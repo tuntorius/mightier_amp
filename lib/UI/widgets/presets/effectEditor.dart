@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import 'package:tinycolor/tinycolor.dart';
+import '../../../bluetooth/devices/effects/Processor.dart';
+import '../../../bluetooth/devices/presets/Preset.dart';
+import '../thickSlider.dart';
+
+class EffectEditor extends StatefulWidget {
+  final Preset preset;
+  final int slot;
+  EffectEditor({this.preset, this.slot});
+  @override
+  _EffectEditorState createState() => _EffectEditorState();
+}
+
+class _EffectEditorState extends State<EffectEditor> {
+  String percentFormatter(val) {
+    return "${val.round()} %";
+  }
+
+  String dbFormatter(double val) {
+    return "${val.toStringAsFixed(1)} db";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var _preset = widget.preset;
+    var _slot = widget.slot;
+    var sliders = List<Widget>();
+
+    bool enabled = _preset.slotEnabled(_slot);
+
+    //get all the parameters for the slot
+    List<Processor> prc = _preset.getEffectsForSlot(_slot);
+
+    //create the widgets to edit them
+    if (prc != null) {
+      var _selected = _preset.getSelectedEffectForSlot(_slot);
+      List<Parameter> params = prc[_selected].parameters;
+
+      if (params != null && params.length > 0) {
+        for (int i = 0; i < params.length; i++) {
+          sliders.add(ThickSlider(
+            value: params[i].value.toDouble(),
+            min: params[i].valueType == ValueType.db ? -6 : 0,
+            max: params[i].valueType == ValueType.db ? 6 : 100,
+            label: params[i].name,
+            labelFormatter: params[i].valueType == ValueType.db
+                ? dbFormatter
+                : percentFormatter,
+            activeColor: enabled
+                ? _preset.effectColor(_slot)
+                : TinyColor(_preset.effectColor(_slot)).desaturate(80).color,
+            onChanged: (val) {
+              setState(() {
+                _preset.setParameterValue(params[i], val);
+              });
+            },
+          ));
+/*  TODO: Tempo tapping
+          if (params[i].valueType == ValueType.tempo)
+            sliders.add(FloatingActionButton(
+              backgroundColor: _preset.effectColor(_slot),
+              foregroundColor: Colors.white,
+              child: Text("Tap"),
+              onPressed: () {},
+            ));*/
+        }
+      }
+    }
+    return ListView(
+      children: sliders,
+    );
+  }
+}

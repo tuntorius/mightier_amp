@@ -180,11 +180,7 @@ class Preset {
         return;
     }
 
-    if (notifyBT) {
-      if (device.effectSwitchedNotifier.value != index) notifyBT = false;
-      device.effectSwitchedNotifier.value = index;
-      if (notifyBT) device.effectSwitchedNotifier.notifyListeners();
-    }
+    if (notifyBT) device.effectSwitched.add(index);
   }
 
   //returns list of effects for given slot
@@ -252,11 +248,7 @@ class Preset {
         selectedReverb = index;
         break;
     }
-    if (notifyBT) {
-      if (device.effectChangedNotifier.value != slot) notifyBT = false;
-      device.effectChangedNotifier.value = slot;
-      if (notifyBT) device.effectChangedNotifier.notifyListeners();
-    }
+    if (notifyBT) device.effectChanged.add(slot);
   }
 
   //change a parameter and announce it
@@ -264,14 +256,7 @@ class Preset {
     param.value = value;
 
     if (device != null) {
-      device.parameterChangedNotifier.value = param;
-
-      //force notify, because the code in the framework checks for object equality
-      //and since it's the same object (although with different inside value
-      //it doesn't fire the callback
-
-      // ignore: invalid_use_of_protected_member
-      device.parameterChangedNotifier.notifyListeners();
+      device.parameterChanged.add(param);
     }
   }
 

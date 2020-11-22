@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:collection';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mighty_plug_manager/main.dart';
 import '../UI/pages/settings.dart';
@@ -21,12 +19,13 @@ class BLEMidiHandler {
   static const String midiService = "03b80e5a-ede8-4b33-a751-6ce34ec4c700";
   static const String midiCharacteristic =
       "7772e5db-3868-4112-a1a9-f2669d106bf3";
+
   static final BLEMidiHandler _bleHandler = BLEMidiHandler._();
 
   FlutterBlue flutterBlue = FlutterBlue.instance;
 
-  ValueNotifier<midiSetupStatus> status =
-      ValueNotifier(midiSetupStatus.unknown);
+  StreamController<midiSetupStatus> _status = StreamController.broadcast();
+  Stream<midiSetupStatus> get status => _status.stream;
 
   BluetoothState bluetoothState = BluetoothState.unknown;
 
@@ -69,25 +68,25 @@ class BLEMidiHandler {
       switch (event) {
         case BluetoothState.unknown:
           // TODO: Handle this case.
-          status.value = midiSetupStatus.bluetoothOff;
+          _status.add(midiSetupStatus.bluetoothOff);
           break;
         case BluetoothState.unavailable:
           // TODO: Handle this case.
-          status.value = midiSetupStatus.bluetoothOff;
+          _status.add(midiSetupStatus.bluetoothOff);
           break;
         case BluetoothState.unauthorized:
           // TODO: Handle this case.
-          status.value = midiSetupStatus.bluetoothOff;
+          _status.add(midiSetupStatus.bluetoothOff);
           break;
         case BluetoothState.turningOn:
           break;
         case BluetoothState.on:
-          status.value = midiSetupStatus.deviceSearching;
+          _status.add(midiSetupStatus.deviceSearching);
           startScanning();
           break;
         case BluetoothState.turningOff:
         case BluetoothState.off:
-          status.value = midiSetupStatus.bluetoothOff;
+          _status.add(midiSetupStatus.bluetoothOff);
           _device = null;
           break;
       }
@@ -96,10 +95,7 @@ class BLEMidiHandler {
     _scanSubscription = flutterBlue.scanResults.listen((results) {
       // do something with scan results
       scanResults = results;
-      if (status.value == midiSetupStatus.deviceFound)
-        status.notifyListeners();
-      else
-        status.value = midiSetupStatus.deviceFound;
+      _status.add(midiSetupStatus.deviceFound);
       for (ScanResult r in results) {
         print('${r.device.name} found! rssi: ${r.rssi}');
       }
@@ -107,13 +103,13 @@ class BLEMidiHandler {
   }
 
   void startScanning() {
-    status.value = midiSetupStatus.deviceSearching;
+    _status.add(midiSetupStatus.deviceSearching);
     if (bluetoothState != BluetoothState.on) return;
     flutterBlue.startScan(
         timeout: Duration(seconds: 8),
         withServices: [Guid(midiService)]).then((result) {
       //if device is not connected after the search - set to idle
-      if (_device == null) status.value = midiSetupStatus.deviceIdle;
+      if (_device == null) _status.add(midiSetupStatus.deviceIdle);
     });
   }
 
@@ -125,7 +121,7 @@ class BLEMidiHandler {
   void connectToDevice(BluetoothDevice device) async {
     if (bluetoothState != BluetoothState.on) return;
     stopScanning();
-    status.value = midiSetupStatus.deviceConnecting;
+    _status.add(midiSetupStatus.deviceConnecting);
     try {
       await device.connect(autoConnect: false);
     } catch (e) {
@@ -147,12 +143,12 @@ class BLEMidiHandler {
         _midiCharacteristic.setNotifyValue(true);
 
         queueFree = true;
-        status.value = midiSetupStatus.deviceConnected;
+        _status.add(midiSetupStatus.deviceConnected);
         device.state.listen((event) {
           if (event == BluetoothDeviceState.disconnected) {
             _device = null;
             queueFree = true;
-            status.value = midiSetupStatus.deviceDisconnected;
+            _status.add(midiSetupStatus.deviceDisconnected);
           }
         });
       });
@@ -188,12 +184,13 @@ class BLEMidiHandler {
       await _midiCharacteristic.write(dataQueue.removeFirst(),
           withoutResponse: true);
     }
-    //print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
+
     Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
     queueFree = true;
   }
 
   void dispose() {
+    _scanSubscription.cancel();
     _device.disconnect();
   }
 }

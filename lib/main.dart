@@ -1,7 +1,3 @@
-//Note: to connect to nox use adb connect 127.0.0.1:62001 for android 5
-//adb connect 127.0.0.1:62025 for android 7
-
-//name: Mightier Amp
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
@@ -79,11 +75,11 @@ class _MainTabsState extends State<MainTabs> {
         appBar: AppBar(
           title: Text("Mightier Amp"),
           actions: [
-            ValueListenableBuilder(
-              builder: (context, midiSetupStatus status, Widget child) {
+            StreamBuilder<midiSetupStatus>(
+              builder: (context, snapshot) {
                 IconData icon = Icons.bluetooth_disabled;
                 Color color = Colors.grey;
-                switch (status) {
+                switch (snapshot.data) {
                   case midiSetupStatus.bluetoothOff:
                     icon = Icons.bluetooth_disabled;
                     break;
@@ -121,7 +117,7 @@ class _MainTabsState extends State<MainTabs> {
                 }
                 return Icon(icon, color: color);
               },
-              valueListenable: widget.handler.status,
+              stream: widget.handler.status,
             ),
             SizedBox(
               width: 15,

@@ -59,12 +59,11 @@ class _SettingsState extends State<Settings> {
               itemCount: items.length,
             )),
             Expanded(
-              child: ValueListenableBuilder(
-                  builder: (BuildContext context, midiSetupStatus status,
-                      Widget child) {
+              child: StreamBuilder<midiSetupStatus>(
+                  builder: (BuildContext context, snapshot) {
                     return DeviceList();
                   },
-                  valueListenable: midiHandler.status),
+                  stream: midiHandler.status),
             ),
             RaisedButton(
               onPressed: () {

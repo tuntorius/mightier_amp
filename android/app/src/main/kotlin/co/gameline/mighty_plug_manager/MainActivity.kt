@@ -41,7 +41,7 @@ class MainActivity: FlutterActivity() {
                     result.success(buffer);
                 }
                 else
-                    result.success(null);
+                    result.error("decoder_unavailable", "you must open a file first", null);
             }
             else if (methodCall.method == "close") {
                 if (decoder != null)
@@ -54,7 +54,15 @@ class MainActivity: FlutterActivity() {
                     result.success(dur);
                 }
                 else
-                    result.success(-1);
+                    result.error("decoder_unavailable", "you must open a file first", null);
+            }
+            else if (methodCall.method == "sampleRate") {
+                if (decoder != null) {
+                    var sr = decoder.getSampleRate();
+                    result.success(sr);
+                }
+                else
+                    result.error("decoder_unavailable", "you must open a file first", null);
             }
         }
     }

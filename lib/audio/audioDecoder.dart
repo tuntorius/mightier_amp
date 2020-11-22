@@ -34,6 +34,10 @@ class AudioDecoder {
     return await platform.invokeMethod("duration");
   }
 
+  Future<int> _sampleRate() async {
+    return await platform.invokeMethod("sampleRate");
+  }
+
   Future<void> release() async {
     try {
       await platform.invokeMethod("close");
@@ -49,10 +53,10 @@ class AudioDecoder {
 
     //get audio duration
     _durationms = await _duration() / 1000000;
-
+    int sampleRate = await _sampleRate();
     print("$duration} seconds");
     //calc approx buffer size and create it
-    int bytes = ((duration) * 44100).ceil();
+    int bytes = ((duration) * sampleRate).ceil();
 
     //used for max audio sample value
     int maxValue = 0;

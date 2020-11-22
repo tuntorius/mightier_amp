@@ -57,6 +57,8 @@ class _PresetListState extends State<PresetList> {
 
   @override
   Widget build(BuildContext context) {
+    if (PresetsStorage().getCategories().length == 0)
+      return Center(child: Text("No presets"));
     Offset _position;
     return GestureDetector(
       onTapDown: (details) {

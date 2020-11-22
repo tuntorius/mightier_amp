@@ -167,6 +167,10 @@ class MidiCCValues {
   static const bCC_drumOnOff_No = 122;
   static const bCC_drumType_No = 123;
   static const bCC_drumLevel_No = 125;
+  static const bCC_drumTempo1 = 0x62;
+  static const bCC_drumTempo2 = 0x63;
+  static const bCC_drumTempoH = 0x06;
+  static const bCC_drumTempoL = 0x26;
   static const bCC_LoopLevel = 121;
   static const bCC_LoopCtrl = 124;
   static const bCC_DrumLed = 126;

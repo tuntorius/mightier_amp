@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../bluetooth/devices/NuxDevice.dart';
+import '../../bluetooth/NuxDeviceControl.dart';
 import '../widgets/thickSlider.dart';
 import '../widgets/scrollPicker.dart';
 
@@ -9,6 +11,14 @@ class DrumEditor extends StatefulWidget {
 
 class _DrumEditorState extends State<DrumEditor> {
   int selectedDrumPattern = 0;
+  final NuxDevice device = NuxDeviceControl().device;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedDrumPattern = device.selectedDrumStyle;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,51 +32,63 @@ class _DrumEditorState extends State<DrumEditor> {
           Expanded(
             child: ScrollPicker(
               initialValue: selectedDrumPattern,
-              items: [
-                "Metronome",
-                "Pop",
-                "Metal",
-                "Blues",
-                "Swing",
-                "Rock",
-                "Ballad Rock",
-                "Funk",
-                "R&B",
-                "Latin",
-                "Dance"
-              ],
+              items: NuxDevice.drumStyles,
               onChanged: (value) {
                 setState(() {
                   selectedDrumPattern = value;
                 });
               },
               onChangedFinal: (value) {
-                print("Final value: $value");
+                setState(() {
+                  device.setDrumsStyle(value);
+                });
               },
             ),
           ),
-          Text(
-            "Drums",
-            textAlign: TextAlign.center,
-            style: theme.textTheme.headline4.copyWith(color: Colors.white),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Drums",
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headline5.copyWith(color: Colors.white),
+              ),
+              Switch(
+                value: device.drumsEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    device.setDrumsEnabled(value);
+                  });
+                },
+              )
+            ],
           ),
           ThickSlider(
             min: 0,
             max: 100,
             activeColor: Colors.blue,
             label: "Volume",
-            value: 50,
-            labelFormatter: (val) => "50",
-            onChanged: (val) {},
+            value: device.drumsVolume.toDouble(),
+            labelFormatter: (val) => "${device.drumsVolume}",
+            onChanged: (val) {
+              setState(() {
+                device.setDrumsLevel(val.round());
+              });
+            },
           ),
           ThickSlider(
             min: 40,
             max: 240,
             activeColor: Colors.blue,
             label: "Tempo",
-            value: 100,
-            labelFormatter: (val) => "100 BPM",
-            onChanged: (val) {},
+            value: device.drumsTempo,
+            labelFormatter: (val) =>
+                "${device.drumsTempo.toStringAsFixed(2)} BPM",
+            onChanged: (val) {
+              setState(() {
+                device.setDrumsTempo(val);
+              });
+            },
           )
         ],
       ),

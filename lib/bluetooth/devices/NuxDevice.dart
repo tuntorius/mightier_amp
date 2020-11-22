@@ -1,14 +1,9 @@
-import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 
 import '../NuxDeviceControl.dart';
 import "NuxConstants.dart";
-import 'effects/Cabinet.dart';
-import 'effects/EFX.dart';
-import 'effects/Amps.dart';
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
 
@@ -24,14 +19,29 @@ abstract class NuxDevice extends ChangeNotifier {
 
   //notifiers for bluetooth control
   final ValueNotifier<int> presetChangedNotifier = ValueNotifier<int>(0);
-  final ValueNotifier<Parameter> parameterChangedNotifier = ValueNotifier(null);
-  final ValueNotifier<int> effectSwitchedNotifier = ValueNotifier(0);
-  final ValueNotifier<int> effectChangedNotifier = ValueNotifier(0);
+  final StreamController<Parameter> parameterChanged =
+      StreamController<Parameter>();
+  final StreamController<int> effectSwitched = StreamController<int>();
+  final StreamController<int> effectChanged = StreamController<int>();
 
   NuxDevice(this.deviceControl);
 
   List<Preset> get guitarPresets;
   List<Preset> get bassPresets;
+
+  static List<String> drumStyles = [
+    "Metronome",
+    "Pop",
+    "Metal",
+    "Blues",
+    "Swing",
+    "Rock",
+    "Ballad Rock",
+    "Funk",
+    "R&B",
+    "Latin",
+    "Dance"
+  ];
 
   Instrument _selectedInstrument = Instrument.Guitar;
   int _selectedChannel = 0; //nux-based (0-6) channel index
@@ -39,6 +49,44 @@ abstract class NuxDevice extends ChangeNotifier {
   Instrument get selectedInstrument => _selectedInstrument;
   String presetName;
   String presetCategory;
+
+  //drum stuff
+  bool _drumsEnabled = false;
+  int _selectedDrumStyle = 0;
+  int _drumsVolume = 50;
+  double _drumsTempo = 120;
+
+  bool get drumsEnabled => _drumsEnabled;
+  int get selectedDrumStyle => _selectedDrumStyle;
+  int get drumsVolume => _drumsVolume;
+  double get drumsTempo => _drumsTempo;
+
+  void resetDrumSettings() {
+    _drumsEnabled = false;
+    _selectedDrumStyle = 0;
+    _drumsVolume = 50;
+    _drumsTempo = 120;
+  }
+
+  void setDrumsEnabled(bool _enabled) {
+    _drumsEnabled = _enabled;
+    deviceControl.sendDrumsEnabled(_drumsEnabled);
+  }
+
+  void setDrumsStyle(int style) {
+    _selectedDrumStyle = style;
+    deviceControl.sendDrumsStyle(style);
+  }
+
+  void setDrumsLevel(int level) {
+    _drumsVolume = level;
+    deviceControl.sendDrumsLevel(level);
+  }
+
+  void setDrumsTempo(double tempo) {
+    _drumsTempo = tempo;
+    deviceControl.sendDrumsTempo(tempo);
+  }
 
   set selectedInstrument(Instrument instr) {
     if (instr != _selectedInstrument) {
@@ -216,9 +264,11 @@ abstract class NuxDevice extends ChangeNotifier {
 
 class NuxMightyPlug extends NuxDevice {
   int get productVID => 48;
+
   List<Preset> presets = List<Preset>();
   List<Preset> guitarPresets = List<Preset>();
   List<Preset> bassPresets = List<Preset>();
+
   NuxMightyPlug(NuxDeviceControl devControl) : super(devControl) {
     //clean
     guitarPresets.add(Preset(

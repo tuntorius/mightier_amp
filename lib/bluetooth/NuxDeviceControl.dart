@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -25,17 +24,17 @@ class NuxDeviceControl {
   }
 
   NuxDeviceControl._() {
-    _midiHandler.status.addListener(_statusListener);
+    _midiHandler.status.listen(_statusListener);
     _device = NuxMightyPlug(this);
 
-    device.parameterChangedNotifier.addListener(parameterChangedListener);
     device.presetChangedNotifier.addListener(presetChangedListener);
-    device.effectChangedNotifier.addListener(effectChangedListener);
-    device.effectSwitchedNotifier.addListener(effectSwitchedListener);
+    device.parameterChanged.stream.listen(parameterChangedListener);
+    device.effectChanged.stream.listen(effectChangedListener);
+    device.effectSwitched.stream.listen(effectSwitchedListener);
   }
 
-  void _statusListener() {
-    switch (_midiHandler.status.value) {
+  void _statusListener(statusValue) {
+    switch (statusValue) {
       case midiSetupStatus.deviceFound:
         // check if this is valid nux device
         print("Devices found " + _midiHandler.scanResults.toString());
@@ -95,9 +94,8 @@ class NuxDeviceControl {
   }
 
   //preset editing listeners
-  void parameterChangedListener() {
+  void parameterChangedListener(Parameter param) {
     if (_midiHandler.connectedDevice == null) return;
-    var param = device.parameterChangedNotifier.value;
     sendParameter(param, false);
   }
 
@@ -113,9 +111,8 @@ class NuxDeviceControl {
     _midiHandler.sendData(data);
   }
 
-  void effectSwitchedListener() {
+  void effectSwitchedListener(int slot) {
     if (_midiHandler.connectedDevice == null) return;
-    var slot = device.effectSwitchedNotifier.value;
     var preset = device.getPresetByNuxIndex(device.selectedChannelNuxIndex);
     var swIndex = preset
         .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
@@ -127,8 +124,7 @@ class NuxDeviceControl {
     _midiHandler.sendData(data);
   }
 
-  void effectChangedListener() {
-    var slot = device.effectChangedNotifier.value;
+  void effectChangedListener(int slot) {
     sendFullEffectSettings(slot);
   }
 
@@ -177,6 +173,44 @@ class NuxDeviceControl {
     var data = createCCMessage(param.midiCC, val);
     if (!returnOnly) _midiHandler.sendData(data);
     return data;
+  }
+
+  void sendDrumsEnabled(bool enabled) {
+    if (_midiHandler.connectedDevice == null) return;
+    var data =
+        createCCMessage(MidiCCValues.bCC_drumOnOff_No, enabled ? 0x7f : 0);
+    _midiHandler.sendData(data);
+  }
+
+  void sendDrumsStyle(int style) {
+    if (_midiHandler.connectedDevice == null) return;
+    var data = createCCMessage(MidiCCValues.bCC_drumType_No, style);
+    _midiHandler.sendData(data);
+  }
+
+  void sendDrumsLevel(int volume) {
+    if (_midiHandler.connectedDevice == null) return;
+    var data = createCCMessage(MidiCCValues.bCC_drumLevel_No, volume);
+    _midiHandler.sendData(data);
+  }
+
+  void sendDrumsTempo(double tempo) {
+    if (_midiHandler.connectedDevice == null) return;
+
+    int tempoNux = (((tempo - 40) / 200) * 16384).floor();
+    //these must be sent as 2 7bit values
+    int tempoL = tempoNux & 0x7f;
+    int tempoH = (tempoNux >> 7);
+
+    //no idea what the first 2 messages are for
+    var data = createCCMessage(MidiCCValues.bCC_drumTempo1, 0x06);
+    _midiHandler.sendData(data);
+    data = createCCMessage(MidiCCValues.bCC_drumTempo2, 0x26);
+    _midiHandler.sendData(data);
+    data = createCCMessage(MidiCCValues.bCC_drumTempoH, tempoH);
+    _midiHandler.sendData(data);
+    data = createCCMessage(MidiCCValues.bCC_drumTempoL, tempoL);
+    _midiHandler.sendData(data);
   }
 
   int percentageTo7Bit(double val) {

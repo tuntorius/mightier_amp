@@ -1,4 +1,6 @@
-import 'dart:typed_data';
+// (c) 2020 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'dart:ui';
 
 import '../NuxConstants.dart';

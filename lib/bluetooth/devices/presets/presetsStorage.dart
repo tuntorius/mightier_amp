@@ -1,8 +1,9 @@
+// (c) 2020 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/services.dart';
-import 'package:mighty_plug_manager/UI/popups/savePreset.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 

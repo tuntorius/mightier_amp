@@ -1,10 +1,10 @@
+// (c) 2020 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import '../NuxConstants.dart';
 import 'Processor.dart';
 
 abstract class Delay extends Processor {
-  //~3300
-// 0-Analog delay, 1 - Tape Echo, 2 - Digital Delay, 3 - Ping Pong
-
   int get deviceSwitchIndex => MidiCCValues.bCC_DelayEnable;
   int get deviceSelectionIndex => MidiCCValues.bCC_DelayMode;
 }

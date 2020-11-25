@@ -1,3 +1,6 @@
+// (c) 2020 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'dart:core';
 import '../NuxConstants.dart';
 import 'Processor.dart';

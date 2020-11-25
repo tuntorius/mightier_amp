@@ -1,3 +1,6 @@
+// (c) 2020 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 class EProductNo {
   static const CHERUB_VID = 8721;
   static const TAPECORE_PID = 0;

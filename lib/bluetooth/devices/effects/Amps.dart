@@ -1,16 +1,10 @@
+// (c) 2020 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import '../NuxConstants.dart';
 import 'Processor.dart';
 
 class Amplifier extends Processor {
-  //row 2350
-  // Clean: 0 - Twin Verb, 1 - JZ 120, 2 - Tweed Dlx
-  // OD: 3 - Plexi, 4 -Top Boost 30, 5 - Lead 100
-  // DIST: 6 - Fireman, 7 - DIE VH4, 8 - Recto
-  // AG Sim: 9 - Optima, 10 - Stageman
-  // Bass AGL channel: 11 - MLD, 12 - AGL
-  // Bass MLD channel: 11, 12
-  // Bass BASSMAN channel: 11, 12
-
   int get deviceSwitchIndex => MidiCCValues.bCC_AmpEnable;
   int get deviceSelectionIndex => MidiCCValues.bCC_AmpModeSetup;
 }

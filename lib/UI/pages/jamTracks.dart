@@ -1,3 +1,6 @@
+// (c) 2020 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../audio/audioPlayer.dart';

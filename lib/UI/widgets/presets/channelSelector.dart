@@ -74,6 +74,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         ),
         Expanded(
             child: EffectSelector(
+                device: widget.device,
                 preset: _presets[widget.device.selectedChannelNormalized]))
       ],
     );

@@ -132,6 +132,8 @@ abstract class NuxDevice extends ChangeNotifier {
     }
   }
 
+  int selectedEffect = 0;
+
   Preset getPresetByNuxIndex(int index) {
     if (index < 4)
       //guitar presets

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../bluetooth/devices/NuxDevice.dart';
 import 'effectEditor.dart';
 import 'package:tinycolor/tinycolor.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
@@ -7,15 +8,19 @@ import '../customPopupMenu.dart' as custom;
 
 class EffectSelector extends StatefulWidget {
   final Preset preset;
+  final NuxDevice device;
 
-  EffectSelector({@required this.preset});
+  EffectSelector({@required this.preset, @required this.device});
   @override
   _EffectSelectorState createState() => _EffectSelectorState();
 }
 
 class _EffectSelectorState extends State<EffectSelector> {
   List<bool> _effectSelection;
-  int _selectedEffect = 0;
+  //int _selectedEffect = 0;
+
+  int get _selectedEffect => widget.device.selectedEffect;
+  set _selectedEffect(val) => widget.device.selectedEffect = val;
 
   List<Widget> _buttons;
   Preset _preset;

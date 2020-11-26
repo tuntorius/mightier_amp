@@ -7,7 +7,7 @@ import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'audioEditor.dart';
+import 'artistAlbums.dart';
 
 class AudioPlayerInterface extends StatefulWidget {
   @override
@@ -21,7 +21,8 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
 
   RangeValues range = new RangeValues(0, 10000);
 
-  Future<List<SongInfo>> songs;
+  //Future<List<SongInfo>> songs;
+  Future<List<ArtistInfo>> artists;
 
   TextEditingController editingController = TextEditingController();
 
@@ -38,7 +39,8 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
 
   void getArtists() {
     final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-    songs = audioQuery.getSongs(sortType: SongSortType.ALPHABETIC_ARTIST);
+    artists = audioQuery.getArtists();
+    //songs = audioQuery.getSongs(sortType: SongSortType.ALPHABETIC_ARTIST);
   }
 
   void playAudio() async {
@@ -111,8 +113,8 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
                       borderRadius: BorderRadius.all(Radius.circular(25.0)))),
             ),
             Expanded(
-              child: FutureBuilder<List<SongInfo>>(
-                future: songs,
+              child: FutureBuilder<List<ArtistInfo>>(
+                future: artists,
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
@@ -126,20 +128,20 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
                       break;
                     case ConnectionState.done:
                       // TODO: Handle this case.
-                      List<SongInfo> _songs;
+                      List<ArtistInfo> _artists;
                       var searchText = editingController.text.toLowerCase();
                       if (editingController.text.isNotEmpty) {
-                        _songs = List<SongInfo>();
+                        _artists = List<ArtistInfo>();
                         snapshot.data.forEach((item) {
-                          if (item.title.toLowerCase().contains(searchText)) {
-                            _songs.add(item);
+                          if (item.name.toLowerCase().contains(searchText)) {
+                            _artists.add(item);
                           }
                         });
                       } else
-                        _songs = snapshot.data;
+                        _artists = snapshot.data;
 
                       return ListView.builder(
-                          itemCount: _songs.length,
+                          itemCount: _artists.length,
                           itemBuilder: (BuildContext ctxt, int index) {
                             return Padding(
                               padding:
@@ -149,13 +151,13 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
                                   onPressed: () {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
-                                            builder: (context) => AudioEditor(
-                                                _songs[index].filePath)));
+                                            builder: (context) => ArtistAlbums(
+                                                _artists[index].name)));
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Text(
-                                      "${_songs[index].artist} - ${_songs[index].title}",
+                                      "${_artists[index].numberOfAlbums} - ${_artists[index].name}",
                                       style: TextStyle(color: Colors.white),
                                     ),
                                   )),

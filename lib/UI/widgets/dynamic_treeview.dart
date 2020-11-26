@@ -1,7 +1,6 @@
 library dynamic_treeview;
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
 
 //The MIT License (MIT)
 

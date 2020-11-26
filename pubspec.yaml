@@ -23,14 +23,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  #flutter_midi_command: ^0.2.6
   permission_handler: ^5.0.1+1
   path_provider: ^1.6.24
   just_audio: ^0.5.6
   flutter_audio_query: ^0.3.5+6
   tinycolor: ^1.0.3
-  dynamic_treeview: ^1.0.0+2
+  screen: ^0.0.5
 
+# https://pub.dev/packages/direct_select - possibility to use for selecting effects
   #some fixes added to flutter_blue library,
   #besides the newer versions don't work with android 10+
   flutter_blue:

@@ -2,6 +2,8 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import 'package:screen/screen.dart';
 import '../../bluetooth/bleMidiHandler.dart';
 import '../widgets/deviceList.dart';
 import 'calibration.dart';
@@ -61,6 +63,22 @@ class _SettingsState extends State<Settings> {
               },
               itemCount: items.length,
             )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Keep screen on"),
+                Switch(
+                  value: SharedPrefs()
+                      .getValue(SettingsKeys.screenAlwaysOn, false),
+                  onChanged: (val) {
+                    setState(() {
+                      Screen.keepOn(val);
+                      SharedPrefs().setValue(SettingsKeys.screenAlwaysOn, val);
+                    });
+                  },
+                )
+              ],
+            ),
             Expanded(
               child: StreamBuilder<midiSetupStatus>(
                   builder: (BuildContext context, snapshot) {

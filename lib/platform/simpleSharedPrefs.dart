@@ -6,14 +6,17 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:screen/screen.dart';
 
 class SettingsKeys {
   static const String latency = "audioLatency";
+  static const String screenAlwaysOn = "screenAlwaysOn";
 }
 
 class SharedPrefs {
   static final SharedPrefs _storage = SharedPrefs._();
   static const prefsFile = "prefs.json";
+
   factory SharedPrefs() {
     return _storage;
   }
@@ -32,6 +35,9 @@ class SharedPrefs {
     _prefsData = Map<String, dynamic>();
     await _getDirectory();
     await _loadPrefs();
+
+    bool value = getValue(SettingsKeys.screenAlwaysOn, false);
+    Screen.keepOn(value);
   }
 
   _getDirectory() async {
@@ -64,7 +70,17 @@ class SharedPrefs {
     _savePrefs();
   }
 
-  getInt(String key, int _default) {
+  int getInt(String key, int _default) {
+    if (_prefsData.containsKey(key)) return _prefsData[key];
+    return _default;
+  }
+
+  void setValue(String key, dynamic value) {
+    _prefsData[key] = value;
+    _savePrefs();
+  }
+
+  dynamic getValue(String key, dynamic _default) {
     if (_prefsData.containsKey(key)) return _prefsData[key];
     return _default;
   }

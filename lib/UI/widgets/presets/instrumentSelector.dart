@@ -71,7 +71,9 @@ class _InstrumentSelectorState extends State<InstrumentSelector> {
             children: [
               ElevatedButton(
                 child: Icon(Icons.save_alt),
-                onPressed: () {},
+                onPressed: () {
+                  device.saveNuxPreset();
+                },
               ),
               ElevatedButton(
                 child: Icon(Icons.playlist_add),

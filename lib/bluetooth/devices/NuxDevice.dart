@@ -198,6 +198,10 @@ abstract class NuxDevice extends ChangeNotifier {
     }
   }
 
+  void saveNuxPreset() {
+    deviceControl.saveNuxPreset();
+  }
+
   presetFromJson(dynamic _preset) {
     presetName = _preset["name"];
     presetCategory = _preset["category"];

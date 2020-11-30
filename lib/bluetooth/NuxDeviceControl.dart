@@ -46,7 +46,10 @@ class NuxDeviceControl {
               dev.advertisementData.localName != null &&
               _devices.contains(dev.advertisementData.localName)) {
             //_device = _devices[dev.name];
-            _midiHandler.connectToDevice(dev.device);
+
+            //don't autoconnect on auto scan
+            if (!_midiHandler.manualScan)
+              _midiHandler.connectToDevice(dev.device);
           }
         });
         break;
@@ -176,6 +179,12 @@ class NuxDeviceControl {
     var data = createCCMessage(param.midiCC, val);
     if (!returnOnly) _midiHandler.sendData(data);
     return data;
+  }
+
+  void saveNuxPreset() {
+    if (_midiHandler.connectedDevice == null) return;
+    var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
+    _midiHandler.sendData(data);
   }
 
   void sendDrumsEnabled(bool enabled) {

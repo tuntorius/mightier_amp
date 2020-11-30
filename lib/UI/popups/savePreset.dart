@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../widgets/scrollParent.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/presets/presetsStorage.dart';
+import 'alertDialogs.dart';
 
 class SavePresetDialog {
   static final _formKey = GlobalKey<FormState>();
@@ -100,12 +101,21 @@ class SavePresetDialog {
                 if (_formKey.currentState.validate()) {
                   //save and pop
 
-                  device.presetName = nameCtrl.value.text;
-                  device.presetCategory = categoryCtrl.value.text;
-
-                  PresetsStorage().savePreset(
-                      preset, device.presetName, device.presetCategory);
-                  Navigator.of(context).pop();
+                  if (PresetsStorage().findPreset(
+                          nameCtrl.value.text, categoryCtrl.value.text) !=
+                      null) {
+                    //overwriting preset
+                    AlertDialogs.showConfirmDialog(context,
+                        title: "Confirm",
+                        description: "Overwrite existing preset?",
+                        cancelButton: "Cancel",
+                        confirmButton: "Overwrite",
+                        confirmColor: Colors.red, onConfirm: (overwrite) {
+                      if (overwrite) savePreset(preset, context);
+                    });
+                  } else {
+                    savePreset(preset, context);
+                  }
                 }
               },
               textColor: Theme.of(context).primaryColor,
@@ -115,5 +125,15 @@ class SavePresetDialog {
         );
       },
     );
+  }
+
+  savePreset(preset, context) {
+    device.presetName = nameCtrl.value.text;
+    device.presetCategory = categoryCtrl.value.text;
+
+    Navigator.of(context).pop();
+
+    PresetsStorage()
+        .savePreset(preset, device.presetName, device.presetCategory);
   }
 }

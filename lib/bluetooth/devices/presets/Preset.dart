@@ -21,7 +21,7 @@ class Preset {
     Color.fromARGB(255, 0, 255, 0),
     Color.fromARGB(255, 255, 180, 0),
     Color.fromARGB(255, 255, 0, 0),
-    Color.fromARGB(255, 255, 255, 255),
+    Color.fromARGB(230, 230, 230, 255),
     Color.fromARGB(255, 130, 225, 255),
     Color.fromARGB(255, 210, 140, 250),
     Color.fromARGB(255, 71, 167, 245),

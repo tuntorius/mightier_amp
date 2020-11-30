@@ -1,6 +1,8 @@
 // (c) 2020 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../dynamic_treeview.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,114 @@ class PresetList extends StatefulWidget {
 }
 
 class _PresetListState extends State<PresetList> {
+  var popupMenu = <PopupMenuEntry>[
+    PopupMenuItem(
+      value: 0,
+      child: Row(
+        children: <Widget>[
+          Icon(Icons.delete),
+          Text("Delete"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: 1,
+      child: Row(
+        children: <Widget>[
+          Icon(Icons.drive_file_rename_outline),
+          Text("Rename"),
+        ],
+      ),
+    )
+  ];
+
+  void menuActions(action, item) {
+    {
+      if (item is String) {
+        switch (action) {
+          case 0:
+            AlertDialogs.showConfirmDialog(context,
+                title: "Confirm",
+                description: "Are you sure you want to delete category $item?",
+                cancelButton: "Cancel",
+                confirmButton: "Delete",
+                confirmColor: Colors.red, onConfirm: (delete) {
+              if (delete) {
+                PresetsStorage()
+                    .deleteCategory(item)
+                    .then((value) => setState(() {}));
+              }
+            });
+            break;
+          case 1:
+            AlertDialogs.showInputDialog(context,
+                title: "Rename",
+                description: "Enter category name:",
+                cancelButton: "Cancel",
+                confirmButton: "Rename",
+                value: item,
+                confirmColor: Colors.blue, onConfirm: (renamed, newName) {
+              print("Renamed: $renamed, new name $newName");
+              if (renamed) {
+                if (!PresetsStorage().getCategories().contains(newName))
+                  PresetsStorage()
+                      .renameCategory(item, newName)
+                      .then((value) => setState(() {}));
+                else
+                  AlertDialogs.showInfoDialog(context,
+                      confirmButton: "OK",
+                      title: "Warning",
+                      description: "Category already exists!");
+              }
+            });
+            break;
+        }
+      } else {
+        switch (action) {
+          case 0:
+            AlertDialogs.showConfirmDialog(context,
+                title: "Confirm",
+                description: "Are you sure you want to delete ${item["name"]}?",
+                cancelButton: "Cancel",
+                confirmButton: "Delete",
+                confirmColor: Colors.red, onConfirm: (delete) {
+              if (delete) {
+                if (item is Map) {
+                  PresetsStorage()
+                      .deletePreset(item["category"], item["name"])
+                      .then((value) => setState(() {}));
+                }
+              }
+            });
+            break;
+          case 1:
+            AlertDialogs.showInputDialog(context,
+                title: "Rename",
+                description: "Enter preset name:",
+                cancelButton: "Cancel",
+                confirmButton: "Rename",
+                value: item["name"],
+                confirmColor: Colors.blue, onConfirm: (renamed, newName) {
+              print("Renamed: $renamed, new name $newName");
+              if (renamed) {
+                if (PresetsStorage().findPreset(newName, item["category"]) ==
+                    null)
+                  PresetsStorage()
+                      .renamePreset(item["category"], item["name"], newName)
+                      .then((value) => setState(() {}));
+                else
+                  AlertDialogs.showInfoDialog(context,
+                      confirmButton: "OK",
+                      title: "Warning",
+                      description: "Preset already exists!");
+              }
+            });
+            break;
+        }
+      }
+    }
+  }
+
   void showContextMenu(_position, dynamic item) {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject();
     //open menu
@@ -22,39 +132,10 @@ class _PresetListState extends State<PresetList> {
         Offset.zero & overlay.size);
     showMenu(
       position: rect,
-      items: <PopupMenuEntry>[
-        PopupMenuItem(
-          value: 0,
-          child: Row(
-            children: <Widget>[
-              Icon(Icons.delete),
-              Text("Delete"),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          value: 1,
-          child: Row(
-            children: <Widget>[
-              Icon(Icons.drive_file_rename_outline),
-              Text("Rename"),
-            ],
-          ),
-        )
-      ],
+      items: popupMenu,
       context: context,
     ).then((value) {
-      switch (value) {
-        case 0:
-          if (item is Map) {
-            PresetsStorage()
-                .deletePreset(item["category"], item["name"])
-                .then((value) => setState(() {
-                      //print("Deletion complete be masurqk takuv");
-                    }));
-          }
-          break;
-      }
+      menuActions(value, item);
     });
   }
 
@@ -64,6 +145,7 @@ class _PresetListState extends State<PresetList> {
       return Center(child: Text("No presets"));
     Offset _position;
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onTapDown: (details) {
         _position = details.globalPosition;
       },
@@ -97,6 +179,15 @@ class _PresetListState extends State<PresetList> {
               style: TextStyle(
                   color: Preset.channelColors[
                       Preset.nuxChannel(item["instrument"], item["channel"])]),
+            ),
+            trailing: PopupMenuButton(
+              child: Icon(Icons.more_vert, color: Colors.grey),
+              itemBuilder: (context) {
+                return popupMenu;
+              },
+              onSelected: (pos) {
+                menuActions(pos, item);
+              },
             ),
           );
         },

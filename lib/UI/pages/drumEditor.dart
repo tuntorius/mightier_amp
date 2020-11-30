@@ -48,51 +48,59 @@ class _DrumEditorState extends State<DrumEditor> {
               },
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Drums",
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headline5.copyWith(color: Colors.white),
-              ),
-              Switch(
-                value: device.drumsEnabled,
-                onChanged: (value) {
-                  setState(() {
-                    device.setDrumsEnabled(value);
-                  });
-                },
-              )
-            ],
+          Expanded(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Drums",
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headline5
+                          .copyWith(color: Colors.white),
+                    ),
+                    Switch(
+                      value: device.drumsEnabled,
+                      onChanged: (value) {
+                        setState(() {
+                          device.setDrumsEnabled(value);
+                        });
+                      },
+                    )
+                  ],
+                ),
+                ThickSlider(
+                  min: 0,
+                  max: 100,
+                  activeColor: Colors.blue,
+                  label: "Volume",
+                  value: device.drumsVolume.toDouble(),
+                  labelFormatter: (val) => "${device.drumsVolume}",
+                  onChanged: (val) {
+                    setState(() {
+                      device.setDrumsLevel(val.round());
+                    });
+                  },
+                ),
+                ThickSlider(
+                  min: 40,
+                  max: 240,
+                  skipEmitting: 5,
+                  activeColor: Colors.blue,
+                  label: "Tempo",
+                  value: device.drumsTempo,
+                  labelFormatter: (val) =>
+                      "${device.drumsTempo.toStringAsFixed(2)} BPM",
+                  onChanged: (val) {
+                    setState(() {
+                      device.setDrumsTempo(val);
+                    });
+                  },
+                )
+              ],
+            ),
           ),
-          ThickSlider(
-            min: 0,
-            max: 100,
-            activeColor: Colors.blue,
-            label: "Volume",
-            value: device.drumsVolume.toDouble(),
-            labelFormatter: (val) => "${device.drumsVolume}",
-            onChanged: (val) {
-              setState(() {
-                device.setDrumsLevel(val.round());
-              });
-            },
-          ),
-          ThickSlider(
-            min: 40,
-            max: 240,
-            activeColor: Colors.blue,
-            label: "Tempo",
-            value: device.drumsTempo,
-            labelFormatter: (val) =>
-                "${device.drumsTempo.toStringAsFixed(2)} BPM",
-            onChanged: (val) {
-              setState(() {
-                device.setDrumsTempo(val);
-              });
-            },
-          )
         ],
       ),
     );

@@ -127,31 +127,46 @@ class _AudioEditorState extends State<AudioEditor> {
             //   style: TextStyle(color: Colors.white, fontSize: 30),
             // ),
             Expanded(
-                child: PaintedWaveform(
-              sampleData: wfData,
-              currentSample: currentSample,
-              automation: automation,
-              onWaveformTap: (sample) {
-                switch (state) {
-                  case EditorState.play:
-                    playFrom(sample);
-                    break;
-                  case EditorState.insert:
-                    state = EditorState.play;
-                    setState(() {
-                      automation.addEvent(
-                          Duration(milliseconds: sampleToMs(sample)),
-                          AutomationEventType.changePreset)
-                        ..presetCategory = selectedPreset["category"]
-                        ..presetName = selectedPreset["name"]
-                        ..channel = Preset.nuxChannel(
-                            selectedPreset["instrument"],
-                            selectedPreset["channel"])
-                        ..preset = selectedPreset;
-                    });
-                    break;
-                }
-              },
+                child: Stack(
+              children: [
+                PaintedWaveform(
+                  sampleData: wfData,
+                  currentSample: currentSample,
+                  automation: automation,
+                  onWaveformTap: (sample) {
+                    switch (state) {
+                      case EditorState.play:
+                        playFrom(sample);
+                        break;
+                      case EditorState.insert:
+                        setState(() {
+                          state = EditorState.play;
+                          automation.addEvent(
+                              Duration(milliseconds: sampleToMs(sample)),
+                              AutomationEventType.changePreset)
+                            ..presetCategory = selectedPreset["category"]
+                            ..presetName = selectedPreset["name"]
+                            ..channel = Preset.nuxChannel(
+                                selectedPreset["instrument"],
+                                selectedPreset["channel"])
+                            ..preset = selectedPreset;
+                        });
+                        break;
+                    }
+                  },
+                ),
+                if (state == EditorState.insert)
+                  Container(
+                      color: Colors.grey[700],
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Tap here to insert preset change",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ))
+              ],
+              alignment: Alignment.center,
             )),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -228,15 +243,18 @@ class _AudioEditorState extends State<AudioEditor> {
                         SelectPresetDialog().buildDialog(context),
                   ).then((value) {
                     if (value != null) {
-                      state = EditorState.insert;
+                      setState(() {
+                        state = EditorState.insert;
+                      });
                       selectedPreset = value;
                     }
                   });
                 } else
-                  state = EditorState.play;
-                //state = EditorState.insert;
+                  setState(() {
+                    state = EditorState.play;
+                  });
               },
-              child: Text("Add preset change"),
+              child: Text("Insert preset change"),
             ),
             /*ElevatedButton(onPressed: () {}, child: Text("Do other stuff here"))*/
           ]),

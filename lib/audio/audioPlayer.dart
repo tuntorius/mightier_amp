@@ -157,7 +157,7 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Text(
-                                      "${_artists[index].numberOfAlbums} - ${_artists[index].name}",
+                                      "${_artists[index].name}",
                                       style: TextStyle(color: Colors.white),
                                     ),
                                   )),

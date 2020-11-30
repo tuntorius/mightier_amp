@@ -29,12 +29,14 @@ class _JamTracksState extends State<JamTracks> {
           (BuildContext context, AsyncSnapshot<PermissionStatus> snapshot) {
         if (snapshot.hasData) {
           switch (snapshot.data) {
+            case PermissionStatus.denied:
             case PermissionStatus.undetermined:
               return Center(
                 child: RaisedButton(
                   child: Text("Grant storage permission"),
-                  onPressed: () {
-                    Permission.storage.request();
+                  onPressed: () async {
+                    await Permission.storage.request();
+                    setState(() {});
                   },
                 ),
               );

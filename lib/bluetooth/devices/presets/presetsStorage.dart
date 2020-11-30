@@ -115,4 +115,24 @@ class PresetsStorage {
     }
     return null;
   }
+
+  Future deleteCategory(String category) {
+    for (int i = 0; i < presetsData.length; i++) {
+      if (presetsData[i]["category"] == category) {
+        presetsData.removeAt(i);
+        return _savePresets();
+      }
+    }
+    return null;
+  }
+
+  Future renameCategory(String category, String newName) {
+    for (int i = 0; i < presetsData.length; i++) {
+      if (presetsData[i]["category"] == category) {
+        presetsData[i]["category"] = newName;
+        return _savePresets();
+      }
+    }
+    return null;
+  }
 }

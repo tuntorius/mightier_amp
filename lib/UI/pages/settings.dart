@@ -99,7 +99,7 @@ class _SettingsState extends State<Settings> {
                 RaisedButton(
                   child: Text("Scan"),
                   onPressed: () {
-                    midiHandler.startScanning();
+                    midiHandler.startScanning(true);
                   },
                 ),
                 RaisedButton(

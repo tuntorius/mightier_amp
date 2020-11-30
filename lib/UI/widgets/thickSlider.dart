@@ -15,6 +15,7 @@ class ThickSlider extends StatefulWidget {
   final ValueChanged<double> onChanged;
   final ValueChanged<double> onChangeEnd;
   final String Function(double) labelFormatter;
+  final int skipEmitting;
 
   ThickSlider(
       {this.activeColor,
@@ -25,7 +26,8 @@ class ThickSlider extends StatefulWidget {
       this.value,
       this.onChanged,
       this.onChangeEnd,
-      this.labelFormatter});
+      this.labelFormatter,
+      this.skipEmitting = 2});
 
   @override
   _ThickSliderState createState() => _ThickSliderState();
@@ -35,6 +37,7 @@ class _ThickSliderState extends State<ThickSlider> {
   double factor = 0.5; //normalized position in 0-1
   double pos = 0;
   int lastTapDown = 0;
+  int emitCounter = 0;
   // Returns a number between min and max, proportional to value, which must
   // be between 0.0 and 1.0.
   double _lerp(double value) {
@@ -69,6 +72,7 @@ class _ThickSliderState extends State<ThickSlider> {
     assert(widget.max != null);
     assert(widget.min < widget.max);
     assert(widget.value >= widget.min && widget.value <= widget.max);
+    assert(widget.skipEmitting > 0);
     //normalize value to 0-1
     factor = _unlerp(widget.value);
   }
@@ -104,6 +108,13 @@ class _ThickSliderState extends State<ThickSlider> {
         },
         onHorizontalDragUpdate: (detail) {
           addPercentage(detail.delta.dx, width);
+          emitCounter++;
+          if (emitCounter % widget.skipEmitting == 0) {
+            widget.onChanged?.call(_lerp(factor));
+          }
+        },
+        onHorizontalDragEnd: (detail) {
+          //call the last factor value here
           widget.onChanged?.call(_lerp(factor));
         },
         child: Container(

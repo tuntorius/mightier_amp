@@ -1,6 +1,8 @@
 // (c) 2020 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import 'effectEditor.dart';
@@ -81,9 +83,6 @@ class _EffectSelectorState extends State<EffectSelector> {
       if (TinyColor(_popupEffectColor).isLight())
         _popupEffectColor = TinyColor(_popupEffectColor).darken(15).color;
 
-    //find current effect properties
-    //if (!(effects[0] is Cabinet)) {
-    //find name
     _selectedEffectName = _preset
         .getEffectsForSlot(
             _selectedEffect)[_preset.getSelectedEffectForSlot(_selectedEffect)]
@@ -113,33 +112,6 @@ class _EffectSelectorState extends State<EffectSelector> {
         ),
       ));
     }
-    // } else {
-    //   //special case for cabinets
-
-    //   //get name
-    //   var cabs = _preset.getCabinets();
-    //   _selectedEffectName =
-    //       cabs[_preset.getSelectedEffectForSlot(_selectedEffect)];
-
-    //   //create popup menu
-    //   _effectItems = List<custom.PopupMenuItem<int>>();
-    //   for (int f = 0; f < _preset.getCabinets().length; f++) {
-    //     _effectItems.add(custom.PopupMenuItem<int>(
-    //       value: f,
-    //       backgroundColor:
-    //           f == _preset.getSelectedEffectForSlot(_selectedEffect)
-    //               ? _popupEffectColor
-    //               : null,
-    //       child: Padding(
-    //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-    //         child: Text(
-    //           _preset.getCabinets()[f],
-    //           style: TextStyle(color: Colors.white),
-    //         ),
-    //       ),
-    //     ));
-    //   }
-    // }
 
     var effectSelectButton = Container(
       decoration: BoxDecoration(
@@ -213,18 +185,54 @@ class _EffectSelectorState extends State<EffectSelector> {
               )
             else
               effectSelectButton,
-            if (_preset.slotSwitchable(_selectedEffect))
-              Switch(
-                value: _preset.slotEnabled(_selectedEffect),
-                onChanged: (val) {
-                  setState(() {
-                    _preset.setSlotEnabled(_selectedEffect, val, true);
-                  });
-                },
-                activeColor: TinyColor(_effectColor).brighten(20).color,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[700],
-              ),
+            Row(
+              children: [
+                if (_selectedEffect != 0)
+                  IconButton(
+                    onPressed: () {
+                      var effect =
+                          _preset.getSelectedEffectForSlot(_selectedEffect) - 1;
+                      if (effect < 0) effect = effects.length - 1;
+                      setState(() {
+                        _preset.setSelectedEffectForSlot(
+                            _selectedEffect, effect, true);
+                      });
+                    },
+                    icon: Transform.rotate(
+                        angle: pi,
+                        child: Icon(Icons.play_arrow,
+                            color: TinyColor(_effectColor).brighten(20).color)),
+                    iconSize: 30,
+                  ),
+                if (_selectedEffect != 0)
+                  IconButton(
+                    onPressed: () {
+                      var effect =
+                          _preset.getSelectedEffectForSlot(_selectedEffect) + 1;
+                      if (effect > effects.length - 1) effect = 0;
+                      setState(() {
+                        _preset.setSelectedEffectForSlot(
+                            _selectedEffect, effect, true);
+                      });
+                    },
+                    icon: Icon(Icons.play_arrow,
+                        color: TinyColor(_effectColor).brighten(20).color),
+                    iconSize: 30,
+                  ),
+                if (_preset.slotSwitchable(_selectedEffect))
+                  Switch(
+                    value: _preset.slotEnabled(_selectedEffect),
+                    onChanged: (val) {
+                      setState(() {
+                        _preset.setSlotEnabled(_selectedEffect, val, true);
+                      });
+                    },
+                    activeColor: TinyColor(_effectColor).brighten(20).color,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey[700],
+                  ),
+              ],
+            ),
           ],
         ),
         Expanded(

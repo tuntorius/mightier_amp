@@ -38,6 +38,8 @@ class BLEMidiHandler {
 
   bool queueFree = true;
 
+  bool manualScan = false;
+
   factory BLEMidiHandler() {
     return _bleHandler;
   }
@@ -85,7 +87,7 @@ class BLEMidiHandler {
           break;
         case BluetoothState.on:
           _status.add(midiSetupStatus.deviceSearching);
-          startScanning();
+          startScanning(false);
           break;
         case BluetoothState.turningOff:
         case BluetoothState.off:
@@ -105,7 +107,8 @@ class BLEMidiHandler {
     });
   }
 
-  void startScanning() {
+  void startScanning(bool manual) {
+    manualScan = manual;
     _status.add(midiSetupStatus.deviceSearching);
     if (bluetoothState != BluetoothState.on) return;
     flutterBlue.startScan(

@@ -18,8 +18,9 @@ class NuxDeviceControl {
 
   NuxDevice _device;
   StreamSubscription<List<int>> rxSubscription;
+  Timer batteryTimer;
 
-  bool _presetsReceived = false;
+  bool get isConnected => _midiHandler.connectedDevice != null;
 
   final List<String> _devices = ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
   factory NuxDeviceControl() {
@@ -66,25 +67,30 @@ class NuxDeviceControl {
 
   void _onConnect() {
     print("Mighty plug connected");
-    device.resetDrumSettings();
+    device.onConnect();
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
   }
 
   void _onDisconnect() {
-    rxSubscription.cancel();
-    _presetsReceived = false;
+    batteryTimer?.cancel();
+    rxSubscription?.cancel();
+    device.onDisconnect();
     print("Mighty plug disconnected");
   }
 
   void _onDataReceive(List<int> data) {
-    if (data.length < 3) print(data);
     if (data.length > 2)
       _device.onDataReceived(data.sublist(2));
-    else if (!_presetsReceived) {
+    else if (!_device.nuxPresetsReceived) {
       //ask the presets now
       getPresetDelayed();
-      _presetsReceived = true;
     }
+  }
+
+  void _onBatteryTimer(Timer timer) {
+    var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
+        [SysCtrlState.syscmd_dsprun_battery, 0, 0, 0, 0]);
+    _midiHandler.sendData(data);
   }
 
   //for some reason we should not ask for presets immediately
@@ -97,6 +103,12 @@ class NuxDeviceControl {
     var data = createSysExMessage(DeviceMessageID.devReqPresetMsgID, index);
 
     _midiHandler.sendData(data);
+  }
+
+  void onPresetsReady() {
+    batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
+    _onBatteryTimer(null);
+    print("Presets received");
   }
 
   //preset editing listeners
@@ -185,6 +197,7 @@ class NuxDeviceControl {
     if (_midiHandler.connectedDevice == null) return;
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
     _midiHandler.sendData(data);
+    getPreset(device.selectedChannelNuxIndex);
   }
 
   void sendDrumsEnabled(bool enabled) {

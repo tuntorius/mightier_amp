@@ -26,6 +26,7 @@ abstract class NuxDevice extends ChangeNotifier {
       StreamController<Parameter>();
   final StreamController<int> effectSwitched = StreamController<int>();
   final StreamController<int> effectChanged = StreamController<int>();
+  final StreamController<int> batteryPercentage = StreamController<int>();
 
   NuxDevice(this.deviceControl);
 
@@ -46,6 +47,9 @@ abstract class NuxDevice extends ChangeNotifier {
     "Dance"
   ];
 
+  bool _nuxPresetsReceived = false;
+  bool get nuxPresetsReceived => _nuxPresetsReceived;
+
   Instrument _selectedInstrument = Instrument.Guitar;
   int _selectedChannel = 0; //nux-based (0-6) channel index
 
@@ -63,6 +67,15 @@ abstract class NuxDevice extends ChangeNotifier {
   int get selectedDrumStyle => _selectedDrumStyle;
   int get drumsVolume => _drumsVolume;
   double get drumsTempo => _drumsTempo;
+
+  void onConnect() {
+    _nuxPresetsReceived = false;
+    resetDrumSettings();
+  }
+
+  void onDisconnect() {
+    batteryPercentage.add(0);
+  }
 
   void resetDrumSettings() {
     _drumsEnabled = false;
@@ -178,13 +191,28 @@ abstract class NuxDevice extends ChangeNotifier {
             if (current == total - 1) {
               preset.setupPresetFromNuxData();
 
-              if (data[2] < 6)
-                deviceControl.getPreset(data[2] + 1);
-              else {
-                deviceControl.changeDevicePreset(0);
-                _setSelectedChannelNuxIndex(0, true);
-                notifyListeners();
+              if (!_nuxPresetsReceived) {
+                if (data[2] < 6)
+                  deviceControl.getPreset(data[2] + 1);
+                else {
+                  deviceControl.changeDevicePreset(0);
+                  _setSelectedChannelNuxIndex(0, true);
+                  notifyListeners();
+                  _nuxPresetsReceived = true;
+                  deviceControl.onPresetsReady();
+                }
               }
+            }
+            break;
+          case 0:
+            switch (data[7]) {
+              case DeviceMessageID.devSysCtrlMsgID:
+                switch (data[8]) {
+                  case SysCtrlState.syscmd_dsprun_battery:
+                    batteryPercentage.add(data[9]);
+                    break;
+                }
+                break;
             }
             break;
         }

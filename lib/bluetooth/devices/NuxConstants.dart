@@ -16,6 +16,17 @@ class CherubSysExMessageID {
   static const cSysExDeviceSpecMsgID = 7;
 }
 
+class SysCtrlState {
+  static const syscmd_null = 0;
+  static const syscmd_save = 48;
+  static const syscmd_resetall = 50;
+  static const syscmd_refresh_preset = 51;
+  static const syscmd_bt = 64;
+  static const syscmd_eco_pro = 65;
+  static const syscmd_dsprun_battery = 66;
+  static const syscmd_usbaudio = 67;
+}
+
 class DeviceMessageID {
   static const devReqMIDIParaMsgID = 0;
   static const devGetMIDIParaMsgID = 1;

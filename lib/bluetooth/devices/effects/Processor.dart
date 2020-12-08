@@ -8,6 +8,48 @@ import '../NuxConstants.dart';
 enum ValueType { percentage, db, tempo }
 
 class Parameter {
+  static const delayTimeMstable = [
+    .07972789115646259,
+    .16124716553287982,
+    .5031292517006802,
+    .7398412698412699,
+    1.1972789115646258
+  ];
+
+  static double percentageToTime(double p) {
+    double t = p / 25;
+    int lo = t.floor();
+    int hi = t.ceil();
+    var hiF = t - lo;
+    var loF = 1 - hiF;
+    return (delayTimeMstable[lo] * loF + delayTimeMstable[hi] * hiF);
+  }
+
+  static double timeToPercentage(t) {
+    return (t < delayTimeMstable[0]
+        ? 0
+        : t < delayTimeMstable[1]
+            ? 25 *
+                (t - delayTimeMstable[0]) /
+                (delayTimeMstable[1] - delayTimeMstable[0])
+            : t < delayTimeMstable[2]
+                ? 25 *
+                        (t - delayTimeMstable[1]) /
+                        (delayTimeMstable[2] - delayTimeMstable[1]) +
+                    25
+                : t < delayTimeMstable[3]
+                    ? 25 *
+                            (t - delayTimeMstable[2]) /
+                            (delayTimeMstable[3] - delayTimeMstable[2]) +
+                        50
+                    : t < delayTimeMstable[4]
+                        ? 25 *
+                                (t - delayTimeMstable[3]) /
+                                (delayTimeMstable[4] - delayTimeMstable[3]) +
+                            75
+                        : 100);
+  }
+
   Processor parent;
   ValueType valueType;
   String name;
@@ -17,8 +59,7 @@ class Parameter {
   double value;
 
   Parameter(
-      { //this.index,
-      this.value,
+      {this.value,
       this.handle,
       this.valueType,
       this.name,

@@ -23,17 +23,19 @@ class SavePresetDialog {
     List<String> categories = PresetsStorage().getCategories();
     var preset = device.presetToJson();
 
-    final _height = MediaQuery.of(context).size.height * 0.35;
+    final _height = MediaQuery.of(context).size.height * 0.25;
+    final node = FocusScope.of(context);
 
     return StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(
           title: const Text('Save preset'),
-          content: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            key: _formKey,
-            child: SingleChildScrollView(
-              controller: parentScroll,
+          content: SingleChildScrollView(
+            reverse: true,
+            controller: parentScroll,
+            child: Form(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              key: _formKey,
               child: Column(
                 //mainAxisSize: MainAxisSize.max,
                 //crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,42 +50,48 @@ class SavePresetDialog {
                     ),
                     child: ScrollParent(
                       controller: parentScroll,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(categories[index]),
-                            onTap: () {
-                              setState(() {
-                                categoryCtrl.text = categories[index];
-                              });
-                            },
-                          );
-                        },
-                        itemCount: categories.length,
+                      child: ListTileTheme(
+                        textColor: Colors.black,
+                        child: ListView.builder(
+                          physics: ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(categories[index]),
+                              onTap: () {
+                                setState(() {
+                                  categoryCtrl.text = categories[index];
+                                });
+                              },
+                            );
+                          },
+                          itemCount: categories.length,
+                        ),
                       ),
                     ),
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: "Category"),
                     controller: categoryCtrl,
+                    style: TextStyle(color: Colors.black),
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'Please enter preset category';
                       }
                       return null;
                     },
+                    onEditingComplete: () => node.nextFocus(),
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: "Name"),
                     controller: nameCtrl,
+                    style: TextStyle(color: Colors.black),
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'Please enter preset name';
                       }
                       return null;
                     },
+                    onEditingComplete: () => node.unfocus(),
                   ),
                 ],
               ),
@@ -95,6 +103,7 @@ class SavePresetDialog {
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              textColor: Theme.of(context).primaryColor,
             ),
             FlatButton(
               onPressed: () {
@@ -118,7 +127,6 @@ class SavePresetDialog {
                   }
                 }
               },
-              textColor: Theme.of(context).primaryColor,
               child: Text('Save'),
             ),
           ],

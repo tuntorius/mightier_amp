@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import '../../popups/savePreset.dart';
 import '../../../bluetooth/devices/presets/Preset.dart';
 import 'channelSelector.dart';
@@ -72,7 +73,16 @@ class _InstrumentSelectorState extends State<InstrumentSelector> {
               ElevatedButton(
                 child: Icon(Icons.save_alt),
                 onPressed: () {
-                  device.saveNuxPreset();
+                  if (device.deviceControl.isConnected) {
+                    AlertDialogs.showConfirmDialog(context,
+                        title: "Save preset to device",
+                        cancelButton: "Cancel",
+                        confirmButton: "Save",
+                        confirmColor: Colors.red,
+                        description: "Are you sure?", onConfirm: (val) {
+                      if (val) device.saveNuxPreset();
+                    });
+                  }
                 },
               ),
               ElevatedButton(

@@ -68,6 +68,8 @@ class MainTabs extends StatefulWidget {
 
 class _MainTabsState extends State<MainTabs> {
   int _currentIndex = 0;
+  BuildContext dialogContext;
+
   final List<Widget> _children = [
     StyleEditor(),
     DrumEditor(),
@@ -76,9 +78,59 @@ class _MainTabsState extends State<MainTabs> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    widget.device.connectStatus.stream.listen(connectionStateListener);
+  }
+
+  void connectionStateListener(DeviceConnectionState event) {
+    switch (event) {
+      case DeviceConnectionState.connectedStart:
+        print("just connected");
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            dialogContext = context;
+            return WillPopScope(
+              onWillPop: () => Future.value(false),
+              child: Dialog(
+                backgroundColor: Colors.grey[700],
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: new Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        "Connecting",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+        break;
+      case DeviceConnectionState.presetsLoaded:
+        print("presets loaded");
+        break;
+      case DeviceConnectionState.configReceived:
+        print("config loaded");
+        Navigator.pop(context);
+        break;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[900],
         appBar: NuxAppBar.getAppBar(widget.device, widget.handler),
         body: _children[_currentIndex],
         bottomNavigationBar: BottomBar(

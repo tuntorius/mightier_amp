@@ -8,12 +8,13 @@ import 'audioEditor.dart';
 
 class AlbumTracks extends StatelessWidget {
   final String albumId;
+  final String artist;
   final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-  AlbumTracks(this.albumId);
+  AlbumTracks(this.albumId, this.artist);
   @override
   Widget build(BuildContext context) {
     Future<List<SongInfo>> songs =
-        audioQuery.getSongsFromAlbum(albumId: albumId);
+        audioQuery.getSongsFromArtistAlbum(albumId: albumId, artist: artist);
     return Scaffold(
       appBar: AppBar(title: Text("$albumId tracks")),
       body: FutureBuilder<List<SongInfo>>(

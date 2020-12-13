@@ -39,8 +39,9 @@ class ArtistAlbums extends StatelessWidget {
                           color: Colors.grey[700],
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                    AlbumTracks(snapshot.data[index].id)));
+                                builder: (context) => AlbumTracks(
+                                    snapshot.data[index].id,
+                                    snapshot.data[index].artist)));
                           },
                           child: Text(
                             snapshot.data[index].title,

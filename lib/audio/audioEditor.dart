@@ -235,28 +235,28 @@ class _AudioEditorState extends State<AudioEditor> {
                 ),
               ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                if (state != EditorState.insert) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        SelectPresetDialog().buildDialog(context),
-                  ).then((value) {
-                    if (value != null) {
-                      setState(() {
-                        state = EditorState.insert;
-                      });
-                      selectedPreset = value;
-                    }
-                  });
-                } else
-                  setState(() {
-                    state = EditorState.play;
-                  });
-              },
-              child: Text("Set base preset"),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     if (state != EditorState.insert) {
+            //       showDialog(
+            //         context: context,
+            //         builder: (BuildContext context) =>
+            //             SelectPresetDialog().buildDialog(context),
+            //       ).then((value) {
+            //         if (value != null) {
+            //           setState(() {
+            //             state = EditorState.insert;
+            //           });
+            //           selectedPreset = value;
+            //         }
+            //       });
+            //     } else
+            //       setState(() {
+            //         state = EditorState.play;
+            //       });
+            //   },
+            //   child: Text("Set base preset"),
+            // ),
             ElevatedButton(
               onPressed: () {
                 if (state != EditorState.insert) {

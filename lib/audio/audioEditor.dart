@@ -100,11 +100,12 @@ class _AudioEditorState extends State<AudioEditor> {
 
   void playerStateUpdate(PlayerState state) {
     //just refresh state so the play button is correct
-    print(state);
+    //print(state);
     setState(() {});
   }
 
   void eventUpdate(AutomationEvent event) {
+    print(event.presetName);
     device.presetFromJson(event.preset);
   }
 
@@ -233,6 +234,28 @@ class _AudioEditorState extends State<AudioEditor> {
                   ),
                 ),
               ],
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (state != EditorState.insert) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        SelectPresetDialog().buildDialog(context),
+                  ).then((value) {
+                    if (value != null) {
+                      setState(() {
+                        state = EditorState.insert;
+                      });
+                      selectedPreset = value;
+                    }
+                  });
+                } else
+                  setState(() {
+                    state = EditorState.play;
+                  });
+              },
+              child: Text("Set base preset"),
             ),
             ElevatedButton(
               onPressed: () {

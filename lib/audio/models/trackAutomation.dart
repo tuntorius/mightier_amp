@@ -112,15 +112,17 @@ class TrackAutomation {
   void seek(Duration position) {
     player.seek(position);
 
+    _nextEvent = _events.length;
     //recalculate next event
     for (int i = 0; i < _events.length; i++) {
-      if (_events[i].eventTime > position) {
-        //this is the first not executed event
+      if (position < _events[i].eventTime) {
+        //this is the first event prior the seek time
         _nextEvent = i;
         break;
       }
     }
 
+    print("next event $_nextEvent");
     //execute the previous
     if (_nextEvent > 0) executeEvent(_events[_nextEvent - 1]);
   }

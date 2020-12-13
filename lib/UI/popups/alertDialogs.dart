@@ -7,7 +7,7 @@ class AlertDialogs {
       {String title,
       String description,
       String confirmButton,
-      Function(bool) onConfirm,
+      Function() onConfirm,
       Color confirmColor}) {
     // set up the buttons
     Widget continueButton = FlatButton(
@@ -17,7 +17,7 @@ class AlertDialogs {
       ),
       onPressed: () {
         Navigator.of(context).pop();
-        onConfirm?.call(true);
+        onConfirm?.call();
       },
     );
     // set up the AlertDialog
@@ -114,6 +114,7 @@ class AlertDialogs {
         child: TextFormField(
           decoration: InputDecoration(labelText: description),
           controller: nameCtrl,
+          style: TextStyle(color: Colors.black),
           validator: (value) {
             if (value.isEmpty) {
               return 'Please enter preset name';
@@ -134,5 +135,71 @@ class AlertDialogs {
         return alert;
       },
     );
+  }
+
+  static showOptionDialog(BuildContext context,
+      {String title,
+      String confirmButton,
+      String cancelButton,
+      List<String> options,
+      int value,
+      Function(bool, int) onConfirm,
+      Color confirmColor}) {
+    int selected = value;
+    // set up the buttons
+    return StatefulBuilder(builder: (context, setState) {
+      Widget continueButton = FlatButton(
+        child: Text(
+          confirmButton,
+          style: TextStyle(color: confirmColor),
+        ),
+        onPressed: () {
+          Navigator.of(context).pop();
+          onConfirm?.call(true, selected);
+        },
+      );
+      Widget closeButton = FlatButton(
+        child: Text(cancelButton),
+        onPressed: () {
+          Navigator.of(context).pop();
+          onConfirm?.call(false, 0);
+        },
+      );
+      var widgets = List<RadioListTile>();
+      for (int i = 0; i < options.length; i++) {
+        widgets.add(
+          RadioListTile(
+            value: i,
+            groupValue: selected,
+            title: Text(options[i]),
+            onChanged: (currentUser) {
+              setState(() {
+                selected = i;
+              });
+            },
+            selected: selected == i,
+            activeColor: Colors.blue,
+          ),
+        );
+      }
+
+      // set up the AlertDialog
+      AlertDialog alert = AlertDialog(
+        title: Text(title),
+        content: ListTileTheme(
+          textColor: Colors.black,
+          child: ListView(
+            shrinkWrap: true,
+            children: widgets,
+          ),
+        ),
+        actions: [
+          closeButton,
+          continueButton,
+        ],
+      );
+
+      return alert;
+    });
   }
 }

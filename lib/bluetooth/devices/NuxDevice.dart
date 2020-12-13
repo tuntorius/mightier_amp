@@ -10,6 +10,8 @@ import "NuxConstants.dart";
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
 
+enum DeviceConnectionState { connectedStart, presetsLoaded, configReceived }
+
 abstract class NuxDevice extends ChangeNotifier {
   final NuxDeviceControl deviceControl;
   int get productVID {
@@ -27,6 +29,8 @@ abstract class NuxDevice extends ChangeNotifier {
   final StreamController<int> effectSwitched = StreamController<int>();
   final StreamController<int> effectChanged = StreamController<int>();
   final StreamController<int> batteryPercentage = StreamController<int>();
+  final StreamController<DeviceConnectionState> connectStatus =
+      StreamController();
 
   NuxDevice(this.deviceControl);
 
@@ -57,6 +61,20 @@ abstract class NuxDevice extends ChangeNotifier {
   String presetName;
   String presetCategory;
 
+  //general settings
+  bool _ecoMode = false;
+
+  int _usbMode = 0;
+  int _inputVol = 0;
+  int _outputVol = 0;
+  int _btEq = 0;
+
+  bool get ecoMode => _ecoMode;
+  int get usbMode => _usbMode;
+  int get inputVol => _inputVol;
+  int get outputVol => _outputVol;
+  int get btEq => _btEq;
+
   //drum stuff
   bool _drumsEnabled = false;
   int _selectedDrumStyle = 0;
@@ -71,6 +89,7 @@ abstract class NuxDevice extends ChangeNotifier {
   void onConnect() {
     _nuxPresetsReceived = false;
     resetDrumSettings();
+    connectStatus.add(DeviceConnectionState.connectedStart);
   }
 
   void onDisconnect() {
@@ -102,6 +121,31 @@ abstract class NuxDevice extends ChangeNotifier {
   void setDrumsTempo(double tempo) {
     _drumsTempo = tempo;
     deviceControl.sendDrumsTempo(tempo);
+  }
+
+  void setEcoMode(bool enabled) {
+    _ecoMode = enabled;
+    deviceControl.setEcoMode(enabled);
+  }
+
+  void setUsbMode(int mode) {
+    _usbMode = mode;
+    deviceControl.setUsbAudioMode(mode);
+  }
+
+  void setUsbInputVol(int vol) {
+    _inputVol = vol;
+    deviceControl.setUsbInputVolume(vol);
+  }
+
+  void setUsbOutputVol(int vol) {
+    _outputVol = vol;
+    deviceControl.setUsbOutputVolume(vol);
+  }
+
+  void setBtEq(int eq) {
+    _btEq = eq;
+    deviceControl.setBtEq(eq);
   }
 
   set selectedInstrument(Instrument instr) {
@@ -199,9 +243,20 @@ abstract class NuxDevice extends ChangeNotifier {
                   _setSelectedChannelNuxIndex(0, true);
                   notifyListeners();
                   _nuxPresetsReceived = true;
+
+                  connectStatus.add(DeviceConnectionState.presetsLoaded);
                   deviceControl.onPresetsReady();
                 }
               }
+            }
+            break;
+          case DeviceMessageID.devGetManuMsgID:
+            //this has lots of unknown values - maybe bpm settings
+            //eco mode is 12
+            if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
+              _btEq = data[10];
+              _ecoMode = data[12] != 0;
+              notifyListeners();
             }
             break;
           case 0:
@@ -210,6 +265,13 @@ abstract class NuxDevice extends ChangeNotifier {
                 switch (data[8]) {
                   case SysCtrlState.syscmd_dsprun_battery:
                     batteryPercentage.add(data[9]);
+                    break;
+                  case SysCtrlState.syscmd_usbaudio:
+                    _usbMode = data[9];
+                    _inputVol = data[10];
+                    _outputVol = data[11];
+                    connectStatus.add(DeviceConnectionState.configReceived);
+                    notifyListeners();
                     break;
                 }
                 break;
@@ -228,6 +290,10 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void saveNuxPreset() {
     deviceControl.saveNuxPreset();
+  }
+
+  void resetNuxPresets() {
+    deviceControl.resetNuxPresets();
   }
 
   presetFromJson(dynamic _preset) {

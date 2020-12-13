@@ -2,11 +2,16 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import 'package:mighty_plug_manager/UI/pages/UsbSettings.dart';
+import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+import '../../bluetooth/NuxDeviceControl.dart';
+import '../../bluetooth/devices/NuxDevice.dart';
+import '../../platform/simpleSharedPrefs.dart';
 import 'package:screen/screen.dart';
 import '../../bluetooth/bleMidiHandler.dart';
 import '../widgets/deviceList.dart';
 import 'calibration.dart';
+import 'package:flutter/foundation.dart';
 
 class Settings extends StatefulWidget {
   static String output = "";
@@ -21,104 +26,184 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   BLEMidiHandler midiHandler = BLEMidiHandler();
+  final NuxDevice device = NuxDeviceControl().device;
 
-  Future<int> future;
-  int value = 0;
+  final eqOptions = [
+    "Normal",
+    "Acoustic",
+    "Blues",
+    "Clean Bass",
+    "Guitar Cut",
+    "Metal",
+    "Pop",
+    "Rock",
+    "Solo Cut"
+  ];
+
   @override
   void initState() {
     super.initState();
-    future = generateValue();
-    //changeValue();
+    device.addListener(_deviceChanged);
   }
 
-  Future<int> generateValue() async {
-    await Future.delayed(Duration(seconds: 1));
-    return 1;
+  @override
+  void dispose() {
+    super.dispose();
+    device.removeListener(_deviceChanged);
+  }
+
+  void _deviceChanged() {
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     List<String> items =
         Settings.output != null ? Settings.output.split('\n') : List<String>();
-    return Container(
-      child: Center(
-        child: Column(
-          children: [
-            FutureBuilder(
-                future: future,
-                builder: (context, AsyncSnapshot<int> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Text("Waiting");
-                    case ConnectionState.done:
-                      return Text(value.toString());
-                    default:
-                      return Text("default");
-                  }
-                }),
-            Expanded(
-                child: ListView.builder(
+    return ListView(
+      children: [
+        if (kDebugMode)
+          Container(
+            height: 150,
+            child: ListView.builder(
               itemBuilder: (context, index) {
                 return Text(items[index]);
               },
               itemCount: items.length,
-            )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Keep screen on"),
-                Switch(
-                  value: SharedPrefs()
-                      .getValue(SettingsKeys.screenAlwaysOn, false),
-                  onChanged: (val) {
-                    setState(() {
-                      Screen.keepOn(val);
-                      SharedPrefs().setValue(SettingsKeys.screenAlwaysOn, val);
-                    });
-                  },
-                )
-              ],
             ),
-            Expanded(
-              child: StreamBuilder<midiSetupStatus>(
-                  builder: (BuildContext context, snapshot) {
-                    return DeviceList();
-                  },
-                  stream: midiHandler.status),
+          ),
+        ListTileTheme(
+          iconColor: Colors.white,
+          child: Column(
+            children: [
+              SwitchListTile(
+                title: Text("Keep Screen On"),
+                value:
+                    SharedPrefs().getValue(SettingsKeys.screenAlwaysOn, false),
+                onChanged: (val) {
+                  setState(() {
+                    Screen.keepOn(val);
+                    SharedPrefs().setValue(SettingsKeys.screenAlwaysOn, val);
+                  });
+                },
+              ),
+              //Divider(),
+              ListTile(
+                enabled: device.deviceControl.isConnected,
+                title: Text("USB Audio Settings"),
+                trailing: Icon(Icons.keyboard_arrow_right),
+                onTap: () {
+                  //if (midiHandler.connectedDevice != null) {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => UsbSettings()));
+                  //}
+                },
+              ),
+              //Divider(),
+              ListTile(
+                enabled: device.deviceControl.isConnected,
+                title: Text("Bluetooth Audio EQ"),
+                subtitle: Text(eqOptions[device.btEq]),
+                trailing: Icon(Icons.keyboard_arrow_right),
+                onTap: () {
+                  var dialog = AlertDialogs.showOptionDialog(context,
+                      confirmButton: "OK",
+                      cancelButton: "Cancel",
+                      title: "Bluetooth Audio EQ",
+                      value: device.btEq,
+                      options: eqOptions, onConfirm: (changed, newValue) {
+                    if (changed) {
+                      setState(() {
+                        device.setBtEq(newValue);
+                      });
+                    }
+                  });
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => dialog,
+                  );
+                },
+              ),
+              //Divider(),
+              ListTile(
+                enabled: device.deviceControl.isConnected,
+                title: Text("Reset Device Presets"),
+                onTap: () {
+                  if (midiHandler.connectedDevice != null) {
+                    AlertDialogs.showConfirmDialog(context,
+                        title: "Reset device presets",
+                        cancelButton: "Cancel",
+                        confirmButton: "Reset",
+                        confirmColor: Colors.red,
+                        description: "Are you sure?", onConfirm: (val) {
+                      if (val) device.resetNuxPresets();
+                    });
+                  }
+                },
+              ),
+              //Divider(),
+              SwitchListTile(
+                  title: Text("Eco Mode"),
+                  value: device.ecoMode,
+                  onChanged: device.deviceControl.isConnected
+                      ? (val) {
+                          setState(
+                            () {
+                              device.setEcoMode(val);
+                            },
+                          );
+                        }
+                      : null),
+              //Divider(),
+              ListTile(
+                enabled: device.deviceControl.isConnected,
+                title: Text("Calibrate Latency"),
+                trailing: Icon(Icons.keyboard_arrow_right),
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => Calibration()));
+                },
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+            height: 150,
+            child: StreamBuilder<midiSetupStatus>(
+                builder: (BuildContext context, snapshot) {
+                  return DeviceList();
+                },
+                stream: midiHandler.status),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            RaisedButton(
+              child: Text("Scan"),
+              onPressed: () {
+                midiHandler.startScanning(true);
+              },
             ),
             RaisedButton(
+              child: Text("Stop Scanning"),
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => Calibration()));
+                midiHandler.stopScanning();
               },
-              child: Text("Calibrate"),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                RaisedButton(
-                  child: Text("Scan"),
-                  onPressed: () {
-                    midiHandler.startScanning(true);
-                  },
-                ),
-                RaisedButton(
-                  child: Text("Stop Scanning"),
-                  onPressed: () {
-                    midiHandler.stopScanning();
-                  },
-                ),
-                RaisedButton(
-                  child: Text("Disconnect"),
-                  onPressed: () {
-                    midiHandler.disconnectDevice();
-                  },
-                ),
-              ],
-            )
+            RaisedButton(
+              child: Text("Disconnect"),
+              onPressed: () {
+                midiHandler.disconnectDevice();
+                setState(() {});
+              },
+            ),
           ],
-        ),
-      ),
+        )
+      ],
     );
   }
 }

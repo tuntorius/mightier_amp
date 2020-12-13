@@ -105,10 +105,61 @@ class NuxDeviceControl {
     _midiHandler.sendData(data);
   }
 
-  void onPresetsReady() {
+  void onPresetsReady() async {
     batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
     _onBatteryTimer(null);
     print("Presets received");
+
+    await Future.delayed(Duration(milliseconds: 200));
+    //request other nux stuff
+
+    //eco mode and other
+    var data = createSysExMessage(DeviceMessageID.devReqManuMsgID, [0]);
+    _midiHandler.sendData(data);
+    //_midiHandler.sendData(data);
+    //_midiHandler.sendData(data);
+
+    await Future.delayed(Duration(milliseconds: 200));
+    //usb settings. Send them 3 times as the module does not respond everytime.
+    // This is what their software is doing)
+    data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
+        [SysCtrlState.syscmd_usbaudio, 0, 0, 0, 0]);
+    _midiHandler.sendData(data);
+    //_midiHandler.sendData(data);
+    //_midiHandler.sendData(data);
+
+    //fw version
+    //data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID, [0, 0]);
+    //_midiHandler.sendData(data);
+  }
+
+  void setEcoMode(bool enable) {
+    var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
+        [SysCtrlState.syscmd_eco_pro, enable ? 1 : 0, 0, 0, 0]);
+    _midiHandler.sendData(data);
+  }
+
+  void setBtEq(int eq) {
+    var data = createSysExMessage(
+        DeviceMessageID.devSysCtrlMsgID, [SysCtrlState.syscmd_bt, 1, eq, 0, 0]);
+    _midiHandler.sendData(data);
+  }
+
+  void setUsbAudioMode(int mode) {
+    var data = createCCMessage(MidiCCValues.bCC_VolumePedalMin, mode);
+    _midiHandler.sendData(data);
+  }
+
+  void setUsbInputVolume(int vol) {
+    var data = createCCMessage(
+        MidiCCValues.bCC_VolumePedal, percentageTo7Bit(vol.toDouble()));
+    _midiHandler.sendData(data);
+  }
+
+  void setUsbOutputVolume(int vol) {
+    var data = createCCMessage(
+        MidiCCValues.bCC_VolumePrePost, percentageTo7Bit(vol.toDouble()));
+    _midiHandler.sendData(data);
   }
 
   //preset editing listeners
@@ -196,6 +247,13 @@ class NuxDeviceControl {
   void saveNuxPreset() {
     if (_midiHandler.connectedDevice == null) return;
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
+    _midiHandler.sendData(data);
+    getPreset(device.selectedChannelNuxIndex);
+  }
+
+  void resetNuxPresets() {
+    if (_midiHandler.connectedDevice == null) return;
+    var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7f);
     _midiHandler.sendData(data);
     getPreset(device.selectedChannelNuxIndex);
   }

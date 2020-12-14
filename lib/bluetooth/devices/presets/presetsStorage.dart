@@ -116,6 +116,19 @@ class PresetsStorage {
     return null;
   }
 
+  Future changeChannel(
+      String category, String name, int instrument, int channel) {
+    for (int i = 0; i < presetsData.length; i++) {
+      if (presetsData[i]["category"] == category &&
+          presetsData[i]["name"] == name) {
+        presetsData[i]["instrument"] = instrument;
+        presetsData[i]["channel"] = channel;
+        return _savePresets();
+      }
+    }
+    return null;
+  }
+
   Future deleteCategory(String category) {
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["category"] == category) {

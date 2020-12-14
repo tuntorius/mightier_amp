@@ -21,7 +21,6 @@ class _DrumEditorState extends State<DrumEditor> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     selectedDrumPattern = device.selectedDrumStyle;
   }
@@ -37,6 +36,7 @@ class _DrumEditorState extends State<DrumEditor> {
         children: [
           Expanded(
             child: ScrollPicker(
+              showDivider: false,
               initialValue: selectedDrumPattern,
               items: NuxDevice.drumStyles,
               onChanged: (value) {
@@ -102,29 +102,32 @@ class _DrumEditorState extends State<DrumEditor> {
                     });
                   },
                 ),
-                RawMaterialButton(
-                  onPressed: () {
-                    timer.addClickTime();
-                    var result = timer.calculate();
-                    if (result != false) {
-                      setState(() {
-                        var bpm = 60 / (result / 1000);
-                        bpm = Math.min(Math.max(bpm, 40), 240);
-                        device.setDrumsTempo(bpm);
-                      });
-                    }
-                  },
-                  elevation: 2.0,
-                  fillColor: Colors.blue,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      "Tap",
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: RawMaterialButton(
+                    onPressed: () {
+                      timer.addClickTime();
+                      var result = timer.calculate();
+                      if (result != false) {
+                        setState(() {
+                          var bpm = 60 / (result / 1000);
+                          bpm = Math.min(Math.max(bpm, 40), 240);
+                          device.setDrumsTempo(bpm);
+                        });
+                      }
+                    },
+                    elevation: 2.0,
+                    fillColor: Colors.blue,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        "Tap",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
                     ),
+                    padding: EdgeInsets.all(15.0),
+                    shape: CircleBorder(),
                   ),
-                  padding: EdgeInsets.all(15.0),
-                  shape: CircleBorder(),
                 )
               ],
             ),

@@ -21,7 +21,10 @@ class _PresetListState extends State<PresetList> {
       value: 0,
       child: Row(
         children: <Widget>[
-          Icon(Icons.delete),
+          Icon(
+            Icons.delete,
+            color: Colors.black,
+          ),
           Text("Delete"),
         ],
       ),
@@ -30,7 +33,49 @@ class _PresetListState extends State<PresetList> {
       value: 1,
       child: Row(
         children: <Widget>[
-          Icon(Icons.drive_file_rename_outline),
+          Icon(
+            Icons.drive_file_rename_outline,
+            color: Colors.black,
+          ),
+          Text("Rename"),
+        ],
+      ),
+    )
+  ];
+
+  var popupSubmenu = <PopupMenuEntry>[
+    PopupMenuItem(
+      value: 0,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.delete,
+            color: Colors.black,
+          ),
+          Text("Delete"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: 2,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.account_tree,
+            color: Colors.black,
+          ),
+          Text("Change channel"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: 1,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.drive_file_rename_outline,
+            color: Colors.black,
+          ),
           Text("Rename"),
         ],
       ),
@@ -119,12 +164,39 @@ class _PresetListState extends State<PresetList> {
               }
             });
             break;
+          case 2:
+            var channelList = List<String>();
+            int nuxChannel =
+                Preset.nuxChannel(item["instrument"], item["channel"]);
+            Channel.values
+                .forEach((e) => channelList.add(e.toString().split('.')[1]));
+            var dialog = AlertDialogs.showOptionDialog(context,
+                confirmButton: "Change",
+                cancelButton: "Cancel",
+                title: "Select Channel",
+                options: channelList,
+                value: nuxChannel, onConfirm: (changed, newValue) {
+              if (changed) {
+                setState(() {
+                  PresetsStorage().changeChannel(
+                      item["category"],
+                      item["name"],
+                      Preset.instrumentFromNuxChannel(newValue),
+                      Preset.normalizedFromNuxChannel(newValue));
+                });
+              }
+            });
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => dialog,
+            );
+            break;
         }
       }
     }
   }
 
-  void showContextMenu(_position, dynamic item) {
+  void showContextMenu(_position, dynamic item, List<PopupMenuEntry> _menu) {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject();
     //open menu
     var rect = RelativeRect.fromRect(
@@ -132,7 +204,7 @@ class _PresetListState extends State<PresetList> {
         Offset.zero & overlay.size);
     showMenu(
       position: rect,
-      items: popupMenu,
+      items: _menu,
       context: context,
     ).then((value) {
       menuActions(value, item);
@@ -151,10 +223,10 @@ class _PresetListState extends State<PresetList> {
       },
       child: DynamicTreeView(
         onCategoryTap: (val) {
-          print(val);
+          //print(val);
         },
         onCategoryLongPress: (val) {
-          showContextMenu(_position, val);
+          showContextMenu(_position, val, popupMenu);
         },
         categories: PresetsStorage().getCategories(),
         items: PresetsStorage().presetsData,
@@ -165,7 +237,7 @@ class _PresetListState extends State<PresetList> {
             },
             onLongPress: () {
               print("Long");
-              showContextMenu(_position, item);
+              showContextMenu(_position, item, popupSubmenu);
             },
             title: Text(
               item["name"],
@@ -183,7 +255,7 @@ class _PresetListState extends State<PresetList> {
             trailing: PopupMenuButton(
               child: Icon(Icons.more_vert, color: Colors.grey),
               itemBuilder: (context) {
-                return popupMenu;
+                return popupSubmenu;
               },
               onSelected: (pos) {
                 menuActions(pos, item);

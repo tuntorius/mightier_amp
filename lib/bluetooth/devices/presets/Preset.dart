@@ -32,6 +32,16 @@ class Preset {
     return channel;
   }
 
+  static int normalizedFromNuxChannel(int nuxChannel) {
+    if (nuxChannel >= 4) return nuxChannel - 4;
+    return nuxChannel;
+  }
+
+  static int instrumentFromNuxChannel(int nuxChannel) {
+    if (nuxChannel >= 4) return 1;
+    return 0;
+  }
+
   NuxDevice device;
   Instrument instrument;
   Channel channel;

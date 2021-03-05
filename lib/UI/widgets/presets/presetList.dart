@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+import '../../../platform/fileSaver.dart';
 
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../dynamic_treeview.dart';
@@ -16,6 +17,35 @@ class PresetList extends StatefulWidget {
 }
 
 class _PresetListState extends State<PresetList> {
+  var presetsMenu = <PopupMenuEntry>[
+    PopupMenuItem(
+      value: 1,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.save_alt,
+            color: Colors.grey[400],
+          ),
+          SizedBox(width: 5),
+          Text("Export"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: 2,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.open_in_browser,
+            color: Colors.grey[400],
+          ),
+          SizedBox(width: 5),
+          Text("Import"),
+        ],
+      ),
+    )
+  ];
+  //menu for category
   var popupMenu = <PopupMenuEntry>[
     PopupMenuItem(
       value: 0,
@@ -23,8 +53,9 @@ class _PresetListState extends State<PresetList> {
         children: <Widget>[
           Icon(
             Icons.delete,
-            color: Colors.black,
+            color: Colors.grey[400],
           ),
+          SizedBox(width: 5),
           Text("Delete"),
         ],
       ),
@@ -35,14 +66,29 @@ class _PresetListState extends State<PresetList> {
         children: <Widget>[
           Icon(
             Icons.drive_file_rename_outline,
-            color: Colors.black,
+            color: Colors.grey[400],
           ),
+          SizedBox(width: 5),
           Text("Rename"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: 2,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.save_alt,
+            color: Colors.grey[400],
+          ),
+          SizedBox(width: 5),
+          Text("Export Category"),
         ],
       ),
     )
   ];
 
+  //menu for preset
   var popupSubmenu = <PopupMenuEntry>[
     PopupMenuItem(
       value: 0,
@@ -50,8 +96,9 @@ class _PresetListState extends State<PresetList> {
         children: <Widget>[
           Icon(
             Icons.delete,
-            color: Colors.black,
+            color: Colors.grey[400],
           ),
+          SizedBox(width: 5),
           Text("Delete"),
         ],
       ),
@@ -62,8 +109,9 @@ class _PresetListState extends State<PresetList> {
         children: <Widget>[
           Icon(
             Icons.account_tree,
-            color: Colors.black,
+            color: Colors.grey[400],
           ),
+          SizedBox(width: 5),
           Text("Change channel"),
         ],
       ),
@@ -74,17 +122,62 @@ class _PresetListState extends State<PresetList> {
         children: <Widget>[
           Icon(
             Icons.drive_file_rename_outline,
-            color: Colors.black,
+            color: Colors.grey[400],
           ),
+          SizedBox(width: 5),
           Text("Rename"),
         ],
       ),
-    )
+    ),
+    PopupMenuItem(
+      value: 3,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.copy,
+            color: Colors.grey[400],
+          ),
+          SizedBox(width: 5),
+          Text("Duplicate"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: 4,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.save_alt,
+            color: Colors.grey[400],
+          ),
+          SizedBox(width: 5),
+          Text("Export Preset"),
+        ],
+      ),
+    ),
   ];
 
-  void menuActions(action, item) {
+  void mainMenuActions(action) async {
+    switch (action) {
+      case 1: //export category
+        String data = PresetsStorage().presetsToJson();
+
+        if (data != null)
+          saveFile("application/octet-stream", "presets.nuxpreset", data);
+        break;
+      case 2: //import
+        var content = await openFile("application/octet-stream");
+        PresetsStorage().presetsFromJson(content).then((value) {
+          setState(() {});
+        });
+        break;
+    }
+  }
+
+  void menuActions(action, item) async {
     {
       if (item is String) {
+        //category
         switch (action) {
           case 0:
             AlertDialogs.showConfirmDialog(context,
@@ -122,8 +215,14 @@ class _PresetListState extends State<PresetList> {
               }
             });
             break;
+          case 2: //export category
+            String data = PresetsStorage().presetsToJson(item);
+
+            if (data != null)
+              saveFile("application/octet-stream", "$item.nuxpreset", data);
         }
       } else {
+        //preset
         switch (action) {
           case 0:
             AlertDialogs.showConfirmDialog(context,
@@ -191,6 +290,21 @@ class _PresetListState extends State<PresetList> {
               builder: (BuildContext context) => dialog,
             );
             break;
+          case 3: //duplicate
+            PresetsStorage()
+                .duplicatePreset(item["category"], item["name"])
+                .then((value) {
+              setState(() {});
+            });
+            break;
+          case 4: //export
+            String data =
+                PresetsStorage().presetToJson(item["category"], item["name"]);
+
+            if (data != null)
+              saveFile("application/octet-stream", "${item["name"]}.nuxpreset",
+                  data);
+            break;
         }
       }
     }
@@ -213,8 +327,31 @@ class _PresetListState extends State<PresetList> {
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.only(left: 16, right: 12),
+          title: Text("Presets"),
+          trailing: PopupMenuButton(
+            child: Icon(Icons.more_vert, color: Colors.grey),
+            itemBuilder: (context) {
+              return presetsMenu;
+            },
+            onSelected: (pos) {
+              mainMenuActions(pos);
+            },
+          ),
+        ),
+        Expanded(
+          child: _buildList(context),
+        )
+      ],
+    );
+  }
+
+  Widget _buildList(BuildContext context) {
     if (PresetsStorage().getCategories().length == 0)
-      return Center(child: Text("No presets"));
+      return Center(child: Text("Empty"));
     Offset _position;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -265,7 +402,8 @@ class _PresetListState extends State<PresetList> {
         },
         config: Config(
             parentTextStyle: TextStyle(color: Colors.white),
-            parentPaddingEdgeInsets: EdgeInsets.only(left: 20),
+            parentPaddingEdgeInsets: EdgeInsets.only(left: 16, right: 8),
+            childrenPaddingEdgeInsets: EdgeInsets.only(left: 40, right: 4),
             arrowIcon: Icon(Icons.keyboard_arrow_down, color: Colors.white)),
       ),
     );

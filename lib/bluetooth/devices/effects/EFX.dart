@@ -64,6 +64,13 @@ class UniVibe extends EFX {
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.efxvar2,
         midiCC: MidiCCValues.bCC_DistTone),
+    Parameter(
+        name: "Mode",
+        handle: "mode",
+        value: 0,
+        valueType: ValueType.vibeMode,
+        devicePresetIndex: PresetDataIndex.efxvar3,
+        midiCC: MidiCCValues.bCC_DistLevel),
   ];
 }
 

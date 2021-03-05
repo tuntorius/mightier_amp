@@ -162,9 +162,11 @@ class BLEMidiHandler {
   }
 
   void disconnectDevice() async {
-    await _device.disconnect();
-    queueFree = true;
-    _device = null;
+    if (_device != null) {
+      await _device.disconnect();
+      queueFree = true;
+      _device = null;
+    }
   }
 
   StreamSubscription<List<int>> registerDataListener(

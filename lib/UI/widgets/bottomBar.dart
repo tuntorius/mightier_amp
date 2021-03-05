@@ -27,7 +27,11 @@ class _BottomBarState extends State<BottomBar> {
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.music_note),
+            icon: Icon(Icons.equalizer),
+            label: "Editor",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
             label: "Presets",
           ),
           BottomNavigationBarItem(
@@ -36,7 +40,7 @@ class _BottomBarState extends State<BottomBar> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.playlist_play),
-            label: "Jam Tracks",
+            label: "JamTracks",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

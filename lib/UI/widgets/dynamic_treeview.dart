@@ -242,41 +242,52 @@ class _ParentWidgetState extends State<ParentWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        ListTile(
-          onTap: () {
-            if (widget.onTap != null) widget.onTap(widget.title);
+    return ListTileTheme(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          ListTile(
+            tileColor: Colors.grey[850],
+            onTap: () {
+              if (widget.onTap != null) widget.onTap(widget.title);
 
-            setState(() {
-              shouldExpand = !shouldExpand;
-            });
-            if (shouldExpand) {
-              expandController.forward();
-            } else {
-              expandController.reverse();
-            }
-          },
-          onLongPress: () {
-            if (widget.onLongPress != null) widget.onLongPress(widget.title);
-          },
-          title: Text(widget.title, style: widget.config.parentTextStyle),
-          contentPadding: widget.config.parentPaddingEdgeInsets,
-          trailing: IconButton(
-            onPressed: null,
-            icon: RotationTransition(
+              setState(() {
+                shouldExpand = !shouldExpand;
+              });
+              if (shouldExpand) {
+                expandController.forward();
+              } else {
+                expandController.reverse();
+              }
+            },
+            onLongPress: () {
+              if (widget.onLongPress != null) widget.onLongPress(widget.title);
+            },
+            title: Transform.translate(
+                offset: Offset(-16, 0), //workaround until horizontalTitleGap
+                //is available in release channel
+                child:
+                    Text(widget.title, style: widget.config.parentTextStyle)),
+            contentPadding: widget.config.parentPaddingEdgeInsets,
+            leading: RotationTransition(
               turns: sizeAnimation,
               child: widget.config.arrowIcon,
             ),
+            trailing: IconButton(
+              icon: Icon(Icons.more_vert, color: Colors.grey),
+              onPressed: () {
+                if (widget.onLongPress != null)
+                  widget.onLongPress(widget.title);
+              },
+            ),
           ),
-        ),
-        ChildWidget(
-          children: widget.children,
-          config: widget.config,
-          shouldExpand: shouldExpand,
-        )
-      ],
+          ChildWidget(
+            children: widget.children,
+            config: widget.config,
+            shouldExpand: shouldExpand,
+          )
+        ],
+      ),
     );
   }
 }

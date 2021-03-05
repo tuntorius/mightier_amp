@@ -145,7 +145,14 @@ class Vibe extends Modulation {
         value: 50,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth)
+        midiCC: MidiCCValues.bCC_ModfxDepth),
+    Parameter(
+        name: "Mode",
+        handle: "mode",
+        value: 0,
+        valueType: ValueType.vibeMode,
+        devicePresetIndex: PresetDataIndex.modfxmix,
+        midiCC: MidiCCValues.bCC_ChorusLevel),
   ];
 }
 

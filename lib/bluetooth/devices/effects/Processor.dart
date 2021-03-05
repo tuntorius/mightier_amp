@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../NuxConstants.dart';
 
-enum ValueType { percentage, db, tempo }
+enum ValueType { percentage, db, tempo, vibeMode }
 
 class Parameter {
   static const delayTimeMstable = [

@@ -148,12 +148,14 @@ class PresetsStorage {
   }
 
   Future deleteCategory(String category) {
-    for (int i = 0; i < presetsData.length; i++) {
+    bool modified = false;
+    for (int i = presetsData.length - 1; i >= 0; i--) {
       if (presetsData[i]["category"] == category) {
         presetsData.removeAt(i);
-        return _savePresets();
+        modified = true;
       }
     }
+    if (modified) return _savePresets();
     return null;
   }
 

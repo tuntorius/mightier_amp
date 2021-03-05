@@ -32,7 +32,7 @@ class _JamTracksState extends State<JamTracks> {
             case PermissionStatus.denied:
             case PermissionStatus.undetermined:
               return Center(
-                child: RaisedButton(
+                child: ElevatedButton(
                   child: Text("Grant storage permission"),
                   onPressed: () async {
                     await Permission.storage.request();

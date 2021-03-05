@@ -42,12 +42,11 @@ class _PresetEditorState extends State<PresetEditor> {
     return Column(
       children: [
         Column(children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
+          ListTile(
+            title: Text("Preset Editor"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(child: Text("Style Editor")),
                 ElevatedButton(
                   child: Icon(Icons.save_alt),
                   onPressed: () {

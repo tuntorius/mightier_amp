@@ -255,7 +255,7 @@ class NuxDeviceControl {
     if (_midiHandler.connectedDevice == null) return;
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7f);
     _midiHandler.sendData(data);
-    getPreset(device.selectedChannelNuxIndex);
+    getPresetDelayed();
   }
 
   void sendDrumsEnabled(bool enabled) {
@@ -305,7 +305,7 @@ class NuxDeviceControl {
   }
 
   List<int> createCCMessage(int controlNumber, int value) {
-    var msg = List<int>(5);
+    var msg = List<int>.filled(5, 0);
     msg[0] = 0x80;
     msg[1] = 0x80;
     msg[2] = MidiMessageValues.controlChange;
@@ -316,7 +316,7 @@ class NuxDeviceControl {
 
   List<int> createSysExMessage(int deviceMessageId, var data,
       {int sysExMsgId = CherubSysExMessageID.cSysExDeviceSpecMsgID}) {
-    List<int> msg = List<int>();
+    List<int> msg = [];
 
     //create header
     msg.addAll([

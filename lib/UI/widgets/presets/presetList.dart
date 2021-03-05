@@ -365,6 +365,12 @@ class _PresetListState extends State<PresetList> {
         onCategoryLongPress: (val) {
           showContextMenu(_position, val, popupMenu);
         },
+        itemBuilder: (context) {
+          return popupMenu;
+        },
+        onSelected: (pos, item) {
+          menuActions(pos, item);
+        },
         categories: PresetsStorage().getCategories(),
         items: PresetsStorage().presetsData,
         childBuilder: (item) {
@@ -373,7 +379,6 @@ class _PresetListState extends State<PresetList> {
               widget.onTap(item);
             },
             onLongPress: () {
-              print("Long");
               showContextMenu(_position, item, popupSubmenu);
             },
             title: Text(

@@ -39,6 +39,9 @@ class DynamicTreeView extends StatefulWidget {
 
   final ChildBuilder childBuilder;
 
+  final PopupMenuItemBuilder itemBuilder;
+  final Function(int, String) onSelected;
+
   ///The width of DynamicTreeView
   //final double width;
 
@@ -50,6 +53,8 @@ class DynamicTreeView extends StatefulWidget {
     this.config = const Config(),
     this.onCategoryTap,
     this.onCategoryLongPress,
+    this.itemBuilder,
+    this.onSelected,
     @required this.childBuilder,
     //this.width = 220.0,
   }) : assert(items != null && categories != null);
@@ -74,7 +79,7 @@ class _DynamicTreeViewOriState extends State<DynamicTreeView> {
   _buildTreeView() {
     var k = widget.categories;
 
-    var widgets = List<Widget>();
+    var widgets = <Widget>[];
 
     for (var i = 0; i < k.length; i++) {
       widgets.add(buildWidget(k[i]));
@@ -89,6 +94,8 @@ class _DynamicTreeViewOriState extends State<DynamicTreeView> {
     var p = ParentWidget(
       onTap: widget.onCategoryTap,
       onLongPress: widget.onCategoryLongPress,
+      itemBuilder: widget.itemBuilder,
+      onSelected: widget.onSelected,
       config: widget.config,
       children: _buildChildren(d),
       title: d,
@@ -98,7 +105,7 @@ class _DynamicTreeViewOriState extends State<DynamicTreeView> {
   }
 
   List<Widget> _buildChildren(String category) {
-    var cW = List<Widget>();
+    var cW = <Widget>[];
 
     for (var item in widget.items) {
       if (item["category"] == category) cW.add(widget.childBuilder(item));
@@ -197,6 +204,8 @@ class ParentWidget extends StatefulWidget {
   final Config config;
   final OnCategoryTap onTap;
   final OnCategoryLongPress onLongPress;
+  final PopupMenuItemBuilder itemBuilder;
+  final Function(int, String) onSelected;
   final String title;
   ParentWidget({
     this.onTap,
@@ -204,6 +213,8 @@ class ParentWidget extends StatefulWidget {
     this.children,
     this.config,
     this.title,
+    this.onSelected,
+    this.itemBuilder,
     Key key,
   }) : super(key: key);
 
@@ -273,11 +284,11 @@ class _ParentWidgetState extends State<ParentWidget>
               turns: sizeAnimation,
               child: widget.config.arrowIcon,
             ),
-            trailing: IconButton(
+            trailing: PopupMenuButton(
               icon: Icon(Icons.more_vert, color: Colors.grey),
-              onPressed: () {
-                if (widget.onLongPress != null)
-                  widget.onLongPress(widget.title);
+              itemBuilder: widget.itemBuilder,
+              onSelected: (pos) {
+                widget.onSelected(pos, widget.title);
               },
             ),
           ),

@@ -158,12 +158,14 @@ class PresetsStorage {
   }
 
   Future renameCategory(String category, String newName) {
+    bool modified = false;
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["category"] == category) {
         presetsData[i]["category"] = newName;
-        return _savePresets();
+        modified = true;
       }
     }
+    if (modified) return _savePresets();
     return null;
   }
 

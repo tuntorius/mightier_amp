@@ -12,6 +12,7 @@ import '../../bluetooth/bleMidiHandler.dart';
 import '../widgets/deviceList.dart';
 import 'calibration.dart';
 import 'package:flutter/foundation.dart';
+import 'package:package_info/package_info.dart';
 
 class Settings extends StatefulWidget {
   static String output = "";
@@ -40,10 +41,18 @@ class _SettingsState extends State<Settings> {
     "Solo Cut"
   ];
 
+  String _version = "";
+
   @override
   void initState() {
     super.initState();
     device.addListener(_deviceChanged);
+
+    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+      setState(() {
+        _version = packageInfo.version;
+      });
+    });
   }
 
   @override
@@ -182,19 +191,19 @@ class _SettingsState extends State<Settings> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RaisedButton(
+            ElevatedButton(
               child: Text("Scan"),
               onPressed: () {
                 midiHandler.startScanning(true);
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text("Stop Scanning"),
               onPressed: () {
                 midiHandler.stopScanning();
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text("Disconnect"),
               onPressed: () {
                 midiHandler.disconnectDevice();
@@ -202,7 +211,8 @@ class _SettingsState extends State<Settings> {
               },
             ),
           ],
-        )
+        ),
+        ListTile(title: Text("App Version"), trailing: Text(_version))
       ],
     );
   }

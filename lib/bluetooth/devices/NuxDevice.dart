@@ -293,7 +293,11 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void resetNuxPresets() {
+    _nuxPresetsReceived = false;
     deviceControl.resetNuxPresets();
+
+    //show loading popup
+    connectStatus.add(DeviceConnectionState.connectedStart);
   }
 
   presetFromJson(dynamic _preset) {

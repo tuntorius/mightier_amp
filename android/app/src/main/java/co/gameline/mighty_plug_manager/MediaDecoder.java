@@ -12,7 +12,7 @@
       }
   */
 
-package co.gameline.mighty_plug_manager;
+package com.tuntori.mightieramp;
 
 import java.io.Console;
 

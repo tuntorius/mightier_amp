@@ -1,7 +1,7 @@
 // (c) 2020 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-package co.gameline.mighty_plug_manager
+package com.tuntori.mightieramp
 
 import android.os.Bundle
 

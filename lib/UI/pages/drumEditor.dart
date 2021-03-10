@@ -26,13 +26,17 @@ class _DrumEditorState extends State<DrumEditor> {
     final ThemeData theme = Theme.of(context);
 
     selectedDrumPattern = device.selectedDrumStyle;
+    Orientation orientation = MediaQuery.of(context).orientation;
+    var height = 3;
+    if (orientation == Orientation.portrait) height = 5;
 
-    return Container(
+    return SingleChildScrollView(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
+          Container(
+            height: ScrollPicker.itemHeight * height,
             child: ScrollPicker(
               showDivider: false,
               initialValue: selectedDrumPattern,
@@ -50,85 +54,83 @@ class _DrumEditorState extends State<DrumEditor> {
               },
             ),
           ),
-          Expanded(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Drums",
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.headline5
-                          .copyWith(color: Colors.white),
-                    ),
-                    Switch(
-                      value: device.drumsEnabled,
-                      onChanged: (value) {
-                        setState(() {
-                          device.setDrumsEnabled(value);
-                        });
-                      },
-                    )
-                  ],
-                ),
-                ThickSlider(
-                  min: 0,
-                  max: 100,
-                  activeColor: Colors.blue,
-                  label: "Volume",
-                  value: device.drumsVolume.toDouble(),
-                  labelFormatter: (val) => "${device.drumsVolume}",
-                  onChanged: (val) {
-                    setState(() {
-                      device.setDrumsLevel(val.round());
-                    });
-                  },
-                ),
-                ThickSlider(
-                  min: 40,
-                  max: 240,
-                  skipEmitting: 5,
-                  activeColor: Colors.blue,
-                  label: "Tempo",
-                  value: device.drumsTempo,
-                  labelFormatter: (val) =>
-                      "${device.drumsTempo.toStringAsFixed(2)} BPM",
-                  onChanged: (val) {
-                    setState(() {
-                      device.setDrumsTempo(val);
-                    });
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: RawMaterialButton(
-                    onPressed: () {
-                      timer.addClickTime();
-                      var result = timer.calculate();
-                      if (result != false) {
-                        setState(() {
-                          var bpm = 60 / (result / 1000);
-                          bpm = Math.min(Math.max(bpm, 40), 240);
-                          device.setDrumsTempo(bpm);
-                        });
-                      }
-                    },
-                    elevation: 2.0,
-                    fillColor: Colors.blue,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        "Tap",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ),
-                    padding: EdgeInsets.all(15.0),
-                    shape: CircleBorder(),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Drums",
+                    textAlign: TextAlign.center,
+                    style:
+                        theme.textTheme.headline5.copyWith(color: Colors.white),
                   ),
-                )
-              ],
-            ),
+                  Switch(
+                    value: device.drumsEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        device.setDrumsEnabled(value);
+                      });
+                    },
+                  )
+                ],
+              ),
+              ThickSlider(
+                min: 0,
+                max: 100,
+                activeColor: Colors.blue,
+                label: "Volume",
+                value: device.drumsVolume.toDouble(),
+                labelFormatter: (val) => "${device.drumsVolume}",
+                onChanged: (val) {
+                  setState(() {
+                    device.setDrumsLevel(val.round());
+                  });
+                },
+              ),
+              ThickSlider(
+                min: 40,
+                max: 240,
+                skipEmitting: 5,
+                activeColor: Colors.blue,
+                label: "Tempo",
+                value: device.drumsTempo,
+                labelFormatter: (val) =>
+                    "${device.drumsTempo.toStringAsFixed(2)} BPM",
+                onChanged: (val) {
+                  setState(() {
+                    device.setDrumsTempo(val);
+                  });
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: RawMaterialButton(
+                  onPressed: () {
+                    timer.addClickTime();
+                    var result = timer.calculate();
+                    if (result != false) {
+                      setState(() {
+                        var bpm = 60 / (result / 1000);
+                        bpm = Math.min(Math.max(bpm, 40), 240);
+                        device.setDrumsTempo(bpm);
+                      });
+                    }
+                  },
+                  elevation: 2.0,
+                  fillColor: Colors.blue,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      "Tap",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                  padding: EdgeInsets.all(15.0),
+                  shape: CircleBorder(),
+                ),
+              )
+            ],
           ),
         ],
       ),

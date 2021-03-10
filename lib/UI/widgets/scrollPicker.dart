@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 
 /// This helper widget manages the scrollable content inside a picker widget.
 class ScrollPicker extends StatefulWidget {
+  // Constants
+  static const double itemHeight = 50.0;
+
   ScrollPicker({
     Key key,
     @required this.items,
@@ -30,9 +33,6 @@ class ScrollPicker extends StatefulWidget {
 
 class _ScrollPickerState extends State<ScrollPicker> {
   _ScrollPickerState(this.selectedValue);
-
-  // Constants
-  static const double itemHeight = 50.0;
 
   // Variables
   double widgetHeight;
@@ -96,7 +96,7 @@ class _ScrollPickerState extends State<ScrollPicker> {
                     );
                   }),
                   controller: scrollController,
-                  itemExtent: itemHeight,
+                  itemExtent: ScrollPicker.itemHeight,
                   onSelectedItemChanged: _onSelectedItemChanged,
                   physics: FixedExtentScrollPhysics(),
                 ),
@@ -108,7 +108,7 @@ class _ScrollPickerState extends State<ScrollPicker> {
             IgnorePointer(
               child: Center(
                 child: Container(
-                  height: itemHeight,
+                  height: ScrollPicker.itemHeight,
                   decoration: BoxDecoration(
                     border: Border(
                       top: BorderSide(color: themeData.accentColor, width: 1.0),

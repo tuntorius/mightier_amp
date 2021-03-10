@@ -20,7 +20,6 @@ import 'UI/pages/presetEditor.dart';
 import 'UI/pages/drumEditor.dart';
 import 'UI/pages/jamTracks.dart';
 import 'UI/pages/settings.dart';
-import 'bluetooth/devices/NuxDevice.dart';
 
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -55,17 +54,16 @@ class _AppState extends State<App> {
     return MaterialApp(
       title: 'Mightier Amp',
       theme: getTheme(),
-      home: MainTabs(device.device),
+      home: MainTabs(),
       navigatorKey: navigatorKey,
     );
   }
 }
 
 class MainTabs extends StatefulWidget {
-  final NuxDevice device;
   final BLEMidiHandler handler = BLEMidiHandler();
 
-  MainTabs(this.device);
+  MainTabs();
   @override
   _MainTabsState createState() => _MainTabsState();
 }
@@ -82,16 +80,16 @@ class _MainTabsState extends State<MainTabs> {
 
     //add 5 pages widgets
     _children.addAll([
-      PresetEditor(widget.device),
+      PresetEditor(),
       PresetList(onTap: (preset) {
-        widget.device.presetFromJson(preset);
+        NuxDeviceControl().device.presetFromJson(preset);
       }),
       DrumEditor(),
       JamTracks(),
       Settings()
     ]);
 
-    widget.device.connectStatus.stream.listen(connectionStateListener);
+    NuxDeviceControl().connectStatus.stream.listen(connectionStateListener);
   }
 
   void connectionStateListener(DeviceConnectionState event) {
@@ -161,7 +159,7 @@ class _MainTabsState extends State<MainTabs> {
     return WillPopScope(
       onWillPop: _willPopCallback,
       child: Scaffold(
-          appBar: NuxAppBar.getAppBar(widget.device, widget.handler),
+          appBar: NuxAppBar.getAppBar(widget.handler),
           body: _children[_currentIndex],
           bottomNavigationBar: BottomBar(
             index: _currentIndex,

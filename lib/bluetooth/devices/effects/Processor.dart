@@ -78,51 +78,6 @@ class ProcessorInfo {
 }
 
 abstract class Processor {
-  static List<ProcessorInfo> processorList = [
-    ProcessorInfo(
-        shortName: "Gate",
-        longName: "Noise Gate",
-        keyName: "gate",
-        color: Colors.green,
-        icon: Icons.account_tree),
-    ProcessorInfo(
-        shortName: "EFX",
-        longName: "EFX",
-        keyName: "efx",
-        color: Colors.deepPurpleAccent,
-        icon: Icons.account_tree),
-    ProcessorInfo(
-        shortName: "Amp",
-        longName: "Amplifier",
-        keyName: "amp",
-        color: null,
-        icon: Icons.speaker_phone),
-    ProcessorInfo(
-        shortName: "IR",
-        longName: "Cabinet",
-        keyName: "cabinet",
-        color: Colors.blue,
-        icon: Icons.speaker),
-    ProcessorInfo(
-        shortName: "Mod",
-        longName: "Modulation",
-        keyName: "mod",
-        color: Colors.cyan[300],
-        icon: Icons.waves),
-    ProcessorInfo(
-        shortName: "Delay",
-        longName: "Delay",
-        keyName: "delay",
-        color: Colors.blueAccent,
-        icon: Icons.blur_linear),
-    ProcessorInfo(
-        shortName: "Reverb",
-        longName: "Reverb",
-        keyName: "reverb",
-        color: Colors.orange,
-        icon: Icons.blur_on),
-  ];
-
   String name;
 
   List<Parameter> parameters;
@@ -139,7 +94,6 @@ abstract class Processor {
 
   void setupFromNuxPayload(List<int> nuxData) {
     for (int i = 0; i < parameters.length; i++) {
-      //TODO: See what happens with tempo, db and others
       if (parameters[i].valueType != ValueType.db)
         parameters[i].value =
             nuxData[parameters[i].devicePresetIndex].toDouble();

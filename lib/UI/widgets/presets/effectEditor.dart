@@ -31,12 +31,9 @@ class _EffectEditorState extends State<EffectEditor> {
   Widget build(BuildContext context) {
     var _preset = widget.preset;
     var _slot = widget.slot;
-    var sliders = List<Widget>();
+    var sliders = <Widget>[];
 
     bool enabled = _preset.slotEnabled(_slot);
-
-    //store a reference to the tempo parameter if any
-    Parameter tempoParameter;
 
     //get all the parameters for the slot
     List<Processor> prc = _preset.getEffectsForSlot(_slot);
@@ -48,7 +45,7 @@ class _EffectEditorState extends State<EffectEditor> {
 
       if (params != null && params.length > 0) {
         for (int i = 0; i < params.length; i++) {
-          sliders.add(ThickSlider(
+          var slider = ThickSlider(
             value: params[i].value,
             min: params[i].valueType == ValueType.db ? -6 : 0,
             max: params[i].valueType == ValueType.db ? 6 : 100,
@@ -61,6 +58,11 @@ class _EffectEditorState extends State<EffectEditor> {
                   return dbFormatter(val);
                 case ValueType.tempo:
                   return "${Parameter.percentageToTime(val).toStringAsFixed(2)} s";
+                case ValueType.vibeMode:
+                  if (val == 0)
+                    return "Vibe";
+                  else if (val == 127) return "Chorus";
+                  return "";
               }
               return "";
             },
@@ -72,7 +74,9 @@ class _EffectEditorState extends State<EffectEditor> {
                 _preset.setParameterValue(params[i], val);
               });
             },
-          ));
+          );
+
+          sliders.add(slider);
 
           if (params[i].valueType == ValueType.tempo) {
             sliders.add(RawMaterialButton(
@@ -102,7 +106,8 @@ class _EffectEditorState extends State<EffectEditor> {
         }
       }
     }
-    return ListView(
+
+    return Column(
       children: sliders,
     );
   }

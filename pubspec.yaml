@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.4.0
+version: 0.4.1+2
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -30,6 +30,7 @@ dependencies:
   tinycolor: ^1.0.3
   screen: ^0.0.5
   package_info: ^2.0.0
+  audio_picker: ^1.0.0
   
 # https://pub.dev/packages/direct_select - possibility to use for selecting effects
   #some fixes added to flutter_blue library,

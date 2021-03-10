@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../../../platform/fileSaver.dart';
 
 import '../../../bluetooth/devices/presets/Preset.dart';
@@ -264,11 +265,11 @@ class _PresetListState extends State<PresetList> {
             });
             break;
           case 2:
-            var channelList = List<String>();
-            int nuxChannel =
-                Preset.nuxChannel(item["instrument"], item["channel"]);
-            Channel.values
-                .forEach((e) => channelList.add(e.toString().split('.')[1]));
+            var channelList = <String>[];
+            int nuxChannel = item["channel"];
+            var d = NuxDeviceControl().device;
+            for (int i = 0; i < d.channelsCount; i++)
+              channelList.add(d.channelName(i));
             var dialog = AlertDialogs.showOptionDialog(context,
                 confirmButton: "Change",
                 cancelButton: "Cancel",
@@ -277,11 +278,8 @@ class _PresetListState extends State<PresetList> {
                 value: nuxChannel, onConfirm: (changed, newValue) {
               if (changed) {
                 setState(() {
-                  PresetsStorage().changeChannel(
-                      item["category"],
-                      item["name"],
-                      Preset.instrumentFromNuxChannel(newValue),
-                      Preset.normalizedFromNuxChannel(newValue));
+                  PresetsStorage()
+                      .changeChannel(item["category"], item["name"], newValue);
                 });
               }
             });
@@ -386,13 +384,9 @@ class _PresetListState extends State<PresetList> {
               style: TextStyle(color: Colors.white),
             ),
             subtitle: Text(
-              Channel.values[
-                      Preset.nuxChannel(item["instrument"], item["channel"])]
-                  .toString()
-                  .split('.')[1],
-              style: TextStyle(
-                  color: Preset.channelColors[
-                      Preset.nuxChannel(item["instrument"], item["channel"])]),
+              NuxDeviceControl().device.channelName(item["channel"]),
+              //Channel.values[item["channel"]].toString().split('.')[1],
+              style: TextStyle(color: Preset.channelColors[item["channel"]]),
             ),
             trailing: PopupMenuButton(
               child: Icon(Icons.more_vert, color: Colors.grey),

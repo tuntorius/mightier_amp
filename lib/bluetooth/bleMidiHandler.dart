@@ -66,7 +66,6 @@ class BLEMidiHandler {
     });
 
     print("BLEMidiHandler:Init()");
-
     flutterBlue.state.listen((event) {
       print(event.toString());
       bluetoothState = event;
@@ -172,8 +171,6 @@ class BLEMidiHandler {
   StreamSubscription<List<int>> registerDataListener(
       Function(List<int>) listener) {
     return _midiCharacteristic.value.listen(listener);
-    //StreamSubscription<List<int>> _rxSubscription =
-    //   _midiCommand.onMidiDataReceived.listen(listener);
   }
 
   ListQueue<List<int>> dataQueue = ListQueue<List<int>>();

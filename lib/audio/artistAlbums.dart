@@ -35,8 +35,8 @@ class ArtistAlbums extends StatelessWidget {
                   itemBuilder: (BuildContext ctxt, int index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
-                      child: FlatButton(
-                          color: Colors.grey[700],
+                      child: ElevatedButton(
+                          //color: Colors.grey[700],
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => AlbumTracks(

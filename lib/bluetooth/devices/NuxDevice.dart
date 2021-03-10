@@ -10,10 +10,9 @@ import "NuxConstants.dart";
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
 
-enum DeviceConnectionState { connectedStart, presetsLoaded, configReceived }
-
 abstract class NuxDevice extends ChangeNotifier {
   final NuxDeviceControl deviceControl;
+
   int get productVID {
     throw ("Not implemented exception");
   }
@@ -22,48 +21,87 @@ abstract class NuxDevice extends ChangeNotifier {
     return 8721;
   }
 
+//General device parameters
+  String get productName;
+  String get productStringId;
+  int get channelsCount;
+  int get effectsChainLength;
+  List<ProcessorInfo> get processorList;
+
+  int get groupsCount;
+  List<String> groupsName;
+  String channelName(int channel);
+
   //notifiers for bluetooth control
   final ValueNotifier<int> presetChangedNotifier = ValueNotifier<int>(0);
+
+  //Notifies when an effect is switched on and off
+  final StreamController<int> effectSwitched = StreamController<int>();
+
+  //Notifies when an effect in a certain slot is changed
+  final StreamController<int> effectChanged = StreamController<int>();
+
+  //Notifies when an effect parameter has changed
   final StreamController<Parameter> parameterChanged =
       StreamController<Parameter>();
-  final StreamController<int> effectSwitched = StreamController<int>();
-  final StreamController<int> effectChanged = StreamController<int>();
-  final StreamController<int> batteryPercentage = StreamController<int>();
-  final StreamController<DeviceConnectionState> connectStatus =
-      StreamController();
 
   NuxDevice(this.deviceControl);
 
-  List<Preset> get guitarPresets;
-  List<Preset> get bassPresets;
-
-  static List<String> drumStyles = [
-    "Metronome",
-    "Pop",
-    "Metal",
-    "Blues",
-    "Swing",
-    "Rock",
-    "Ballad Rock",
-    "Funk",
-    "R&B",
-    "Latin",
-    "Dance"
-  ];
+  List<Preset> presets = <Preset>[];
 
   bool _nuxPresetsReceived = false;
   bool get nuxPresetsReceived => _nuxPresetsReceived;
 
-  Instrument _selectedInstrument = Instrument.Guitar;
-  int _selectedChannel = 0; //nux-based (0-6) channel index
+  @protected
+  int selectedGroupP = 0;
 
-  Instrument get selectedInstrument => _selectedInstrument;
+  @protected
+  int selectedChannelP = 0; //nux-based (0-6) channel index
+
+  int get selectedGroup => selectedGroupP;
+  int get selectedChannel => selectedChannelP;
+
+  //normalized functions are to get zero-based channel from each group index
+  int get selectedChannelNormalized;
+
+  void setChannelFromGroup(int instr);
+  void setGroupFromChannel(int chan);
+
+  set selectedGroup(int instr) {
+    if (instr != selectedGroupP) {
+      setChannelFromGroup(instr);
+
+      presetChangedNotifier.value = selectedChannelP;
+
+      selectedGroupP = instr;
+    }
+  }
+
+  set selectedChannelNormalized(int chan) {
+    presetChangedNotifier.value = selectedChannelP;
+  }
+
+  void _setSelectedChannelNuxIndex(int chan, bool notify) {
+    selectedChannelP = chan;
+
+    setGroupFromChannel(chan);
+
+    //notify ui for change
+    if (notify) {
+      resetToNuxPreset();
+      notifyListeners();
+    }
+  }
+
+  //UI Stuff
+  int selectedEffect = 0;
+
+  //TODO: these should not be here
   String presetName;
   String presetCategory;
 
   //general settings
   bool _ecoMode = false;
-
   int _usbMode = 0;
   int _inputVol = 0;
   int _outputVol = 0;
@@ -89,12 +127,13 @@ abstract class NuxDevice extends ChangeNotifier {
   void onConnect() {
     _nuxPresetsReceived = false;
     resetDrumSettings();
-    connectStatus.add(DeviceConnectionState.connectedStart);
   }
 
   void onDisconnect() {
-    batteryPercentage.add(0);
+    deviceControl.onBatteryPercentage(0);
   }
+
+  List<String> getDrumStyles();
 
   void resetDrumSettings() {
     _drumsEnabled = false;
@@ -148,72 +187,14 @@ abstract class NuxDevice extends ChangeNotifier {
     deviceControl.setBtEq(eq);
   }
 
-  set selectedInstrument(Instrument instr) {
-    if (instr != _selectedInstrument) {
-      if (instr == Instrument.Guitar)
-        _selectedChannel = 0;
-      else {
-        _selectedChannel = 4;
-      }
-
-      presetChangedNotifier.value = _selectedChannel;
-    }
-
-    _selectedInstrument = instr;
+  Preset getPreset(int index) {
+    return presets[index];
   }
 
-  //normalized functions are to abstract the channel from the instrument index
-  int get selectedChannelNormalized {
-    if (_selectedInstrument == Instrument.Guitar) return _selectedChannel;
-    return _selectedChannel - 4;
-  }
-
-  set selectedChannelNormalized(chan) {
-    if (_selectedInstrument == Instrument.Guitar) {
-      _selectedChannel = chan;
-    } else
-      _selectedChannel = chan + 4;
-
-    presetChangedNotifier.value = _selectedChannel;
-  }
-
-  int get selectedChannelNuxIndex => _selectedChannel;
-
-  void _setSelectedChannelNuxIndex(chan, bool notify) {
-    _selectedChannel = chan;
-    if (chan < 4)
-      _selectedInstrument = Instrument.Guitar;
-    else
-      _selectedInstrument = Instrument.Bass;
-    //notify ui for change
-    if (notify) {
-      resetToNuxPreset();
-      notifyListeners();
-    }
-  }
-
-  int selectedEffect = 0;
-
-  Preset getPresetByNuxIndex(int index) {
-    if (index < 4)
-      //guitar presets
-      return guitarPresets[index];
-    else
-      return bassPresets[index - 4];
-  }
-
-  List<Preset> getInstrumentPresets(Instrument instr) {
-    switch (instr) {
-      case Instrument.Guitar:
-        return guitarPresets;
-      case Instrument.Bass:
-        return bassPresets;
-    }
-    return null;
-  }
+  List<Preset> getGroupPresets(int instr);
 
   void resetToNuxPreset() {
-    getPresetByNuxIndex(selectedChannelNuxIndex).setupPresetFromNuxData();
+    getPreset(selectedChannel).setupPresetFromNuxData();
   }
 
   void onDataReceived(List<int> data) {
@@ -227,24 +208,23 @@ abstract class NuxDevice extends ChangeNotifier {
             var total = (data[3] & 0xf0) >> 4;
             var current = data[3] & 0x0f;
 
-            var preset = getPresetByNuxIndex(data[2]);
+            var preset = getPreset(data[2]);
             if (current == 0) preset.resetNuxData();
 
-            preset.addNuxPayloadPiece(data);
+            preset.addNuxPayloadPiece(data.sublist(4, 16));
 
             if (current == total - 1) {
               preset.setupPresetFromNuxData();
 
               if (!_nuxPresetsReceived) {
-                if (data[2] < 6)
-                  deviceControl.getPreset(data[2] + 1);
+                if (data[2] < channelsCount - 1)
+                  deviceControl.requestPreset(data[2] + 1);
                 else {
                   deviceControl.changeDevicePreset(0);
                   _setSelectedChannelNuxIndex(0, true);
                   notifyListeners();
                   _nuxPresetsReceived = true;
 
-                  connectStatus.add(DeviceConnectionState.presetsLoaded);
                   deviceControl.onPresetsReady();
                 }
               }
@@ -264,13 +244,13 @@ abstract class NuxDevice extends ChangeNotifier {
               case DeviceMessageID.devSysCtrlMsgID:
                 switch (data[8]) {
                   case SysCtrlState.syscmd_dsprun_battery:
-                    batteryPercentage.add(data[9]);
+                    deviceControl.onBatteryPercentage(data[9]);
                     break;
                   case SysCtrlState.syscmd_usbaudio:
                     _usbMode = data[9];
                     _inputVol = data[10];
                     _outputVol = data[11];
-                    connectStatus.add(DeviceConnectionState.configReceived);
+                    deviceControl.onConfigReceived();
                     notifyListeners();
                     break;
                 }
@@ -295,31 +275,23 @@ abstract class NuxDevice extends ChangeNotifier {
   void resetNuxPresets() {
     _nuxPresetsReceived = false;
     deviceControl.resetNuxPresets();
-
-    //show loading popup
-    connectStatus.add(DeviceConnectionState.connectedStart);
   }
 
   presetFromJson(dynamic _preset) {
     presetName = _preset["name"];
     presetCategory = _preset["category"];
-
-    //set instrument channel
-    selectedInstrument = Instrument.values[_preset["instrument"]];
-    var nuxChannel =
-        Preset.nuxChannel(selectedInstrument.index, _preset["channel"]);
+    var nuxChannel = _preset["channel"];
 
     _setSelectedChannelNuxIndex(nuxChannel, false);
     deviceControl.changeDevicePreset(nuxChannel);
 
-    Preset p = getPresetByNuxIndex(selectedChannelNuxIndex);
+    Preset p = getPreset(selectedChannel);
 
     //setup all effects
-    for (int i = 0; i < 7; i++) {
-      if (!_preset.containsKey(Processor.processorList[i].keyName)) continue;
+    for (int i = 0; i < effectsChainLength; i++) {
+      if (!_preset.containsKey(processorList[i].keyName)) continue;
       //get effect
-      Map<String, dynamic> _effect =
-          _preset[Processor.processorList[i].keyName];
+      Map<String, dynamic> _effect = _preset[processorList[i].keyName];
 
       int fxType = _effect["fx_type"];
       p.setSelectedEffectForSlot(i, fxType, false);
@@ -340,15 +312,12 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   Map<String, dynamic> presetToJson() {
-    Map<String, dynamic> mainJson = {
-      "instrument": selectedInstrument.index,
-      "channel": selectedChannelNormalized
-    };
+    Map<String, dynamic> mainJson = {"channel": selectedChannel};
 
-    Preset p = getPresetByNuxIndex(selectedChannelNuxIndex);
+    Preset p = getPreset(selectedChannel);
 
     //parse all effects
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < effectsChainLength; i++) {
       var dev = Map<String, dynamic>();
       dev["fx_type"] = p.getSelectedEffectForSlot(i);
       dev["enabled"] = p.slotEnabled(i);
@@ -360,70 +329,8 @@ abstract class NuxDevice extends ChangeNotifier {
         dev[fx.parameters[f].handle] = fx.parameters[f].value;
       }
 
-      mainJson[Processor.processorList[i].keyName] = dev;
+      mainJson[processorList[i].keyName] = dev;
     }
     return mainJson;
-  }
-}
-
-class NuxMightyPlug extends NuxDevice {
-  int get productVID => 48;
-
-  List<Preset> presets = List<Preset>();
-  List<Preset> guitarPresets = List<Preset>();
-  List<Preset> bassPresets = List<Preset>();
-
-  NuxMightyPlug(NuxDeviceControl devControl) : super(devControl) {
-    //clean
-    guitarPresets.add(Preset(
-        device: this,
-        instrument: Instrument.Guitar,
-        channel: Channel.Clean,
-        channelName: "Clean"));
-
-    //OD
-    guitarPresets.add(Preset(
-        device: this,
-        instrument: Instrument.Guitar,
-        channel: Channel.Overdive,
-        channelName: "Drive"));
-
-    //Dist
-    guitarPresets.add(Preset(
-        device: this,
-        instrument: Instrument.Guitar,
-        channel: Channel.Distortion,
-        channelName: "Dist"));
-
-    //AGSim
-    guitarPresets.add(Preset(
-        device: this,
-        instrument: Instrument.Guitar,
-        channel: Channel.AGSim,
-        channelName: "AGSim"));
-
-    //Pop Bass
-    bassPresets.add(Preset(
-        device: this,
-        instrument: Instrument.Bass,
-        channel: Channel.Pop,
-        channelName: "Pop"));
-
-    //Rock Bass
-    bassPresets.add(Preset(
-        device: this,
-        instrument: Instrument.Bass,
-        channel: Channel.Rock,
-        channelName: "Rock"));
-
-    //Funk Bass
-    bassPresets.add(Preset(
-        device: this,
-        instrument: Instrument.Bass,
-        channel: Channel.Funk,
-        channelName: "Funk"));
-
-    presets.addAll(guitarPresets);
-    presets.addAll(bassPresets);
   }
 }

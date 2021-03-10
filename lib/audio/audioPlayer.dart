@@ -28,7 +28,6 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     getArtists();
@@ -131,7 +130,7 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
                       List<ArtistInfo> _artists;
                       var searchText = editingController.text.toLowerCase();
                       if (editingController.text.isNotEmpty) {
-                        _artists = List<ArtistInfo>();
+                        _artists = <ArtistInfo>[];
                         snapshot.data.forEach((item) {
                           if (item.name.toLowerCase().contains(searchText)) {
                             _artists.add(item);
@@ -146,8 +145,7 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
                             return Padding(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 2.0),
-                              child: FlatButton(
-                                  color: Colors.grey[700],
+                              child: ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(

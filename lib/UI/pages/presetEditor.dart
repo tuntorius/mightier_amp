@@ -3,32 +3,40 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../popups/savePreset.dart';
-import '../../bluetooth/devices/presets/Preset.dart';
 import '../widgets/presets/channelSelector.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 
 class PresetEditor extends StatefulWidget {
-  final NuxDevice device;
-
-  PresetEditor(this.device);
+  PresetEditor();
   @override
   _PresetEditorState createState() => _PresetEditorState();
 }
 
 class _PresetEditorState extends State<PresetEditor> {
   NuxDevice device;
+
   @override
   void initState() {
     super.initState();
-    device = widget.device;
+    device = NuxDeviceControl().device;
     device.addListener(onDeviceDataChanged);
+    NuxDeviceControl().addListener(onDeviceChanged);
   }
 
   @override
   void dispose() {
     super.dispose();
     device.removeListener(onDeviceDataChanged);
+    NuxDeviceControl().removeListener(onDeviceChanged);
+  }
+
+  void onDeviceChanged() {
+    if (device != null) device.removeListener(onDeviceDataChanged);
+    device = NuxDeviceControl().device;
+    device.addListener(onDeviceDataChanged);
+    setState(() {});
   }
 
   void onDeviceDataChanged() {
@@ -37,9 +45,10 @@ class _PresetEditorState extends State<PresetEditor> {
 
   @override
   Widget build(BuildContext context) {
-    List<bool> _instrumentSelection = [false, false];
-    _instrumentSelection[device.selectedInstrument.index] = true;
-    return Column(
+    List<bool> _instrumentSelection =
+        List<bool>.filled(device.groupsCount, false);
+    _instrumentSelection[device.selectedGroup] = true;
+    return ListView(
       children: [
         Column(children: [
           ListTile(
@@ -50,6 +59,7 @@ class _PresetEditorState extends State<PresetEditor> {
                 ElevatedButton(
                   child: Icon(Icons.save_alt),
                   onPressed: () {
+                    //TODO: move to method
                     if (device.deviceControl.isConnected) {
                       AlertDialogs.showConfirmDialog(context,
                           title: "Save preset to device",
@@ -72,7 +82,7 @@ class _PresetEditorState extends State<PresetEditor> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) =>
-                          saveDialog.buildDialog(widget.device, context),
+                          saveDialog.buildDialog(device, context),
                     );
                   },
                 )
@@ -82,31 +92,25 @@ class _PresetEditorState extends State<PresetEditor> {
           ToggleButtons(
             fillColor: Colors.blue,
             children: [
-              Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    children: [
-                      Icon(Icons.music_note),
-                      Text("Guitar"),
-                    ],
-                  )),
-              Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    children: [Icon(Icons.music_note_sharp), Text("Bass")],
-                  ))
+              for (int i = 0; i < device.groupsCount; i++)
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.music_note),
+                        Text(device.groupsName[i]),
+                      ],
+                    )),
             ],
             isSelected: _instrumentSelection,
             onPressed: (int index) {
               setState(() {
-                device.selectedInstrument = Instrument.values[index];
+                device.selectedGroup = index;
               });
             },
           ),
         ]),
-        Expanded(
-          child: ChannelSelector(device: widget.device),
-        )
+        ChannelSelector(device: device)
       ],
     );
   }

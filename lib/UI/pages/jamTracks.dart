@@ -1,6 +1,7 @@
 // (c) 2020 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../audio/audioPlayer.dart';
@@ -42,7 +43,19 @@ class _JamTracksState extends State<JamTracks> {
               );
               break;
             case PermissionStatus.granted:
-              return Container(child: Center(child: AudioPlayerInterface()));
+              return Column(
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        AudioPicker.pickAudio();
+                      },
+                      child: Text("Try audio browse")),
+                  Container(
+                      child: Center(
+                    child: AudioPlayerInterface(),
+                  )),
+                ],
+              );
               break;
             default:
               return Text("Permission declined");

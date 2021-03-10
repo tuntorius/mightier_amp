@@ -26,10 +26,9 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
   @override
   Widget build(BuildContext context) {
-    _buttons = List<Widget>();
+    _buttons = <Widget>[];
 
-    _presets =
-        widget.device.getInstrumentPresets(widget.device.selectedInstrument);
+    _presets = widget.device.getGroupPresets(widget.device.selectedGroup);
 
     _channelsSelection = List<bool>.filled(_presets.length, false);
     _channelsSelection[widget.device.selectedChannelNormalized] = true;
@@ -75,10 +74,9 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             });
           },
         ),
-        Expanded(
-            child: EffectSelector(
-                device: widget.device,
-                preset: _presets[widget.device.selectedChannelNormalized]))
+        EffectSelector(
+            device: widget.device,
+            preset: _presets[widget.device.selectedChannelNormalized])
       ],
     );
   }

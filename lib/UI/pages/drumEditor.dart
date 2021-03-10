@@ -2,32 +2,30 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/effects/Delay.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
-import '../../bluetooth/NuxDeviceControl.dart';
 import '../widgets/thickSlider.dart';
 import '../widgets/scrollPicker.dart';
 import 'dart:math' as Math;
 
 class DrumEditor extends StatefulWidget {
+  DrumEditor();
   @override
   _DrumEditorState createState() => _DrumEditorState();
 }
 
 class _DrumEditorState extends State<DrumEditor> {
   int selectedDrumPattern = 0;
-  final NuxDevice device = NuxDeviceControl().device;
+  //final NuxDevice device = NuxDeviceControl().device;
   DelayTapTimer timer = DelayTapTimer();
 
   @override
-  void initState() {
-    super.initState();
-    selectedDrumPattern = device.selectedDrumStyle;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    var device = NuxDeviceControl().device;
     final ThemeData theme = Theme.of(context);
+
+    selectedDrumPattern = device.selectedDrumStyle;
 
     return Container(
       child: Column(
@@ -38,7 +36,7 @@ class _DrumEditorState extends State<DrumEditor> {
             child: ScrollPicker(
               showDivider: false,
               initialValue: selectedDrumPattern,
-              items: NuxDevice.drumStyles,
+              items: device.getDrumStyles(),
               onChanged: (value) {
                 setState(() {
                   selectedDrumPattern = value;

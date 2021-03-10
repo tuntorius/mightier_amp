@@ -37,23 +37,22 @@ class _EffectSelectorState extends State<EffectSelector> {
   @override
   void initState() {
     super.initState();
-    _effectSelection = List<bool>.filled(Processor.processorList.length, false);
   }
 
   List<Widget> createSlotButtons() {
-    var btns = List<Widget>();
+    var btns = <Widget>[];
     for (int i = 0; i < _effectSelection.length; i++) {
       Color c = _preset.slotEnabled(i) ? _preset.effectColor(i) : null;
       btns.add(
         Column(
           children: [
             Icon(
-              Processor.processorList[i].icon,
+              widget.device.processorList[i].icon,
               size: 30,
               color: c,
             ),
             Text(
-              Processor.processorList[i].shortName,
+              widget.device.processorList[i].shortName,
               style: TextStyle(color: Colors.white),
             ),
           ],
@@ -67,6 +66,8 @@ class _EffectSelectorState extends State<EffectSelector> {
   Widget build(BuildContext context) {
     _preset = widget.preset;
 
+    _effectSelection =
+        List<bool>.filled(widget.device.processorList.length, false);
     _effectSelection[_selectedEffect] = true;
 
     _effectColor = _preset.effectColor(_selectedEffect);
@@ -89,7 +90,7 @@ class _EffectSelectorState extends State<EffectSelector> {
         .name;
 
     //create popup menu
-    _effectItems = List<custom.PopupMenuEntry<dynamic>>();
+    _effectItems = <custom.PopupMenuEntry<dynamic>>[];
     for (int f = 0; f < effects.length; f++) {
       if (effects[f].isSeparator == true) {
         _effectItems.add(custom.PopupMenuDivider(
@@ -125,11 +126,11 @@ class _EffectSelectorState extends State<EffectSelector> {
         child: Row(
           children: [
             Icon(
-              Processor.processorList[_selectedEffect].icon,
+              widget.device.processorList[_selectedEffect].icon,
               color: _effectColor,
             ),
             Text(
-              Processor.processorList[_selectedEffect].longName,
+              widget.device.processorList[_selectedEffect].longName,
               style:
                   TextStyle(color: _effectColor, fontWeight: FontWeight.bold),
             ),
@@ -235,11 +236,9 @@ class _EffectSelectorState extends State<EffectSelector> {
             ),
           ],
         ),
-        Expanded(
-          child: EffectEditor(
-            preset: _preset,
-            slot: _selectedEffect,
-          ),
+        EffectEditor(
+          preset: _preset,
+          slot: _selectedEffect,
         )
       ],
     );

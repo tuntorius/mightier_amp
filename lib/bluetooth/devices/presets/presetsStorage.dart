@@ -25,12 +25,12 @@ class PresetsStorage {
   List<String> categoriesCache;
 
   PresetsStorage._() {
-    presetsData = List<Map<String, dynamic>>();
+    presetsData = <Map<String, dynamic>>[];
     _init();
   }
 
   _init() async {
-    categoriesCache = List<String>();
+    categoriesCache = <String>[];
     await _getDirectory();
     await _loadPresets();
   }
@@ -134,12 +134,10 @@ class PresetsStorage {
     return null;
   }
 
-  Future changeChannel(
-      String category, String name, int instrument, int channel) {
+  Future changeChannel(String category, String name, int channel) {
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["category"] == category &&
           presetsData[i]["name"] == name) {
-        presetsData[i]["instrument"] = instrument;
         presetsData[i]["channel"] = channel;
         return _savePresets();
       }

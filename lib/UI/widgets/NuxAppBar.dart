@@ -2,19 +2,18 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import 'dart:math';
-
-import '../../bluetooth/devices/NuxDevice.dart';
 import 'blinkWidget.dart';
 
-AppBar getAppBar(NuxDevice device, BLEMidiHandler handler) {
+AppBar getAppBar(BLEMidiHandler handler) {
   return AppBar(
     title: Text("Mightier Amp"),
     actions: [
       StreamBuilder<int>(
         builder: (context, value) {
-          if (device.deviceControl.isConnected &&
+          if (NuxDeviceControl().device.deviceControl.isConnected &&
               value.connectionState == ConnectionState.active &&
               value.data != 0) {
             return Stack(
@@ -38,7 +37,7 @@ AppBar getAppBar(NuxDevice device, BLEMidiHandler handler) {
           }
           return Container();
         },
-        stream: device.batteryPercentage.stream,
+        stream: NuxDeviceControl().batteryPercentage.stream,
       ),
       SizedBox(width: 8),
       StreamBuilder<midiSetupStatus>(

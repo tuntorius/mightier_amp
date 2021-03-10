@@ -147,9 +147,7 @@ class _AudioEditorState extends State<AudioEditor> {
                               AutomationEventType.changePreset)
                             ..presetCategory = selectedPreset["category"]
                             ..presetName = selectedPreset["name"]
-                            ..channel = Preset.nuxChannel(
-                                selectedPreset["instrument"],
-                                selectedPreset["channel"])
+                            ..channel = selectedPreset["channel"]
                             ..preset = selectedPreset;
                         });
                         break;

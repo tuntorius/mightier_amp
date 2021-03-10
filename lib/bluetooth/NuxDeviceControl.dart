@@ -3,38 +3,96 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
 
 import 'bleMidiHandler.dart';
 
 import 'devices/NuxConstants.dart';
 import 'devices/NuxDevice.dart';
+import 'devices/NuxMightyPlugAir.dart';
 import 'devices/effects/Processor.dart';
 
-class NuxDeviceControl {
+enum DeviceConnectionState { connectedStart, presetsLoaded, configReceived }
+
+class NuxDeviceControl extends ChangeNotifier {
   static final NuxDeviceControl _nuxDeviceControl = NuxDeviceControl._();
 
   final BLEMidiHandler _midiHandler = BLEMidiHandler();
 
+  //holds current device
   NuxDevice _device;
   StreamSubscription<List<int>> rxSubscription;
   Timer batteryTimer;
 
+  //connect status control
+  final StreamController<DeviceConnectionState> connectStatus =
+      StreamController();
+  final StreamController<int> batteryPercentage = StreamController<int>();
+
   bool get isConnected => _midiHandler.connectedDevice != null;
 
-  final List<String> _devices = ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
+  final List<String> _devices = [
+    "NUX MIGHTY PLUG MIDI",
+    "NUX MIGHTY AIR MIDI",
+    "NUX MIGHTY8BT MIDI", //this one and below are experimental
+    "NUX MIGHTY20BT MIDI",
+    "GUO AN MIDI",
+    "MIGHTY BASS MIDI",
+    "NUX MIGHTY GO MIDI",
+    "NUX MIGHTY LITE MIDI",
+    "AirBorne GO"
+  ];
+
+  List<NuxDevice> _deviceInstances = <NuxDevice>[];
+
+  NuxDevice bleNameToInstance(String bleName) {
+    if (!_devices.contains(bleName))
+      throw UnsupportedError("Device with BLE name $bleName unsupported");
+
+    switch (_devices.indexOf(bleName)) {
+      case 0:
+        return NuxMightyPlug(this);
+      case 1:
+        return NuxMightyAir(this);
+      case 2:
+        return NuxMighty8BT(this);
+      default:
+        return null;
+    }
+  }
+
   factory NuxDeviceControl() {
     return _nuxDeviceControl;
   }
 
   NuxDeviceControl._() {
     _midiHandler.status.listen(_statusListener);
-    _device = NuxMightyPlug(this);
 
-    device.presetChangedNotifier.addListener(presetChangedListener);
-    device.parameterChanged.stream.listen(parameterChangedListener);
-    device.effectChanged.stream.listen(effectChangedListener);
-    device.effectSwitched.stream.listen(effectSwitchedListener);
+    //create all supported devices
+    for (int i = 0; i < _devices.length; i++) {
+      var dev = bleNameToInstance(_devices[i]);
+      if (dev != null) {
+        _deviceInstances.add(dev);
+
+        _deviceInstances[i]
+            .presetChangedNotifier
+            .addListener(presetChangedListener);
+        _deviceInstances[i]
+            .parameterChanged
+            .stream
+            .listen(parameterChangedListener);
+        _deviceInstances[i].effectChanged.stream.listen(effectChangedListener);
+        _deviceInstances[i]
+            .effectSwitched
+            .stream
+            .listen(effectSwitchedListener);
+      }
+    }
+
+    //just a test
+    _device = _deviceInstances[2];
   }
 
   void _statusListener(statusValue) {
@@ -46,18 +104,25 @@ class NuxDeviceControl {
           if (dev.device.type != BluetoothDeviceType.classic &&
               dev.advertisementData.localName != null &&
               _devices.contains(dev.advertisementData.localName)) {
-            //_device = _devices[dev.name];
-
-            //don't autoconnect on auto scan
-            if (!_midiHandler.manualScan)
+            //don't autoconnect on manual scan
+            if (!_midiHandler.manualScan) {
               _midiHandler.connectToDevice(dev.device);
+            }
           }
         });
         break;
       case midiSetupStatus.deviceConnected:
+        //which device connected?
+        //find which device connected
+        print("${_midiHandler.connectedDevice.name} connected");
+        int devIndex = _devices.indexOf(_midiHandler.connectedDevice.name);
+        _device = _deviceInstances[devIndex];
+        notifyListeners();
         _onConnect();
         break;
       case midiSetupStatus.deviceDisconnected:
+        _device = _deviceInstances[2]; //TODO: JAT JUST A TEST
+        notifyListeners();
         _onDisconnect();
         break;
       default:
@@ -66,8 +131,9 @@ class NuxDeviceControl {
   }
 
   void _onConnect() {
-    print("Mighty plug connected");
+    print("Device connected");
     device.onConnect();
+    connectStatus.add(DeviceConnectionState.connectedStart);
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
   }
 
@@ -75,7 +141,7 @@ class NuxDeviceControl {
     batteryTimer?.cancel();
     rxSubscription?.cancel();
     device.onDisconnect();
-    print("Mighty plug disconnected");
+    print("Device disconnected");
   }
 
   void _onDataReceive(List<int> data) {
@@ -83,7 +149,7 @@ class NuxDeviceControl {
       _device.onDataReceived(data.sublist(2));
     else if (!_device.nuxPresetsReceived) {
       //ask the presets now
-      getPresetDelayed();
+      requestPresetDelayed();
     }
   }
 
@@ -94,12 +160,12 @@ class NuxDeviceControl {
   }
 
   //for some reason we should not ask for presets immediately
-  void getPresetDelayed() async {
+  void requestPresetDelayed() async {
     await Future.delayed(Duration(seconds: 1));
-    getPreset(0);
+    requestPreset(0);
   }
 
-  void getPreset(int index) {
+  void requestPreset(int index) {
     var data = createSysExMessage(DeviceMessageID.devReqPresetMsgID, index);
 
     _midiHandler.sendData(data);
@@ -110,6 +176,7 @@ class NuxDeviceControl {
     _onBatteryTimer(null);
     print("Presets received");
 
+    connectStatus.add(DeviceConnectionState.presetsLoaded);
     await Future.delayed(Duration(milliseconds: 200));
     //request other nux stuff
 
@@ -131,6 +198,14 @@ class NuxDeviceControl {
     //fw version
     //data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID, [0, 0]);
     //_midiHandler.sendData(data);
+  }
+
+  void onConfigReceived() {
+    connectStatus.add(DeviceConnectionState.configReceived);
+  }
+
+  void onBatteryPercentage(int val) {
+    batteryPercentage.add(val);
   }
 
   void setEcoMode(bool enable) {
@@ -182,7 +257,7 @@ class NuxDeviceControl {
 
   void effectSwitchedListener(int slot) {
     if (_midiHandler.connectedDevice == null) return;
-    var preset = device.getPresetByNuxIndex(device.selectedChannelNuxIndex);
+    var preset = device.getPreset(device.selectedChannel);
     var swIndex = preset
         .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
         .deviceSwitchIndex;
@@ -199,7 +274,7 @@ class NuxDeviceControl {
 
   void sendFullEffectSettings(int slot) {
     if (_midiHandler.connectedDevice == null) return;
-    var preset = device.getPresetByNuxIndex(device.selectedChannelNuxIndex);
+    var preset = device.getPreset(device.selectedChannel);
     var effect;
     int index;
     effect =
@@ -212,8 +287,6 @@ class NuxDeviceControl {
       //accumData.addAll(data);
       _midiHandler.sendData(data);
     }
-
-    //
 
     //send parameters
     for (int i = 0; i < effect.parameters.length; i++) {
@@ -248,14 +321,18 @@ class NuxDeviceControl {
     if (_midiHandler.connectedDevice == null) return;
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
     _midiHandler.sendData(data);
-    getPreset(device.selectedChannelNuxIndex);
+    requestPreset(device.selectedChannel);
   }
 
   void resetNuxPresets() {
     if (_midiHandler.connectedDevice == null) return;
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7f);
     _midiHandler.sendData(data);
-    getPresetDelayed();
+
+    //show loading popup
+    connectStatus.add(DeviceConnectionState.connectedStart);
+
+    requestPresetDelayed();
   }
 
   void sendDrumsEnabled(bool enabled) {

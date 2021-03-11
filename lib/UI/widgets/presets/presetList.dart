@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
@@ -169,9 +169,10 @@ class _PresetListState extends State<PresetList> {
         break;
       case 2: //import
         var content = await openFile("application/octet-stream");
-        PresetsStorage().presetsFromJson(content).then((value) {
-          setState(() {});
-        });
+        if (content != null)
+          PresetsStorage().presetsFromJson(content).then((value) {
+            setState(() {});
+          });
         break;
     }
   }

@@ -41,6 +41,7 @@ class DynamicTreeView extends StatefulWidget {
 
   final PopupMenuItemBuilder itemBuilder;
   final Function(int, String) onSelected;
+  final bool simplified;
 
   ///The width of DynamicTreeView
   //final double width;
@@ -55,6 +56,7 @@ class DynamicTreeView extends StatefulWidget {
     this.onCategoryLongPress,
     this.itemBuilder,
     this.onSelected,
+    this.simplified = false,
     @required this.childBuilder,
     //this.width = 220.0,
   }) : assert(items != null && categories != null);
@@ -97,6 +99,7 @@ class _DynamicTreeViewOriState extends State<DynamicTreeView> {
       itemBuilder: widget.itemBuilder,
       onSelected: widget.onSelected,
       config: widget.config,
+      simplified: widget.simplified,
       children: _buildChildren(d),
       title: d,
       key: Key(d),
@@ -206,6 +209,7 @@ class ParentWidget extends StatefulWidget {
   final OnCategoryLongPress onLongPress;
   final PopupMenuItemBuilder itemBuilder;
   final Function(int, String) onSelected;
+  final bool simplified;
   final String title;
   ParentWidget({
     this.onTap,
@@ -215,6 +219,7 @@ class ParentWidget extends StatefulWidget {
     this.title,
     this.onSelected,
     this.itemBuilder,
+    this.simplified,
     Key key,
   }) : super(key: key);
 
@@ -272,7 +277,8 @@ class _ParentWidgetState extends State<ParentWidget>
               }
             },
             onLongPress: () {
-              if (widget.onLongPress != null) widget.onLongPress(widget.title);
+              if (widget.onLongPress != null && !widget.simplified)
+                widget.onLongPress(widget.title);
             },
             title: Transform.translate(
                 offset: Offset(-16, 0), //workaround until horizontalTitleGap
@@ -284,13 +290,15 @@ class _ParentWidgetState extends State<ParentWidget>
               turns: sizeAnimation,
               child: widget.config.arrowIcon,
             ),
-            trailing: PopupMenuButton(
-              icon: Icon(Icons.more_vert, color: Colors.grey),
-              itemBuilder: widget.itemBuilder,
-              onSelected: (pos) {
-                widget.onSelected(pos, widget.title);
-              },
-            ),
+            trailing: widget.simplified
+                ? null
+                : PopupMenuButton(
+                    icon: Icon(Icons.more_vert, color: Colors.grey),
+                    itemBuilder: widget.itemBuilder,
+                    onSelected: (pos) {
+                      widget.onSelected(pos, widget.title);
+                    },
+                  ),
           ),
           ChildWidget(
             children: widget.children,

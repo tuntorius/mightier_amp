@@ -31,7 +31,8 @@ dependencies:
   screen: ^0.0.5
   package_info: ^2.0.0
   audio_picker: ^1.0.0
-  
+#  flute_music_player: ^0.0.6 #alternative to flutter_audio_query for newer androids
+
 # https://pub.dev/packages/direct_select - possibility to use for selecting effects
   #some fixes added to flutter_blue library,
   #besides the newer versions don't work with android 10+

@@ -154,21 +154,67 @@ class _MainTabsState extends State<MainTabs> {
     return confirmation.future;
   }
 
+  setTab(int tab) {
+    setState(() {
+      _currentIndex = tab;
+    });
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _willPopCallback,
       child: Scaffold(
-          appBar: NuxAppBar.getAppBar(widget.handler),
-          body: _children[_currentIndex],
-          bottomNavigationBar: BottomBar(
-            index: _currentIndex,
-            onTap: (_index) {
-              setState(() {
-                _currentIndex = _index;
-              });
-            },
-          )),
+        appBar: NuxAppBar.getAppBar(widget.handler),
+        body: _children[_currentIndex],
+        /*drawer: Drawer(
+          child: ListView(
+            children: [
+              Text("Mightier Amp"),
+              Divider(),
+              ListTile(
+                title: Text("Style editor"),
+                onTap: () {
+                  setTab(0);
+                },
+              ),
+              ListTile(
+                title: Text("Presets"),
+                onTap: () {
+                  setTab(1);
+                },
+              ),
+              ListTile(
+                title: Text("Drums"),
+                onTap: () {
+                  setTab(2);
+                },
+              ),
+              ListTile(
+                title: Text("Jam Tracks"),
+                onTap: () {
+                  setTab(3);
+                },
+              ),
+              ListTile(
+                title: Text("Settings"),
+                onTap: () {
+                  setTab(4);
+                },
+              ),
+            ],
+          ),
+        ),*/
+        bottomNavigationBar: BottomBar(
+          index: _currentIndex,
+          onTap: (_index) {
+            setState(() {
+              _currentIndex = _index;
+            });
+          },
+        ),
+      ),
     );
   }
 }

@@ -3,6 +3,7 @@
 
 import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/audio/audioEditor.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../audio/audioPlayer.dart';
 
@@ -46,14 +47,13 @@ class _JamTracksState extends State<JamTracks> {
               return Column(
                 children: [
                   ElevatedButton(
-                      onPressed: () {
-                        AudioPicker.pickAudio();
+                      onPressed: () async {
+                        var path = await AudioPicker.pickAudio();
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AudioEditor(path)));
                       },
                       child: Text("Try audio browse")),
-                  Container(
-                      child: Center(
-                    child: AudioPlayerInterface(),
-                  )),
+                  Expanded(child: AudioPlayerInterface()),
                 ],
               );
               break;

@@ -12,7 +12,8 @@ import '../../../bluetooth/devices/presets/presetsStorage.dart';
 
 class PresetList extends StatefulWidget {
   final void Function(dynamic) onTap;
-  PresetList({this.onTap});
+  final bool simplified;
+  PresetList({this.onTap, this.simplified = false});
   @override
   _PresetListState createState() => _PresetListState();
 }
@@ -327,19 +328,20 @@ class _PresetListState extends State<PresetList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ListTile(
-          contentPadding: EdgeInsets.only(left: 16, right: 12),
-          title: Text("Presets"),
-          trailing: PopupMenuButton(
-            child: Icon(Icons.more_vert, color: Colors.grey),
-            itemBuilder: (context) {
-              return presetsMenu;
-            },
-            onSelected: (pos) {
-              mainMenuActions(pos);
-            },
+        if (!widget.simplified)
+          ListTile(
+            contentPadding: EdgeInsets.only(left: 16, right: 12),
+            title: Text("Presets"),
+            trailing: PopupMenuButton(
+              child: Icon(Icons.more_vert, color: Colors.grey),
+              itemBuilder: (context) {
+                return presetsMenu;
+              },
+              onSelected: (pos) {
+                mainMenuActions(pos);
+              },
+            ),
           ),
-        ),
         Expanded(
           child: _buildList(context),
         )
@@ -357,6 +359,7 @@ class _PresetListState extends State<PresetList> {
         _position = details.globalPosition;
       },
       child: DynamicTreeView(
+        simplified: widget.simplified,
         onCategoryTap: (val) {
           //print(val);
         },
@@ -377,7 +380,8 @@ class _PresetListState extends State<PresetList> {
               widget.onTap(item);
             },
             onLongPress: () {
-              showContextMenu(_position, item, popupSubmenu);
+              if (!widget.simplified)
+                showContextMenu(_position, item, popupSubmenu);
             },
             title: Text(
               item["name"],
@@ -388,15 +392,17 @@ class _PresetListState extends State<PresetList> {
               //Channel.values[item["channel"]].toString().split('.')[1],
               style: TextStyle(color: Preset.channelColors[item["channel"]]),
             ),
-            trailing: PopupMenuButton(
-              child: Icon(Icons.more_vert, color: Colors.grey),
-              itemBuilder: (context) {
-                return popupSubmenu;
-              },
-              onSelected: (pos) {
-                menuActions(pos, item);
-              },
-            ),
+            trailing: widget.simplified
+                ? null
+                : PopupMenuButton(
+                    child: Icon(Icons.more_vert, color: Colors.grey),
+                    itemBuilder: (context) {
+                      return popupSubmenu;
+                    },
+                    onSelected: (pos) {
+                      menuActions(pos, item);
+                    },
+                  ),
           );
         },
         config: Config(

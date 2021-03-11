@@ -7,7 +7,8 @@ import '../widgets/presets/presetList.dart';
 class SelectPresetDialog {
   Widget buildDialog(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.grey[700],
+      contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+      backgroundColor: Colors.grey[900],
       title: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -23,12 +24,11 @@ class SelectPresetDialog {
           ),
         ],
       ),
-      content: Container(
-        height: 300,
-        child: PresetList(onTap: (preset) {
-          Navigator.of(context).pop(preset);
-        }),
-      ),
+      content: PresetList(
+          simplified: true,
+          onTap: (preset) {
+            Navigator.of(context).pop(preset);
+          }),
     );
   }
 }

@@ -11,7 +11,7 @@ Note: The app is Android only because Apple will never let an app that controls 
 
 ## Download
 Get the latest release:
-[https://github.com/tuntorius/mightier_amp/releases/latest]
+https://github.com/tuntorius/mightier_amp/releases/latest
 
 ## Donation
 If you find this app useful, you can buy me a coffee  :) 

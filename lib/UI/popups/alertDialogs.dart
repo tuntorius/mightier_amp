@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 class AlertDialogs {
   static TextEditingController nameCtrl;
 
+  static final _inputFormKey = GlobalKey<FormState>();
+
   static showInfoDialog(BuildContext context,
       {String title,
       String description,
@@ -89,7 +91,9 @@ class AlertDialogs {
       String confirmButton,
       String cancelButton,
       String value,
-      Function(bool, String) onConfirm,
+      Function(String) onConfirm,
+      bool Function(String) validation,
+      String validationErrorMessage,
       Color confirmColor}) {
     nameCtrl = TextEditingController(text: value);
     // set up the buttons
@@ -97,7 +101,6 @@ class AlertDialogs {
       child: Text(cancelButton),
       onPressed: () {
         Navigator.of(context).pop();
-        onConfirm?.call(false, "");
       },
     );
     Widget continueButton = TextButton(
@@ -106,14 +109,20 @@ class AlertDialogs {
         style: TextStyle(color: confirmColor),
       ),
       onPressed: () {
-        Navigator.of(context).pop();
-        onConfirm?.call(true, nameCtrl.text);
+        if (_inputFormKey.currentState.validate()) {
+          Navigator.of(context).pop();
+          onConfirm?.call(nameCtrl.text);
+        } else {
+          //error
+        }
       },
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text(title),
       content: Form(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        key: _inputFormKey,
         child: TextFormField(
           decoration: InputDecoration(labelText: description),
           controller: nameCtrl,
@@ -121,6 +130,9 @@ class AlertDialogs {
           validator: (value) {
             if (value.isEmpty) {
               return 'Please enter preset name';
+            }
+            if (!validation(value)) {
+              return validationErrorMessage;
             }
             return null;
           },
@@ -189,11 +201,14 @@ class AlertDialogs {
       // set up the AlertDialog
       AlertDialog alert = AlertDialog(
         title: Text(title),
-        content: ListTileTheme(
-          textColor: Colors.black,
-          child: ListView(
-            shrinkWrap: true,
-            children: widgets,
+        content: Container(
+          width: double.maxFinite,
+          child: ListTileTheme(
+            textColor: Colors.black,
+            child: ListView(
+              shrinkWrap: true,
+              children: widgets,
+            ),
           ),
         ),
         actions: [

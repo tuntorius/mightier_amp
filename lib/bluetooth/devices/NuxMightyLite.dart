@@ -2,7 +2,8 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/Mighty8BTPreset.dart';
+import '../../UI/mightierIcons.dart';
+import 'presets/Mighty8BTPreset.dart';
 
 import '../NuxDeviceControl.dart';
 import 'NuxDevice.dart';
@@ -19,6 +20,8 @@ class NuxMightyLite extends NuxDevice {
   String get productName => "NUX Mighty Lite BT";
   String get productNameShort => "Mighty Lite";
   String get productStringId => "mighty_lite";
+  IconData get productIcon => MightierIcons.amp_lite;
+
   List<String> get productBLENames =>
       ["NUX MIGHTY LITE MIDI", "AirBorne GO", "GUO AN MIDI"];
 

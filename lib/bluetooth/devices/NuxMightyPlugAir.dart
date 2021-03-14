@@ -22,6 +22,7 @@ class NuxMightyPlug extends NuxDevice {
   String get productName => "NUX Mighty Plug/Air";
   String get productNameShort => "Mighty Plug/Air";
   String get productStringId => "mighty_plug_air";
+  IconData get productIcon => MightierIcons.amp_plugair;
   List<String> get productBLENames =>
       ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
 

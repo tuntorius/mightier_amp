@@ -78,6 +78,7 @@ class PresetsStorage {
       if (!categoriesCache.contains(element["category"]))
         categoriesCache.add(element["category"]);
     });
+    categoriesCache.sort();
   }
 
   int findPreset(String name, String category) {
@@ -145,6 +146,18 @@ class PresetsStorage {
       if (presetsData[i]["category"] == category &&
           presetsData[i]["name"] == name) {
         presetsData[i]["channel"] = channel;
+        return _savePresets();
+      }
+    }
+    return null;
+  }
+
+  Future changePresetCategory(
+      String category, String name, String newCategory) {
+    for (int i = 0; i < presetsData.length; i++) {
+      if (presetsData[i]["category"] == category &&
+          presetsData[i]["name"] == name) {
+        presetsData[i]["category"] = newCategory;
         return _savePresets();
       }
     }

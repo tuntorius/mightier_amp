@@ -24,6 +24,7 @@ abstract class NuxDevice extends ChangeNotifier {
 //General device parameters
   String get productName;
   String get productNameShort;
+  IconData get productIcon;
   String get productStringId;
   List<String> get productBLENames;
 

@@ -2,7 +2,8 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/Mighty8BTPreset.dart';
+import '../../UI/mightierIcons.dart';
+import 'presets/Mighty8BTPreset.dart';
 
 import '../NuxDeviceControl.dart';
 import 'NuxDevice.dart';
@@ -19,6 +20,7 @@ class NuxMighty2040BT extends NuxDevice {
   String get productName => "NUX Mighty 20/40 BT";
   String get productNameShort => "Mighty 20/40 BT";
   String get productStringId => "mighty_20_40bt";
+  IconData get productIcon => MightierIcons.amp_20bt;
   List<String> get productBLENames =>
       ["NUX MIGHTY20BT MIDI", "NUX MIGHTY40BT MIDI"];
 

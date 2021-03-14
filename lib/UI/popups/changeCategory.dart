@@ -3,25 +3,23 @@
 
 import 'package:flutter/material.dart';
 import '../widgets/scrollParent.dart';
-import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/presets/presetsStorage.dart';
-import 'alertDialogs.dart';
 
-class SavePresetDialog {
+class ChangeCategoryDialog {
   static final _formKey = GlobalKey<FormState>();
   final categoryCtrl = TextEditingController();
-  final nameCtrl = TextEditingController();
   final parentScroll = ScrollController();
-  NuxDevice device;
+  String category;
+  String name;
+  Function(String) onCategoryChange;
 
-  SavePresetDialog({@required this.device}) {
-    categoryCtrl.text = device.presetCategory ?? "";
-    nameCtrl.text = device.presetName ?? "";
+  ChangeCategoryDialog(
+      {@required this.category, @required this.name, this.onCategoryChange}) {
+    categoryCtrl.text = category;
   }
 
-  Widget buildDialog(NuxDevice device, BuildContext context) {
+  Widget buildDialog(BuildContext context) {
     List<String> categories = PresetsStorage().getCategories();
-    var preset = device.presetToJson();
 
     final _height = MediaQuery.of(context).size.height * 0.25;
     final node = FocusScope.of(context);
@@ -29,7 +27,7 @@ class SavePresetDialog {
     return StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(
-          title: const Text('Save preset'),
+          title: const Text('Change Preset Category'),
           content: Container(
             width: double.maxFinite,
             child: SingleChildScrollView(
@@ -82,18 +80,8 @@ class SavePresetDialog {
                         if (value.isEmpty) {
                           return 'Please enter preset category';
                         }
-                        return null;
-                      },
-                      onEditingComplete: () => node.nextFocus(),
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(labelText: "Name"),
-                      controller: nameCtrl,
-                      style: TextStyle(color: Colors.black),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter preset name';
-                        }
+                        if (PresetsStorage().findPreset(name, value) != null)
+                          return 'The category already contains a preset with this name!';
                         return null;
                       },
                       onEditingComplete: () => node.unfocus(),
@@ -114,40 +102,16 @@ class SavePresetDialog {
             TextButton(
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  //save and pop
-
-                  if (PresetsStorage().findPreset(
-                          nameCtrl.value.text, categoryCtrl.value.text) !=
-                      null) {
-                    //overwriting preset
-                    AlertDialogs.showConfirmDialog(context,
-                        title: "Confirm",
-                        description: "Overwrite existing preset?",
-                        cancelButton: "Cancel",
-                        confirmButton: "Overwrite",
-                        confirmColor: Colors.red, onConfirm: (overwrite) {
-                      if (overwrite) savePreset(preset, context);
-                    });
-                  } else {
-                    savePreset(preset, context);
-                  }
+                  //call change success
+                  onCategoryChange(categoryCtrl.value.text);
+                  Navigator.of(context).pop();
                 }
               },
-              child: Text('Save'),
+              child: Text('Change'),
             ),
           ],
         );
       },
     );
-  }
-
-  savePreset(preset, context) {
-    device.presetName = nameCtrl.value.text;
-    device.presetCategory = categoryCtrl.value.text;
-
-    Navigator.of(context).pop();
-
-    PresetsStorage()
-        .savePreset(preset, device.presetName, device.presetCategory);
   }
 }

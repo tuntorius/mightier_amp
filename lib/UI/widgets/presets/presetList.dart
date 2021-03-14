@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+import 'package:mighty_plug_manager/UI/popups/changeCategory.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:tinycolor/tinycolor.dart';
 import '../../../platform/fileSaver.dart';
@@ -112,11 +113,24 @@ class _PresetListState extends State<PresetList> {
       child: Row(
         children: <Widget>[
           Icon(
-            Icons.account_tree,
+            Icons.alt_route,
             color: Colors.grey[400],
           ),
           SizedBox(width: 5),
           Text("Change Channel"),
+        ],
+      ),
+    ),
+    PopupMenuItem(
+      value: 5,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            MightierIcons.tag,
+            color: Colors.grey[400],
+          ),
+          SizedBox(width: 5),
+          Text("Change Category"),
         ],
       ),
     ),
@@ -205,20 +219,16 @@ class _PresetListState extends State<PresetList> {
                 cancelButton: "Cancel",
                 confirmButton: "Rename",
                 value: item,
-                confirmColor: Colors.blue, onConfirm: (renamed, newName) {
-              print("Renamed: $renamed, new name $newName");
-              if (renamed) {
-                if (!PresetsStorage().getCategories().contains(newName))
+                validation: (String newName) {
+                  return !PresetsStorage().getCategories().contains(newName);
+                },
+                validationErrorMessage: "Name already taken!",
+                confirmColor: Colors.blue,
+                onConfirm: (newName) {
                   PresetsStorage()
                       .renameCategory(item, newName)
                       .then((value) => setState(() {}));
-                else
-                  AlertDialogs.showInfoDialog(context,
-                      confirmButton: "OK",
-                      title: "Warning",
-                      description: "Category already exists!");
-              }
-            });
+                });
             break;
           case 2: //export category
             String data = PresetsStorage().presetsToJson(item);
@@ -252,21 +262,18 @@ class _PresetListState extends State<PresetList> {
                 cancelButton: "Cancel",
                 confirmButton: "Rename",
                 value: item["name"],
-                confirmColor: Colors.blue, onConfirm: (renamed, newName) {
-              print("Renamed: $renamed, new name $newName");
-              if (renamed) {
-                if (PresetsStorage().findPreset(newName, item["category"]) ==
-                    null)
+                validationErrorMessage: "Name already taken!",
+                validation: (newName) {
+                  return PresetsStorage()
+                          .findPreset(newName, item["category"]) ==
+                      null;
+                },
+                confirmColor: Colors.blue,
+                onConfirm: (newName) {
                   PresetsStorage()
                       .renamePreset(item["category"], item["name"], newName)
                       .then((value) => setState(() {}));
-                else
-                  AlertDialogs.showInfoDialog(context,
-                      confirmButton: "OK",
-                      title: "Warning",
-                      description: "Preset already exists!");
-              }
-            });
+                });
             break;
           case 2:
             var channelList = <String>[];
@@ -306,6 +313,23 @@ class _PresetListState extends State<PresetList> {
             if (data != null)
               saveFile("application/octet-stream", "${item["name"]}.nuxpreset",
                   data);
+            break;
+          case 5: //change category
+            //TODO:
+            var categoryDialog = ChangeCategoryDialog(
+                category: item["category"],
+                name: item["name"],
+                onCategoryChange: (newCategory) {
+                  setState(() {
+                    PresetsStorage().changePresetCategory(
+                        item["category"], item["name"], newCategory);
+                  });
+                });
+            showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  categoryDialog.buildDialog(context),
+            );
             break;
         }
       }
@@ -401,7 +425,9 @@ class _PresetListState extends State<PresetList> {
             leading: Container(
               height: double.infinity, //strange hack to center icon vertically
               child: Icon(
-                MightierIcons.amp_plugair,
+                NuxDeviceControl()
+                    .getDeviceFromId(item["product_id"])
+                    .productIcon,
                 size: 30,
                 color: color,
               ),

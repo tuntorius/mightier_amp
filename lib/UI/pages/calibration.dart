@@ -61,6 +61,8 @@ class _CalibrationState extends State<Calibration> {
       onWillPop: () async {
         await player.stop();
         await player.dispose();
+
+        NuxDeviceControl().sendFullPresetSettings();
         return true;
       },
       child: Scaffold(

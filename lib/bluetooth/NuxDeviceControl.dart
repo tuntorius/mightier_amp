@@ -287,6 +287,12 @@ class NuxDeviceControl extends ChangeNotifier {
     sendFullEffectSettings(slot);
   }
 
+  void sendFullPresetSettings() {
+    if (_midiHandler.connectedDevice == null) return;
+    for (var i = 0; i < device.processorList.length; i++)
+      sendFullEffectSettings(i);
+  }
+
   void sendFullEffectSettings(int slot) {
     if (_midiHandler.connectedDevice == null) return;
     var preset = device.getPreset(device.selectedChannel);
@@ -306,10 +312,6 @@ class NuxDeviceControl extends ChangeNotifier {
     //send parameters
     for (int i = 0; i < effect.parameters.length; i++) {
       sendParameter(effect.parameters[i], false);
-      // if (accumData.length > 17) {
-      //   _midiHandler.sendData(Uint8List.fromList(accumData));
-      //   accumData.clear();
-      // }
     }
     //send switched
     if (preset.slotSwitchable(slot)) {
@@ -317,8 +319,6 @@ class NuxDeviceControl extends ChangeNotifier {
       var data = createCCMessage(effect.deviceSwitchIndex, enabled);
       _midiHandler.sendData(data);
     }
-    // if (accumData.length > 0)
-    //   _midiHandler.sendData(Uint8List.fromList(accumData));
   }
 
   List<int> sendParameter(Parameter param, bool returnOnly) {

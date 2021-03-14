@@ -25,6 +25,10 @@ class Parameter {
     return (delayTimeMstable[lo] * loF + delayTimeMstable[hi] * hiF);
   }
 
+  static double percentageToBPM(double p) {
+    return 60 / percentageToTime(p);
+  }
+
   static double timeToPercentage(t) {
     return (t < delayTimeMstable[0]
         ? 0

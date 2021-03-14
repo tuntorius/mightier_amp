@@ -11,6 +11,7 @@ import 'package:screen/screen.dart';
 class SettingsKeys {
   static const String latency = "audioLatency";
   static const String screenAlwaysOn = "screenAlwaysOn";
+  static const String timeUnit = "timeUnit";
 }
 
 class SharedPrefs {

@@ -2,7 +2,9 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/settings.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Delay.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:tinycolor/tinycolor.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
 import '../../../bluetooth/devices/presets/Preset.dart';
@@ -57,6 +59,10 @@ class _EffectEditorState extends State<EffectEditor> {
                 case ValueType.db:
                   return dbFormatter(val);
                 case ValueType.tempo:
+                  var unit = SharedPrefs()
+                      .getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index);
+                  if (unit == TimeUnit.BPM.index)
+                    return "${Parameter.percentageToBPM(val).toStringAsFixed(2)} BPM";
                   return "${Parameter.percentageToTime(val).toStringAsFixed(2)} s";
                 case ValueType.vibeMode:
                   if (val == 0)

@@ -14,6 +14,8 @@ import 'calibration.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info/package_info.dart';
 
+enum TimeUnit { BPM, Seconds }
+
 class Settings extends StatefulWidget {
   static String output = "";
   static void print(String value) {
@@ -39,6 +41,8 @@ class _SettingsState extends State<Settings> {
     "Rock",
     "Solo Cut"
   ];
+
+  final timeUnit = ["BPM", "Seconds"];
 
   List<String> nuxDevices;
 
@@ -99,6 +103,31 @@ class _SettingsState extends State<Settings> {
                 },
               ),
               ListTile(
+                title: Text("Delay Time Unit"),
+                subtitle: Text(timeUnit[SharedPrefs()
+                    .getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index)]),
+                trailing: Icon(Icons.keyboard_arrow_right),
+                onTap: () {
+                  var dialog = AlertDialogs.showOptionDialog(context,
+                      confirmButton: "OK",
+                      cancelButton: "Cancel",
+                      title: "Delay Time Unit",
+                      value: SharedPrefs()
+                          .getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index),
+                      options: timeUnit, onConfirm: (changed, newValue) {
+                    if (changed) {
+                      setState(() {
+                        SharedPrefs().setValue(SettingsKeys.timeUnit, newValue);
+                      });
+                    }
+                  });
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => dialog,
+                  );
+                },
+              ),
+              ListTile(
                 enabled: !device.deviceControl.isConnected,
                 title: Text("Device"),
                 subtitle: Text(device.productName),
@@ -122,7 +151,7 @@ class _SettingsState extends State<Settings> {
                   );
                 },
               ),
-              //Divider(),
+              Divider(),
               ListTile(
                 enabled: device.deviceControl.isConnected,
                 title: Text("USB Audio Settings"),
@@ -238,6 +267,7 @@ class _SettingsState extends State<Settings> {
             ),
           ],
         ),
+        Divider(),
         ListTile(title: Text("App Version"), trailing: Text(_version))
       ],
     );

@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
@@ -82,7 +82,11 @@ class _MainTabsState extends State<MainTabs> {
     _children.addAll([
       PresetEditor(),
       PresetList(onTap: (preset) {
-        NuxDeviceControl().device.presetFromJson(preset);
+        var dev = NuxDeviceControl().device;
+        if (dev.isPresetSupported(preset))
+          NuxDeviceControl().device.presetFromJson(preset);
+        else
+          print("Preset is for different device!");
       }),
       DrumEditor(),
       JamTracks(),

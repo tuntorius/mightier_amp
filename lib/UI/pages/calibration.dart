@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
@@ -22,7 +22,6 @@ class _CalibrationState extends State<Calibration> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     player = AudioPlayer();
     player.setAsset("assets/audio/calibration.wav");

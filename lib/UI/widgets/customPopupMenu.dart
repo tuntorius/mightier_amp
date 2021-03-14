@@ -1134,7 +1134,6 @@ class _PopupMenuButtonState<T> extends State<PopupMenuButton<T>> {
       default:
         return const Icon(Icons.more_vert);
     }
-    return null;
   }
 
   @override

@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
@@ -95,12 +95,7 @@ class _PresetEditorState extends State<PresetEditor> {
               for (int i = 0; i < device.groupsCount; i++)
                 Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      children: [
-                        Icon(Icons.music_note),
-                        Text(device.groupsName[i]),
-                      ],
-                    )),
+                    child: Text(device.groupsName[i])),
             ],
             isSelected: _instrumentSelection,
             onPressed: (int index) {

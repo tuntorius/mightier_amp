@@ -1,4 +1,8 @@
+// (c) 2020-2021 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'package:flutter/material.dart';
+import '../../UI/mightierIcons.dart';
 
 import '../NuxDeviceControl.dart';
 import 'NuxDevice.dart';
@@ -9,13 +13,17 @@ import 'presets/Preset.dart';
 enum PlugAirChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
 
 class NuxMightyPlug extends NuxDevice {
+  static const defaultNuxId = "mighty_plug_air";
   int get productVID => 48;
 
   static const _guitarGroup = 0;
   static const _bassGroup = 1;
 
-  String get productName => "NUX Mighty Plug";
+  String get productName => "NUX Mighty Plug/Air";
+  String get productNameShort => "Mighty Plug/Air";
   String get productStringId => "mighty_plug_air";
+  List<String> get productBLENames =>
+      ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
 
   int get channelsCount => 7;
   int get effectsChainLength => 7;
@@ -29,25 +37,25 @@ class NuxMightyPlug extends NuxDevice {
         longName: "Noise Gate",
         keyName: "gate",
         color: Colors.green,
-        icon: Icons.account_tree),
+        icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "EFX",
         longName: "EFX",
         keyName: "efx",
         color: Colors.deepPurpleAccent,
-        icon: Icons.account_tree),
+        icon: MightierIcons.pedal),
     ProcessorInfo(
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
         color: null,
-        icon: Icons.speaker_phone),
+        icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "IR",
         longName: "Cabinet",
         keyName: "cabinet",
         color: Colors.blue,
-        icon: Icons.speaker),
+        icon: MightierIcons.cabinet),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",
@@ -180,11 +188,4 @@ class NuxMightyPlug extends NuxDevice {
   String channelName(int channel) {
     return channelNames[channel];
   }
-}
-
-//Identical to Plug, just change name
-class NuxMightyAir extends NuxMightyPlug {
-  String get productName => "NUX Mighty Air";
-
-  NuxMightyAir(NuxDeviceControl devControl) : super(devControl);
 }

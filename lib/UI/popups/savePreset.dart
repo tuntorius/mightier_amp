@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
@@ -98,14 +98,14 @@ class SavePresetDialog {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
-              child: Text("Cancel"),
+            TextButton(
+              child: Text("Cancel",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              textColor: Theme.of(context).primaryColor,
             ),
-            FlatButton(
+            TextButton(
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   //save and pop

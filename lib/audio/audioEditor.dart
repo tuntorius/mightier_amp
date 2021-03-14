@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:math';
@@ -10,7 +10,6 @@ import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import '../UI/popups/selectPreset.dart';
-import '../bluetooth/devices/presets/Preset.dart';
 
 import 'audioDecoder.dart';
 import 'models/trackAutomation.dart';
@@ -36,6 +35,10 @@ class _AudioEditorState extends State<AudioEditor> {
   int currentSample = 0;
   bool pageLeft = false;
   int latency = SharedPrefs().getInt(SettingsKeys.latency, 0);
+
+  //speed and pitch shifting stuff
+  double speed = 1;
+  int semitones = 0;
 
   //stuff for inserting
   EditorState state = EditorState.play;
@@ -277,6 +280,54 @@ class _AudioEditorState extends State<AudioEditor> {
               },
               child: Text("Insert preset change"),
             ),
+            ListTile(
+              title: Text("Speed: ${(speed * 100).round()}%"),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        speed -= 0.01;
+                        speed = max(speed, 0.01);
+                        automation.setSpeed(speed);
+                        setState(() {});
+                      },
+                      child: Text("-")),
+                  ElevatedButton(
+                      onPressed: () {
+                        speed += 0.01;
+                        automation.setSpeed(speed);
+                        setState(() {});
+                      },
+                      child: Text("+"))
+                ],
+              ),
+            ),
+            ListTile(
+              title: Text(
+                  "Pitch: ${semitones > 0 ? "+" : ""}$semitones semitones"),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        semitones--;
+                        double pitch = pow(2, semitones / 12);
+                        automation.setPitch(pitch);
+                        setState(() {});
+                      },
+                      child: Text("-")),
+                  ElevatedButton(
+                      onPressed: () {
+                        semitones++;
+                        double pitch = pow(2, semitones / 12);
+                        automation.setPitch(pitch);
+                        setState(() {});
+                      },
+                      child: Text("+"))
+                ],
+              ),
+            )
             /*ElevatedButton(onPressed: () {}, child: Text("Do other stuff here"))*/
           ]),
         ),

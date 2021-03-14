@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:audio_picker/audio_picker.dart';
@@ -32,7 +32,6 @@ class _JamTracksState extends State<JamTracks> {
         if (snapshot.hasData) {
           switch (snapshot.data) {
             case PermissionStatus.denied:
-            case PermissionStatus.undetermined:
               return Center(
                 child: ElevatedButton(
                   child: Text("Grant storage permission"),

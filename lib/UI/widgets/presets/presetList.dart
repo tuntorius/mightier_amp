@@ -3,9 +3,11 @@
 
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:tinycolor/tinycolor.dart';
 import '../../../platform/fileSaver.dart';
 
 import '../../../bluetooth/devices/presets/Preset.dart';
+import '../../mightierIcons.dart';
 import '../dynamic_treeview.dart';
 import 'package:flutter/material.dart';
 import '../../../bluetooth/devices/presets/presetsStorage.dart';
@@ -114,7 +116,7 @@ class _PresetListState extends State<PresetList> {
             color: Colors.grey[400],
           ),
           SizedBox(width: 5),
-          Text("Change channel"),
+          Text("Change Channel"),
         ],
       ),
     ),
@@ -376,26 +378,46 @@ class _PresetListState extends State<PresetList> {
         categories: PresetsStorage().getCategories(),
         items: PresetsStorage().presetsData,
         childBuilder: (item) {
+          var device = NuxDeviceControl().device;
+          //check if enabled and desaturate color if needed
+          bool enabled = item["product_id"] == device.productStringId;
+          Color color = Preset.channelColors[item["channel"]];
+          if (!enabled) color = TinyColor(color).desaturate(90).color;
+          bool selected = item["category"] == device.presetCategory &&
+              item["name"] == device.presetName;
           return ListTile(
+            enabled: enabled,
+            selectedTileColor: Colors.grey[800],
+            selected: selected,
             onTap: () {
               widget.onTap(item);
+              setState(() {});
             },
             onLongPress: () {
               if (!widget.simplified)
                 showContextMenu(_position, item, popupSubmenu);
             },
-            title: Text(
-              item["name"],
-              style: TextStyle(color: Colors.white),
+            minLeadingWidth: 0,
+            leading: Container(
+              height: double.infinity, //strange hack to center icon vertically
+              child: Icon(
+                MightierIcons.amp_plugair,
+                size: 30,
+                color: color,
+              ),
             ),
+            title: Text(item["name"],
+                style: TextStyle(color: enabled ? Colors.white : Colors.grey)),
             subtitle: Text(
-              NuxDeviceControl().device.channelName(item["channel"]),
+              NuxDeviceControl().getDeviceNameFromId(item["product_id"]),
+              //NuxDeviceControl().device.channelName(item["channel"]),
               //Channel.values[item["channel"]].toString().split('.')[1],
-              style: TextStyle(color: Preset.channelColors[item["channel"]]),
+              style: TextStyle(color: color),
             ),
             trailing: widget.simplified
                 ? null
                 : PopupMenuButton(
+                    enabled: enabled,
                     child: Icon(Icons.more_vert, color: Colors.grey),
                     itemBuilder: (context) {
                       return popupSubmenu;
@@ -409,7 +431,7 @@ class _PresetListState extends State<PresetList> {
         config: Config(
             parentTextStyle: TextStyle(color: Colors.white),
             parentPaddingEdgeInsets: EdgeInsets.only(left: 16, right: 8),
-            childrenPaddingEdgeInsets: EdgeInsets.only(left: 40, right: 4),
+            childrenPaddingEdgeInsets: EdgeInsets.only(left: 0, right: 4),
             arrowIcon: Icon(Icons.keyboard_arrow_down, color: Colors.white)),
       ),
     );

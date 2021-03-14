@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
@@ -140,7 +140,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
   Widget build(context) {
     double msPerSample = 0;
     double time = 0;
-    List<Widget> automationEventButtons = List<Widget>();
+    List<Widget> automationEventButtons = <Widget>[];
 
     if (layoutBuilt == true &&
         widget.automation.duration != null &&

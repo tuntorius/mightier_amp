@@ -1,11 +1,11 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
 
 import 'audioEditor.dart';
 
+/*
 class AlbumTracks extends StatelessWidget {
   final String albumId;
   final String artist;
@@ -36,8 +36,8 @@ class AlbumTracks extends StatelessWidget {
                   itemBuilder: (BuildContext ctxt, int index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
-                      child: FlatButton(
-                          color: Colors.grey[700],
+                      child: ElevatedButton(
+                          //color: Colors.grey[700],
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => AudioEditor(
@@ -57,3 +57,4 @@ class AlbumTracks extends StatelessWidget {
     );
   }
 }
+*/

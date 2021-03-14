@@ -1,13 +1,11 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:ui';
 
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
-import '../effects/EFX.dart';
 import '../effects/Amps.dart';
-import '../effects/Cabinet.dart';
 import '../effects/Modulation.dart';
 import '../effects/Delay.dart';
 import '../effects/Reverb.dart';

@@ -1,9 +1,9 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 package com.tuntori.mightieramp
 
-import android.os.Bundle
+//import android.os.Bundle
 
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
@@ -14,7 +14,7 @@ import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry
 import io.flutter.view.FlutterMain
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+//import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 import android.content.Intent
@@ -50,7 +50,8 @@ class MainActivity: FlutterActivity() {
 
     fun configureDecoderAPI(@NonNull flutterEngine: FlutterEngine)
     {
-        MethodChannel(flutterEngine.getDartExecutor(), CHANNEL).setMethodCallHandler { methodCall, result ->
+        MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
+        .setMethodCallHandler { methodCall, result ->
             var arguments = methodCall.arguments<Map<String, String>>();
             if (methodCall.method == "open")
             {
@@ -91,7 +92,8 @@ class MainActivity: FlutterActivity() {
 
     fun configureFileSaveAPI(@NonNull flutterEngine: FlutterEngine)
     {
-        MethodChannel(flutterEngine.getDartExecutor(), "com.msvcode.filesaver/files").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "com.msvcode.filesaver/files")
+        .setMethodCallHandler { call, result ->
             // Note: this method is invoked on the main thread.
             if (call.method == "saveFile") {
                 _result = result

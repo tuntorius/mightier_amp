@@ -1,8 +1,7 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
 //import 'package:audioplayers/audioplayers.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,7 +21,7 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
   RangeValues range = new RangeValues(0, 10000);
 
   //Future<List<SongInfo>> songs;
-  Future<List<ArtistInfo>> artists;
+  //Future<List<ArtistInfo>> artists;
 
   TextEditingController editingController = TextEditingController();
 
@@ -37,9 +36,8 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
   }
 
   void getArtists() {
-    final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-    artists = audioQuery.getArtists();
-    //songs = audioQuery.getSongs(sortType: SongSortType.ALPHABETIC_ARTIST);
+    //final FlutterAudioQuery audioQuery = FlutterAudioQuery();
+    //artists = audioQuery.getArtists();
   }
 
   void playAudio() async {
@@ -111,7 +109,7 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(25.0)))),
             ),
-            Expanded(
+            /*Expanded(
               child: FutureBuilder<List<ArtistInfo>>(
                 future: artists,
                 builder: (context, snapshot) {
@@ -166,7 +164,7 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
                   return Text("Loading...");
                 },
               ),
-            ),
+            ),*/
           ],
         ),
       ),

@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import '../NuxConstants.dart';
@@ -6,7 +6,7 @@ import 'Processor.dart';
 
 class DelayTapTimer {
   final timeout = 1500;
-  List<DateTime> timeArray = List<DateTime>();
+  List<DateTime> timeArray = <DateTime>[];
 
   addClickTime() {
     timeArray.add(DateTime.now());

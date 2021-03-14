@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
@@ -23,7 +23,7 @@ class AutomationEvent {
 class TrackAutomation {
   final player = AudioPlayer();
 
-  final _events = List<AutomationEvent>();
+  final _events = <AutomationEvent>[];
   String _audioFile;
 
   List<AutomationEvent> get events => _events;
@@ -34,6 +34,7 @@ class TrackAutomation {
   int _positionResolution = 1;
 
   int _latency = 0;
+  int _speed = 1;
 
   StreamController<Duration> _positionController = StreamController<Duration>();
   StreamController<AutomationEvent> _eventController =
@@ -77,7 +78,7 @@ class TrackAutomation {
 
     if (_nextEvent < _events.length) {
       if (_events[_nextEvent].eventTime.inMilliseconds <=
-          position.inMilliseconds - _latency) {
+          position.inMilliseconds - _latency * (1 / _speed)) {
         //execute event
         executeEvent(_events[_nextEvent]);
         //increment expected event
@@ -107,6 +108,15 @@ class TrackAutomation {
       play();
     else
       player.pause();
+  }
+
+  void setSpeed(double speed) {
+    player.setSpeed(speed);
+  }
+
+  void setPitch(double pitch) {
+    //TODO: just_audio library will implement this soon
+    //player.setPitch(pitch);
   }
 
   void seek(Duration position) {

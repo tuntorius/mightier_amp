@@ -9,20 +9,21 @@ import 'NuxDevice.dart';
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
 
-enum M8BTChannel { Clean, Overdrive, Distortion }
+enum MLiteChannel { Clean, Overdrive, Distortion }
 
-class NuxMighty8BT extends NuxDevice {
+class NuxMightyLite extends NuxDevice {
   int get productVID => 48;
 
   static const _group = 0;
 
-  String get productName => "NUX Mighty 8 BT";
-  String get productNameShort => "Mighty 8 BT";
-  String get productStringId => "mighty_8bt";
-  List<String> get productBLENames => ["NUX MIGHTY8BT MIDI"];
+  String get productName => "NUX Mighty Lite BT";
+  String get productNameShort => "Mighty Lite";
+  String get productStringId => "mighty_lite";
+  List<String> get productBLENames =>
+      ["NUX MIGHTY LITE MIDI", "AirBorne GO", "GUO AN MIDI"];
 
   int get channelsCount => 3;
-  int get effectsChainLength => 5;
+  int get effectsChainLength => 4;
   int get groupsCount => 1;
   List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
@@ -47,15 +48,9 @@ class NuxMighty8BT extends NuxDevice {
         color: Colors.cyan[300],
         icon: Icons.waves),
     ProcessorInfo(
-        shortName: "Delay",
-        longName: "Delay",
-        keyName: "delay",
-        color: Colors.blueAccent,
-        icon: Icons.blur_linear),
-    ProcessorInfo(
-        shortName: "Reverb",
-        longName: "Reverb",
-        keyName: "reverb",
+        shortName: "Ambience",
+        longName: "Ambience",
+        keyName: "ambience",
         color: Colors.orange,
         icon: Icons.blur_on),
   ];
@@ -75,26 +70,26 @@ class NuxMighty8BT extends NuxDevice {
     "Latin"
   ];
 
-  NuxMighty8BT(NuxDeviceControl devControl) : super(devControl) {
+  NuxMightyLite(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
-    M8BTChannel.values.forEach((element) {
+    MLiteChannel.values.forEach((element) {
       channelNames.add(element.toString().split('.')[1]);
     });
 
     //clean
     presets.add(M8BTPreset(
-        device: this, channel: M8BTChannel.Clean.index, channelName: "Clean"));
+        device: this, channel: MLiteChannel.Clean.index, channelName: "Clean"));
 
     //OD
     presets.add(M8BTPreset(
         device: this,
-        channel: M8BTChannel.Overdrive.index,
+        channel: MLiteChannel.Overdrive.index,
         channelName: "Drive"));
 
     //Dist
     presets.add(M8BTPreset(
         device: this,
-        channel: M8BTChannel.Distortion.index,
+        channel: MLiteChannel.Distortion.index,
         channelName: "Dist"));
   }
 

@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
@@ -11,6 +11,8 @@ import 'bleMidiHandler.dart';
 
 import 'devices/NuxConstants.dart';
 import 'devices/NuxDevice.dart';
+import 'devices/NuxMighty2040BT.dart';
+import 'devices/NuxMightyLite.dart';
 import 'devices/NuxMightyPlugAir.dart';
 import 'devices/effects/Processor.dart';
 
@@ -33,34 +35,46 @@ class NuxDeviceControl extends ChangeNotifier {
 
   bool get isConnected => _midiHandler.connectedDevice != null;
 
-  final List<String> _devices = [
-    "NUX MIGHTY PLUG MIDI",
-    "NUX MIGHTY AIR MIDI",
-    "NUX MIGHTY8BT MIDI", //this one and below are experimental
-    "NUX MIGHTY20BT MIDI",
-    "GUO AN MIDI",
-    "MIGHTY BASS MIDI",
-    "NUX MIGHTY GO MIDI",
-    "NUX MIGHTY LITE MIDI",
-    "AirBorne GO"
-  ];
-
   List<NuxDevice> _deviceInstances = <NuxDevice>[];
 
-  NuxDevice bleNameToInstance(String bleName) {
-    if (!_devices.contains(bleName))
-      throw UnsupportedError("Device with BLE name $bleName unsupported");
+  List<NuxDevice> get deviceList => _deviceInstances;
 
-    switch (_devices.indexOf(bleName)) {
-      case 0:
-        return NuxMightyPlug(this);
-      case 1:
-        return NuxMightyAir(this);
-      case 2:
-        return NuxMighty8BT(this);
-      default:
-        return null;
+  List<String> get deviceNameList {
+    var names = <String>[];
+    for (int i = 0; i < _deviceInstances.length; i++)
+      names.add(_deviceInstances[i].productNameShort);
+    return names;
+  }
+
+  int get deviceIndex {
+    for (int i = 0; i < _deviceInstances.length; i++)
+      if (_device == _deviceInstances[i]) return i;
+    return 0;
+  }
+
+  set deviceIndex(int index) => _device = _deviceInstances[index];
+
+  NuxDevice deviceFromBLEId(String id) {
+    for (int i = 0; i < _deviceInstances.length; i++)
+      if (_deviceInstances[i].productBLENames.contains(id))
+        return _deviceInstances[i];
+
+    return null;
+  }
+
+  String getDeviceNameFromId(String id) {
+    for (int i = 0; i < _deviceInstances.length; i++) {
+      if (_deviceInstances[i].productStringId == id)
+        return _deviceInstances[i].productNameShort;
     }
+    return "Unknown";
+  }
+
+  NuxDevice getDeviceFromId(String id) {
+    for (int i = 0; i < _deviceInstances.length; i++) {
+      if (_deviceInstances[i].productStringId == id) return _deviceInstances[i];
+    }
+    return null;
   }
 
   factory NuxDeviceControl() {
@@ -71,11 +85,14 @@ class NuxDeviceControl extends ChangeNotifier {
     _midiHandler.status.listen(_statusListener);
 
     //create all supported devices
-    for (int i = 0; i < _devices.length; i++) {
-      var dev = bleNameToInstance(_devices[i]);
-      if (dev != null) {
-        _deviceInstances.add(dev);
+    _deviceInstances.add(NuxMightyPlug(this));
+    _deviceInstances.add(NuxMighty8BT(this));
+    _deviceInstances.add(NuxMighty2040BT(this));
+    _deviceInstances.add(NuxMightyLite(this));
 
+    for (int i = 0; i < _deviceInstances.length; i++) {
+      var dev = _deviceInstances[i];
+      if (dev != null) {
         _deviceInstances[i]
             .presetChangedNotifier
             .addListener(presetChangedListener);
@@ -91,8 +108,8 @@ class NuxDeviceControl extends ChangeNotifier {
       }
     }
 
-    //just a test
-    _device = _deviceInstances[2];
+    //make it read from config
+    _device = _deviceInstances[0];
   }
 
   void _statusListener(statusValue) {
@@ -103,7 +120,7 @@ class NuxDeviceControl extends ChangeNotifier {
         _midiHandler.scanResults.forEach((dev) {
           if (dev.device.type != BluetoothDeviceType.classic &&
               dev.advertisementData.localName != null &&
-              _devices.contains(dev.advertisementData.localName)) {
+              deviceFromBLEId(dev.advertisementData.localName) != null) {
             //don't autoconnect on manual scan
             if (!_midiHandler.manualScan) {
               _midiHandler.connectToDevice(dev.device);
@@ -115,13 +132,11 @@ class NuxDeviceControl extends ChangeNotifier {
         //which device connected?
         //find which device connected
         print("${_midiHandler.connectedDevice.name} connected");
-        int devIndex = _devices.indexOf(_midiHandler.connectedDevice.name);
-        _device = _deviceInstances[devIndex];
+        _device = deviceFromBLEId(_midiHandler.connectedDevice.name);
         notifyListeners();
         _onConnect();
         break;
       case midiSetupStatus.deviceDisconnected:
-        _device = _deviceInstances[2]; //TODO: JAT JUST A TEST
         notifyListeners();
         _onDisconnect();
         break;

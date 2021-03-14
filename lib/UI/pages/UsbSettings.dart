@@ -1,12 +1,9 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
-import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
-import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
-import '../../bluetooth/devices/presets/Preset.dart';
 
 class UsbSettings extends StatefulWidget {
   @override

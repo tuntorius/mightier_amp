@@ -1,10 +1,9 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/effects/Delay.dart';
-import '../../bluetooth/devices/NuxDevice.dart';
 import '../widgets/thickSlider.dart';
 import '../widgets/scrollPicker.dart';
 import 'dart:math' as Math;

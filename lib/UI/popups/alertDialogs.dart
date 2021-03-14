@@ -1,3 +1,6 @@
+// (c) 2020-2021 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'package:flutter/material.dart';
 
 class AlertDialogs {
@@ -10,7 +13,7 @@ class AlertDialogs {
       Function() onConfirm,
       Color confirmColor}) {
     // set up the buttons
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(
         confirmButton,
         style: TextStyle(color: confirmColor),
@@ -45,14 +48,14 @@ class AlertDialogs {
       Function(bool) onConfirm,
       Color confirmColor}) {
     // set up the buttons
-    Widget cancel = FlatButton(
+    Widget cancel = TextButton(
       child: Text(cancelButton),
       onPressed: () {
         Navigator.of(context).pop();
         onConfirm?.call(false);
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(
         confirmButton,
         style: TextStyle(color: confirmColor),
@@ -90,14 +93,14 @@ class AlertDialogs {
       Color confirmColor}) {
     nameCtrl = TextEditingController(text: value);
     // set up the buttons
-    Widget cancel = FlatButton(
+    Widget cancel = TextButton(
       child: Text(cancelButton),
       onPressed: () {
         Navigator.of(context).pop();
         onConfirm?.call(false, "");
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(
         confirmButton,
         style: TextStyle(color: confirmColor),
@@ -148,7 +151,7 @@ class AlertDialogs {
     int selected = value;
     // set up the buttons
     return StatefulBuilder(builder: (context, setState) {
-      Widget continueButton = FlatButton(
+      Widget continueButton = TextButton(
         child: Text(
           confirmButton,
           style: TextStyle(color: confirmColor),
@@ -158,14 +161,14 @@ class AlertDialogs {
           onConfirm?.call(true, selected);
         },
       );
-      Widget closeButton = FlatButton(
+      Widget closeButton = TextButton(
         child: Text(cancelButton),
         onPressed: () {
           Navigator.of(context).pop();
           onConfirm?.call(false, 0);
         },
       );
-      var widgets = List<RadioListTile>();
+      var widgets = <RadioListTile>[];
       for (int i = 0; i < options.length; i++) {
         widgets.add(
           RadioListTile(

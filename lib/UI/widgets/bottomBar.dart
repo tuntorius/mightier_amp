@@ -1,7 +1,8 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/mightierIcons.dart';
 
 class BottomBar extends StatefulWidget {
   final void Function(int) onTap;
@@ -27,7 +28,7 @@ class _BottomBarState extends State<BottomBar> {
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.equalizer),
+            icon: Icon(MightierIcons.sliders),
             label: "Editor",
           ),
           BottomNavigationBarItem(
@@ -35,7 +36,7 @@ class _BottomBarState extends State<BottomBar> {
             label: "Presets",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.music_note),
+            icon: Icon(MightierIcons.drum),
             label: "Drums",
           ),
           BottomNavigationBarItem(

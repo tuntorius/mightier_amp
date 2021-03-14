@@ -1,8 +1,9 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
@@ -49,6 +50,11 @@ class PresetsStorage {
     try {
       var _presetJson = await _presetsFile.readAsString();
       presetsData = json.decode(_presetJson);
+
+      //fix any old compatibility issues
+      for (int i = 0; i < presetsData.length; i++)
+        presetsData[i] = fixPresetCompatibility(presetsData[i]);
+
       _buildCategoryCache();
     } catch (e) {
       //   //no file
@@ -186,7 +192,7 @@ class PresetsStorage {
   //converts a category to json
   //if parameter left empty, then the full preset list is converted
   String presetsToJson([String category]) {
-    var presets = List<dynamic>();
+    var presets = <dynamic>[];
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["category"] == category ||
           category == null ||
@@ -225,6 +231,8 @@ class PresetsStorage {
       String category, String name, Map<String, dynamic> presetData) async {
     int p = findPreset(name, category);
 
+    presetData = fixPresetCompatibility(presetData);
+
     //check if exists
     if (p != null) {
       Map<String, dynamic> _p = presetsData[p];
@@ -262,5 +270,13 @@ class PresetsStorage {
       if (p1[k] != p2[k]) return false;
     }
     return true;
+  }
+
+  Map<String, dynamic> fixPresetCompatibility(Map<String, dynamic> presetData) {
+    //old style preset didn't contain mighty plug
+    if (!presetData.containsKey("product_id"))
+      presetData["product_id"] = NuxMightyPlug.defaultNuxId;
+
+    return presetData;
   }
 }

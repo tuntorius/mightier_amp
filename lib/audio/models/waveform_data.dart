@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:math';
@@ -104,8 +104,9 @@ class WaveformData {
   Path _path(List<int> samples, Size size) {
     final upsample = 2;
 
-    List<double> points = List<double>(size.width.ceil() * upsample + 1);
-    points.fillRange(0, size.width.ceil() * upsample + 1, 0);
+    List<double> points =
+        List<double>.filled(size.width.ceil() * upsample + 1, 0);
+    //points.fillRange(0, size.width.ceil() * upsample + 1, 0);
     final middle = size.height;
     //final int filter = (samples.length / size.width).floor();
     var i = 0.0;

@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:ui' as ui;
@@ -23,7 +23,7 @@ class WaveformPainter extends CustomPainter {
     ..strokeWidth = 1
     ..style = PaintingStyle.stroke;
 
-  final List<Paint> channelPaints = List<Paint>();
+  final List<Paint> channelPaints = <Paint>[];
 
   WaveformPainter(this.data,
       {this.strokeWidth = 1.0,

@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
@@ -23,7 +23,10 @@ abstract class NuxDevice extends ChangeNotifier {
 
 //General device parameters
   String get productName;
+  String get productNameShort;
   String get productStringId;
+  List<String> get productBLENames;
+
   int get channelsCount;
   int get effectsChainLength;
   List<ProcessorInfo> get processorList;
@@ -277,6 +280,11 @@ abstract class NuxDevice extends ChangeNotifier {
     deviceControl.resetNuxPresets();
   }
 
+  bool isPresetSupported(dynamic _preset) {
+    String productId = _preset["product_id"];
+    return productStringId == productId;
+  }
+
   presetFromJson(dynamic _preset) {
     presetName = _preset["name"];
     presetCategory = _preset["category"];
@@ -312,7 +320,10 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   Map<String, dynamic> presetToJson() {
-    Map<String, dynamic> mainJson = {"channel": selectedChannel};
+    Map<String, dynamic> mainJson = {
+      "channel": selectedChannel,
+      "product_id": productStringId
+    };
 
     Preset p = getPreset(selectedChannel);
 

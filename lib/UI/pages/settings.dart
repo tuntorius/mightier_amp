@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
@@ -27,7 +27,6 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   BLEMidiHandler midiHandler = BLEMidiHandler();
-  final NuxDevice device = NuxDeviceControl().device;
 
   final eqOptions = [
     "Normal",
@@ -41,12 +40,14 @@ class _SettingsState extends State<Settings> {
     "Solo Cut"
   ];
 
+  List<String> nuxDevices;
+
   String _version = "";
 
   @override
   void initState() {
     super.initState();
-    device.addListener(_deviceChanged);
+    NuxDeviceControl().addListener(_deviceChanged);
 
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
       setState(() {
@@ -58,7 +59,7 @@ class _SettingsState extends State<Settings> {
   @override
   void dispose() {
     super.dispose();
-    device.removeListener(_deviceChanged);
+    NuxDeviceControl().removeListener(_deviceChanged);
   }
 
   void _deviceChanged() {
@@ -67,8 +68,9 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    final NuxDevice device = NuxDeviceControl().device;
     List<String> items =
-        Settings.output != null ? Settings.output.split('\n') : List<String>();
+        Settings.output != null ? Settings.output.split('\n') : <String>[];
     return ListView(
       children: [
         if (kDebugMode)
@@ -94,6 +96,30 @@ class _SettingsState extends State<Settings> {
                     Screen.keepOn(val);
                     SharedPrefs().setValue(SettingsKeys.screenAlwaysOn, val);
                   });
+                },
+              ),
+              ListTile(
+                enabled: !device.deviceControl.isConnected,
+                title: Text("Device"),
+                subtitle: Text(device.productName),
+                trailing: Icon(Icons.keyboard_arrow_right),
+                onTap: () {
+                  var dialog = AlertDialogs.showOptionDialog(context,
+                      confirmButton: "OK",
+                      cancelButton: "Cancel",
+                      title: "Select Device",
+                      value: NuxDeviceControl().deviceIndex,
+                      options: NuxDeviceControl().deviceNameList,
+                      onConfirm: (changed, newValue) {
+                    if (changed) {
+                      NuxDeviceControl().deviceIndex = newValue;
+                      setState(() {});
+                    }
+                  });
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => dialog,
+                  );
                 },
               ),
               //Divider(),

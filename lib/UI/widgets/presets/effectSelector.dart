@@ -1,4 +1,4 @@
-// (c) 2020 Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:math';
@@ -22,7 +22,6 @@ class EffectSelector extends StatefulWidget {
 
 class _EffectSelectorState extends State<EffectSelector> {
   List<bool> _effectSelection;
-  //int _selectedEffect = 0;
 
   int get _selectedEffect => widget.device.selectedEffect;
   set _selectedEffect(val) => widget.device.selectedEffect = val;
@@ -41,21 +40,27 @@ class _EffectSelectorState extends State<EffectSelector> {
 
   List<Widget> createSlotButtons() {
     var btns = <Widget>[];
+
+    double width = MediaQuery.of(context).size.width;
+
     for (int i = 0; i < _effectSelection.length; i++) {
       Color c = _preset.slotEnabled(i) ? _preset.effectColor(i) : null;
       btns.add(
-        Column(
-          children: [
-            Icon(
-              widget.device.processorList[i].icon,
-              size: 30,
-              color: c,
-            ),
-            Text(
-              widget.device.processorList[i].shortName,
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
+        Container(
+          width: width / _effectSelection.length - 3,
+          child: Column(
+            children: [
+              Icon(
+                widget.device.processorList[i].icon,
+                size: 30,
+                color: c,
+              ),
+              Text(
+                widget.device.processorList[i].shortName,
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -128,6 +133,9 @@ class _EffectSelectorState extends State<EffectSelector> {
             Icon(
               widget.device.processorList[_selectedEffect].icon,
               color: _effectColor,
+            ),
+            SizedBox(
+              width: 5,
             ),
             Text(
               widget.device.processorList[_selectedEffect].longName,

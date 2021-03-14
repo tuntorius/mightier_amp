@@ -9,22 +9,23 @@ import 'NuxDevice.dart';
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
 
-enum M8BTChannel { Clean, Overdrive, Distortion }
+enum M2040BTChannel { Clean, Overdrive, Metal, Lead }
 
-class NuxMighty8BT extends NuxDevice {
+class NuxMighty2040BT extends NuxDevice {
   int get productVID => 48;
 
   static const _group = 0;
 
-  String get productName => "NUX Mighty 8 BT";
-  String get productNameShort => "Mighty 8 BT";
-  String get productStringId => "mighty_8bt";
-  List<String> get productBLENames => ["NUX MIGHTY8BT MIDI"];
+  String get productName => "NUX Mighty 20/40 BT";
+  String get productNameShort => "Mighty 20/40 BT";
+  String get productStringId => "mighty_20_40bt";
+  List<String> get productBLENames =>
+      ["NUX MIGHTY20BT MIDI", "NUX MIGHTY40BT MIDI"];
 
   int get channelsCount => 3;
   int get effectsChainLength => 5;
-  int get groupsCount => 1;
-  List<String> get groupsName => ["Default"];
+  int get groupsCount => 2;
+  List<String> get groupsName => ["1", "2"];
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [
@@ -60,42 +61,58 @@ class NuxMighty8BT extends NuxDevice {
         icon: Icons.blur_on),
   ];
 
-  List<String> channelNames = [];
+  List<Preset> guitarPresets = <Preset>[];
+  List<Preset> bassPresets = <Preset>[];
+
+  List<String> _channelNames = [];
 
   final List<String> drumStyles = [
     "Metronome",
-    "Pop",
-    "Metal",
-    "Blues",
-    "Country",
     "Rock",
-    "Ballad Rock",
-    "Funk",
+    "60's",
+    "Bossanova",
+    "Pop 1",
+    "Pop 2",
+    "Pop 3",
+    "Blues 1",
+    "Blues 2",
+    "Jazz",
+    "Jam",
     "R&B",
-    "Latin"
+    "Latin",
+    "Dance House",
+    "Dance House 1",
+    "Blues 3/4",
+    "Ballad 3/4"
   ];
 
-  NuxMighty8BT(NuxDeviceControl devControl) : super(devControl) {
+  NuxMighty2040BT(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
-    M8BTChannel.values.forEach((element) {
-      channelNames.add(element.toString().split('.')[1]);
+    M2040BTChannel.values.forEach((element) {
+      _channelNames.add(element.toString().split('.')[1]);
     });
 
     //clean
     presets.add(M8BTPreset(
-        device: this, channel: M8BTChannel.Clean.index, channelName: "Clean"));
+        device: this,
+        channel: M2040BTChannel.Clean.index,
+        channelName: "Clean"));
 
     //OD
     presets.add(M8BTPreset(
         device: this,
-        channel: M8BTChannel.Overdrive.index,
+        channel: M2040BTChannel.Overdrive.index,
         channelName: "Drive"));
 
-    //Dist
+    //Metal
     presets.add(M8BTPreset(
         device: this,
-        channel: M8BTChannel.Distortion.index,
-        channelName: "Dist"));
+        channel: M2040BTChannel.Metal.index,
+        channelName: "Metal"));
+
+    //Lead
+    presets.add(M8BTPreset(
+        device: this, channel: M2040BTChannel.Lead.index, channelName: "Lead"));
   }
 
   List<String> getDrumStyles() => drumStyles;
@@ -123,6 +140,6 @@ class NuxMighty8BT extends NuxDevice {
 
   @override
   String channelName(int channel) {
-    return channelNames[channel];
+    return _channelNames[channel];
   }
 }

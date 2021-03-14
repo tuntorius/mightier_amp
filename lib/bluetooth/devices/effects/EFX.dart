@@ -10,9 +10,9 @@ abstract class EFX extends Processor {
   // 7 - 3 Band EQ, 8 - Muff, 9 - Crunch, 10 - Red Dist, 11 - Morning Drive, 12 - Dist One
   // The bass TS (6) is only available in bass preset mode, the rest are everywhere
 
-  int get deviceSwitchIndex => MidiCCValues.bCC_DistEnable;
+  int get midiCCEnableValue => MidiCCValues.bCC_DistEnable;
 
-  int get deviceSelectionIndex => MidiCCValues.bCC_DistMode;
+  int get midiCCSelectionValue => MidiCCValues.bCC_DistMode;
 }
 
 class TouchWah extends EFX {

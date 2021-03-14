@@ -86,14 +86,22 @@ abstract class Processor {
 
   List<Parameter> parameters;
 
-  int nuxIndex;
+  //the number which the nux device uses to refer to the effect
+  int get nuxIndex;
 
-  int deviceSwitchIndex;
+  //The CC command that switches the effect on/off
+  int midiCCEnableValue;
 
-  int deviceSelectionIndex;
+  //The CC command that selects the active effect for a certain slot
+  int midiCCSelectionValue;
 
+  //used to declare that the device is a separator
+  //Used in the selection popup menu
   bool isSeparator;
 
+  //Used to sort various effects in a category
+  //for example acoustic amps/electric amps
+  //used in conjunction with isSeparator
   String category;
 
   void setupFromNuxPayload(List<int> nuxData) {
@@ -113,9 +121,9 @@ class NoiseGate extends Processor {
 
   int get nuxIndex => 0;
 
-  int get deviceSwitchIndex => MidiCCValues.bCC_GateEnable;
+  int get midiCCEnableValue => MidiCCValues.bCC_GateEnable;
 
-  int get deviceSelectionIndex => 0;
+  int get midiCCSelectionValue => 0;
 
 //row 1388: 0-
   List<Parameter> parameters = [

@@ -34,8 +34,8 @@ class DelayTapTimer {
 }
 
 abstract class Delay extends Processor {
-  int get deviceSwitchIndex => MidiCCValues.bCC_DelayEnable;
-  int get deviceSelectionIndex => MidiCCValues.bCC_DelayMode;
+  int get midiCCEnableValue => MidiCCValues.bCC_DelayEnable;
+  int get midiCCSelectionValue => MidiCCValues.bCC_DelayMode;
 }
 
 class AnalogDelay extends Delay {

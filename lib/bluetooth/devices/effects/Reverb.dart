@@ -5,8 +5,8 @@ import '../NuxConstants.dart';
 import 'Processor.dart';
 
 abstract class Reverb extends Processor {
-  int get deviceSwitchIndex => MidiCCValues.bCC_ReverbEnable;
-  int get deviceSelectionIndex => MidiCCValues.bCC_ReverbMode;
+  int get midiCCEnableValue => MidiCCValues.bCC_ReverbEnable;
+  int get midiCCSelectionValue => MidiCCValues.bCC_ReverbMode;
 }
 
 class RoomReverb extends Reverb {

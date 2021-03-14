@@ -275,7 +275,7 @@ class NuxDeviceControl extends ChangeNotifier {
     var preset = device.getPreset(device.selectedChannel);
     var swIndex = preset
         .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
-        .deviceSwitchIndex;
+        .midiCCEnableValue;
 
     //in midi boolean is 00 and 7f for false and true
     int enabled = preset.slotEnabled(slot) ? 0x7f : 0x00;
@@ -301,22 +301,31 @@ class NuxDeviceControl extends ChangeNotifier {
     effect =
         preset.getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)];
     index = effect.nuxIndex;
-    //List<int> accumData = List<int>();
-    //set effect
-    if (slot != 0) {
-      var data = createCCMessage(effect.deviceSelectionIndex, index);
-      //accumData.addAll(data);
+
+    //check if preset switchable
+    bool switchable = preset.slotSwitchable(slot);
+    bool enabled = preset.slotEnabled(slot);
+
+    //send parameters only if the effect is on OR is not switchable off
+    bool send = !switchable || (switchable && enabled);
+
+    //send effect type
+    if (slot != 0 && send) {
+      var data = createCCMessage(effect.midiCCSelectionValue, index);
       _midiHandler.sendData(data);
     }
 
     //send parameters
-    for (int i = 0; i < effect.parameters.length; i++) {
-      sendParameter(effect.parameters[i], false);
+    if (send) {
+      for (int i = 0; i < effect.parameters.length; i++) {
+        sendParameter(effect.parameters[i], false);
+      }
     }
+
     //send switched
-    if (preset.slotSwitchable(slot)) {
-      int enabled = preset.slotEnabled(slot) ? 0x7f : 0x00;
-      var data = createCCMessage(effect.deviceSwitchIndex, enabled);
+    if (switchable) {
+      int enabledVal = enabled ? 0x7f : 0x00;
+      var data = createCCMessage(effect.midiCCEnableValue, enabledVal);
       _midiHandler.sendData(data);
     }
   }

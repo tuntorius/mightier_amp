@@ -412,7 +412,7 @@ class _PresetListState extends State<PresetList> {
           return ListTile(
             enabled: enabled,
             selectedTileColor: Colors.grey[800],
-            selected: selected,
+            selected: selected && !widget.simplified,
             onTap: () {
               widget.onTap(item);
               setState(() {});
@@ -435,15 +435,14 @@ class _PresetListState extends State<PresetList> {
             title: Text(item["name"],
                 style: TextStyle(color: enabled ? Colors.white : Colors.grey)),
             subtitle: Text(
-              NuxDeviceControl().getDeviceNameFromId(item["product_id"]),
-              //NuxDeviceControl().device.channelName(item["channel"]),
+              //NuxDeviceControl().getDeviceNameFromId(item["product_id"]),
+              NuxDeviceControl().device.channelName(item["channel"]),
               //Channel.values[item["channel"]].toString().split('.')[1],
               style: TextStyle(color: color),
             ),
             trailing: widget.simplified
                 ? null
                 : PopupMenuButton(
-                    enabled: enabled,
                     child: Icon(Icons.more_vert, color: Colors.grey),
                     itemBuilder: (context) {
                       return popupSubmenu;

@@ -6,9 +6,9 @@ import '../NuxConstants.dart';
 import 'Processor.dart';
 
 //cabinets are 3 categories - electric, acoustic and bass
-class Cabinet extends Processor {
-  int get deviceSwitchIndex => MidiCCValues.bCC_CabEnable;
-  int get deviceSelectionIndex => MidiCCValues.bCC_CabMode;
+abstract class Cabinet extends Processor {
+  int get midiCCEnableValue => MidiCCValues.bCC_CabEnable;
+  int get midiCCSelectionValue => MidiCCValues.bCC_CabMode;
 
   Parameter value = Parameter(
       devicePresetIndex: PresetDataIndex.cabgain,
@@ -27,42 +27,50 @@ class V1960 extends Cabinet {
   @override
   String get category => "Electric IR";
   final name = "V1960";
-  int get nuxIndex => 0;
+  static int get cabIndex => 0;
+  int get nuxIndex => cabIndex;
 }
 
 class A212 extends Cabinet {
   final name = "A212"; //Sunn A212???
-  int get nuxIndex => 1;
+  static int get cabIndex => 1;
+  int get nuxIndex => cabIndex;
 }
 
 class BS410 extends Cabinet {
   final name = "BS410";
-  int get nuxIndex => 2;
+  static int get cabIndex => 2;
+  int get nuxIndex => cabIndex;
 }
 
 class DR112 extends Cabinet {
   final name = "DR112";
-  int get nuxIndex => 3;
+  static int get cabIndex => 3;
+  int get nuxIndex => cabIndex;
 }
 
 class GB412 extends Cabinet {
   final name = "GB412";
-  int get nuxIndex => 4;
+  static int get cabIndex => 4;
+  int get nuxIndex => cabIndex;
 }
 
 class JZ120IR extends Cabinet {
   final name = "JZ120";
-  int get nuxIndex => 5;
+  static int get cabIndex => 5;
+  int get nuxIndex => cabIndex;
 }
 
 class TR212 extends Cabinet {
   final name = "TR212";
-  int get nuxIndex => 6;
+  int get nuxIndex => cabIndex;
+  static int get cabIndex => 6;
 }
 
 class V412 extends Cabinet {
   final name = "V412";
-  int get nuxIndex => 7;
+  static int get cabIndex => 7;
+  int get nuxIndex => cabIndex;
 }
 
 class AGLDB810 extends Cabinet {
@@ -72,22 +80,26 @@ class AGLDB810 extends Cabinet {
   @override
   String get category => "Bass IR";
   final name = "AGL DB810";
-  int get nuxIndex => 8;
+  static int get cabIndex => 8;
+  int get nuxIndex => cabIndex;
 }
 
 class AMPSV810 extends Cabinet {
   final name = "AMP SV810";
-  int get nuxIndex => 9;
+  static int get cabIndex => 9;
+  int get nuxIndex => cabIndex;
 }
 
 class MKB410 extends Cabinet {
   final name = "MKB 410";
-  int get nuxIndex => 10;
+  static int get cabIndex => 10;
+  int get nuxIndex => cabIndex;
 }
 
 class TRC410 extends Cabinet {
   final name = "TRC 410";
-  int get nuxIndex => 11;
+  static int get cabIndex => 11;
+  int get nuxIndex => cabIndex;
 }
 
 class GHBird extends Cabinet {
@@ -97,35 +109,42 @@ class GHBird extends Cabinet {
   @override
   String get category => "Acoustic IR";
   final name = "G HBird EG Magnetic";
-  int get nuxIndex => 12;
+  static int get cabIndex => 12;
+  int get nuxIndex => cabIndex;
 }
 
 class GJ15 extends Cabinet {
   final name = "G J15 EG Magnetic";
-  int get nuxIndex => 13;
+  static int get cabIndex => 13;
+  int get nuxIndex => cabIndex;
 }
 
 class MD45 extends Cabinet {
   final name = "M D45 EG Magnetic";
-  int get nuxIndex => 14;
+  static int get cabIndex => 14;
+  int get nuxIndex => cabIndex;
 }
 
 class GIBJ200 extends Cabinet {
   final name = "GIB J200 EG Magnetic";
-  int get nuxIndex => 15;
+  static int get cabIndex => 15;
+  int get nuxIndex => cabIndex;
 }
 
 class GIBJ45 extends Cabinet {
   final name = "GIB J45 EG Magnetic";
-  int get nuxIndex => 16;
+  static int get cabIndex => 16;
+  int get nuxIndex => cabIndex;
 }
 
 class TL314 extends Cabinet {
   final name = "TL 314 EG Magnetic";
-  int get nuxIndex => 17;
+  static int get cabIndex => 17;
+  int get nuxIndex => cabIndex;
 }
 
 class MHD28 extends Cabinet {
   final name = "M HD28 EG Magnetic";
-  int get nuxIndex => 18;
+  static int get cabIndex => 18;
+  int get nuxIndex => cabIndex;
 }

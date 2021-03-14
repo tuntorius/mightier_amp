@@ -7,8 +7,8 @@ import 'Processor.dart';
 abstract class Modulation extends Processor {
   //row 1247: 0-phaser, 1-chorus, 2-Stereo chorus, 3-Flanger, 4-Vibe, 5-Tremolo
 
-  int get deviceSwitchIndex => MidiCCValues.bCC_ModfxEnable;
-  int get deviceSelectionIndex => MidiCCValues.bCC_ModfxMode;
+  int get midiCCEnableValue => MidiCCValues.bCC_ModfxEnable;
+  int get midiCCSelectionValue => MidiCCValues.bCC_ModfxMode;
 }
 
 class Phaser extends Modulation {

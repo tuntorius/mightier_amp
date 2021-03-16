@@ -2,8 +2,8 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:core';
-import '../NuxConstants.dart';
-import 'Processor.dart';
+import '../../NuxConstants.dart';
+import '../Processor.dart';
 
 //cabinets are 3 categories - electric, acoustic and bass
 abstract class Cabinet extends Processor {

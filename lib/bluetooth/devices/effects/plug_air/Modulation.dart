@@ -1,8 +1,8 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import '../NuxConstants.dart';
-import 'Processor.dart';
+import '../../NuxConstants.dart';
+import '../Processor.dart';
 
 abstract class Modulation extends Processor {
   //row 1247: 0-phaser, 1-chorus, 2-Stereo chorus, 3-Flanger, 4-Vibe, 5-Tremolo

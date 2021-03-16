@@ -97,7 +97,7 @@ class _SettingsState extends State<Settings> {
                     SharedPrefs().getValue(SettingsKeys.screenAlwaysOn, false),
                 onChanged: (val) {
                   setState(() {
-                    Screen.keepOn(val);
+                    Wakelock.toggle(enable: val);
                     SharedPrefs().setValue(SettingsKeys.screenAlwaysOn, val);
                   });
                 },

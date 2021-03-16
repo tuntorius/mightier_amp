@@ -1,9 +1,9 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import '../NuxConstants.dart';
+import '../../NuxConstants.dart';
+import '../Processor.dart';
 import 'Cabinet.dart';
-import 'Processor.dart';
 
 abstract class Amplifier extends Processor {
   int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;

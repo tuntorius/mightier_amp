@@ -177,7 +177,7 @@ class MidiCCValues {
   static const bCC_ReverbRouting = 34;
   static const bCC_DelayEnable = 28;
   static const bCC_ReverbEnable = 36;
-  static const bCC_CtrlType = 49; //preset change
+  static const bCC_CtrlType = 49;
   static const bCC_drumOnOff_No = 122;
   static const bCC_drumType_No = 123;
   static const bCC_drumLevel_No = 125;

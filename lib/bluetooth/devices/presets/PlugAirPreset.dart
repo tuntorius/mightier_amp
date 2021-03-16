@@ -5,12 +5,13 @@ import 'dart:ui';
 
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
-import '../effects/EFX.dart';
-import '../effects/Amps.dart';
-import '../effects/Cabinet.dart';
-import '../effects/Modulation.dart';
-import '../effects/Delay.dart';
-import '../effects/Reverb.dart';
+import '../effects/plug_air/Effects.dart';
+import '../effects/plug_air/EFX.dart';
+import '../effects/plug_air/Amps.dart';
+import '../effects/plug_air/Cabinet.dart';
+import '../effects/plug_air/Modulation.dart';
+import '../effects/plug_air/Delay.dart';
+import '../effects/plug_air/Reverb.dart';
 import 'Preset.dart';
 
 class PlugAirPreset extends Preset {
@@ -29,8 +30,6 @@ class PlugAirPreset extends Preset {
 
   bool noiseGateEnabled = true;
   bool efxEnabled = true;
-  // bool ampEnabled = true;
-  // bool cabEnabled = true;
   bool modulationEnabled = true;
   bool delayEnabled = true;
   bool reverbEnabled = true;

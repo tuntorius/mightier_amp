@@ -1,8 +1,8 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import '../NuxConstants.dart';
-import 'Processor.dart';
+import '../../NuxConstants.dart';
+import '../Processor.dart';
 
 abstract class EFX extends Processor {
   //row 1871

@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/settings.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/effects/Delay.dart';
+import '../../../bluetooth/devices/utilities/DelayTapTimer.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:tinycolor/tinycolor.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';

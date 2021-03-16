@@ -229,7 +229,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
                   ),
                 ),
                 Expanded(
-                  flex: 3,
+                  flex: 2,
                   child: GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTapUp: zoomViewOnTapUp,

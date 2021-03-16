@@ -2,12 +2,12 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-//import 'package:audioplayers/audioplayers.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'artistAlbums.dart';
 
+/*
 class AudioPlayerInterface extends StatefulWidget {
   @override
   _AudioPlayerState createState() => _AudioPlayerState();
@@ -21,7 +21,7 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
   RangeValues range = new RangeValues(0, 10000);
 
   //Future<List<SongInfo>> songs;
-  //Future<List<ArtistInfo>> artists;
+  Future<List<ArtistInfo>> artists;
 
   TextEditingController editingController = TextEditingController();
 
@@ -36,8 +36,8 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
   }
 
   void getArtists() {
-    //final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-    //artists = audioQuery.getArtists();
+    final FlutterAudioQuery audioQuery = FlutterAudioQuery();
+    artists = audioQuery.getArtists();
   }
 
   void playAudio() async {
@@ -96,78 +96,91 @@ class _AudioPlayerState extends State<AudioPlayerInterface> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Column(
-          children: [
-            TextField(
-              controller: editingController,
-              decoration: InputDecoration(
-                  labelText: "Search",
-                  hintText: "Search",
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
-            ),
-            /*Expanded(
-              child: FutureBuilder<List<ArtistInfo>>(
-                future: artists,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                      // TODO: Handle this case.
-                      break;
-                    case ConnectionState.waiting:
-                      // TODO: Handle this case.
-                      break;
-                    case ConnectionState.active:
-                      // TODO: Handle this case.
-                      break;
-                    case ConnectionState.done:
-                      // TODO: Handle this case.
-                      List<ArtistInfo> _artists;
-                      var searchText = editingController.text.toLowerCase();
-                      if (editingController.text.isNotEmpty) {
-                        _artists = <ArtistInfo>[];
-                        snapshot.data.forEach((item) {
-                          if (item.name.toLowerCase().contains(searchText)) {
-                            _artists.add(item);
-                          }
-                        });
-                      } else
-                        _artists = snapshot.data;
-
-                      return ListView.builder(
-                          itemCount: _artists.length,
-                          itemBuilder: (BuildContext ctxt, int index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 2.0),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) => ArtistAlbums(
-                                                _artists[index].name)));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(
-                                      "${_artists[index].name}",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  )),
-                            );
-                          });
-                      break;
-                  }
-                  return Text("Loading...");
-                },
+    return Scaffold(
+      appBar: AppBar(title: Text("Music gallery")),
+      body: Container(
+        child: Center(
+          child: Column(
+            children: [
+              TextField(
+                controller: editingController,
+                decoration: InputDecoration(
+                    labelText: "Search",
+                    hintText: "Search",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
-            ),*/
-          ],
+              Expanded(
+                child: FutureBuilder<List<ArtistInfo>>(
+                  future: artists,
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                        // TODO: Handle this case.
+                        break;
+                      case ConnectionState.waiting:
+                        // TODO: Handle this case.
+                        break;
+                      case ConnectionState.active:
+                        // TODO: Handle this case.
+                        break;
+                      case ConnectionState.done:
+                        // TODO: Handle this case.
+                        List<ArtistInfo> _artists;
+                        var searchText = editingController.text.toLowerCase();
+                        if (editingController.text.isNotEmpty) {
+                          _artists = <ArtistInfo>[];
+                          snapshot.data.forEach((item) {
+                            if (item.name.toLowerCase().contains(searchText)) {
+                              _artists.add(item);
+                            }
+                          });
+                        } else
+                          _artists = snapshot.data;
+
+                        return ListView.builder(
+                            itemCount: _artists.length,
+                            itemBuilder: (BuildContext ctxt, int index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 2.0),
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ArtistAlbums(
+                                                      _artists[index].name)))
+                                          .then((value) => {
+                                                //check if value send from child page
+                                                //and return it to the parent
+                                                if (value != null)
+                                                  Navigator.of(context)
+                                                      .pop(value)
+                                              });
+                                      ;
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Text(
+                                        "${_artists[index].name}",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    )),
+                              );
+                            });
+                        break;
+                    }
+                    return Text("Loading...");
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+*/

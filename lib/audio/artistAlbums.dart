@@ -2,10 +2,10 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-//import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:flutter_audio_query/flutter_audio_query.dart';
 
 import 'albumTracks.dart';
-/*
+
 class ArtistAlbums extends StatelessWidget {
   final String artist;
   final FlutterAudioQuery audioQuery = FlutterAudioQuery();
@@ -38,10 +38,18 @@ class ArtistAlbums extends StatelessWidget {
                       child: ElevatedButton(
                           //color: Colors.grey[700],
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => AlbumTracks(
-                                    snapshot.data[index].id,
-                                    snapshot.data[index].artist)));
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(
+                                    builder: (context) => AlbumTracks(
+                                        albumId: snapshot.data[index].id,
+                                        albumName: snapshot.data[index].title,
+                                        artist: snapshot.data[index].artist)))
+                                .then((value) => {
+                                      //check if value send from child page
+                                      //and return it to the parent
+                                      if (value != null)
+                                        Navigator.of(context).pop(value)
+                                    });
                           },
                           child: Text(
                             snapshot.data[index].title,
@@ -57,4 +65,3 @@ class ArtistAlbums extends StatelessWidget {
     );
   }
 }
-*/

@@ -1,22 +1,21 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+/*
 import 'package:flutter/material.dart';
 
-import 'audioEditor.dart';
-
-/*
 class AlbumTracks extends StatelessWidget {
   final String albumId;
+  final String albumName;
   final String artist;
   final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-  AlbumTracks(this.albumId, this.artist);
+  AlbumTracks({this.albumId, this.albumName, this.artist});
   @override
   Widget build(BuildContext context) {
     Future<List<SongInfo>> songs =
         audioQuery.getSongsFromArtistAlbum(albumId: albumId, artist: artist);
     return Scaffold(
-      appBar: AppBar(title: Text("$albumId tracks")),
+      appBar: AppBar(title: Text("$albumName tracks")),
       body: FutureBuilder<List<SongInfo>>(
         future: songs,
         builder: (context, snapshot) {
@@ -39,9 +38,12 @@ class AlbumTracks extends StatelessWidget {
                       child: ElevatedButton(
                           //color: Colors.grey[700],
                           onPressed: () {
+                            //pop with selected song
+                            Navigator.of(context).pop(snapshot.data[index]);
+/*
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => AudioEditor(
-                                    snapshot.data[index].filePath)));
+                                    snapshot.data[index].filePath)));*/
                           },
                           child: Text(
                             snapshot.data[index].title,

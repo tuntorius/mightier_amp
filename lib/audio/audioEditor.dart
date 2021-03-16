@@ -4,17 +4,20 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mighty_plug_manager/audio/widgets/presetsPanel.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
-import '../UI/popups/selectPreset.dart';
+import 'package:page_view_indicators/circle_page_indicator.dart';
 
 import 'audioDecoder.dart';
 import 'models/trackAutomation.dart';
 import 'models/waveform_data.dart';
 import 'widgets/painted_waveform.dart';
+import 'widgets/speedPanel.dart';
 
 enum EditorState { play, insert }
 
@@ -29,6 +32,12 @@ class _AudioEditorState extends State<AudioEditor> {
   WaveformData wfData;
   AudioDecoder decoder;
   TrackAutomation automation;
+
+  final controller = PageController(
+    initialPage: 0,
+  );
+
+  final _currentPageNotifier = ValueNotifier<int>(0);
 
   NuxDevice device;
 
@@ -48,15 +57,21 @@ class _AudioEditorState extends State<AudioEditor> {
   void initState() {
     super.initState();
 
+    WidgetsFlutterBinding.ensureInitialized();
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
     device = NuxDeviceControl().device;
 
     decodeAudio();
     automation = TrackAutomation();
     automation.setAudioFile(widget.path, 100);
 
-    //set latency only when playing over bluetooth
+    //set latency only when a device is connected
     if (BLEMidiHandler().connectedDevice != null)
       automation.setAudioLatency(latency);
+    else
+      automation.setAudioLatency(0);
 
     automation.positionStream.listen(playPositionUpdate);
     automation.playerStateStream.listen(playerStateUpdate);
@@ -103,7 +118,6 @@ class _AudioEditorState extends State<AudioEditor> {
 
   void playerStateUpdate(PlayerState state) {
     //just refresh state so the play button is correct
-    //print(state);
     setState(() {});
   }
 
@@ -118,6 +132,13 @@ class _AudioEditorState extends State<AudioEditor> {
       onWillPop: () async {
         pageLeft = true;
         await automation.dispose();
+        //revert back to orientation change
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ]);
         return true;
       },
       child: Scaffold(
@@ -131,45 +152,47 @@ class _AudioEditorState extends State<AudioEditor> {
             //   style: TextStyle(color: Colors.white, fontSize: 30),
             // ),
             Expanded(
+                flex: 1,
                 child: Stack(
-              children: [
-                PaintedWaveform(
-                  sampleData: wfData,
-                  currentSample: currentSample,
-                  automation: automation,
-                  onWaveformTap: (sample) {
-                    switch (state) {
-                      case EditorState.play:
-                        playFrom(sample);
-                        break;
-                      case EditorState.insert:
-                        setState(() {
-                          state = EditorState.play;
-                          automation.addEvent(
-                              Duration(milliseconds: sampleToMs(sample)),
-                              AutomationEventType.changePreset)
-                            ..presetCategory = selectedPreset["category"]
-                            ..presetName = selectedPreset["name"]
-                            ..channel = selectedPreset["channel"]
-                            ..preset = selectedPreset;
-                        });
-                        break;
-                    }
-                  },
-                ),
-                if (state == EditorState.insert)
-                  Container(
-                      color: Colors.grey[700],
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Tap here to insert preset change",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ))
-              ],
-              alignment: Alignment.center,
-            )),
+                  children: [
+                    PaintedWaveform(
+                      sampleData: wfData,
+                      currentSample: currentSample,
+                      automation: automation,
+                      onWaveformTap: (sample) {
+                        switch (state) {
+                          case EditorState.play:
+                            playFrom(sample);
+                            break;
+                          case EditorState.insert:
+                            setState(() {
+                              state = EditorState.play;
+                              automation.addEvent(
+                                  Duration(milliseconds: sampleToMs(sample)),
+                                  AutomationEventType.changePreset)
+                                ..presetCategory = selectedPreset["category"]
+                                ..presetName = selectedPreset["name"]
+                                ..channel = selectedPreset["channel"]
+                                ..preset = selectedPreset;
+                            });
+                            break;
+                        }
+                      },
+                    ),
+                    if (state == EditorState.insert)
+                      Container(
+                          color: Colors.grey[700],
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Tap here to insert event",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ))
+                  ],
+                  alignment: Alignment.center,
+                )),
+            //Playback controls
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -202,7 +225,29 @@ class _AudioEditorState extends State<AudioEditor> {
                     size: 50,
                   ),
                 ),
-                PopupMenuButton(
+                MaterialButton(
+                  onPressed: () {
+                    // go to previous event
+                  },
+                  height: 70,
+                  child: Icon(
+                    Icons.chevron_left,
+                    color: Colors.white,
+                    size: 60,
+                  ),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    // go to next event
+                  },
+                  height: 70,
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: Colors.white,
+                    size: 60,
+                  ),
+                ),
+                /*PopupMenuButton(
                   padding: Theme.of(context).buttonTheme.padding,
                   itemBuilder: (context) {
                     return [
@@ -233,99 +278,55 @@ class _AudioEditorState extends State<AudioEditor> {
                       Icon(Icons.arrow_drop_down, color: Colors.white)
                     ],
                   ),
-                ),
+                ),*/
               ],
             ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     if (state != EditorState.insert) {
-            //       showDialog(
-            //         context: context,
-            //         builder: (BuildContext context) =>
-            //             SelectPresetDialog().buildDialog(context),
-            //       ).then((value) {
-            //         if (value != null) {
-            //           setState(() {
-            //             state = EditorState.insert;
-            //           });
-            //           selectedPreset = value;
-            //         }
-            //       });
-            //     } else
-            //       setState(() {
-            //         state = EditorState.play;
-            //       });
-            //   },
-            //   child: Text("Set base preset"),
-            // ),
-            ElevatedButton(
-              onPressed: () {
-                if (state != EditorState.insert) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        SelectPresetDialog().buildDialog(context),
-                  ).then((value) {
-                    if (value != null) {
-                      setState(() {
-                        state = EditorState.insert;
-                      });
-                      selectedPreset = value;
-                    }
-                  });
-                } else
-                  setState(() {
-                    state = EditorState.play;
-                  });
-              },
-              child: Text("Insert preset change"),
-            ),
-            ListTile(
-              title: Text("Speed: ${(speed * 100).round()}%"),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        speed -= 0.01;
-                        speed = max(speed, 0.01);
-                        automation.setSpeed(speed);
-                        setState(() {});
+            Expanded(
+                flex: 1,
+                child: PageView(
+                  controller: controller,
+                  onPageChanged: (int index) {
+                    _currentPageNotifier.value = index;
+                  },
+                  children: [
+                    PresetsPanel(
+                        state: state,
+                        onSelectedPreset: (_preset) {
+                          if (_preset != null) {
+                            setState(() {
+                              selectedPreset = _preset;
+                              state = EditorState.insert;
+                            });
+                          } else {
+                            setState(() {
+                              state = EditorState.play;
+                            });
+                          }
+                        }),
+                    SpeedPanel(
+                      semitones: semitones,
+                      speed: speed,
+                      onSpeedChanged: (_speed) {
+                        setState(() {
+                          speed = _speed;
+                          automation.setSpeed(speed);
+                        });
                       },
-                      child: Text("-")),
-                  ElevatedButton(
-                      onPressed: () {
-                        speed += 0.01;
-                        automation.setSpeed(speed);
-                        setState(() {});
+                      onSemitonesChanged: (_semitones, pitch) {
+                        setState(() {
+                          semitones = _semitones;
+                          automation.setPitch(pitch);
+                        });
                       },
-                      child: Text("+"))
-                ],
-              ),
-            ),
-            ListTile(
-              title: Text(
-                  "Pitch: ${semitones > 0 ? "+" : ""}$semitones semitones"),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        semitones--;
-                        double pitch = pow(2, semitones / 12);
-                        automation.setPitch(pitch);
-                        setState(() {});
-                      },
-                      child: Text("-")),
-                  ElevatedButton(
-                      onPressed: () {
-                        semitones++;
-                        double pitch = pow(2, semitones / 12);
-                        automation.setPitch(pitch);
-                        setState(() {});
-                      },
-                      child: Text("+"))
-                ],
+                    ),
+                  ],
+                )),
+            Container(
+              height: 30,
+              alignment: Alignment.center,
+              child: CirclePageIndicator(
+                itemCount: 2,
+                currentPageNotifier: _currentPageNotifier,
               ),
             )
             /*ElevatedButton(onPressed: () {}, child: Text("Do other stuff here"))*/

@@ -3,10 +3,9 @@
 
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:wakelock/wakelock.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-import 'package:screen/screen.dart';
 
 class SettingsKeys {
   static const String latency = "audioLatency";
@@ -38,7 +37,7 @@ class SharedPrefs {
     await _loadPrefs();
 
     bool value = getValue(SettingsKeys.screenAlwaysOn, false);
-    Screen.keepOn(value);
+    Wakelock.toggle(enable: value);
   }
 
   _getDirectory() async {

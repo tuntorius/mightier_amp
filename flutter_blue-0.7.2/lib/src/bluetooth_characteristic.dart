@@ -123,7 +123,7 @@ class BluetoothCharacteristic {
     // This is an error in the original library
     // Even if we don't want a response, we should still wait
     // for the response event from android BLE api
-    // otherwise there is a change that we could try to send data
+    // otherwise there is a chance that we could try to send data
     // before the previous one has completed and this will generate
     // an exception
     // if (type == CharacteristicWriteType.withoutResponse) {

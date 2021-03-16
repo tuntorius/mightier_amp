@@ -6,7 +6,7 @@ An alternative app for controlling NuX Mighty Plug.
 This app aims to cover all the functionality of the original app plus many enhancements:
 - All amps and effects are enabled for all channels.
 - Ability to save presets locally on your mobile device.
-- Improved Jam Tracks functionality. Select any audio file in your device, add preset change at any point and play along.
+- Improved Jam Tracks functionality. Select any audio file in your device, add events like loop points, preset changes and others at any point and play along.
 
 Note that the app is Android only because Apple will never let an app that controls external hardware on their store if it's not developed by the original company!
 

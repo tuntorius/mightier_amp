@@ -1,6 +1,6 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
-
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 
@@ -65,3 +65,4 @@ class ArtistAlbums extends StatelessWidget {
     );
   }
 }
+*/

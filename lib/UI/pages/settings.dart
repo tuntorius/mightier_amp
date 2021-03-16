@@ -7,7 +7,7 @@ import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../platform/simpleSharedPrefs.dart';
-import 'package:screen/screen.dart';
+import 'package:wakelock/wakelock.dart';
 import '../../bluetooth/bleMidiHandler.dart';
 import '../widgets/deviceList.dart';
 import 'calibration.dart';

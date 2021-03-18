@@ -14,7 +14,6 @@ import 'Preset.dart';
 
 class M8BTPreset extends Preset {
   NuxDevice device;
-  int instrument;
   int channel;
   String channelName;
   Color get channelColor => Preset.channelColors[channel];
@@ -34,7 +33,7 @@ class M8BTPreset extends Preset {
   int selectedDelay = 0;
   int selectedReverb = 0;
 
-  M8BTPreset({this.device, this.instrument, this.channel, this.channelName}) {
+  M8BTPreset({this.device, this.channel, this.channelName}) {
     //modulation is available everywhere
     modulationList
         .addAll([Phaser(), Chorus(), STChorus(), Flanger(), Vibe(), Tremolo()]);
@@ -107,7 +106,7 @@ class M8BTPreset extends Preset {
       case 4:
         return reverbList;
     }
-    return null;
+    return <Processor>[];
   }
 
   //returns which of the effects is selected for a given slot

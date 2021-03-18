@@ -12,6 +12,12 @@ ThemeData getTheme() {
     accentColor: Colors.grey[300],
     hintColor: Colors.blue,
     disabledColor: Colors.grey[700],
+    checkboxTheme:
+        CheckboxThemeData(fillColor: MaterialStateColor.resolveWith((states) {
+      return Colors.white;
+    }), checkColor: MaterialStateColor.resolveWith((states) {
+      return Colors.black;
+    })),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.grey[800],

@@ -59,8 +59,8 @@ class _CalibrationState extends State<Calibration> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        await player.stop();
-        await player.dispose();
+        await player?.stop();
+        await player?.dispose();
 
         NuxDeviceControl().sendFullPresetSettings();
         return true;

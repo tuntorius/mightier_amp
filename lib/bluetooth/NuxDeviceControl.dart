@@ -28,6 +28,16 @@ class NuxDeviceControl extends ChangeNotifier {
   StreamSubscription<List<int>> rxSubscription;
   Timer batteryTimer;
 
+  double _masterVolume = 100;
+
+  double get masterVolume => _masterVolume;
+  set masterVolume(double vol) {
+    _masterVolume = vol;
+    if (_midiHandler.connectedDevice != null) {
+      device.sendAmpLevel();
+    }
+  }
+
   //connect status control
   final StreamController<DeviceConnectionState> connectStatus =
       StreamController();
@@ -35,6 +45,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   bool get isConnected => _midiHandler.connectedDevice != null;
 
+  //list of all different nux devices
   List<NuxDevice> _deviceInstances = <NuxDevice>[];
 
   List<NuxDevice> get deviceList => _deviceInstances;
@@ -52,7 +63,10 @@ class NuxDeviceControl extends ChangeNotifier {
     return 0;
   }
 
-  set deviceIndex(int index) => _device = _deviceInstances[index];
+  set deviceIndex(int index) {
+    _device = _deviceInstances[index];
+    notifyListeners();
+  }
 
   NuxDevice deviceFromBLEId(String id) {
     for (int i = 0; i < _deviceInstances.length; i++)
@@ -133,6 +147,7 @@ class NuxDeviceControl extends ChangeNotifier {
         //find which device connected
         print("${_midiHandler.connectedDevice.name} connected");
         _device = deviceFromBLEId(_midiHandler.connectedDevice.name);
+        _masterVolume = 100;
         notifyListeners();
         _onConnect();
         break;
@@ -331,12 +346,17 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   List<int> sendParameter(Parameter param, bool returnOnly) {
-    int val;
+    int outVal;
+    double value = param.value;
+
+    //implement master volume
+    if (param.masterVolume) value *= (masterVolume * 0.01);
+
     if (param.valueType == ValueType.db)
-      val = dbTo7Bit(param.value);
+      outVal = dbTo7Bit(value);
     else
-      val = percentageTo7Bit(param.value);
-    var data = createCCMessage(param.midiCC, val);
+      outVal = percentageTo7Bit(value);
+    var data = createCCMessage(param.midiCC, outVal);
     if (!returnOnly) _midiHandler.sendData(data);
     return data;
   }

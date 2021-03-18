@@ -11,20 +11,16 @@ class BottomBar extends StatefulWidget {
   BottomBar({this.index, this.onTap});
 
   @override
-  _BottomBarState createState() => _BottomBarState(index);
+  _BottomBarState createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
-  int index = 0;
-
-  _BottomBarState(this.index);
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-        currentIndex: index,
+        currentIndex: widget.index,
         onTap: (int _index) {
-          index = _index;
-          widget.onTap(index);
+          widget.onTap(_index);
         },
         items: [
           BottomNavigationBarItem(

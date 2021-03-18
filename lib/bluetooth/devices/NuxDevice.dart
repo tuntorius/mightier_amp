@@ -31,9 +31,12 @@ abstract class NuxDevice extends ChangeNotifier {
   int get channelsCount;
   int get effectsChainLength;
   List<ProcessorInfo> get processorList;
+  int get amplifierSlotIndex;
+  bool get cabinetSupport;
+  int get cabinetSlotIndex;
 
   int get groupsCount;
-  List<String> groupsName;
+  List<String> groupsName = <String>[];
   String channelName(int channel);
 
   //notifiers for bluetooth control
@@ -101,8 +104,8 @@ abstract class NuxDevice extends ChangeNotifier {
   int selectedEffect = 0;
 
   //TODO: these should not be here
-  String presetName;
-  String presetCategory;
+  String presetName = "";
+  String presetCategory = "";
 
   //general settings
   bool _ecoMode = false;
@@ -191,8 +194,25 @@ abstract class NuxDevice extends ChangeNotifier {
     deviceControl.setBtEq(eq);
   }
 
+  //used for master volume control
+  void sendAmpLevel() {
+    //amps are at slot 1
+    var preset = getPreset(selectedChannel);
+    var amp = preset.getEffectsForSlot(
+        amplifierSlotIndex)[preset.getSelectedEffectForSlot(2)];
+    for (int i = 0; i < amp.parameters.length; i++) {
+      if (amp.parameters[i].masterVolume) {
+        deviceControl.sendParameter(amp.parameters[i], false);
+      }
+    }
+  }
+
   Preset getPreset(int index) {
     return presets[index];
+  }
+
+  String getAmpNameByIndex(int index) {
+    return presets[0].amplifierList[index].name;
   }
 
   List<Preset> getGroupPresets(int instr);

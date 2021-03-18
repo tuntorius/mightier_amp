@@ -17,14 +17,14 @@ class RoomReverb extends Reverb {
     Parameter(
         name: "Decay",
         handle: "decay",
-        value: 50,
+        value: 64,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
-        value: 50,
+        value: 60,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
@@ -39,14 +39,14 @@ class HallReverb extends Reverb {
     Parameter(
         name: "Decay",
         handle: "decay",
-        value: 50,
+        value: 70,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
-        value: 50,
+        value: 65,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
@@ -61,21 +61,21 @@ class PlateReverb extends Reverb {
     Parameter(
         name: "Decay",
         handle: "decay",
-        value: 50,
+        value: 81,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Damp",
         handle: "damp",
-        value: 50,
+        value: 45,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.reverbdamp,
         midiCC: MidiCCValues.bCC_ReverbRouting),
     Parameter(
         name: "Mix",
         handle: "mix",
-        value: 50,
+        value: 66,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
@@ -90,7 +90,7 @@ class SpringReverb extends Reverb {
     Parameter(
         name: "Decay",
         handle: "decay",
-        value: 50,
+        value: 32,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndex.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),

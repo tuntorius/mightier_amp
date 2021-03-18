@@ -11,6 +11,7 @@ class SettingsKeys {
   static const String latency = "audioLatency";
   static const String screenAlwaysOn = "screenAlwaysOn";
   static const String timeUnit = "timeUnit";
+  static const String changeCabs = "changeCabs";
 }
 
 class SharedPrefs {

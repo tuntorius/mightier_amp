@@ -29,6 +29,10 @@ class NuxMightyPlug extends NuxDevice {
   int get channelsCount => 7;
   int get effectsChainLength => 7;
   int get groupsCount => 2;
+  int get amplifierSlotIndex => 2;
+  bool get cabinetSupport => true;
+  int get cabinetSlotIndex => 3;
+
   List<String> get groupsName => ["Guitar", "Bass"];
   List<ProcessorInfo> get processorList => _processorList;
 
@@ -151,7 +155,7 @@ class NuxMightyPlug extends NuxDevice {
       case _bassGroup:
         return bassPresets;
     }
-    return null;
+    return <Preset>[];
   }
 
   void setGroupFromChannel(int chan) {

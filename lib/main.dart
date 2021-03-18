@@ -9,6 +9,8 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'UI/popups/alertDialogs.dart';
 import 'UI/widgets/NuxAppBar.dart' as NuxAppBar;
 import 'UI/widgets/presets/presetList.dart';
+import 'UI/widgets/thickSlider.dart';
+import 'audio/trackdata/trackData.dart';
 import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
 
@@ -48,6 +50,7 @@ class _AppState extends State<App> {
   NuxDeviceControl device = NuxDeviceControl();
   SharedPrefs prefs = SharedPrefs();
   PresetsStorage storage = PresetsStorage();
+  TrackData data = TrackData();
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +71,13 @@ class MainTabs extends StatefulWidget {
   _MainTabsState createState() => _MainTabsState();
 }
 
-class _MainTabsState extends State<MainTabs> {
+class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   int _currentIndex = 0;
   BuildContext dialogContext;
-
+  TabController controller;
   final List<Widget> _children = [];
+
+  bool openDrawer = false;
 
   @override
   void initState() {
@@ -93,7 +98,19 @@ class _MainTabsState extends State<MainTabs> {
       Settings()
     ]);
 
+    controller = TabController(initialIndex: 0, length: 5, vsync: this);
+    controller.addListener(() {
+      _currentIndex = controller.index;
+      setState(() {});
+    });
     NuxDeviceControl().connectStatus.stream.listen(connectionStateListener);
+    NuxDeviceControl().addListener(onDeviceChanged);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    NuxDeviceControl().removeListener(onDeviceChanged);
   }
 
   void connectionStateListener(DeviceConnectionState event) {
@@ -158,11 +175,14 @@ class _MainTabsState extends State<MainTabs> {
     return confirmation.future;
   }
 
-  setTab(int tab) {
-    setState(() {
-      _currentIndex = tab;
-    });
-    Navigator.of(context).pop();
+  // setTab(int tab) {
+  //   _currentIndex = tab;
+  //   setState(() {});
+  //   Navigator.of(context).pop();
+  // }
+
+  void onDeviceChanged() {
+    setState(() {});
   }
 
   @override
@@ -171,7 +191,76 @@ class _MainTabsState extends State<MainTabs> {
       onWillPop: _willPopCallback,
       child: Scaffold(
         appBar: NuxAppBar.getAppBar(widget.handler),
-        body: _children[_currentIndex],
+        body: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            TabBarView(
+              children: _children,
+              physics: NeverScrollableScrollPhysics(),
+              controller: controller,
+            ),
+            GestureDetector(
+              onTap: () {
+                openDrawer = !openDrawer;
+                setState(() {});
+              },
+              onVerticalDragUpdate: (details) {
+                if (details.delta.dy < 0) {
+                  //open
+                  openDrawer = true;
+                } else {
+                  //close
+                  openDrawer = false;
+                }
+                setState(() {});
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 50,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .bottomNavigationBarTheme
+                            .backgroundColor,
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(15))),
+                    child: Icon(
+                      openDrawer
+                          ? Icons.keyboard_arrow_down
+                          : Icons.keyboard_arrow_up,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  AnimatedContainer(
+                    padding: EdgeInsets.all(8),
+                    color: Theme.of(context)
+                        .bottomNavigationBarTheme
+                        .backgroundColor,
+                    duration: Duration(milliseconds: 100),
+                    height: openDrawer ? 60 : 0,
+                    child: ThickSlider(
+                        activeColor: Colors.blue,
+                        value: NuxDeviceControl().masterVolume,
+                        skipEmitting: 3,
+                        label: "Volume",
+                        labelFormatter: (value) {
+                          return value.round().toString();
+                        },
+                        min: 0,
+                        max: 100,
+                        onChanged: (value) {
+                          setState(() {
+                            NuxDeviceControl().masterVolume = value;
+                          });
+                        }),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         /*drawer: Drawer(
           child: ListView(
             children: [
@@ -210,13 +299,26 @@ class _MainTabsState extends State<MainTabs> {
             ],
           ),
         ),*/
-        bottomNavigationBar: BottomBar(
-          index: _currentIndex,
-          onTap: (_index) {
-            setState(() {
-              _currentIndex = _index;
-            });
+        bottomNavigationBar: GestureDetector(
+          onVerticalDragUpdate: (details) {
+            if (details.delta.dy < 0) {
+              //open
+              openDrawer = true;
+            } else {
+              //close
+              openDrawer = false;
+            }
+            setState(() {});
           },
+          child: BottomBar(
+            index: _currentIndex,
+            onTap: (_index) {
+              setState(() {
+                _currentIndex = _index;
+                controller.animateTo(_currentIndex);
+              });
+            },
+          ),
         ),
       ),
     );

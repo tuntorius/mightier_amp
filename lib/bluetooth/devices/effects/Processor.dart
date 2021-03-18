@@ -52,13 +52,13 @@ class Parameter {
                         : 100);
   }
 
-  Processor parent;
   ValueType valueType;
   String name;
   String handle;
   int midiCC;
   int devicePresetIndex;
   double value;
+  bool masterVolume = false;
 
   Parameter(
       {this.value,
@@ -66,7 +66,8 @@ class Parameter {
       this.valueType,
       this.name,
       this.midiCC,
-      this.devicePresetIndex});
+      this.devicePresetIndex,
+      this.masterVolume});
 }
 
 class ProcessorInfo {
@@ -80,27 +81,27 @@ class ProcessorInfo {
 }
 
 abstract class Processor {
-  String name;
+  String name = "";
 
-  List<Parameter> parameters;
+  List<Parameter> parameters = <Parameter>[];
 
   //the number which the nux device uses to refer to the effect
   int get nuxIndex;
 
   //The CC command that switches the effect on/off
-  int midiCCEnableValue;
+  int midiCCEnableValue = 0;
 
   //The CC command that selects the active effect for a certain slot
-  int midiCCSelectionValue;
+  int midiCCSelectionValue = 0;
 
   //used to declare that the device is a separator
   //Used in the selection popup menu
-  bool isSeparator;
+  bool isSeparator = false;
 
   //Used to sort various effects in a category
   //for example acoustic amps/electric amps
   //used in conjunction with isSeparator
-  String category;
+  String category = "";
 
   void setupFromNuxPayload(List<int> nuxData) {
     for (int i = 0; i < parameters.length; i++) {

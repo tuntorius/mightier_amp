@@ -26,6 +26,10 @@ class NuxMighty8BT extends NuxDevice {
   int get channelsCount => 3;
   int get effectsChainLength => 5;
   int get groupsCount => 1;
+  int get amplifierSlotIndex => 1;
+  bool get cabinetSupport => false;
+  int get cabinetSlotIndex => null;
+
   List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
 
@@ -35,13 +39,13 @@ class NuxMighty8BT extends NuxDevice {
         longName: "Noise Gate",
         keyName: "gate",
         color: Colors.green,
-        icon: Icons.account_tree),
+        icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
         color: null,
-        icon: Icons.speaker_phone),
+        icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",

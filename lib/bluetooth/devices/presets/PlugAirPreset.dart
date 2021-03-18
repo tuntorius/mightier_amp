@@ -16,7 +16,6 @@ import 'Preset.dart';
 
 class PlugAirPreset extends Preset {
   NuxDevice device;
-  int instrument;
   int channel;
   String channelName;
   Color get channelColor => Preset.channelColors[channel];
@@ -41,8 +40,7 @@ class PlugAirPreset extends Preset {
   int selectedDelay = 0;
   int selectedReverb = 0;
 
-  PlugAirPreset(
-      {this.device, this.instrument, this.channel, this.channelName}) {
+  PlugAirPreset({this.device, this.channel, this.channelName}) {
     //modulation is available everywhere
     modulationList
         .addAll([Phaser(), Chorus(), STChorus(), Flanger(), Vibe(), Tremolo()]);
@@ -181,7 +179,7 @@ class PlugAirPreset extends Preset {
       case 6:
         return reverbList;
     }
-    return null;
+    return <Processor>[];
   }
 
   //returns which of the effects is selected for a given slot

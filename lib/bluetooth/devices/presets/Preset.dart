@@ -3,6 +3,8 @@
 
 import 'dart:ui';
 
+import '../effects/plug_air/Amps.dart';
+
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
@@ -19,15 +21,14 @@ abstract class Preset {
   ];
 
   NuxDevice device;
-  int instrument;
   int channel;
   String channelName;
   Color get channelColor => channelColors[channel];
-
+  List<Amplifier> get amplifierList;
   //nux data
   List<int> nuxData = <int>[];
 
-  Preset({this.device, this.instrument, this.channel, this.channelName});
+  Preset({this.device, this.channel, this.channelName});
 
   //checks if the effect slot can be switched on and off
   bool slotSwitchable(int index);

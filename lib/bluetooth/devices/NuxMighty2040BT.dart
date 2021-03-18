@@ -27,6 +27,10 @@ class NuxMighty2040BT extends NuxDevice {
   int get channelsCount => 3;
   int get effectsChainLength => 5;
   int get groupsCount => 2;
+  int get amplifierSlotIndex => 1;
+  bool get cabinetSupport => false;
+  int get cabinetSlotIndex => null;
+
   List<String> get groupsName => ["1", "2"];
   List<ProcessorInfo> get processorList => _processorList;
 
@@ -36,13 +40,13 @@ class NuxMighty2040BT extends NuxDevice {
         longName: "Noise Gate",
         keyName: "gate",
         color: Colors.green,
-        icon: Icons.account_tree),
+        icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
         color: null,
-        icon: Icons.speaker_phone),
+        icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",
@@ -94,6 +98,7 @@ class NuxMighty2040BT extends NuxDevice {
       _channelNames.add(element.toString().split('.')[1]);
     });
 
+    //TODO: add 4 more
     //clean
     presets.add(M8BTPreset(
         device: this,

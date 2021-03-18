@@ -18,7 +18,7 @@ class ThickSlider extends StatefulWidget {
   final int skipEmitting;
 
   ThickSlider(
-      {this.activeColor,
+      {@required this.activeColor,
       this.negativeColor,
       this.label,
       this.min,
@@ -26,8 +26,8 @@ class ThickSlider extends StatefulWidget {
       this.value,
       this.onChanged,
       this.onChangeEnd,
-      this.labelFormatter,
-      this.skipEmitting = 2});
+      @required this.labelFormatter,
+      this.skipEmitting = 3});
 
   @override
   _ThickSliderState createState() => _ThickSliderState();

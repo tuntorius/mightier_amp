@@ -151,6 +151,15 @@ class _SettingsState extends State<Settings> {
                   );
                 },
               ),
+              CheckboxListTile(
+                  title: Text("Associate Cabinets with Amps"),
+                  value: SharedPrefs().getInt(SettingsKeys.changeCabs, 1) != 0,
+                  onChanged: (value) {
+                    setState(() {
+                      SharedPrefs()
+                          .setInt(SettingsKeys.changeCabs, value ? 1 : 0);
+                    });
+                  }),
               Divider(),
               ListTile(
                 enabled: device.deviceControl.isConnected,

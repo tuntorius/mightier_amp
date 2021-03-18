@@ -34,6 +34,7 @@ class TwinVerb extends Amplifier {
         handle: "level",
         value: 80,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -66,6 +67,7 @@ class JZ120 extends Amplifier {
         handle: "level",
         value: 76,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -119,6 +121,7 @@ class TweedDlx extends Amplifier {
         handle: "level",
         value: 92,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -175,6 +178,7 @@ class Plexi extends Amplifier {
         handle: "level",
         value: 53,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -207,6 +211,7 @@ class TopBoost extends Amplifier {
         handle: "level",
         value: 81,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -260,6 +265,7 @@ class Lead100 extends Amplifier {
         handle: "level",
         value: 66,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -316,6 +322,7 @@ class Fireman extends Amplifier {
         handle: "level",
         value: 69,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -348,6 +355,7 @@ class DIEVH4 extends Amplifier {
         handle: "level",
         value: 72,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -401,6 +409,7 @@ class Recto extends Amplifier {
         handle: "level",
         value: 60,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -457,6 +466,7 @@ class Optima extends Amplifier {
         handle: "level",
         value: 100,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -503,6 +513,7 @@ class Stageman extends Amplifier {
         handle: "level",
         value: 90,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -552,6 +563,7 @@ class MLD extends Amplifier {
         handle: "level",
         value: 91,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -605,6 +617,7 @@ class AGL extends Amplifier {
         handle: "level",
         value: 89,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndex.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(

@@ -4,6 +4,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Amps.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import 'effectEditor.dart';
 import 'package:tinycolor/tinycolor.dart';
@@ -65,6 +68,25 @@ class _EffectSelectorState extends State<EffectSelector> {
       );
     }
     return btns;
+  }
+
+  void setSelectedEffect(dynamic index) {
+    setState(() {
+      var device = NuxDeviceControl().device;
+      _preset.setSelectedEffectForSlot(_selectedEffect, index, true);
+
+      if (device.cabinetSupport &&
+          SharedPrefs().getInt(SettingsKeys.changeCabs, 1) == 1) {
+        if (_selectedEffect == device.amplifierSlotIndex) {
+          //get the cabinet for this amp and set it
+          Processor amp = _preset.getEffectsForSlot(_selectedEffect)[index];
+          if (amp is Amplifier) {
+            _preset.setSelectedEffectForSlot(
+                device.cabinetSlotIndex, amp.defaultCab, true);
+          }
+        }
+      }
+    });
   }
 
   @override
@@ -185,12 +207,7 @@ class _EffectSelectorState extends State<EffectSelector> {
               custom.PopupMenuButton(
                 child: effectSelectButton,
                 itemBuilder: (context) => _effectItems,
-                onSelected: (index) {
-                  setState(() {
-                    _preset.setSelectedEffectForSlot(
-                        _selectedEffect, index, true);
-                  });
-                },
+                onSelected: setSelectedEffect,
               )
             else
               effectSelectButton,
@@ -202,10 +219,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                       var effect =
                           _preset.getSelectedEffectForSlot(_selectedEffect) - 1;
                       if (effect < 0) effect = effects.length - 1;
-                      setState(() {
-                        _preset.setSelectedEffectForSlot(
-                            _selectedEffect, effect, true);
-                      });
+                      setSelectedEffect(effect);
                     },
                     icon: Transform.rotate(
                         angle: pi,
@@ -219,10 +233,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                       var effect =
                           _preset.getSelectedEffectForSlot(_selectedEffect) + 1;
                       if (effect > effects.length - 1) effect = 0;
-                      setState(() {
-                        _preset.setSelectedEffectForSlot(
-                            _selectedEffect, effect, true);
-                      });
+                      setSelectedEffect(effect);
                     },
                     icon: Icon(Icons.play_arrow,
                         color: TinyColor(_effectColor).brighten(20).color),

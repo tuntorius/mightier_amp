@@ -33,8 +33,8 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
 
   Offset _startingFocalPoint;
 
-  double _previousOffset;
-  double _offset; // where the top left corner of the waveform is drawn
+  double _previousOffset = 0;
+  double _offset = 0; // where the top left corner of the waveform is drawn
 
   double _previousScale;
   double _scale;

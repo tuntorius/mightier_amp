@@ -1,0 +1,21 @@
+name: audio_picker
+description: This plugin helps open a picker to get the absolute path of Audio files from your phone. If you ever wanted to play songs in your app, or upload audio files to your server, this plugin helps you get the absolute path of the audio file that you select.
+version: 1.0.0
+author: chiragshenoy <chiragshenoy@gmail.com>
+homepage: https://github.com/chiragshenoy/audio_picker
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    androidPackage: com.audio_picker.audio_picker
+    pluginClass: AudioPickerPlugin

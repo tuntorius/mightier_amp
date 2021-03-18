@@ -9,9 +9,9 @@ import 'package:flutter/services.dart';
 
 class AudioDecoder {
   static const platform = const MethodChannel("mighty_plug/decoder");
-  int size;
-  double _durationms;
-  List<int> _samples;
+  int size = 0;
+  double _durationms = 0;
+  List<int> _samples = <int>[];
 
   List<int> get samples => _samples;
   double get duration => _durationms;

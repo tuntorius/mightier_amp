@@ -19,7 +19,7 @@ class WaveformData {
   int _oldFromFrame = -1, _oldToFrame = -1;
   bool _needsUpdate = false;
 
-  bool _ready;
+  bool _ready = false;
   bool _initialized = false;
 
   bool get needsUpdate => _needsUpdate;
@@ -33,32 +33,6 @@ class WaveformData {
 
   void setReady() {
     _ready = true;
-  }
-
-  // get the frame position at a specific percent of the waveform. Can use a 0-1 or 0-100 range.
-  int frameIdxFromPercent(double percent) {
-    if (percent == null) {
-      return 0;
-    }
-
-    // if the scale is 0-1.0
-    if (percent < 0.0) {
-      percent = 0.0;
-    } else if (percent > 100.0) {
-      percent = 100.0;
-    }
-
-    if (percent > 0.0 && percent < 1.0) {
-      return (data.length.toDouble() * percent).floor();
-    }
-
-    int idx = (data.length.toDouble() * (percent / 100)).floor();
-    //is this safety or what
-    // final maxIdx = (data.length.toDouble() * 0.98).floor();
-    // if (idx > maxIdx) {
-    //   idx = maxIdx;
-    // }
-    return idx;
   }
 
   //calculate X coordinate of line within the chosen samples

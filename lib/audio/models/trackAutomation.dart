@@ -24,7 +24,7 @@ class TrackAutomation {
   final player = AudioPlayer();
 
   final _events = <AutomationEvent>[];
-  String _audioFile;
+  String _audioFile = "";
 
   List<AutomationEvent> get events => _events;
 
@@ -43,9 +43,7 @@ class TrackAutomation {
   Stream<Duration> get positionStream => _positionController.stream;
   Stream<AutomationEvent> get eventStream => _eventController.stream;
 
-  Stream<Duration> _internalCustomPositionStream;
-
-  Duration get duration => player.duration;
+  Duration get duration => player.duration ?? Duration();
   PlayerState get playerState => player.playerState;
   Stream<PlayerState> get playerStateStream => player.playerStateStream;
   bool get playing => player.playing;
@@ -55,13 +53,13 @@ class TrackAutomation {
     await player.setFilePath(path);
 
     //force 1ms precision. It's needed for accurate event switch
-    _internalCustomPositionStream = player.createPositionStream(
+    player.createPositionStream(
         steps: 99999999999,
         minPeriod: Duration(milliseconds: 1),
-        maxPeriod: Duration(milliseconds: 200));
+        maxPeriod: Duration(milliseconds: 200))
+      ..listen(playPositionUpdate);
 
     _positionResolution = max(1, positionResolution);
-    _internalCustomPositionStream.listen(playPositionUpdate);
   }
 
   void setAudioLatency(int latency) {

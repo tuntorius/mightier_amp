@@ -3,8 +3,6 @@
 
 package com.tuntori.mightieramp
 
-//import android.os.Bundle
-
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -14,7 +12,6 @@ import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry
 import io.flutter.view.FlutterMain
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-//import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 import android.content.Intent
@@ -128,6 +125,7 @@ class MainActivity: FlutterActivity() {
     }
 
     //replace with ACTION_GET_CONTENT for just a temporary access
+    //the other is ACTION_OPEN_DOCUMENT
     private fun openFile(mimeType: String) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             // Filter to only show results that can be "opened", such as

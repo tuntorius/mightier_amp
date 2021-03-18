@@ -4,17 +4,13 @@
 //import 'package:audio_picker/audio_picker.dart';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 import 'package:path/path.dart';
 import 'package:mighty_plug_manager/audio/audioEditor.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:dart_tags/dart_tags.dart';
-
-class JamTrack {
-  String name;
-  String path;
-}
 
 class JamTracks extends StatefulWidget {
   @override
@@ -23,8 +19,6 @@ class JamTracks extends StatefulWidget {
 
 class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
   TabController cntrl;
-
-  static List<JamTrack> files = <JamTrack>[];
 
   @override
   void initState() {
@@ -90,19 +84,18 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
                       Stack(
                         alignment: Alignment.bottomRight,
                         children: [
-                          ListView(
-                            children: [
-                              for (var i = 0; i < files.length; i++)
-                                ListTile(
-                                  title: Text(files[i].name),
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AudioEditor(files[i].path)));
-                                  },
-                                )
-                            ],
+                          ListView.builder(
+                            itemCount: TrackData().tracks.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(TrackData().tracks[index].name),
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => AudioEditor(
+                                          TrackData().tracks[index].path)));
+                                },
+                              );
+                            },
                           ),
                           Padding(
                             padding: const EdgeInsets.all(20.0),
@@ -110,28 +103,26 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
                               onPressed: () async {
-                                var path = await FilePicker.platform.pickFiles(
-                                    type: FileType.audio,
-                                    allowMultiple: true,
-                                    withData: false,
-                                    withReadStream: false);
+                                var path =
+                                    await AudioPicker.pickAudioMultiple();
+                                print(path);
 
-                                for (int i = 0; i < path.names.length; i++) {
-                                  var jt = JamTrack();
-                                  jt.name = path.names[i];
-                                  jt.path = path.paths[i];
-                                  // var tp = TagProcessor();
-                                  // var f = new File(jt.path);
-                                  // var tags = await tp
-                                  //     .getTagsFromByteArray(f.readAsBytes());
-                                  // jt.name = getProperTags(tags, jt.name);
-                                  files.add(jt);
+                                for (int i = 0; i < path.length; i++) {
+                                  var name = basenameWithoutExtension(path[i]);
+                                  var tp = TagProcessor();
+                                  var f = new File(path[i]);
+                                  var tags = await tp
+                                      .getTagsFromByteArray(f.readAsBytes());
+                                  name = getProperTags(tags, name);
+
+                                  TrackData().addTrack(path[i], name);
+
+                                  setState(() {});
                                 }
-                                setState(() {});
                               },
                               child: Text(
                                 "+",
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 28),
                               ),
                             ),
                           )

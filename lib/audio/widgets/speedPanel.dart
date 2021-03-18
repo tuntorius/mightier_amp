@@ -47,14 +47,14 @@ class SpeedPanel extends StatelessWidget {
               ElevatedButton(
                   onPressed: () {
                     var _semitones = semitones - 1;
-                    double pitch = pow(2, _semitones / 12);
+                    double pitch = pow(2, _semitones / 12).toDouble();
                     onSemitonesChanged(_semitones, pitch);
                   },
                   child: Text("-")),
               ElevatedButton(
                   onPressed: () {
                     var _semitones = semitones + 1;
-                    double pitch = pow(2, _semitones / 12);
+                    double pitch = pow(2, _semitones / 12).toDouble();
                     onSemitonesChanged(_semitones, pitch);
                   },
                   child: Text("+"))

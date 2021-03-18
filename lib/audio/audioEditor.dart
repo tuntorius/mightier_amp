@@ -30,8 +30,8 @@ class AudioEditor extends StatefulWidget {
 
 class _AudioEditorState extends State<AudioEditor> {
   WaveformData wfData;
-  AudioDecoder decoder;
-  TrackAutomation automation;
+  AudioDecoder decoder = AudioDecoder();
+  TrackAutomation automation = TrackAutomation();
 
   final controller = PageController(
     initialPage: 0,
@@ -39,7 +39,7 @@ class _AudioEditorState extends State<AudioEditor> {
 
   final _currentPageNotifier = ValueNotifier<int>(0);
 
-  NuxDevice device;
+  NuxDevice device = NuxDeviceControl().device;
 
   int currentSample = 0;
   bool pageLeft = false;
@@ -64,7 +64,6 @@ class _AudioEditorState extends State<AudioEditor> {
     device = NuxDeviceControl().device;
 
     decodeAudio();
-    automation = TrackAutomation();
     automation.setAudioFile(widget.path, 100);
 
     //set latency only when a device is connected
@@ -79,8 +78,6 @@ class _AudioEditorState extends State<AudioEditor> {
   }
 
   Future decodeAudio() async {
-    decoder = AudioDecoder();
-
     await decoder.open(widget.path);
 
     decoder.decode(() {

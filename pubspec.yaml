@@ -35,8 +35,10 @@ dependencies:
     path: ./tinycolor
   wakelock: ^0.5.0+2
   package_info: ^2.0.0
-#file_picker is crap - it loads full file into memory
-  file_picker: ^3.0.0
+  #modified audio_picker to allow multiple file selection
+  #note the ios version does not have the multi file fix
+  audio_picker:
+    path: ./audio_picker
   page_view_indicators: ^2.0.0
   #relace with audiotagger for null-safety
   dart_tags: ^0.3.1

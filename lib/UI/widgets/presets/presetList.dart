@@ -1,9 +1,12 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
-import 'package:mighty_plug_manager/UI/popups/changeCategory.dart';
-import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
+
+import '../../../UI/popups/alertDialogs.dart';
+import '../../../UI/popups/changeCategory.dart';
+import '../../../bluetooth/NuxDeviceControl.dart';
+import '../../../bluetooth/devices/NuxDevice.dart';
 import 'package:tinycolor/tinycolor.dart';
 import '../../../platform/fileSaver.dart';
 
@@ -21,7 +24,9 @@ class PresetList extends StatefulWidget {
   _PresetListState createState() => _PresetListState();
 }
 
-class _PresetListState extends State<PresetList> {
+class _PresetListState extends State<PresetList>
+    with AutomaticKeepAliveClientMixin<PresetList> {
+  Map<String, NuxDevice> devices;
   var presetsMenu = <PopupMenuEntry>[
     PopupMenuItem(
       value: 1,
@@ -113,7 +118,7 @@ class _PresetListState extends State<PresetList> {
       child: Row(
         children: <Widget>[
           Icon(
-            Icons.alt_route,
+            Icons.circle,
             color: Colors.grey[400],
           ),
           SizedBox(width: 5),
@@ -175,6 +180,9 @@ class _PresetListState extends State<PresetList> {
     ),
   ];
 
+  @override
+  bool get wantKeepAlive => true;
+
   void mainMenuActions(action) async {
     switch (action) {
       case 1: //export category
@@ -188,6 +196,11 @@ class _PresetListState extends State<PresetList> {
         if (content != null)
           PresetsStorage().presetsFromJson(content).then((value) {
             setState(() {});
+          }).catchError((error) {
+            AlertDialogs.showInfoDialog(context,
+                title: "Error",
+                description: "The selected file is not a valid preset file!",
+                confirmButton: "OK");
           });
         break;
     }
@@ -278,7 +291,7 @@ class _PresetListState extends State<PresetList> {
           case 2:
             var channelList = <String>[];
             int nuxChannel = item["channel"];
-            var d = NuxDeviceControl().device;
+            var d = NuxDeviceControl().getDeviceFromId(item["product_id"]);
             for (int i = 0; i < d.channelsCount; i++)
               channelList.add(d.channelName(i));
             var dialog = AlertDialogs.showOptionDialog(context,
@@ -352,7 +365,65 @@ class _PresetListState extends State<PresetList> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    NuxDeviceControl().addListener(refreshPresets);
+    PresetsStorage().addListener(refreshPresets);
+
+    //cache devices
+    devices = <String, NuxDevice>{};
+    NuxDeviceControl().deviceList.forEach((element) {
+      devices[element.productStringId] = element;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    NuxDeviceControl().removeListener(refreshPresets);
+    PresetsStorage().removeListener(refreshPresets);
+  }
+
+  void refreshPresets() {
+    setState(() {});
+  }
+
+  List<Widget> buildEffectsPreview(Map<String, dynamic> preset) {
+    var widgets = <Widget>[];
+    NuxDevice dev = devices[preset["product_id"]];
+    for (int i = 0; i < dev.processorList.length; i++) {
+      ProcessorInfo pi = dev.processorList[i];
+      if (preset.containsKey(pi.keyName)) {
+        //special case for amp
+        if (pi.keyName == "amp") {
+          var name = dev.getAmpNameByIndex(preset[pi.keyName]["fx_type"]);
+          widgets.insert(
+              0,
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Text(
+                  name,
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ));
+        } else if (pi.keyName == "cabinet")
+          continue;
+        else {
+          bool enabled = preset[pi.keyName]["enabled"];
+          widgets.add(Icon(
+            pi.icon,
+            color: enabled ? pi.color : Colors.grey,
+            size: 16,
+          ));
+        }
+      }
+    }
+    return widgets;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         if (!widget.simplified)
@@ -403,55 +474,87 @@ class _PresetListState extends State<PresetList> {
         items: PresetsStorage().presetsData,
         childBuilder: (item) {
           var device = NuxDeviceControl().device;
+          bool newItem = false;
           //check if enabled and desaturate color if needed
           bool enabled = item["product_id"] == device.productStringId;
+
           Color color = Preset.channelColors[item["channel"]];
           if (!enabled) color = TinyColor(color).desaturate(90).color;
           bool selected = item["category"] == device.presetCategory &&
               item["name"] == device.presetName;
-          return ListTile(
-            enabled: enabled,
-            selectedTileColor: Colors.grey[800],
-            selected: selected && !widget.simplified,
-            onTap: () {
-              widget.onTap(item);
-              setState(() {});
-            },
-            onLongPress: () {
-              if (!widget.simplified)
-                showContextMenu(_position, item, popupSubmenu);
-            },
-            minLeadingWidth: 0,
-            leading: Container(
-              height: double.infinity, //strange hack to center icon vertically
-              child: Icon(
-                NuxDeviceControl()
-                    .getDeviceFromId(item["product_id"])
-                    .productIcon,
-                size: 30,
-                color: color,
+
+          //create trailing widget based on whether the preset is new
+          Widget trailingWidget;
+          if (widget.simplified)
+            trailingWidget = null;
+          else {
+            var button = PopupMenuButton(
+              child: Icon(Icons.more_vert, color: Colors.grey),
+              itemBuilder: (context) {
+                return popupSubmenu;
+              },
+              onSelected: (pos) {
+                menuActions(pos, item);
+              },
+            );
+            if (item.containsKey("new")) {
+              newItem = true;
+              trailingWidget = Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.circle,
+                    color: Colors.blue,
+                    size: 16,
+                  ),
+                  button
+                ],
+              );
+            } else
+              trailingWidget = button;
+          }
+          var out = ChildBuilderInfo();
+          out.hasNewItems = newItem;
+          out.widget = ListTile(
+              enabled: enabled,
+              selectedTileColor: Colors.grey[800],
+              selected: selected && !widget.simplified,
+              onTap: () {
+                //remove the new marker if exists
+                PresetsStorage().clearNewFlag(item["category"], item["name"]);
+                widget.onTap(item);
+                setState(() {});
+              },
+              onLongPress: () {
+                if (!widget.simplified)
+                  showContextMenu(_position, item, popupSubmenu);
+              },
+              minLeadingWidth: 0,
+              leading: Container(
+                height:
+                    double.infinity, //strange hack to center icon vertically
+                child: Icon(
+                  NuxDeviceControl()
+                      .getDeviceFromId(item["product_id"])
+                      .productIcon,
+                  size: 30,
+                  color: color,
+                ),
               ),
-            ),
-            title: Text(item["name"],
-                style: TextStyle(color: enabled ? Colors.white : Colors.grey)),
-            subtitle: Text(
+              title: Text(item["name"],
+                  style:
+                      TextStyle(color: enabled ? Colors.white : Colors.grey)),
+              subtitle: Row(
+                children: buildEffectsPreview(item),
+              ),
+              /*Text(
               //NuxDeviceControl().getDeviceNameFromId(item["product_id"]),
               NuxDeviceControl().device.channelName(item["channel"]),
               //Channel.values[item["channel"]].toString().split('.')[1],
               style: TextStyle(color: color),
-            ),
-            trailing: widget.simplified
-                ? null
-                : PopupMenuButton(
-                    child: Icon(Icons.more_vert, color: Colors.grey),
-                    itemBuilder: (context) {
-                      return popupSubmenu;
-                    },
-                    onSelected: (pos) {
-                      menuActions(pos, item);
-                    },
-                  ),
-          );
+            )*/
+              trailing: trailingWidget);
+          return out;
         },
         config: Config(
             parentTextStyle: TextStyle(color: Colors.white),

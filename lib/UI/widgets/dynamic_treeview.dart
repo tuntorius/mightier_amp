@@ -23,7 +23,12 @@ import 'package:flutter/material.dart';
 typedef OnCategoryTap = Function(String title);
 typedef OnCategoryLongPress = Function(String title);
 
-typedef ChildBuilder = Widget Function(dynamic item);
+typedef ChildBuilder = ChildBuilderInfo Function(dynamic item);
+
+class ChildBuilderInfo {
+  Widget widget;
+  bool hasNewItems;
+}
 
 ///A tree view that supports indefinite category/subcategory lists with horizontal and vertical scrolling
 class DynamicTreeView extends StatefulWidget {
@@ -67,7 +72,7 @@ class DynamicTreeView extends StatefulWidget {
 
 class _DynamicTreeViewOriState extends State<DynamicTreeView> {
   List<Widget> treeView;
-
+  bool hasNewItems = false;
   @override
   void initState() {
     super.initState();
@@ -101,6 +106,7 @@ class _DynamicTreeViewOriState extends State<DynamicTreeView> {
       config: widget.config,
       simplified: widget.simplified,
       children: _buildChildren(d),
+      hasNewItems: hasNewItems,
       title: d,
       key: Key(d),
     );
@@ -109,9 +115,13 @@ class _DynamicTreeViewOriState extends State<DynamicTreeView> {
 
   List<Widget> _buildChildren(String category) {
     var cW = <Widget>[];
-
+    hasNewItems = false;
     for (var item in widget.items) {
-      if (item["category"] == category) cW.add(widget.childBuilder(item));
+      if (item["category"] == category) {
+        ChildBuilderInfo cbi = widget.childBuilder(item);
+        cW.add(cbi.widget);
+        if (cbi.hasNewItems) hasNewItems = true;
+      }
     }
     return cW;
   }
@@ -211,6 +221,7 @@ class ParentWidget extends StatefulWidget {
   final Function(int, String) onSelected;
   final bool simplified;
   final String title;
+  final bool hasNewItems;
   ParentWidget({
     this.onTap,
     this.onLongPress,
@@ -220,6 +231,7 @@ class ParentWidget extends StatefulWidget {
     this.onSelected,
     this.itemBuilder,
     this.simplified,
+    this.hasNewItems,
     Key key,
   }) : super(key: key);
 
@@ -258,48 +270,67 @@ class _ParentWidgetState extends State<ParentWidget>
 
   @override
   Widget build(BuildContext context) {
+    //create trailing widget based on whether the preset is new
+    Widget trailingWidget;
+    if (widget.simplified)
+      trailingWidget = null;
+    else {
+      var button = PopupMenuButton(
+        icon: Icon(Icons.more_vert, color: Colors.grey),
+        itemBuilder: widget.itemBuilder,
+        onSelected: (pos) {
+          widget.onSelected(pos, widget.title);
+        },
+      );
+      if (widget.hasNewItems)
+        trailingWidget = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.circle,
+              color: Colors.blue,
+              size: 16,
+            ),
+            button
+          ],
+        );
+      else
+        trailingWidget = button;
+    }
+
     return ListTileTheme(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           ListTile(
-            tileColor: Colors.grey[850],
-            onTap: () {
-              if (widget.onTap != null) widget.onTap(widget.title);
+              tileColor: Colors.grey[850],
+              onTap: () {
+                if (widget.onTap != null) widget.onTap(widget.title);
 
-              setState(() {
-                shouldExpand = !shouldExpand;
-              });
-              if (shouldExpand) {
-                expandController.forward();
-              } else {
-                expandController.reverse();
-              }
-            },
-            onLongPress: () {
-              if (widget.onLongPress != null && !widget.simplified)
-                widget.onLongPress(widget.title);
-            },
-            title: Transform.translate(
-                offset: Offset(-16, 0), //workaround until horizontalTitleGap
-                //is available in release channel
-                child:
-                    Text(widget.title, style: widget.config.parentTextStyle)),
-            contentPadding: widget.config.parentPaddingEdgeInsets,
-            leading: RotationTransition(
-              turns: sizeAnimation,
-              child: widget.config.arrowIcon,
-            ),
-            trailing: widget.simplified
-                ? null
-                : PopupMenuButton(
-                    icon: Icon(Icons.more_vert, color: Colors.grey),
-                    itemBuilder: widget.itemBuilder,
-                    onSelected: (pos) {
-                      widget.onSelected(pos, widget.title);
-                    },
-                  ),
-          ),
+                setState(() {
+                  shouldExpand = !shouldExpand;
+                });
+                if (shouldExpand) {
+                  expandController.forward();
+                } else {
+                  expandController.reverse();
+                }
+              },
+              onLongPress: () {
+                if (widget.onLongPress != null && !widget.simplified)
+                  widget.onLongPress(widget.title);
+              },
+              title: Transform.translate(
+                  offset: Offset(-16, 0), //workaround until horizontalTitleGap
+                  //is available in release channel
+                  child:
+                      Text(widget.title, style: widget.config.parentTextStyle)),
+              contentPadding: widget.config.parentPaddingEdgeInsets,
+              leading: RotationTransition(
+                turns: sizeAnimation,
+                child: widget.config.arrowIcon,
+              ),
+              trailing: trailingWidget),
           ChildWidget(
             children: widget.children,
             config: widget.config,

@@ -20,6 +20,22 @@ class _DrumEditorState extends State<DrumEditor> {
   DelayTapTimer timer = DelayTapTimer();
 
   @override
+  void initState() {
+    super.initState();
+    NuxDeviceControl().addListener(onDeviceChanged);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    NuxDeviceControl().removeListener(onDeviceChanged);
+  }
+
+  void onDeviceChanged() {
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     var device = NuxDeviceControl().device;
     final ThemeData theme = Theme.of(context);

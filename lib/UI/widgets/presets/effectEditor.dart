@@ -97,7 +97,12 @@ class _EffectEditorState extends State<EffectEditor> {
                 }
               },
               elevation: 2.0,
-              fillColor: _preset.effectColor(_slot),
+              fillColor: enabled
+                  ? TinyColor(_preset.effectColor(_slot)).darken(15).color
+                  : TinyColor(_preset.effectColor(_slot))
+                      .desaturate(80)
+                      .darken(15)
+                      .color,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(

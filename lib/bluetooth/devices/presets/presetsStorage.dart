@@ -1,13 +1,14 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
-class PresetsStorage {
+class PresetsStorage extends ChangeNotifier {
   static final PresetsStorage _storage = PresetsStorage._();
   static const presetsFile = "presets.json";
 
@@ -22,8 +23,8 @@ class PresetsStorage {
   Directory storageDirectory;
   File _presetsFile;
 
-  List<dynamic> presetsData;
-  List<String> categoriesCache;
+  List<dynamic> presetsData = <dynamic>[];
+  List<String> categoriesCache = <String>[];
 
   PresetsStorage._() {
     presetsData = <Map<String, dynamic>>[];
@@ -66,6 +67,7 @@ class PresetsStorage {
     _buildCategoryCache();
     String _json = json.encode(presetsData);
     await _presetsFile.writeAsString(_json);
+    notifyListeners();
   }
 
   List<String> getCategories() {
@@ -139,6 +141,18 @@ class PresetsStorage {
       }
     }
     return null;
+  }
+
+  clearNewFlag(String category, String name) {
+    for (int i = 0; i < presetsData.length; i++) {
+      if (presetsData[i]["category"] == category &&
+          presetsData[i]["name"] == name) {
+        if (presetsData[i].containsKey("new")) {
+          presetsData[i].remove("new");
+          _savePresets();
+        }
+      }
+    }
   }
 
   Future changeChannel(String category, String name, int channel) {
@@ -222,21 +236,24 @@ class PresetsStorage {
     return null;
   }
 
-  presetsFromJson(String jsonData) async {
-    Map<String, dynamic> data = json.decode(jsonData);
+  Future presetsFromJson(String jsonData) async {
+    try {
+      Map<String, dynamic> data = json.decode(jsonData);
 
-    if (!data.containsKey("type")) return Future.error("Wrong File");
-    if (data["type"] == presetsSingle) {
-      //single preset
-      Map<String, dynamic> pr = data["data"];
-      _presetFromJson(pr["category"], pr["name"], pr);
-    } else if (data["type"] == presetsMultiple) {
-      //this is array of presets
-
-      List<dynamic> pr = data["data"];
-      for (Map<String, dynamic> item in pr) {
-        _presetFromJson(item["category"], item["name"], item);
+      if (!data.containsKey("type")) return Future.error("Wrong File");
+      if (data["type"] == presetsSingle) {
+        //single preset
+        Map<String, dynamic> pr = data["data"];
+        _presetFromJson(pr["category"], pr["name"], pr);
+      } else if (data["type"] == presetsMultiple) {
+        //this is array of presets
+        List<dynamic> pr = data["data"];
+        for (Map<String, dynamic> item in pr) {
+          _presetFromJson(item["category"], item["name"], item);
+        }
       }
+    } on FormatException {
+      return Future.error("Wrong File");
     }
   }
 
@@ -256,6 +273,8 @@ class PresetsStorage {
       name = _findFreeName(name, category);
     }
 
+    //highlight that the preset is new
+    presetData["new"] = true;
     //save preset
     savePreset(presetData, name, category);
   }

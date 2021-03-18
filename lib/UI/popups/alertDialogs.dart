@@ -9,9 +9,9 @@ class AlertDialogs {
   static final _inputFormKey = GlobalKey<FormState>();
 
   static showInfoDialog(BuildContext context,
-      {String title,
-      String description,
-      String confirmButton,
+      {@required String title,
+      @required String description,
+      @required String confirmButton,
       Function() onConfirm,
       Color confirmColor}) {
     // set up the buttons

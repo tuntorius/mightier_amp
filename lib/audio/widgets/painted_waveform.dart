@@ -251,6 +251,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
                     ),
                   ),
                 ),
+                //container for event handles
                 Container(
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),

@@ -11,32 +11,43 @@ class PresetsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            if (state != EditorState.insert) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) =>
-                    SelectPresetDialog().buildDialog(context),
-              ).then((value) {
-                if (value != null) {
-                  onSelectedPreset(value);
-                }
-              });
-            } else
-              onSelectedPreset(null);
-          },
-          child: Container(
-            width: 150,
-            height: 40,
-            alignment: Alignment.center,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: ListView(
+        //crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              if (state != EditorState.insert) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      SelectPresetDialog().buildDialog(context),
+                ).then((value) {
+                  if (value != null) {
+                    onSelectedPreset(value);
+                  }
+                });
+              } else
+                onSelectedPreset(null);
+            },
             child:
                 Text(state != EditorState.insert ? "Insert Event" : "Cancel"),
           ),
-        ),
-      ],
+          ElevatedButton(
+            child: Text("Duplicate Selected"),
+            onPressed: () {},
+          ),
+          ElevatedButton(
+            child: Text("Edit Selected"),
+            onPressed: () {},
+          ),
+          ElevatedButton(
+            child: Text("Delete Selected"),
+            onPressed: () {},
+          ),
+        ],
+      ),
     );
   }
 }

@@ -149,7 +149,7 @@ class _AudioEditorState extends State<AudioEditor> {
             //   style: TextStyle(color: Colors.white, fontSize: 30),
             // ),
             Expanded(
-                flex: 1,
+                flex: 3,
                 child: Stack(
                   children: [
                     PaintedWaveform(
@@ -279,7 +279,7 @@ class _AudioEditorState extends State<AudioEditor> {
               ],
             ),
             Expanded(
-                flex: 1,
+                flex: 2,
                 child: PageView(
                   controller: controller,
                   onPageChanged: (int index) {
@@ -316,13 +316,14 @@ class _AudioEditorState extends State<AudioEditor> {
                         });
                       },
                     ),
+                    Text("TODO"),
                   ],
                 )),
             Container(
               height: 30,
               alignment: Alignment.center,
               child: CirclePageIndicator(
-                itemCount: 2,
+                itemCount: 3,
                 currentPageNotifier: _currentPageNotifier,
               ),
             )

@@ -26,8 +26,6 @@ dependencies:
   permission_handler: ^6.1.0
   path_provider: ^2.0.1
   just_audio: ^0.7.1
-  #just_audio:
-  #  path: "./just_audio-dev/just_audio"
 
   #upgrade to null-safety
   #tinycolor: ^1.0.3
@@ -40,9 +38,7 @@ dependencies:
   audio_picker:
     path: ./audio_picker
   page_view_indicators: ^2.0.0
-  #relace with audiotagger for null-safety
-  dart_tags: ^0.3.1
-#  flute_music_player: ^0.0.6 #alternative to flutter_audio_query for newer androids
+  audiotagger: ^2.1.0
 # https://github.com/lukhof/flutter_audio_query/tree/development - version of flutter_audio_query with ios support
 
 # https://pub.dev/packages/direct_select - possibility to use for selecting effects
@@ -50,7 +46,7 @@ dependencies:
   #some fixes added to flutter_blue library,
   #besides the newer versions don't work with android 10+
   flutter_blue:
-    path: ./flutter_blue-0.7.2
+    path: ./flutter_blue
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^0.1.3

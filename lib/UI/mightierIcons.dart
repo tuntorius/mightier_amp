@@ -29,6 +29,8 @@ class MightierIcons {
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData amp_plugair =
       IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData gate =
+      IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData sliders =
       IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData amp_8bt =
@@ -39,8 +41,6 @@ class MightierIcons {
       IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData cabinet =
       IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData gate =
-      IconData(0xe80a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData amp =
       IconData(0xe80b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pedal =

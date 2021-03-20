@@ -41,7 +41,7 @@ class _CalibrationState extends State<Calibration> {
     if (posMs >= 500 + delay) {
       if (!toggled) {
         nuxMode++;
-        if (nuxMode > 3) nuxMode = 0;
+        if (nuxMode > 2) nuxMode = 0;
         devControl.changeDevicePreset(nuxMode);
 
         setState(() {
@@ -62,6 +62,8 @@ class _CalibrationState extends State<Calibration> {
         await player?.stop();
         await player?.dispose();
 
+        int channel = NuxDeviceControl().device.selectedChannel;
+        NuxDeviceControl().changeDevicePreset(channel);
         NuxDeviceControl().sendFullPresetSettings();
         return true;
       },

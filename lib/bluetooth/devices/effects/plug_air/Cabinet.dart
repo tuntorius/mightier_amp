@@ -11,7 +11,7 @@ abstract class Cabinet extends Processor {
   int get midiCCSelectionValue => MidiCCValues.bCC_CabMode;
 
   Parameter value = Parameter(
-      devicePresetIndex: PresetDataIndex.cabgain,
+      devicePresetIndex: PresetDataIndexPlugAir.cabgain,
       name: "Level",
       handle: "level",
       value: 0,

@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
-import 'presets/Mighty8BTPreset.dart';
+import 'presets/MightyLitePreset.dart';
 
 import '../NuxDeviceControl.dart';
 import 'NuxDevice.dart';
@@ -31,6 +31,7 @@ class NuxMightyLite extends NuxDevice {
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => null;
+  bool get presetSaveSupport => true;
 
   List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
@@ -84,17 +85,17 @@ class NuxMightyLite extends NuxDevice {
     });
 
     //clean
-    presets.add(M8BTPreset(
+    presets.add(MLitePreset(
         device: this, channel: MLiteChannel.Clean.index, channelName: "Clean"));
 
     //OD
-    presets.add(M8BTPreset(
+    presets.add(MLitePreset(
         device: this,
         channel: MLiteChannel.Overdrive.index,
         channelName: "Drive"));
 
     //Dist
-    presets.add(M8BTPreset(
+    presets.add(MLitePreset(
         device: this,
         channel: MLiteChannel.Distortion.index,
         channelName: "Dist"));

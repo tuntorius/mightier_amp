@@ -39,8 +39,8 @@ class AnalogDelay extends Delay {
   ];
 }
 
-class TapeEcho extends Delay {
-  final name = "Tape Echo";
+class ModulationDelay extends Delay {
+  final name = "Modulation";
 
   int get nuxIndex => 1;
   List<Parameter> parameters = [
@@ -91,35 +91,6 @@ class DigitalDelay extends Delay {
         name: "Time",
         handle: "time",
         value: 48,
-        valueType: ValueType.tempo,
-        devicePresetIndex: PresetDataIndexPlugAir.delaytime,
-        midiCC: MidiCCValues.bCC_DelayTime),
-  ];
-}
-
-class PingPong extends Delay {
-  final name = "Ping Pong";
-
-  int get nuxIndex => 3;
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Repeat",
-        handle: "repeat",
-        value: 50,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
-        midiCC: MidiCCValues.bCC_DelayRepeat),
-    Parameter(
-        name: "Mix",
-        handle: "mix",
-        value: 45,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.delaymix,
-        midiCC: MidiCCValues.bCC_DelayLevel),
-    Parameter(
-        name: "Time",
-        handle: "time",
-        value: 50,
         valueType: ValueType.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),

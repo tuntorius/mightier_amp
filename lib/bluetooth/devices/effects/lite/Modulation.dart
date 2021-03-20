@@ -21,21 +21,21 @@ class Phaser extends Modulation {
         handle: "rate",
         value: 39,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
+        devicePresetIndex: PresetDataIndexLite.modfxrate,
         midiCC: MidiCCValues.bCC_ModfxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 60,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
+        devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
     Parameter(
-        name: "Feedback",
+        name: "*Feedback*",
         handle: "feedback",
         value: 32,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
+        devicePresetIndex: PresetDataIndexLite.modfxmix,
         midiCC: MidiCCValues.bCC_ChorusLevel),
   ];
 }
@@ -50,108 +50,21 @@ class Chorus extends Modulation {
         handle: "rate",
         value: 60,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
+        devicePresetIndex: PresetDataIndexLite.modfxrate,
         midiCC: MidiCCValues.bCC_ModfxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 88,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
+        devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
     Parameter(
-        name: "Mix",
+        name: "*Mix*",
         handle: "mix",
         value: 64,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
-  ];
-}
-
-class STChorus extends Modulation {
-  final name = "ST Chorus";
-
-  int get nuxIndex => 2;
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Rate",
-        handle: "rate",
-        value: 60,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
-    Parameter(
-        name: "Depth",
-        handle: "depth",
-        value: 74,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
-    Parameter(
-        name: "Mix",
-        handle: "mix",
-        value: 36,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
-  ];
-}
-
-class Flanger extends Modulation {
-  final name = "Flanger";
-
-  int get nuxIndex => 3;
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Rate",
-        handle: "rate",
-        value: 56,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
-    Parameter(
-        name: "Depth",
-        handle: "depth",
-        value: 68,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
-    Parameter(
-        name: "Mix",
-        handle: "mix",
-        value: 80,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
-  ];
-}
-
-class Vibe extends Modulation {
-  final name = "Vibe";
-
-  int get nuxIndex => 4;
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Rate",
-        handle: "rate",
-        value: 54,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
-    Parameter(
-        name: "Depth",
-        handle: "depth",
-        value: 80,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
-    Parameter(
-        name: "Mode",
-        handle: "mode",
-        value: 0,
-        valueType: ValueType.vibeMode,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
+        devicePresetIndex: PresetDataIndexLite.modfxmix,
         midiCC: MidiCCValues.bCC_ChorusLevel),
   ];
 }
@@ -159,21 +72,50 @@ class Vibe extends Modulation {
 class Tremolo extends Modulation {
   final name = "Tremolo";
 
-  int get nuxIndex => 5;
+  int get nuxIndex => 2;
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 59,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
+        devicePresetIndex: PresetDataIndexLite.modfxrate,
         midiCC: MidiCCValues.bCC_ModfxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 63,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
+        devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
+  ];
+}
+
+class Vibe extends Modulation {
+  final name = "Vibe";
+
+  int get nuxIndex => 3;
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Rate",
+        handle: "rate",
+        value: 54,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexLite.modfxrate,
+        midiCC: MidiCCValues.bCC_ModfxRate),
+    Parameter(
+        name: "Depth",
+        handle: "depth",
+        value: 80,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexLite.modfxdepth,
+        midiCC: MidiCCValues.bCC_ModfxDepth),
+    Parameter(
+        name: "*Mix*",
+        handle: "mix",
+        value: 0,
+        valueType: ValueType.vibeMode,
+        devicePresetIndex: PresetDataIndexLite.modfxmix,
+        midiCC: MidiCCValues.bCC_ChorusLevel),
   ];
 }

@@ -60,7 +60,7 @@ class DeviceMessageID {
   static const devDfuDataGetID = 105;
 }
 
-class PresetDataIndex {
+class PresetDataIndexPlugAir {
   static const effectTypesIndex = [
     0, //not used but there must be a value here
     efxtype,
@@ -115,6 +115,64 @@ class PresetDataIndex {
   static const reverbdecay = 31;
   static const reverbdamp = 32;
   static const reverbmix = 33;
+}
+
+class PresetDataIndex8BT {
+  //use PresetDataIndexLite for most of the constants
+
+}
+
+class PresetDataIndexLite {
+  static const effectTypesIndex = [
+    0, //not used but there must be a value here
+    drivetype,
+    modfxtype,
+    efxtype,
+  ];
+
+  static const effectEnabledIndex = [ngenable, modfxenable, efxenable];
+
+  static const ngenable = 0;
+  static const ngthresold = 1;
+  static const ngsustain = 2;
+
+  static const drivetype = 3;
+  static const drivesubtype1 = 4;
+  static const drivesubtype2 = 5;
+  static const drivesubtype3 = 6;
+  static const drivegain = 7;
+  static const drivelevel = 8;
+  static const drivebass = 9;
+  static const drivemid = 10;
+  static const drivetreble = 11;
+  static const drivetone = 12;
+
+  static const modfxenable = 13;
+  static const modfxtype = 14;
+  static const modfxrate = 15;
+  static const modfxdepth = 16;
+  static const modfxmix = 17;
+
+  static const efxenable = 18;
+  static const efxtype = 19;
+  static const reverbtype = 20;
+  static const reverbdecay = 21;
+  static const reverbmix = 22;
+
+  static const delaytype = 23;
+  static const delaytime = 24;
+  static const delayfeedback = 25;
+  static const delaymix = 26;
+
+  static const tap_time_flag = 27;
+  static const tap_time_bpm_h = 28;
+  static const tap_time_bpm_l = 29;
+  static const tap_time_value_h = 30;
+  static const tap_time_value_l = 31;
+  static const reverbenable = 32;
+  static const delayenable = 33;
+  static const miclevel = 34;
+  static const micambsend = 35;
 }
 
 class MidiMessageValues {

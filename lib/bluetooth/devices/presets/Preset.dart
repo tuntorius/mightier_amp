@@ -18,6 +18,7 @@ abstract class Preset {
     Color.fromARGB(255, 130, 225, 255),
     Color.fromARGB(255, 210, 140, 250),
     Color.fromARGB(255, 71, 167, 245),
+    Color.fromARGB(230, 230, 230, 255),
   ];
 
   NuxDevice device;
@@ -76,12 +77,12 @@ abstract class Preset {
     if (nuxData.length < 10) return;
     for (int i = 0; i < device.effectsChainLength; i++) {
       //set proper effect
-      int effectIndex = nuxData[PresetDataIndex.effectTypesIndex[i]];
+      int effectIndex = nuxData[PresetDataIndexPlugAir.effectTypesIndex[i]];
       setSelectedEffectForSlot(i, effectIndex, false);
 
       //enable/disable effect
       setSlotEnabled(
-          i, nuxData[PresetDataIndex.effectEnabledIndex[i]] != 0, false);
+          i, nuxData[PresetDataIndexPlugAir.effectEnabledIndex[i]] != 0, false);
 
       getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
           .setupFromNuxPayload(nuxData);

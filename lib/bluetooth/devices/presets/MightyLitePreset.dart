@@ -3,25 +3,25 @@
 
 import 'dart:ui';
 
+import 'package:just_audio/just_audio.dart';
+
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
-import '../effects/mighty_8bt/Amps.dart';
-import '../effects/mighty_8bt/Modulation.dart';
-import '../effects/mighty_8bt/Delay.dart';
-import '../effects/mighty_8bt/Reverb.dart';
+import '../effects/lite/Amps.dart';
+import '../effects/lite/Modulation.dart';
+import '../effects/lite/Ambience.dart';
 import 'Preset.dart';
 
-class M8BTPreset extends Preset {
+class MLitePreset extends Preset {
   NuxDevice device;
   int channel;
   String channelName;
   Color get channelColor => Preset.channelColors[channel];
   final NoiseGate2Param noiseGate = NoiseGate2Param();
-  final List<M8BTAmplifier> amplifierList = <M8BTAmplifier>[];
+  final List<LiteAmplifier> amplifierList = <LiteAmplifier>[];
   final List<Modulation> modulationList = <Modulation>[];
-  final List<Delay> delayList = <Delay>[];
-  final List<Reverb> reverbList = <Reverb>[];
+  final List<Ambience> ambiList = <Ambience>[];
 
   bool noiseGateEnabled = true;
   bool modulationEnabled = true;
@@ -30,20 +30,24 @@ class M8BTPreset extends Preset {
 
   int selectedAmp = 0;
   int selectedMod = 0;
-  int selectedDelay = 0;
-  int selectedReverb = 0;
+  int selectedAmbience = 0;
 
-  M8BTPreset({this.device, this.channel, this.channelName}) {
+  MLitePreset({this.device, this.channel, this.channelName}) {
     //modulation is available everywhere
     modulationList.addAll([Phaser(), Chorus(), Tremolo(), Vibe()]);
 
     amplifierList.addAll([AmpClean()]);
 
-    delayList.addAll([Delay1(), Delay2(), Delay3(), Delay4()]);
-
-    //reverb is available in all presets
-    reverbList
-        .addAll([RoomReverb(), HallReverb(), PlateReverb(), SpringReverb()]);
+    ambiList.addAll([
+      Delay1(),
+      Delay2(),
+      Delay3(),
+      Delay4(),
+      RoomReverb(),
+      HallReverb(),
+      PlateReverb(),
+      SpringReverb()
+    ]);
   }
 
   /// checks if the effect slot can be switched on and off
@@ -101,9 +105,7 @@ class M8BTPreset extends Preset {
       case 2:
         return modulationList;
       case 3:
-        return delayList;
-      case 4:
-        return reverbList;
+        return ambiList;
     }
     return <Processor>[];
   }
@@ -118,9 +120,7 @@ class M8BTPreset extends Preset {
       case 2:
         return selectedMod;
       case 3:
-        return selectedDelay;
-      case 4:
-        return selectedReverb;
+        return selectedAmbience;
       default:
         return 0;
     }
@@ -137,10 +137,7 @@ class M8BTPreset extends Preset {
         selectedMod = index;
         break;
       case 3:
-        selectedDelay = index;
-        break;
-      case 4:
-        selectedReverb = index;
+        selectedAmbience = index;
         break;
     }
     super.setSelectedEffectForSlot(slot, index, notifyBT);

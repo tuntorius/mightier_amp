@@ -3,19 +3,29 @@
 
 import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
-import 'presets/Mighty8BTPreset.dart';
+import 'presets/MightyXXBTPreset.dart';
 
 import '../NuxDeviceControl.dart';
 import 'NuxDevice.dart';
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
 
-enum M2040BTChannel { Clean, Overdrive, Metal, Lead }
+enum M2040BTChannel {
+  Clean1,
+  Overdrive1,
+  Metal1,
+  Lead1,
+  Clean2,
+  Overdrive2,
+  Metal2,
+  Lead2
+}
 
 class NuxMighty2040BT extends NuxDevice {
   int get productVID => 48;
 
-  static const _group = 0;
+  static const _group1 = 0;
+  static const _group2 = 1;
 
   String get productName => "NUX Mighty 20/40 BT";
   String get productNameShort => "Mighty 20/40 BT";
@@ -30,6 +40,7 @@ class NuxMighty2040BT extends NuxDevice {
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => null;
+  bool get presetSaveSupport => false;
 
   List<String> get groupsName => ["1", "2"];
   List<ProcessorInfo> get processorList => _processorList;
@@ -67,8 +78,8 @@ class NuxMighty2040BT extends NuxDevice {
         icon: Icons.blur_on),
   ];
 
-  List<Preset> guitarPresets = <Preset>[];
-  List<Preset> bassPresets = <Preset>[];
+  List<Preset> presets1 = <Preset>[];
+  List<Preset> presets2 = <Preset>[];
 
   List<String> _channelNames = [];
 
@@ -98,50 +109,97 @@ class NuxMighty2040BT extends NuxDevice {
       _channelNames.add(element.toString().split('.')[1]);
     });
 
-    //TODO: add 4 more
     //clean
-    presets.add(M8BTPreset(
+    presets1.add(MXXBTPreset(
         device: this,
-        channel: M2040BTChannel.Clean.index,
+        channel: M2040BTChannel.Clean1.index,
         channelName: "Clean"));
 
     //OD
-    presets.add(M8BTPreset(
+    presets1.add(MXXBTPreset(
         device: this,
-        channel: M2040BTChannel.Overdrive.index,
+        channel: M2040BTChannel.Overdrive1.index,
         channelName: "Drive"));
 
     //Metal
-    presets.add(M8BTPreset(
+    presets1.add(MXXBTPreset(
         device: this,
-        channel: M2040BTChannel.Metal.index,
+        channel: M2040BTChannel.Metal1.index,
         channelName: "Metal"));
 
     //Lead
-    presets.add(M8BTPreset(
-        device: this, channel: M2040BTChannel.Lead.index, channelName: "Lead"));
+    presets1.add(MXXBTPreset(
+        device: this,
+        channel: M2040BTChannel.Lead1.index,
+        channelName: "Lead"));
+
+    presets2.add(MXXBTPreset(
+        device: this,
+        channel: M2040BTChannel.Clean2.index,
+        channelName: "Clean"));
+
+    //OD
+    presets2.add(MXXBTPreset(
+        device: this,
+        channel: M2040BTChannel.Overdrive2.index,
+        channelName: "Drive"));
+
+    //Metal
+    presets2.add(MXXBTPreset(
+        device: this,
+        channel: M2040BTChannel.Metal2.index,
+        channelName: "Metal"));
+
+    //Lead
+    presets2.add(MXXBTPreset(
+        device: this,
+        channel: M2040BTChannel.Lead2.index,
+        channelName: "Lead"));
+
+    presets.addAll(presets1);
+    presets.addAll(presets2);
   }
 
   List<String> getDrumStyles() => drumStyles;
 
   List<Preset> getGroupPresets(int instr) {
-    return presets;
+    switch (instr) {
+      case _group1:
+        return presets1;
+      case _group2:
+        return presets2;
+    }
+    return <Preset>[];
   }
 
   void setGroupFromChannel(int chan) {
-    selectedGroupP = _group;
+    if (chan < 4)
+      selectedGroupP = _group1;
+    else
+      selectedGroupP = _group2;
   }
 
-  void setChannelFromGroup(int instr) {}
+  void setChannelFromGroup(int instr) {
+    if (instr == _group1)
+      selectedChannelP = 0;
+    else {
+      selectedChannelP = 4;
+    }
+  }
 
   @override
   int get selectedChannelNormalized {
-    return selectedChannel;
+    if (selectedGroup == _group1) return selectedChannel;
+    return selectedChannel - 4;
   }
 
   @override
   set selectedChannelNormalized(int chan) {
-    selectedChannelP = chan;
+    if (selectedGroupP == _group1) {
+      selectedChannelP = chan;
+    } else
+      selectedChannelP = chan + 4;
+
     super.selectedChannelNormalized = selectedChannelP;
   }
 

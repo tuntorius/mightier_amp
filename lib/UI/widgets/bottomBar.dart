@@ -36,7 +36,7 @@ class _BottomBarState extends State<BottomBar> {
             label: "Drums",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.playlist_play),
+            icon: Icon(Icons.queue_music),
             label: "JamTracks",
           ),
           BottomNavigationBarItem(

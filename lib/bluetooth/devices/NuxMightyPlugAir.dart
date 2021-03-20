@@ -32,6 +32,7 @@ class NuxMightyPlug extends NuxDevice {
   int get amplifierSlotIndex => 2;
   bool get cabinetSupport => true;
   int get cabinetSlotIndex => 3;
+  bool get presetSaveSupport => true;
 
   List<String> get groupsName => ["Guitar", "Bass"];
   List<ProcessorInfo> get processorList => _processorList;

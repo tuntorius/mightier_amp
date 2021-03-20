@@ -177,7 +177,7 @@ class NuxDeviceControl extends ChangeNotifier {
   void _onDataReceive(List<int> data) {
     if (data.length > 2)
       _device.onDataReceived(data.sublist(2));
-    else if (!_device.nuxPresetsReceived) {
+    else if (!_device.nuxPresetsReceived && _device.presetSaveSupport) {
       //ask the presets now
       requestPresetDelayed();
     }
@@ -299,16 +299,16 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void effectChangedListener(int slot) {
-    sendFullEffectSettings(slot);
+    sendFullEffectSettings(slot, true);
   }
 
   void sendFullPresetSettings() {
     if (_midiHandler.connectedDevice == null) return;
     for (var i = 0; i < device.processorList.length; i++)
-      sendFullEffectSettings(i);
+      sendFullEffectSettings(i, false);
   }
 
-  void sendFullEffectSettings(int slot) {
+  void sendFullEffectSettings(int slot, bool force) {
     if (_midiHandler.connectedDevice == null) return;
     var preset = device.getPreset(device.selectedChannel);
     var effect;
@@ -322,7 +322,8 @@ class NuxDeviceControl extends ChangeNotifier {
     bool enabled = preset.slotEnabled(slot);
 
     //send parameters only if the effect is on OR is not switchable off
-    bool send = !switchable || (switchable && enabled);
+    bool send = !switchable || (switchable && enabled) || force;
+    send = true; //still buggy, fix it first
 
     //send effect type
     if (slot != 0 && send) {
@@ -350,7 +351,7 @@ class NuxDeviceControl extends ChangeNotifier {
     double value = param.value;
 
     //implement master volume
-    if (param.masterVolume) value *= (masterVolume * 0.01);
+    if (param.masterVolume ?? false) value *= (masterVolume * 0.01);
 
     if (param.valueType == ValueType.db)
       outVal = dbTo7Bit(value);

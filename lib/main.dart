@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
@@ -199,66 +200,68 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
               physics: NeverScrollableScrollPhysics(),
               controller: controller,
             ),
-            GestureDetector(
-              onTap: () {
-                openDrawer = !openDrawer;
-                setState(() {});
-              },
-              onVerticalDragUpdate: (details) {
-                if (details.delta.dy < 0) {
-                  //open
-                  openDrawer = true;
-                } else {
-                  //close
-                  openDrawer = false;
-                }
-                setState(() {});
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 50,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .bottomNavigationBarTheme
-                            .backgroundColor,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(15))),
-                    child: Icon(
-                      openDrawer
-                          ? Icons.keyboard_arrow_down
-                          : Icons.keyboard_arrow_up,
-                      size: 20,
-                      color: Colors.grey,
+            //this is the volume bar, which is not ready yet
+            if (kDebugMode)
+              GestureDetector(
+                onTap: () {
+                  openDrawer = !openDrawer;
+                  setState(() {});
+                },
+                onVerticalDragUpdate: (details) {
+                  if (details.delta.dy < 0) {
+                    //open
+                    openDrawer = true;
+                  } else {
+                    //close
+                    openDrawer = false;
+                  }
+                  setState(() {});
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 50,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .bottomNavigationBarTheme
+                              .backgroundColor,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(15))),
+                      child: Icon(
+                        openDrawer
+                            ? Icons.keyboard_arrow_down
+                            : Icons.keyboard_arrow_up,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                  AnimatedContainer(
-                    padding: EdgeInsets.all(8),
-                    color: Theme.of(context)
-                        .bottomNavigationBarTheme
-                        .backgroundColor,
-                    duration: Duration(milliseconds: 100),
-                    height: openDrawer ? 60 : 0,
-                    child: ThickSlider(
-                        activeColor: Colors.blue,
-                        value: NuxDeviceControl().masterVolume,
-                        skipEmitting: 3,
-                        label: "Volume",
-                        labelFormatter: (value) {
-                          return value.round().toString();
-                        },
-                        min: 0,
-                        max: 100,
-                        onChanged: (value) {
-                          setState(() {
-                            NuxDeviceControl().masterVolume = value;
-                          });
-                        }),
-                  ),
-                ],
+                    AnimatedContainer(
+                      padding: EdgeInsets.all(8),
+                      color: Theme.of(context)
+                          .bottomNavigationBarTheme
+                          .backgroundColor,
+                      duration: Duration(milliseconds: 100),
+                      height: openDrawer ? 60 : 0,
+                      child: ThickSlider(
+                          activeColor: Colors.blue,
+                          value: NuxDeviceControl().masterVolume,
+                          skipEmitting: 3,
+                          label: "Volume",
+                          labelFormatter: (value) {
+                            return value.round().toString();
+                          },
+                          min: 0,
+                          max: 100,
+                          onChanged: (value) {
+                            setState(() {
+                              NuxDeviceControl().masterVolume = value;
+                            });
+                          }),
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
         /*drawer: Drawer(

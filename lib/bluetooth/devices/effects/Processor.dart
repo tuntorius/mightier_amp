@@ -114,3 +114,9 @@ abstract class Processor {
     }
   }
 }
+
+abstract class Amplifier extends Processor {
+  int get midiCCEnableValue;
+  int get midiCCSelectionValue;
+  int get defaultCab;
+}

@@ -29,6 +29,7 @@ class NuxMighty8BT extends NuxDevice {
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => null;
+  bool get presetSaveSupport => true;
 
   List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;

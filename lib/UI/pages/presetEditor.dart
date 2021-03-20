@@ -56,22 +56,23 @@ class _PresetEditorState extends State<PresetEditor> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
-                  child: Icon(Icons.save_alt),
-                  onPressed: () {
-                    //TODO: move to method
-                    if (device.deviceControl.isConnected) {
-                      AlertDialogs.showConfirmDialog(context,
-                          title: "Save preset to device",
-                          cancelButton: "Cancel",
-                          confirmButton: "Save",
-                          confirmColor: Colors.red,
-                          description: "Are you sure?", onConfirm: (val) {
-                        if (val) device.saveNuxPreset();
-                      });
-                    }
-                  },
-                ),
+                if (device.presetSaveSupport)
+                  ElevatedButton(
+                    child: Icon(Icons.save_alt),
+                    onPressed: () {
+                      //TODO: move to method
+                      if (device.deviceControl.isConnected) {
+                        AlertDialogs.showConfirmDialog(context,
+                            title: "Save preset to device",
+                            cancelButton: "Cancel",
+                            confirmButton: "Save",
+                            confirmColor: Colors.red,
+                            description: "Are you sure?", onConfirm: (val) {
+                          if (val) device.saveNuxPreset();
+                        });
+                      }
+                    },
+                  ),
                 SizedBox(
                   width: 2,
                 ),

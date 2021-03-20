@@ -34,6 +34,7 @@ abstract class NuxDevice extends ChangeNotifier {
   int get amplifierSlotIndex;
   bool get cabinetSupport;
   int get cabinetSlotIndex;
+  bool get presetSaveSupport;
 
   int get groupsCount;
   List<String> groupsName = <String>[];
@@ -201,7 +202,7 @@ abstract class NuxDevice extends ChangeNotifier {
     var amp = preset.getEffectsForSlot(
         amplifierSlotIndex)[preset.getSelectedEffectForSlot(2)];
     for (int i = 0; i < amp.parameters.length; i++) {
-      if (amp.parameters[i].masterVolume) {
+      if (amp.parameters[i].masterVolume ?? false) {
         deviceControl.sendParameter(amp.parameters[i], false);
       }
     }
@@ -334,7 +335,7 @@ abstract class NuxDevice extends ChangeNotifier {
       for (int f = 0; f < fx.parameters.length; f++)
         fx.parameters[f].value = _effect[fx.parameters[f].handle];
 
-      deviceControl.sendFullEffectSettings(i);
+      deviceControl.sendFullEffectSettings(i, false);
     }
     //update widgets
     notifyListeners();

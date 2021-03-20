@@ -120,15 +120,16 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
                                   setState(() {});
                                 }
                               },
-                              child: Text(
-                                "+",
-                                style: TextStyle(fontSize: 28),
+                              child: Icon(
+                                Icons.add,
+                                size: 28,
+                                //style: TextStyle(fontSize: 28),
                               ),
                             ),
                           )
                         ],
                       ),
-                      Text("Tab2")
+                      Text("TODO")
                     ]),
                   ),
                 ],

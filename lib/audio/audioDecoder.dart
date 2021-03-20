@@ -29,7 +29,7 @@ class AudioDecoder {
     }
   }
 
-  Future<Uint8List> nextBuffer() async {
+  Future<Uint8List?> nextBuffer() async {
     return await platform.invokeMethod("next");
   }
 
@@ -77,7 +77,7 @@ class AudioDecoder {
     onStart();
     Stopwatch stopwatch = new Stopwatch()..start();
     do {
-      Uint8List list = await nextBuffer();
+      Uint8List? list = await nextBuffer();
       if (list == null) {
         break;
       }

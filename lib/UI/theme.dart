@@ -30,6 +30,17 @@ ThemeData getTheme() {
         size: 30,
       ),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+      backgroundColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) return Colors.grey[700]!;
+        return Colors.blue;
+      }),
+      foregroundColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) return Colors.grey;
+        return Colors.white;
+      }),
+    )),
     textTheme: TextTheme(
       caption: TextStyle(color: Colors.grey[400]),
       button: TextStyle(color: Colors.pink),

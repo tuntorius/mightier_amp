@@ -14,9 +14,9 @@ class SavePresetDialog {
   final parentScroll = ScrollController();
   NuxDevice device;
 
-  SavePresetDialog({@required this.device}) {
-    categoryCtrl.text = device.presetCategory ?? "";
-    nameCtrl.text = device.presetName ?? "";
+  SavePresetDialog({required this.device}) {
+    categoryCtrl.text = device.presetCategory;
+    nameCtrl.text = device.presetName;
   }
 
   Widget buildDialog(NuxDevice device, BuildContext context) {
@@ -51,7 +51,7 @@ class SavePresetDialog {
                     Container(
                       height: _height,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]),
+                        border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: ScrollParent(
                         controller: parentScroll,
@@ -79,7 +79,7 @@ class SavePresetDialog {
                       controller: categoryCtrl,
                       style: TextStyle(color: Colors.black),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Please enter preset category';
                         }
                         return null;
@@ -91,7 +91,7 @@ class SavePresetDialog {
                       controller: nameCtrl,
                       style: TextStyle(color: Colors.black),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Please enter preset name';
                         }
                         return null;
@@ -113,7 +113,7 @@ class SavePresetDialog {
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   //save and pop
 
                   if (PresetsStorage().findPreset(

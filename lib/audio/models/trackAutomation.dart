@@ -14,10 +14,10 @@ class AutomationEvent {
 
   //values if type is presetChange
   dynamic preset;
-  String presetCategory;
-  String presetName;
-  int channel;
-  AutomationEvent({this.eventTime, this.type});
+  String presetCategory = "";
+  String presetName = "";
+  int channel = 0;
+  AutomationEvent({required this.eventTime, required this.type});
 }
 
 class TrackAutomation {
@@ -35,6 +35,9 @@ class TrackAutomation {
 
   int _latency = 0;
   int _speed = 1;
+
+  //editor use only. don't serialize
+  AutomationEvent? selectedEvent;
 
   StreamController<Duration> _positionController = StreamController<Duration>();
   StreamController<AutomationEvent> _eventController =
@@ -150,9 +153,16 @@ class TrackAutomation {
     //finally make sure the events are sorted
     var event = AutomationEvent(eventTime: atPosition, type: type);
     _events.add(event);
+    selectedEvent = event;
     sortEvents();
     return event;
   }
 
-  void removeEvent() {}
+  void removeEvent(AutomationEvent event) {
+    if (!_events.contains(event)) return;
+    //make sure no reference remains
+    if (selectedEvent == event) selectedEvent = null;
+    _events.remove(event);
+    sortEvents();
+  }
 }

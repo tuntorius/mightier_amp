@@ -7,7 +7,7 @@ class ScrollParent extends StatelessWidget {
   final ScrollController controller;
   final Widget child;
 
-  ScrollParent({this.controller, this.child});
+  ScrollParent({required this.controller, required this.child});
 
   @override
   Widget build(BuildContext context) {

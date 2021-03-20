@@ -54,7 +54,7 @@ class NuxMightyPlug extends NuxDevice {
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
-        color: null,
+        color: Colors.green,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "IR",
@@ -66,7 +66,7 @@ class NuxMightyPlug extends NuxDevice {
         shortName: "Mod",
         longName: "Modulation",
         keyName: "mod",
-        color: Colors.cyan[300],
+        color: Colors.cyan[300]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "Delay",

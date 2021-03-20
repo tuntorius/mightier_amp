@@ -8,7 +8,7 @@ class BottomBar extends StatefulWidget {
   final void Function(int) onTap;
   final int index;
 
-  BottomBar({this.index, this.onTap});
+  BottomBar({required this.index, required this.onTap});
 
   @override
   _BottomBarState createState() => _BottomBarState();

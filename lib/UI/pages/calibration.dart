@@ -14,7 +14,7 @@ class Calibration extends StatefulWidget {
 
 class _CalibrationState extends State<Calibration> {
   int delay = 0;
-  AudioPlayer player;
+  late AudioPlayer player;
   int nuxMode = 0;
   bool toggled = false;
   Color presetColor = Preset.channelColors[0];
@@ -59,8 +59,8 @@ class _CalibrationState extends State<Calibration> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        await player?.stop();
-        await player?.dispose();
+        await player.stop();
+        await player.dispose();
 
         int channel = NuxDeviceControl().device.selectedChannel;
         NuxDeviceControl().changeDevicePreset(channel);

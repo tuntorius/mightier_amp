@@ -33,7 +33,9 @@ class M8BTPreset extends Preset {
   int selectedDelay = 0;
   int selectedReverb = 0;
 
-  M8BTPreset({this.device, this.channel, this.channelName}) {
+  M8BTPreset(
+      {required this.device, required this.channel, required this.channelName})
+      : super(channel: channel, channelName: channelName, device: device) {
     //modulation is available everywhere
     modulationList.addAll([Phaser(), Chorus(), Tremolo(), Vibe()]);
 

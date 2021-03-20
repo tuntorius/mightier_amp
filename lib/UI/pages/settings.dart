@@ -44,8 +44,6 @@ class _SettingsState extends State<Settings> {
 
   final timeUnit = ["BPM", "Seconds"];
 
-  List<String> nuxDevices;
-
   String _version = "";
 
   @override
@@ -156,8 +154,9 @@ class _SettingsState extends State<Settings> {
                   value: SharedPrefs().getInt(SettingsKeys.changeCabs, 1) != 0,
                   onChanged: (value) {
                     setState(() {
-                      SharedPrefs()
-                          .setInt(SettingsKeys.changeCabs, value ? 1 : 0);
+                      if (value != null)
+                        SharedPrefs()
+                            .setInt(SettingsKeys.changeCabs, value ? 1 : 0);
                     });
                   }),
               Divider(),

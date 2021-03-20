@@ -14,7 +14,7 @@ Future<String> saveFile(String mime, String name, String data) async {
   } on PlatformException catch (e) {
     //fails native call
     //handle error
-    return null;
+    return Future.error("Error saving file");
   }
 }
 
@@ -29,6 +29,6 @@ Future<String> openFile(String mime) async {
   } on PlatformException catch (e) {
     //fails native call
     //handle error
-    return null;
+    return Future.error("Can't open file");
   }
 }

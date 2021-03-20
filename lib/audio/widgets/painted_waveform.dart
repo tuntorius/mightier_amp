@@ -10,15 +10,17 @@ import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
 class PaintedWaveform extends StatefulWidget {
   final double dragHandlesheight = 56;
   final Function(int) onWaveformTap;
-  final WaveformData sampleData;
+  final WaveformData? sampleData;
   final int currentSample;
   final TrackAutomation automation;
+  final Function(double, double) onTimingData;
   PaintedWaveform(
-      {Key key,
-      @required this.sampleData,
-      this.onWaveformTap,
-      this.currentSample,
-      this.automation})
+      {Key? key,
+      required this.sampleData,
+      required this.onWaveformTap,
+      required this.currentSample,
+      required this.automation,
+      required this.onTimingData})
       : super(key: key);
 
   @override
@@ -31,18 +33,18 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
 
   double canvasSize = 0;
 
-  Offset _startingFocalPoint;
+  late Offset _startingFocalPoint;
 
   double _previousOffset = 0;
   double _offset = 0; // where the top left corner of the waveform is drawn
 
-  double _previousScale;
-  double _scale;
+  double _previousScale = 0;
+  double _scale = 0;
   bool isSingle = true;
 
   bool layoutBuilt = false;
   void initScaling() {
-    endPosition = widget.sampleData.data.length - 1;
+    endPosition = widget.sampleData!.data.length - 1;
 
     //get initial scale. endPosition is essentialy waveform width
     _scale = canvasSize / endPosition;
@@ -56,13 +58,14 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
   }
 
   void scroll(d) {
-    var _fullScale = widget.sampleData.data.length / canvasSize;
+    if (widget.sampleData == null) return;
+    var _fullScale = widget.sampleData!.data.length / canvasSize;
     var _position = (d.localPosition.dx * _fullScale).round();
     var _extent = ((endPosition - startPosition) / 2).round();
 
     if (_position - _extent < 0) _position = _extent;
-    if (_position + _extent > widget.sampleData.data.length - 1)
-      _position = widget.sampleData.data.length - 1 - _extent;
+    if (_position + _extent > widget.sampleData!.data.length - 1)
+      _position = widget.sampleData!.data.length - 1 - _extent;
 
     _offset = -_scale * startPosition;
     setState(() {
@@ -77,7 +80,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
           ((e.localPosition.dx / canvasSize) * (endPosition - startPosition) +
                   startPosition)
               .floor();
-      widget.onWaveformTap?.call(sample);
+      widget.onWaveformTap.call(sample);
     }
   }
 
@@ -119,11 +122,11 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
 
       //limit right boundary
       if (canvasSize / _scale + startPosition >
-          widget.sampleData.data.length - 1) {
+          widget.sampleData!.data.length - 1) {
         _offset = _oldOffset;
         //i think we should not manipulate the scale
         //we should adjust the offset
-        endPosition = widget.sampleData.data.length - 1;
+        endPosition = widget.sampleData!.data.length - 1;
 
         //calculate offset based on end position and new scale
         startPosition = endPosition - (canvasSize / _scale).round();
@@ -139,17 +142,17 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
   @override
   Widget build(context) {
     double msPerSample = 0;
-    double time = 0;
+    //double time = 0;
     List<Widget> automationEventButtons = <Widget>[];
 
-    if (layoutBuilt == true &&
-        widget.automation.duration != null &&
-        widget.sampleData != null) {
-      msPerSample = widget.sampleData.data.length /
+    if (layoutBuilt == true && widget.sampleData != null) {
+      msPerSample = widget.sampleData!.data.length /
           widget.automation.duration.inMilliseconds;
 
-      time = (widget.currentSample / msPerSample) / 1000;
+      var samplesPerPixel = ((endPosition - startPosition) / canvasSize);
 
+      widget.onTimingData(samplesPerPixel, msPerSample);
+      //time = (widget.currentSample / msPerSample) / 1000;
       //create automation event handles (TODO: move them in separate widget)
       for (int i = 0; i < widget.automation.events.length; i++) {
         var element = widget.automation.events[i];
@@ -161,9 +164,8 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
               widget.dragHandlesheight / 2,
           child: GestureDetector(
             onHorizontalDragUpdate: (d) {
+              widget.automation.selectedEvent = widget.automation.events[i];
               //get samples per pixel
-              var samplesPerPixel =
-                  ((endPosition - startPosition) / canvasSize);
 
               setState(() {
                 element.eventTime += Duration(
@@ -172,15 +174,21 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
               });
             },
             onHorizontalDragEnd: (d) {
+              widget.automation.selectedEvent = widget.automation.events[i];
+              widget.automation.sortEvents();
               //update automation
-              setState(() {
-                widget.automation.sortEvents();
-              });
+              setState(() {});
             },
             child: FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                widget.automation.selectedEvent = widget.automation.events[i];
+                setState(() {});
+              },
               backgroundColor: Preset.channelColors[element.channel],
-              child: Icon(Icons.circle),
+              child: Icon(
+                  widget.automation.selectedEvent == widget.automation.events[i]
+                      ? Icons.circle
+                      : null),
               heroTag: "dragTag$i",
             ),
           ),
@@ -195,9 +203,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
         builder: (context, BoxConstraints constraints) {
           // adjust the shape based on parent's orientation/shape
 
-          if (canvasSize == 0 &&
-              widget.sampleData != null &&
-              widget.sampleData.data != null) {
+          if (canvasSize == 0 && widget.sampleData != null) {
             canvasSize = constraints.maxWidth;
             initScaling();
           }

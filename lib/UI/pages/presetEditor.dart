@@ -15,7 +15,7 @@ class PresetEditor extends StatefulWidget {
 }
 
 class _PresetEditorState extends State<PresetEditor> {
-  NuxDevice device;
+  late NuxDevice device;
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _PresetEditorState extends State<PresetEditor> {
   }
 
   void onDeviceChanged() {
-    if (device != null) device.removeListener(onDeviceDataChanged);
+    device.removeListener(onDeviceDataChanged);
     device = NuxDeviceControl().device;
     device.addListener(onDeviceDataChanged);
     setState(() {});
@@ -45,6 +45,9 @@ class _PresetEditorState extends State<PresetEditor> {
 
   @override
   Widget build(BuildContext context) {
+    bool savePresetEnabled =
+        device.deviceControl.isConnected && device.presetSaveSupport;
+
     List<bool> _instrumentSelection =
         List<bool>.filled(device.groupsCount, false);
     _instrumentSelection[device.selectedGroup] = true;
@@ -56,23 +59,24 @@ class _PresetEditorState extends State<PresetEditor> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (device.presetSaveSupport)
-                  ElevatedButton(
-                    child: Icon(Icons.save_alt),
-                    onPressed: () {
-                      //TODO: move to method
-                      if (device.deviceControl.isConnected) {
-                        AlertDialogs.showConfirmDialog(context,
-                            title: "Save preset to device",
-                            cancelButton: "Cancel",
-                            confirmButton: "Save",
-                            confirmColor: Colors.red,
-                            description: "Are you sure?", onConfirm: (val) {
-                          if (val) device.saveNuxPreset();
-                        });
-                      }
-                    },
-                  ),
+                ElevatedButton(
+                  child: Icon(Icons.save_alt),
+                  onPressed: !savePresetEnabled
+                      ? null
+                      : () {
+                          //TODO: move to method
+                          if (device.deviceControl.isConnected) {
+                            AlertDialogs.showConfirmDialog(context,
+                                title: "Save preset to device",
+                                cancelButton: "Cancel",
+                                confirmButton: "Save",
+                                confirmColor: Colors.red,
+                                description: "Are you sure?", onConfirm: (val) {
+                              if (val) device.saveNuxPreset();
+                            });
+                          }
+                        },
+                ),
                 SizedBox(
                   width: 2,
                 ),

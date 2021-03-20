@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/utilities/DelayTapTimer.dart';
 import '../widgets/thickSlider.dart';
@@ -37,7 +38,7 @@ class _DrumEditorState extends State<DrumEditor> {
 
   @override
   Widget build(BuildContext context) {
-    var device = NuxDeviceControl().device;
+    NuxDevice? device = NuxDeviceControl().device;
     final ThemeData theme = Theme.of(context);
 
     selectedDrumPattern = device.selectedDrumStyle;
@@ -77,8 +78,8 @@ class _DrumEditorState extends State<DrumEditor> {
                   Text(
                     "Drums",
                     textAlign: TextAlign.center,
-                    style:
-                        theme.textTheme.headline5.copyWith(color: Colors.white),
+                    style: theme.textTheme.headline5!
+                        .copyWith(color: Colors.white),
                   ),
                   Switch(
                     value: device.drumsEnabled,

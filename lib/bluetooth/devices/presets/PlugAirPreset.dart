@@ -40,7 +40,9 @@ class PlugAirPreset extends Preset {
   int selectedDelay = 0;
   int selectedReverb = 0;
 
-  PlugAirPreset({this.device, this.channel, this.channelName}) {
+  PlugAirPreset(
+      {required this.device, required this.channel, required this.channelName})
+      : super(channel: channel, channelName: channelName, device: device) {
     //modulation is available everywhere
     modulationList
         .addAll([Phaser(), Chorus(), STChorus(), Flanger(), Vibe(), Tremolo()]);

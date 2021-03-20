@@ -39,7 +39,7 @@ class NuxMighty2040BT extends NuxDevice {
   int get groupsCount => 2;
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
-  int get cabinetSlotIndex => null;
+  int get cabinetSlotIndex => 0;
   bool get presetSaveSupport => false;
 
   List<String> get groupsName => ["1", "2"];
@@ -56,13 +56,13 @@ class NuxMighty2040BT extends NuxDevice {
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
-        color: null,
+        color: Colors.green,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",
         keyName: "mod",
-        color: Colors.cyan[300],
+        color: Colors.cyan[300]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "Delay",

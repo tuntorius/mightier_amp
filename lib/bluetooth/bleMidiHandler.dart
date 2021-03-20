@@ -32,9 +32,9 @@ class BLEMidiHandler {
 
   BluetoothState bluetoothState = BluetoothState.unknown;
 
-  BluetoothDevice _device;
-  BluetoothService _midiService;
-  BluetoothCharacteristic _midiCharacteristic;
+  BluetoothDevice? _device;
+  BluetoothService? _midiService;
+  BluetoothCharacteristic? _midiCharacteristic;
 
   bool queueFree = true;
 
@@ -47,13 +47,13 @@ class BLEMidiHandler {
   // Future<List<MidiDevice>> get devices {
   //   return _midiCommand.devices;
   // }
-  List<ScanResult> scanResults;
+  List<ScanResult> scanResults = <ScanResult>[];
 
-  BluetoothDevice get connectedDevice {
+  BluetoothDevice? get connectedDevice {
     return _device;
   }
 
-  StreamSubscription<List<ScanResult>> _scanSubscription;
+  StreamSubscription<List<ScanResult>>? _scanSubscription;
 
   BLEMidiHandler._() {
     //_midiCommand.teardown();
@@ -130,7 +130,7 @@ class BLEMidiHandler {
     try {
       await device.connect(autoConnect: false);
     } catch (e) {
-      if (e.code == 'already_connected') return;
+      if (e == 'already_connected') return;
       throw (e);
     } finally {
       _device = device;
@@ -141,11 +141,11 @@ class BLEMidiHandler {
         if (element.uuid == Guid(midiService)) _midiService = element;
       });
 
-      _midiService.characteristics.forEach((element) {
+      _midiService?.characteristics.forEach((element) {
         if (element.uuid == Guid(midiCharacteristic))
           _midiCharacteristic = element;
 
-        _midiCharacteristic.setNotifyValue(true);
+        _midiCharacteristic?.setNotifyValue(true);
 
         queueFree = true;
         _status.add(midiSetupStatus.deviceConnected);
@@ -162,7 +162,7 @@ class BLEMidiHandler {
 
   void disconnectDevice() async {
     if (_device != null) {
-      await _device.disconnect();
+      await _device!.disconnect();
       queueFree = true;
       _device = null;
     }
@@ -170,7 +170,7 @@ class BLEMidiHandler {
 
   StreamSubscription<List<int>> registerDataListener(
       Function(List<int>) listener) {
-    return _midiCharacteristic.value.listen(listener);
+    return _midiCharacteristic!.value.listen(listener);
   }
 
   ListQueue<List<int>> dataQueue = ListQueue<List<int>>();
@@ -185,9 +185,8 @@ class BLEMidiHandler {
     Stopwatch stopwatch = new Stopwatch()..start();
     //List<int> currentData = List<int>();
     while (dataQueue.isNotEmpty) {
-      //TODO: sending here
-      await _midiCharacteristic.write(dataQueue.removeFirst(),
-          withoutResponse: true);
+      await _midiCharacteristic!
+          .write(dataQueue.removeFirst(), withoutResponse: true);
     }
 
     Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
@@ -195,7 +194,7 @@ class BLEMidiHandler {
   }
 
   void dispose() {
-    _scanSubscription.cancel();
-    _device.disconnect();
+    _scanSubscription?.cancel();
+    _device?.disconnect();
   }
 }

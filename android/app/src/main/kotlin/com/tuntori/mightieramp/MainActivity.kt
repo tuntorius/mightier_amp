@@ -149,7 +149,7 @@ class MainActivity: FlutterActivity() {
         if (resultCode == Activity.RESULT_OK) {
           if (data != null && data.getData() != null) {
             //now write the data
-            writeInFile(data.getData()) //data.getData() is Uri
+            writeInFile(data.getData() as Uri) //data.getData() is Uri
           } else {
             _result?.error("NO DATA", "No data", null)
           }
@@ -161,7 +161,7 @@ class MainActivity: FlutterActivity() {
         if (resultCode == Activity.RESULT_OK) {
             if (data != null && data.getData() != null) {
                 //now write the data
-                readFile(data.getData())
+                readFile(data.getData() as Uri)
             }else {
                 _result?.error("NO DATA", "No data", null)
             }
@@ -172,14 +172,18 @@ class MainActivity: FlutterActivity() {
   }
 
   private fun writeInFile(uri: Uri) {
-    val outputStream: OutputStream
+    val outputStream: OutputStream?
     try {
       outputStream = getContentResolver().openOutputStream(uri)
-      val bw = BufferedWriter(OutputStreamWriter(outputStream))
-      bw.write(_data)
-      bw.flush()
-      bw.close()
-      _result?.success("SUCCESS");
+      if (outputStream!=null) {
+        val bw = BufferedWriter(OutputStreamWriter(outputStream))
+        bw.write(_data)
+        bw.flush()
+        bw.close()
+        _result?.success("SUCCESS");
+      }
+      else
+        _result?.error("ERROR", "Unable to write", null)
     } catch (e:Exception){
       _result?.error("ERROR", "Unable to write", null)
     }

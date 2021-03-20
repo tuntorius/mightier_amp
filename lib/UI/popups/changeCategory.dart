@@ -14,7 +14,9 @@ class ChangeCategoryDialog {
   Function(String) onCategoryChange;
 
   ChangeCategoryDialog(
-      {@required this.category, @required this.name, this.onCategoryChange}) {
+      {required this.category,
+      required this.name,
+      required this.onCategoryChange}) {
     categoryCtrl.text = category;
   }
 
@@ -49,7 +51,7 @@ class ChangeCategoryDialog {
                     Container(
                       height: _height,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]),
+                        border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: ScrollParent(
                         controller: parentScroll,
@@ -77,7 +79,7 @@ class ChangeCategoryDialog {
                       controller: categoryCtrl,
                       style: TextStyle(color: Colors.black),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Please enter preset category';
                         }
                         if (PresetsStorage().findPreset(name, value) != null)
@@ -101,7 +103,7 @@ class ChangeCategoryDialog {
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   //call change success
                   onCategoryChange(categoryCtrl.value.text);
                   Navigator.of(context).pop();

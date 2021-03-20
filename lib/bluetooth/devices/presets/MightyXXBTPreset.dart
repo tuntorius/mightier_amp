@@ -33,7 +33,9 @@ class MXXBTPreset extends Preset {
   int selectedDelay = 0;
   int selectedReverb = 0;
 
-  MXXBTPreset({this.device, this.channel, this.channelName}) {
+  MXXBTPreset(
+      {required this.device, required this.channel, required this.channelName})
+      : super(channel: channel, channelName: channelName, device: device) {
     //modulation is available everywhere
     modulationList.addAll([Phaser(), Chorus(), Tremolo()]);
 

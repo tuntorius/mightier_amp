@@ -18,23 +18,23 @@ class EffectSelector extends StatefulWidget {
   final Preset preset;
   final NuxDevice device;
 
-  EffectSelector({@required this.preset, @required this.device});
+  EffectSelector({required this.preset, required this.device});
   @override
   _EffectSelectorState createState() => _EffectSelectorState();
 }
 
 class _EffectSelectorState extends State<EffectSelector> {
-  List<bool> _effectSelection;
+  late List<bool> _effectSelection;
 
   int get _selectedEffect => widget.device.selectedEffect;
   set _selectedEffect(val) => widget.device.selectedEffect = val;
 
-  List<Widget> _buttons;
-  Preset _preset;
-  List<custom.PopupMenuEntry<dynamic>> _effectItems;
-  String _selectedEffectName;
+  late List<Widget> _buttons;
+  late Preset _preset;
+  late List<custom.PopupMenuEntry<dynamic>> _effectItems;
+  String _selectedEffectName = "";
 
-  Color _effectColor;
+  late Color _effectColor;
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _EffectSelectorState extends State<EffectSelector> {
     double width = MediaQuery.of(context).size.width;
 
     for (int i = 0; i < _effectSelection.length; i++) {
-      Color c = _preset.slotEnabled(i) ? _preset.effectColor(i) : null;
+      Color? c = _preset.slotEnabled(i) ? _preset.effectColor(i) : null;
       btns.add(
         Container(
           width: width / _effectSelection.length - 3,

@@ -9,10 +9,10 @@ class SpeedPanel extends StatelessWidget {
   final Function(int, double) onSemitonesChanged;
 
   SpeedPanel(
-      {this.speed,
-      this.semitones,
-      this.onSpeedChanged,
-      this.onSemitonesChanged});
+      {required this.speed,
+      required this.semitones,
+      required this.onSpeedChanged,
+      required this.onSemitonesChanged});
 
   @override
   Widget build(BuildContext context) {

@@ -17,10 +17,10 @@ class DeviceList extends StatelessWidget {
       itemBuilder: (context, index) {
         final result = midiHandler.scanResults[index];
         return ListTile(
-          title: Text(result.device.name ?? "(No name)",
-              style: Theme.of(context).textTheme.headline6.copyWith(
+          title: Text(result.device.name,
+              style: Theme.of(context).textTheme.headline6!.copyWith(
                   color: midiHandler.connectedDevice != null &&
-                          result.device.id == midiHandler.connectedDevice.id
+                          result.device.id == midiHandler.connectedDevice?.id
                       ? Colors.blue
                       : Colors.white)),
           trailing: result.device.type != BluetoothDeviceType.classic

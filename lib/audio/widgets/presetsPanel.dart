@@ -5,9 +5,12 @@ import '../audioEditor.dart';
 
 class PresetsPanel extends StatelessWidget {
   final EditorState state;
-  final Function(Map<String, dynamic>) onSelectedPreset;
-
-  PresetsPanel({this.state, this.onSelectedPreset});
+  final Function(Map<String, dynamic>?) onSelectedPreset;
+  final Function onDelete;
+  PresetsPanel(
+      {required this.state,
+      required this.onSelectedPreset,
+      required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -16,35 +19,63 @@ class PresetsPanel extends StatelessWidget {
       child: ListView(
         //crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              if (state != EditorState.insert) {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      SelectPresetDialog().buildDialog(context),
-                ).then((value) {
-                  if (value != null) {
-                    onSelectedPreset(value);
-                  }
-                });
-              } else
-                onSelectedPreset(null);
-            },
-            child:
-                Text(state != EditorState.insert ? "Insert Event" : "Cancel"),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (state != EditorState.insert) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            SelectPresetDialog().buildDialog(context),
+                      ).then((value) {
+                        if (value != null) {
+                          onSelectedPreset(value);
+                        }
+                      });
+                    } else
+                      onSelectedPreset(null);
+                  },
+                  child: Text(
+                      state != EditorState.insert ? "Insert Event" : "Cancel"),
+                ),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  child: Text("Duplicate"),
+                  onPressed: null,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  child: Text("Edit"),
+                  onPressed: null,
+                ),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  child: Text("Delete"),
+                  onPressed: () {
+                    onDelete();
+                  },
+                ),
+              )
+            ],
           ),
           ElevatedButton(
-            child: Text("Duplicate Selected"),
-            onPressed: () {},
-          ),
-          ElevatedButton(
-            child: Text("Edit Selected"),
-            onPressed: () {},
-          ),
-          ElevatedButton(
-            child: Text("Delete Selected"),
-            onPressed: () {},
+            child: Text("Set Initial Parameters"),
+            onPressed: null,
           ),
         ],
       ),

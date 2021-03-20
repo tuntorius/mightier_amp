@@ -24,9 +24,9 @@ class NuxDeviceControl extends ChangeNotifier {
   final BLEMidiHandler _midiHandler = BLEMidiHandler();
 
   //holds current device
-  NuxDevice _device;
-  StreamSubscription<List<int>> rxSubscription;
-  Timer batteryTimer;
+  late NuxDevice _device;
+  StreamSubscription<List<int>>? rxSubscription;
+  Timer? batteryTimer;
 
   double _masterVolume = 100;
 
@@ -73,7 +73,8 @@ class NuxDeviceControl extends ChangeNotifier {
       if (_deviceInstances[i].productBLENames.contains(id))
         return _deviceInstances[i];
 
-    return null;
+    //return plug/air by default
+    return _deviceInstances[0];
   }
 
   String getDeviceNameFromId(String id) {
@@ -84,7 +85,7 @@ class NuxDeviceControl extends ChangeNotifier {
     return "Unknown";
   }
 
-  NuxDevice getDeviceFromId(String id) {
+  NuxDevice? getDeviceFromId(String id) {
     for (int i = 0; i < _deviceInstances.length; i++) {
       if (_deviceInstances[i].productStringId == id) return _deviceInstances[i];
     }
@@ -104,6 +105,9 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMighty2040BT(this));
     _deviceInstances.add(NuxMightyLite(this));
 
+    //make it read from config
+    _device = _deviceInstances[0];
+
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
       if (dev != null) {
@@ -121,9 +125,6 @@ class NuxDeviceControl extends ChangeNotifier {
             .listen(effectSwitchedListener);
       }
     }
-
-    //make it read from config
-    _device = _deviceInstances[0];
   }
 
   void _statusListener(statusValue) {
@@ -145,11 +146,13 @@ class NuxDeviceControl extends ChangeNotifier {
       case midiSetupStatus.deviceConnected:
         //which device connected?
         //find which device connected
-        print("${_midiHandler.connectedDevice.name} connected");
-        _device = deviceFromBLEId(_midiHandler.connectedDevice.name);
-        _masterVolume = 100;
-        notifyListeners();
-        _onConnect();
+        if (_midiHandler.connectedDevice != null) {
+          print("${_midiHandler.connectedDevice!.name} connected");
+          _device = deviceFromBLEId(_midiHandler.connectedDevice!.name);
+          _masterVolume = 100;
+          notifyListeners();
+          _onConnect();
+        }
         break;
       case midiSetupStatus.deviceDisconnected:
         notifyListeners();
@@ -183,7 +186,7 @@ class NuxDeviceControl extends ChangeNotifier {
     }
   }
 
-  void _onBatteryTimer(Timer timer) {
+  void _onBatteryTimer(Timer? t) {
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
         [SysCtrlState.syscmd_dsprun_battery, 0, 0, 0, 0]);
     _midiHandler.sendData(data);
@@ -351,7 +354,7 @@ class NuxDeviceControl extends ChangeNotifier {
     double value = param.value;
 
     //implement master volume
-    if (param.masterVolume ?? false) value *= (masterVolume * 0.01);
+    if (param.masterVolume) value *= (masterVolume * 0.01);
 
     if (param.valueType == ValueType.db)
       outVal = dbTo7Bit(value);

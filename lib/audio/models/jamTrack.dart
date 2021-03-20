@@ -1,6 +1,6 @@
 class JamTrack {
-  String _path;
-  String _name;
+  String _path = "";
+  String _name = "";
 
   JamTrack({path, name}) {
     _path = path;

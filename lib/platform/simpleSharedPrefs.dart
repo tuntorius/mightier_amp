@@ -22,18 +22,17 @@ class SharedPrefs {
     return _storage;
   }
 
-  String prefsPath;
-  Directory storageDirectory;
-  File _prefsFile;
+  String prefsPath = "";
+  Directory? storageDirectory;
+  File? _prefsFile;
 
-  Map<String, dynamic> _prefsData;
+  Map<String, dynamic> _prefsData = {};
 
   SharedPrefs._() {
     _init();
   }
 
   _init() async {
-    _prefsData = Map<String, dynamic>();
     await _getDirectory();
     await _loadPrefs();
 
@@ -47,14 +46,18 @@ class SharedPrefs {
     } else if (Platform.isIOS) {
       storageDirectory = await getApplicationDocumentsDirectory();
     }
-    prefsPath = path.join(storageDirectory.path, prefsFile);
-    _prefsFile = File(prefsPath);
+    if (storageDirectory != null) {
+      prefsPath = path.join(storageDirectory!.path, prefsFile);
+      _prefsFile = File(prefsPath);
+    }
   }
 
   _loadPrefs() async {
     try {
-      var _presetJson = await _prefsFile.readAsString();
-      _prefsData = json.decode(_presetJson);
+      if (_prefsFile != null) {
+        var _presetJson = await _prefsFile!.readAsString();
+        _prefsData = json.decode(_presetJson);
+      }
     } catch (e) {
       //   //no file
       //   print("Presets file not available");
@@ -62,8 +65,10 @@ class SharedPrefs {
   }
 
   _savePrefs() async {
-    String _json = json.encode(_prefsData);
-    await _prefsFile.writeAsString(_json);
+    if (_prefsFile != null) {
+      String _json = json.encode(_prefsData);
+      await _prefsFile?.writeAsString(_json);
+    }
   }
 
   setInt(String key, int value) {

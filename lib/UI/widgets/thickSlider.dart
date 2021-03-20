@@ -8,25 +8,21 @@ import 'package:tinycolor/tinycolor.dart';
 
 class ThickSlider extends StatefulWidget {
   final Color activeColor;
-  final Color negativeColor;
   final String label;
   final double min, max;
   final double value;
-  final ValueChanged<double> onChanged;
-  final ValueChanged<double> onChangeEnd;
+  final ValueChanged<double>? onChanged;
   final String Function(double) labelFormatter;
   final int skipEmitting;
 
   ThickSlider(
-      {@required this.activeColor,
-      this.negativeColor,
-      this.label,
-      this.min,
-      this.max,
-      this.value,
+      {required this.activeColor,
+      required this.label,
+      this.min = 0,
+      this.max = 1,
+      required this.value,
       this.onChanged,
-      this.onChangeEnd,
-      @required this.labelFormatter,
+      required this.labelFormatter,
       this.skipEmitting = 3});
 
   @override

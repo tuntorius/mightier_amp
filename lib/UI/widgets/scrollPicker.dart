@@ -9,14 +9,13 @@ class ScrollPicker extends StatefulWidget {
   static const double itemHeight = 50.0;
 
   ScrollPicker({
-    Key key,
-    @required this.items,
-    @required this.initialValue,
-    @required this.onChanged,
-    @required this.onChangedFinal,
+    Key? key,
+    required this.items,
+    required this.initialValue,
+    required this.onChanged,
+    required this.onChangedFinal,
     this.showDivider: true,
-  })  : assert(items != null),
-        super(key: key);
+  }) : super(key: key);
 
   // Events
   final ValueChanged<int> onChanged;
@@ -35,15 +34,11 @@ class _ScrollPickerState extends State<ScrollPicker> {
   _ScrollPickerState(this.selectedValue);
 
   // Variables
-  double widgetHeight;
-  int numberOfVisibleItems;
-  int numberOfPaddingRows;
-  double visibleItemsHeight;
-  double offset;
+  double widgetHeight = 0;
 
   int selectedValue;
 
-  ScrollController scrollController;
+  late ScrollController scrollController;
 
   @override
   void initState() {
@@ -56,9 +51,9 @@ class _ScrollPickerState extends State<ScrollPicker> {
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
-    TextStyle defaultStyle = themeData.textTheme.bodyText2;
+    TextStyle defaultStyle = themeData.textTheme.bodyText2!;
     TextStyle selectedStyle =
-        themeData.textTheme.headline5.copyWith(color: themeData.accentColor);
+        themeData.textTheme.headline5!.copyWith(color: themeData.accentColor);
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {

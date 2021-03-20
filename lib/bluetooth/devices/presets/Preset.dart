@@ -29,7 +29,8 @@ abstract class Preset {
   //nux data
   List<int> nuxData = <int>[];
 
-  Preset({this.device, this.channel, this.channelName});
+  Preset(
+      {required this.device, required this.channel, required this.channelName});
 
   //checks if the effect slot can be switched on and off
   bool slotSwitchable(int index);

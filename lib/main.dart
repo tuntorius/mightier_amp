@@ -29,7 +29,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 void showMessageDialog(String title, String content) {
   showDialog(
-      context: navigatorKey.currentContext,
+      context: navigatorKey.currentContext!,
       builder: (context) => AlertDialog(
             title: Text(title),
             content: Text(content),
@@ -41,7 +41,7 @@ void main() {
 }
 
 class App extends StatefulWidget {
-  App({Key key}) : super(key: key);
+  App({Key? key}) : super(key: key);
 
   @override
   _AppState createState() => _AppState();
@@ -74,8 +74,8 @@ class MainTabs extends StatefulWidget {
 
 class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   int _currentIndex = 0;
-  BuildContext dialogContext;
-  TabController controller;
+  late BuildContext dialogContext;
+  late TabController controller;
   final List<Widget> _children = [];
 
   bool openDrawer = false;

@@ -18,7 +18,7 @@ class JamTracks extends StatefulWidget {
 }
 
 class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
-  TabController cntrl;
+  late TabController cntrl;
 
   @override
   void initState() {
@@ -33,10 +33,12 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
 
   //try to get best version of tags (mp3 only)
   //if not - use filename but strip the extension
-  String getProperTags(Map tags, String filename) {
+  String getProperTags(Map? tags, String filename) {
     String title = "", artist = "";
-    if (tags.containsKey("artist")) artist = tags["artist"];
-    if (tags.containsKey("title")) title = tags["title"];
+    if (tags != null) {
+      if (tags.containsKey("artist")) artist = tags["artist"];
+      if (tags.containsKey("title")) title = tags["title"];
+    }
 
     if (artist.isNotEmpty || title.isNotEmpty) {
       return "$artist - $title";
@@ -107,7 +109,7 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
                                   var name = basenameWithoutExtension(path[i]);
 
                                   //audiotagger
-                                  Map tags =
+                                  Map? tags =
                                       await tagger.readTagsAsMap(path: path[i]);
 
                                   name = getProperTags(tags, name);

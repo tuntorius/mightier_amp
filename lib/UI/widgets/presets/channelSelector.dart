@@ -8,16 +8,16 @@ import 'effectSelector.dart';
 
 class ChannelSelector extends StatefulWidget {
   final NuxDevice device;
-  ChannelSelector({@required this.device});
+  ChannelSelector({required this.device});
 
   @override
   _ChannelSelectorState createState() => _ChannelSelectorState();
 }
 
 class _ChannelSelectorState extends State<ChannelSelector> {
-  List<bool> _channelsSelection;
-  List<Widget> _buttons;
-  List<Preset> _presets;
+  late List<bool> _channelsSelection;
+  List<Widget> _buttons = <Widget>[];
+  late List<Preset> _presets;
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
   @override
   Widget build(BuildContext context) {
-    _buttons = <Widget>[];
+    _buttons.clear();
 
     _presets = widget.device.getGroupPresets(widget.device.selectedGroup);
 

@@ -15,11 +15,11 @@ class TrackData {
     return _storage;
   }
 
-  String tracksPath;
-  Directory storageDirectory;
-  File _tracksFile;
+  String tracksPath = "";
+  late Directory? storageDirectory;
+  late File _tracksFile;
 
-  List<JamTrack> _tracksData;
+  List<JamTrack> _tracksData = <JamTrack>[];
   List<JamTrack> get tracks => _tracksData;
 
   TrackData._() {
@@ -38,7 +38,7 @@ class TrackData {
     } else if (Platform.isIOS) {
       storageDirectory = await getApplicationDocumentsDirectory();
     }
-    tracksPath = path.join(storageDirectory.path, tracksFile);
+    tracksPath = path.join(storageDirectory?.path ?? "", tracksFile);
     _tracksFile = File(tracksPath);
   }
 

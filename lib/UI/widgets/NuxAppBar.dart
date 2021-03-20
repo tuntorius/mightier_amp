@@ -45,6 +45,8 @@ AppBar getAppBar(BLEMidiHandler handler) {
           IconData icon = Icons.bluetooth_disabled;
           Color color = Colors.grey;
           switch (snapshot.data) {
+            case null:
+              break;
             case midiSetupStatus.bluetoothOff:
               icon = Icons.bluetooth_disabled;
               break;

@@ -4,6 +4,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/audio/widgets/presetsPanel.dart';
@@ -29,7 +30,7 @@ class AudioEditor extends StatefulWidget {
 }
 
 class _AudioEditorState extends State<AudioEditor> {
-  WaveformData wfData;
+  WaveformData? wfData;
   AudioDecoder decoder = AudioDecoder();
   TrackAutomation automation = TrackAutomation();
 
@@ -44,6 +45,9 @@ class _AudioEditorState extends State<AudioEditor> {
   int currentSample = 0;
   bool pageLeft = false;
   int latency = SharedPrefs().getInt(SettingsKeys.latency, 0);
+
+  //screen stuff
+  double _samplesPerPixel = 0, _msPerSample = 0;
 
   //speed and pitch shifting stuff
   double speed = 1;
@@ -84,18 +88,18 @@ class _AudioEditorState extends State<AudioEditor> {
       wfData = WaveformData(maxValue: 1, data: decoder.samples);
     }, () {
       if (pageLeft) return false;
-      wfData.setUpdate();
+      wfData!.setUpdate();
       setState(() {});
       return true;
     }, () {
       //final update
-      wfData.setReady();
+      wfData!.setReady();
       setState(() {});
     });
   }
 
   int sampleToMs(int sample) {
-    var percentage = sample / wfData.data.length;
+    var percentage = sample / wfData!.data.length;
     return (percentage * decoder.duration * 1000).round();
   }
 
@@ -121,6 +125,38 @@ class _AudioEditorState extends State<AudioEditor> {
   void eventUpdate(AutomationEvent event) {
     print(event.presetName);
     device.presetFromJson(event.preset);
+  }
+
+  void timingData(double samplesPerPixel, double msPerSample) {
+    _samplesPerPixel = samplesPerPixel;
+    _msPerSample = msPerSample;
+  }
+
+  void stepLeft() {
+    var event = automation.selectedEvent;
+    if (event == null) return;
+    var subtract =
+        Duration(milliseconds: (_samplesPerPixel * _msPerSample).round());
+    if (event.eventTime > subtract)
+      event.eventTime -= subtract;
+    else
+      event.eventTime = Duration(milliseconds: 0);
+
+    setState(() {});
+  }
+
+  void stepRight() {
+    var event = automation.selectedEvent;
+    if (event == null) return;
+    var subtract =
+        Duration(milliseconds: (_samplesPerPixel * _msPerSample).round());
+    var songLength = automation.duration;
+    if (event.eventTime < songLength - subtract)
+      event.eventTime += subtract;
+    else
+      event.eventTime = songLength;
+
+    setState(() {});
   }
 
   @override
@@ -156,6 +192,7 @@ class _AudioEditorState extends State<AudioEditor> {
                       sampleData: wfData,
                       currentSample: currentSample,
                       automation: automation,
+                      onTimingData: timingData,
                       onWaveformTap: (sample) {
                         switch (state) {
                           case EditorState.play:
@@ -223,9 +260,7 @@ class _AudioEditorState extends State<AudioEditor> {
                   ),
                 ),
                 MaterialButton(
-                  onPressed: () {
-                    // go to previous event
-                  },
+                  onPressed: stepLeft, //move event left
                   height: 70,
                   child: Icon(
                     Icons.chevron_left,
@@ -234,9 +269,7 @@ class _AudioEditorState extends State<AudioEditor> {
                   ),
                 ),
                 MaterialButton(
-                  onPressed: () {
-                    // go to next event
-                  },
+                  onPressed: stepRight, //move event left
                   height: 70,
                   child: Icon(
                     Icons.chevron_right,
@@ -288,6 +321,11 @@ class _AudioEditorState extends State<AudioEditor> {
                   children: [
                     PresetsPanel(
                         state: state,
+                        onDelete: () {
+                          if (automation.selectedEvent != null)
+                            automation.removeEvent(automation.selectedEvent!);
+                          setState(() {});
+                        },
                         onSelectedPreset: (_preset) {
                           if (_preset != null) {
                             setState(() {

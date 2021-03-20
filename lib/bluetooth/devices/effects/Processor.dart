@@ -61,13 +61,13 @@ class Parameter {
   bool masterVolume = false;
 
   Parameter(
-      {this.value,
-      this.handle,
-      this.valueType,
-      this.name,
-      this.midiCC,
-      this.devicePresetIndex,
-      this.masterVolume});
+      {required this.value,
+      required this.handle,
+      required this.valueType,
+      required this.name,
+      required this.midiCC,
+      required this.devicePresetIndex,
+      this.masterVolume = false});
 }
 
 class ProcessorInfo {
@@ -77,7 +77,11 @@ class ProcessorInfo {
   Color color;
   IconData icon;
   ProcessorInfo(
-      {this.shortName, this.longName, this.keyName, this.color, this.icon});
+      {required this.shortName,
+      required this.longName,
+      required this.keyName,
+      required this.color,
+      required this.icon});
 }
 
 abstract class Processor {

@@ -32,7 +32,9 @@ class MLitePreset extends Preset {
   int selectedMod = 0;
   int selectedAmbience = 0;
 
-  MLitePreset({this.device, this.channel, this.channelName}) {
+  MLitePreset(
+      {required this.device, required this.channel, required this.channelName})
+      : super(channel: channel, channelName: channelName, device: device) {
     //modulation is available everywhere
     modulationList.addAll([Phaser(), Chorus(), Tremolo(), Vibe()]);
 

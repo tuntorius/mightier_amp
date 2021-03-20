@@ -30,7 +30,7 @@ class NuxMightyLite extends NuxDevice {
   int get groupsCount => 1;
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
-  int get cabinetSlotIndex => null;
+  int get cabinetSlotIndex => 0;
   bool get presetSaveSupport => true;
 
   List<String> get groupsName => ["Default"];
@@ -47,13 +47,13 @@ class NuxMightyLite extends NuxDevice {
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
-        color: null,
+        color: Colors.green,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",
         keyName: "mod",
-        color: Colors.cyan[300],
+        color: Colors.cyan[300]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "Ambience",

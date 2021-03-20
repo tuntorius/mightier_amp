@@ -7,7 +7,7 @@ class BlinkWidget extends StatefulWidget {
   final List<Widget> children;
   final int interval;
 
-  BlinkWidget({@required this.children, this.interval = 500, Key key})
+  BlinkWidget({required this.children, this.interval = 500, Key? key})
       : super(key: key);
 
   @override
@@ -16,7 +16,7 @@ class BlinkWidget extends StatefulWidget {
 
 class _BlinkWidgetState extends State<BlinkWidget>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
   int _currentWidget = 0;
 
   initState() {

@@ -4,16 +4,16 @@
 import 'package:flutter/material.dart';
 
 class AlertDialogs {
-  static TextEditingController nameCtrl;
+  static TextEditingController? nameCtrl;
 
   static final _inputFormKey = GlobalKey<FormState>();
 
   static showInfoDialog(BuildContext context,
-      {@required String title,
-      @required String description,
-      @required String confirmButton,
-      Function() onConfirm,
-      Color confirmColor}) {
+      {required String title,
+      required String description,
+      required String confirmButton,
+      Function()? onConfirm,
+      Color? confirmColor}) {
     // set up the buttons
     Widget continueButton = TextButton(
       child: Text(
@@ -43,12 +43,12 @@ class AlertDialogs {
   }
 
   static showConfirmDialog(BuildContext context,
-      {String title,
-      String description,
-      String confirmButton,
-      String cancelButton,
-      Function(bool) onConfirm,
-      Color confirmColor}) {
+      {required String title,
+      required String description,
+      required String confirmButton,
+      required String cancelButton,
+      Function(bool)? onConfirm,
+      Color? confirmColor}) {
     // set up the buttons
     Widget cancel = TextButton(
       child: Text(cancelButton),
@@ -86,15 +86,15 @@ class AlertDialogs {
   }
 
   static showInputDialog(BuildContext context,
-      {String title,
-      String description,
-      String confirmButton,
-      String cancelButton,
-      String value,
-      Function(String) onConfirm,
-      bool Function(String) validation,
-      String validationErrorMessage,
-      Color confirmColor}) {
+      {required String title,
+      required String description,
+      required String confirmButton,
+      required String cancelButton,
+      required String value,
+      Function(String)? onConfirm,
+      bool Function(String)? validation,
+      String validationErrorMessage = "",
+      Color? confirmColor}) {
     nameCtrl = TextEditingController(text: value);
     // set up the buttons
     Widget cancel = TextButton(
@@ -109,9 +109,9 @@ class AlertDialogs {
         style: TextStyle(color: confirmColor),
       ),
       onPressed: () {
-        if (_inputFormKey.currentState.validate()) {
+        if (_inputFormKey.currentState!.validate()) {
           Navigator.of(context).pop();
-          onConfirm?.call(nameCtrl.text);
+          onConfirm?.call(nameCtrl?.text ?? "");
         } else {
           //error
         }
@@ -128,10 +128,10 @@ class AlertDialogs {
           controller: nameCtrl,
           style: TextStyle(color: Colors.black),
           validator: (value) {
-            if (value.isEmpty) {
+            if (value == null || value.isEmpty) {
               return 'Please enter preset name';
             }
-            if (!validation(value)) {
+            if (validation != null && !validation(value)) {
               return validationErrorMessage;
             }
             return null;
@@ -153,13 +153,13 @@ class AlertDialogs {
   }
 
   static showOptionDialog(BuildContext context,
-      {String title,
-      String confirmButton,
-      String cancelButton,
-      List<String> options,
-      int value,
-      Function(bool, int) onConfirm,
-      Color confirmColor}) {
+      {required String title,
+      required String confirmButton,
+      required String cancelButton,
+      required List<String> options,
+      required int value,
+      required Function(bool, int) onConfirm,
+      Color? confirmColor}) {
     int selected = value;
     // set up the buttons
     return StatefulBuilder(builder: (context, setState) {
@@ -170,14 +170,14 @@ class AlertDialogs {
         ),
         onPressed: () {
           Navigator.of(context).pop();
-          onConfirm?.call(true, selected);
+          onConfirm.call(true, selected);
         },
       );
       Widget closeButton = TextButton(
         child: Text(cancelButton),
         onPressed: () {
           Navigator.of(context).pop();
-          onConfirm?.call(false, 0);
+          onConfirm.call(false, 0);
         },
       );
       var widgets = <RadioListTile>[];

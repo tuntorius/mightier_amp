@@ -9,17 +9,17 @@ import '../models/trackAutomation.dart';
 import '../models/waveform_data.dart';
 
 class WaveformPainter extends CustomPainter {
-  final WaveformData data;
+  final WaveformData? data;
   final int startingFrame;
   final int endingFrame;
   final int currentSample;
   final bool overallWaveform;
   final TrackAutomation automation;
-  Paint painter;
+  late Paint painter;
   final Color color;
   final double strokeWidth;
   final Paint playbackPaint = Paint()
-    ..color = Colors.grey[200]
+    ..color = Colors.grey[200]!
     ..strokeWidth = 1
     ..style = PaintingStyle.stroke;
 
@@ -30,7 +30,7 @@ class WaveformPainter extends CustomPainter {
       this.startingFrame = 0,
       this.endingFrame = 1,
       this.currentSample = 0,
-      this.automation,
+      required this.automation,
       this.overallWaveform = false,
       this.color = Colors.blue}) {
     painter = Paint()
@@ -50,38 +50,39 @@ class WaveformPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (data == null || !data.initialized || automation.duration == null) {
+    if (data == null || !data!.initialized) {
       return;
     }
     var _start = startingFrame, _end = endingFrame;
 
     if (!overallWaveform) {
       final path =
-          data.path(size, fromFrame: startingFrame, toFrame: endingFrame);
-      canvas.drawPath(path, painter);
+          data!.path(size, fromFrame: startingFrame, toFrame: endingFrame);
+
+      if (path != null) canvas.drawPath(path, painter);
       if (currentSample >= startingFrame && currentSample <= endingFrame) {
         double dx =
-            data.verticalLine(size, currentSample, startingFrame, endingFrame);
+            data!.verticalLine(size, currentSample, startingFrame, endingFrame);
         canvas.drawLine(Offset(dx, 0), Offset(dx, size.height), playbackPaint);
       }
     } else {
       _start = 0;
-      _end = data.data.length;
-      final path = data.overallPath(size);
-      canvas.drawPath(path, painter);
-      double dx = data.verticalLine(size, startingFrame, 0, data.data.length);
-      double dy = data.verticalLine(size, endingFrame, 0, data.data.length);
+      _end = data!.data.length;
+      final path = data!.overallPath(size);
+      if (path != null) canvas.drawPath(path, painter);
+      double dx = data!.verticalLine(size, startingFrame, 0, data!.data.length);
+      double dy = data!.verticalLine(size, endingFrame, 0, data!.data.length);
 
       //draw currently visible rectangle
       var rrect = Rect.fromLTRB(dx, 0, dy, size.height);
       canvas.drawRect(rrect, playbackPaint);
 
       //draw playback needle
-      dx = data.verticalLine(size, currentSample, 0, data.data.length);
+      dx = data!.verticalLine(size, currentSample, 0, data!.data.length);
       canvas.drawLine(Offset(dx, 0), Offset(dx, size.height), playbackPaint);
     }
 
-    var msPerSample = data.data.length / automation.duration.inMilliseconds;
+    var msPerSample = data!.data.length / automation.duration.inMilliseconds;
 
     //draw events
     automation.events.forEach((element) {

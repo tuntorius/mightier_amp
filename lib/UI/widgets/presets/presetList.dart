@@ -19,14 +19,14 @@ import '../../../bluetooth/devices/presets/presetsStorage.dart';
 class PresetList extends StatefulWidget {
   final void Function(dynamic) onTap;
   final bool simplified;
-  PresetList({this.onTap, this.simplified = false});
+  PresetList({required this.onTap, this.simplified = false});
   @override
   _PresetListState createState() => _PresetListState();
 }
 
 class _PresetListState extends State<PresetList>
     with AutomaticKeepAliveClientMixin<PresetList> {
-  Map<String, NuxDevice> devices;
+  Map<String, NuxDevice> devices = <String, NuxDevice>{};
   var presetsMenu = <PopupMenuEntry>[
     PopupMenuItem(
       value: 1,
@@ -186,15 +186,14 @@ class _PresetListState extends State<PresetList>
   void mainMenuActions(action) async {
     switch (action) {
       case 1: //export category
-        String data = PresetsStorage().presetsToJson();
+        String? data = PresetsStorage().presetsToJson();
 
         if (data != null)
           saveFile("application/octet-stream", "presets.nuxpreset", data);
         break;
       case 2: //import
-        var content = await openFile("application/octet-stream");
-        if (content != null)
-          PresetsStorage().presetsFromJson(content).then((value) {
+        openFile("application/octet-stream").then((value) {
+          PresetsStorage().presetsFromJson(value).then((value) {
             setState(() {});
           }).catchError((error) {
             AlertDialogs.showInfoDialog(context,
@@ -202,7 +201,7 @@ class _PresetListState extends State<PresetList>
                 description: "The selected file is not a valid preset file!",
                 confirmButton: "OK");
           });
-        break;
+        });
     }
   }
 
@@ -244,7 +243,7 @@ class _PresetListState extends State<PresetList>
                 });
             break;
           case 2: //export category
-            String data = PresetsStorage().presetsToJson(item);
+            String? data = PresetsStorage().presetsToJson(item);
 
             if (data != null)
               saveFile("application/octet-stream", "$item.nuxpreset", data);
@@ -292,25 +291,28 @@ class _PresetListState extends State<PresetList>
             var channelList = <String>[];
             int nuxChannel = item["channel"];
             var d = NuxDeviceControl().getDeviceFromId(item["product_id"]);
-            for (int i = 0; i < d.channelsCount; i++)
-              channelList.add(d.channelName(i));
-            var dialog = AlertDialogs.showOptionDialog(context,
-                confirmButton: "Change",
-                cancelButton: "Cancel",
-                title: "Select Channel",
-                options: channelList,
-                value: nuxChannel, onConfirm: (changed, newValue) {
-              if (changed) {
-                setState(() {
-                  PresetsStorage()
-                      .changeChannel(item["category"], item["name"], newValue);
-                });
-              }
-            });
-            showDialog(
-              context: context,
-              builder: (BuildContext context) => dialog,
-            );
+
+            if (d != null) {
+              for (int i = 0; i < d.channelsCount; i++)
+                channelList.add(d.channelName(i));
+              var dialog = AlertDialogs.showOptionDialog(context,
+                  confirmButton: "Change",
+                  cancelButton: "Cancel",
+                  title: "Select Channel",
+                  options: channelList,
+                  value: nuxChannel, onConfirm: (changed, newValue) {
+                if (changed) {
+                  setState(() {
+                    PresetsStorage().changeChannel(
+                        item["category"], item["name"], newValue);
+                  });
+                }
+              });
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => dialog,
+              );
+            }
             break;
           case 3: //duplicate
             PresetsStorage()
@@ -320,7 +322,7 @@ class _PresetListState extends State<PresetList>
             });
             break;
           case 4: //export
-            String data =
+            String? data =
                 PresetsStorage().presetToJson(item["category"], item["name"]);
 
             if (data != null)
@@ -349,19 +351,23 @@ class _PresetListState extends State<PresetList>
     }
   }
 
-  void showContextMenu(_position, dynamic item, List<PopupMenuEntry> _menu) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+  void showContextMenu(
+      Offset _position, dynamic item, List<PopupMenuEntry> _menu) {
+    final RenderBox? overlay =
+        Overlay.of(context)!.context.findRenderObject() as RenderBox;
     //open menu
-    var rect = RelativeRect.fromRect(
-        _position & const Size(40, 40), // smaller rect, the touch area
-        Offset.zero & overlay.size);
-    showMenu(
-      position: rect,
-      items: _menu,
-      context: context,
-    ).then((value) {
-      menuActions(value, item);
-    });
+    if (overlay != null) {
+      var rect = RelativeRect.fromRect(
+          _position & const Size(40, 40), // smaller rect, the touch area
+          Offset.zero & overlay.size);
+      showMenu(
+        position: rect,
+        items: _menu,
+        context: context,
+      ).then((value) {
+        menuActions(value, item);
+      });
+    }
   }
 
   @override
@@ -371,7 +377,6 @@ class _PresetListState extends State<PresetList>
     PresetsStorage().addListener(refreshPresets);
 
     //cache devices
-    devices = <String, NuxDevice>{};
     NuxDeviceControl().deviceList.forEach((element) {
       devices[element.productStringId] = element;
     });
@@ -390,31 +395,33 @@ class _PresetListState extends State<PresetList>
 
   List<Widget> buildEffectsPreview(Map<String, dynamic> preset) {
     var widgets = <Widget>[];
-    NuxDevice dev = devices[preset["product_id"]];
-    for (int i = 0; i < dev.processorList.length; i++) {
-      ProcessorInfo pi = dev.processorList[i];
-      if (preset.containsKey(pi.keyName)) {
-        //special case for amp
-        if (pi.keyName == "amp") {
-          var name = dev.getAmpNameByIndex(preset[pi.keyName]["fx_type"]);
-          widgets.insert(
-              0,
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Text(
-                  name,
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ));
-        } else if (pi.keyName == "cabinet")
-          continue;
-        else {
-          bool enabled = preset[pi.keyName]["enabled"];
-          widgets.add(Icon(
-            pi.icon,
-            color: enabled ? pi.color : Colors.grey,
-            size: 16,
-          ));
+    NuxDevice? dev = devices[preset["product_id"]];
+    if (dev != null) {
+      for (int i = 0; i < dev.processorList.length; i++) {
+        ProcessorInfo pi = dev.processorList[i];
+        if (preset.containsKey(pi.keyName)) {
+          //special case for amp
+          if (pi.keyName == "amp") {
+            var name = dev.getAmpNameByIndex(preset[pi.keyName]["fx_type"]);
+            widgets.insert(
+                0,
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Text(
+                    name,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ));
+          } else if (pi.keyName == "cabinet")
+            continue;
+          else {
+            bool enabled = preset[pi.keyName]["enabled"];
+            widgets.add(Icon(
+              pi.icon,
+              color: enabled ? pi.color : Colors.grey,
+              size: 16,
+            ));
+          }
         }
       }
     }
@@ -450,7 +457,7 @@ class _PresetListState extends State<PresetList>
   Widget _buildList(BuildContext context) {
     if (PresetsStorage().getCategories().length == 0)
       return Center(child: Text("Empty"));
-    Offset _position;
+    late Offset _position;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapDown: (details) {
@@ -484,7 +491,7 @@ class _PresetListState extends State<PresetList>
               item["name"] == device.presetName;
 
           //create trailing widget based on whether the preset is new
-          Widget trailingWidget;
+          Widget? trailingWidget;
           if (widget.simplified)
             trailingWidget = null;
           else {
@@ -507,6 +514,9 @@ class _PresetListState extends State<PresetList>
                     color: Colors.blue,
                     size: 16,
                   ),
+                  SizedBox(
+                    width: 12,
+                  ),
                   button
                 ],
               );
@@ -517,7 +527,8 @@ class _PresetListState extends State<PresetList>
           out.hasNewItems = newItem;
           out.widget = ListTile(
               enabled: enabled,
-              selectedTileColor: Colors.grey[800],
+              selectedTileColor: Color.fromARGB(
+                  255, 9, 51, 116), //Color.fromARGB(255, 45, 60, 68),
               selected: selected && !widget.simplified,
               onTap: () {
                 //remove the new marker if exists
@@ -535,7 +546,7 @@ class _PresetListState extends State<PresetList>
                     double.infinity, //strange hack to center icon vertically
                 child: Icon(
                   NuxDeviceControl()
-                      .getDeviceFromId(item["product_id"])
+                      .getDeviceFromId(item["product_id"])!
                       .productIcon,
                   size: 30,
                   color: color,
@@ -558,8 +569,8 @@ class _PresetListState extends State<PresetList>
         },
         config: Config(
             parentTextStyle: TextStyle(color: Colors.white),
-            parentPaddingEdgeInsets: EdgeInsets.only(left: 16, right: 8),
-            childrenPaddingEdgeInsets: EdgeInsets.only(left: 0, right: 4),
+            parentPaddingEdgeInsets: EdgeInsets.only(left: 16, right: 4),
+            childrenPaddingEdgeInsets: EdgeInsets.only(left: 0, right: 0),
             arrowIcon: Icon(Icons.keyboard_arrow_down, color: Colors.white)),
       ),
     );

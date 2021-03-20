@@ -19,9 +19,9 @@ class PresetsStorage extends ChangeNotifier {
     return _storage;
   }
 
-  String presetsPath;
-  Directory storageDirectory;
-  File _presetsFile;
+  String presetsPath = "";
+  Directory? storageDirectory;
+  File? _presetsFile;
 
   List<dynamic> presetsData = <dynamic>[];
   List<String> categoriesCache = <String>[];
@@ -43,20 +43,25 @@ class PresetsStorage extends ChangeNotifier {
     } else if (Platform.isIOS) {
       storageDirectory = await getApplicationDocumentsDirectory();
     }
-    presetsPath = path.join(storageDirectory.path, presetsFile);
-    _presetsFile = File(presetsPath);
+
+    if (storageDirectory != null) {
+      presetsPath = path.join(storageDirectory!.path, presetsFile);
+      _presetsFile = File(presetsPath);
+    }
   }
 
   _loadPresets() async {
     try {
-      var _presetJson = await _presetsFile.readAsString();
-      presetsData = json.decode(_presetJson);
+      if (_presetsFile != null) {
+        var _presetJson = await _presetsFile!.readAsString();
+        presetsData = json.decode(_presetJson);
 
-      //fix any old compatibility issues
-      for (int i = 0; i < presetsData.length; i++)
-        presetsData[i] = fixPresetCompatibility(presetsData[i]);
+        //fix any old compatibility issues
+        for (int i = 0; i < presetsData.length; i++)
+          presetsData[i] = fixPresetCompatibility(presetsData[i]);
 
-      _buildCategoryCache();
+        _buildCategoryCache();
+      }
     } catch (e) {
       //   //no file
       //   print("Presets file not available");
@@ -66,7 +71,7 @@ class PresetsStorage extends ChangeNotifier {
   _savePresets() async {
     _buildCategoryCache();
     String _json = json.encode(presetsData);
-    await _presetsFile.writeAsString(_json);
+    await _presetsFile!.writeAsString(_json);
     notifyListeners();
   }
 
@@ -83,7 +88,7 @@ class PresetsStorage extends ChangeNotifier {
     categoriesCache.sort();
   }
 
-  int findPreset(String name, String category) {
+  int? findPreset(String name, String category) {
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["name"] == name &&
           presetsData[i]["category"] == category) return i;
@@ -114,7 +119,7 @@ class PresetsStorage extends ChangeNotifier {
         return _savePresets();
       }
     }
-    return null;
+    return Future.error("Preset not found");
   }
 
   Future duplicatePreset(String category, String name) {
@@ -123,13 +128,15 @@ class PresetsStorage extends ChangeNotifier {
           presetsData[i]["name"] == name) {
         var clone = json.decode(json.encode(presetsData[i]));
 
-        name = _findFreeName(name, category);
-        clone["name"] = name;
-        presetsData.insert(i + 1, clone);
-        return _savePresets();
+        String? _name = _findFreeName(name, category);
+        if (_name != null) {
+          clone["name"] = _name;
+          presetsData.insert(i + 1, clone);
+          return _savePresets();
+        }
       }
     }
-    return null;
+    return Future.error("Can't clone preset");
   }
 
   Future renamePreset(String category, String name, String newName) {
@@ -140,7 +147,7 @@ class PresetsStorage extends ChangeNotifier {
         return _savePresets();
       }
     }
-    return null;
+    return Future.error("Preset not found");
   }
 
   clearNewFlag(String category, String name) {
@@ -163,7 +170,7 @@ class PresetsStorage extends ChangeNotifier {
         return _savePresets();
       }
     }
-    return null;
+    return Future.error("Preset not found");
   }
 
   Future changePresetCategory(
@@ -175,7 +182,7 @@ class PresetsStorage extends ChangeNotifier {
         return _savePresets();
       }
     }
-    return null;
+    return Future.error("Preset not found");
   }
 
   Future deleteCategory(String category) {
@@ -187,7 +194,7 @@ class PresetsStorage extends ChangeNotifier {
       }
     }
     if (modified) return _savePresets();
-    return null;
+    return Future.error("Category not found");
   }
 
   Future renameCategory(String category, String newName) {
@@ -199,10 +206,10 @@ class PresetsStorage extends ChangeNotifier {
       }
     }
     if (modified) return _savePresets();
-    return null;
+    return Future.error("Category not found");
   }
 
-  String presetToJson(String category, String name) {
+  String? presetToJson(String category, String name) {
     var finalData = Map<String, dynamic>();
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["category"] == category &&
@@ -218,7 +225,7 @@ class PresetsStorage extends ChangeNotifier {
 
   //converts a category to json
   //if parameter left empty, then the full preset list is converted
-  String presetsToJson([String category]) {
+  String? presetsToJson([String? category]) {
     var presets = <dynamic>[];
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["category"] == category ||
@@ -259,10 +266,10 @@ class PresetsStorage extends ChangeNotifier {
 
   _presetFromJson(
       String category, String name, Map<String, dynamic> presetData) async {
-    int p = findPreset(name, category);
+    int? p = findPreset(name, category);
 
     presetData = fixPresetCompatibility(presetData);
-
+    String? _name = name;
     //check if exists
     if (p != null) {
       Map<String, dynamic> _p = presetsData[p];
@@ -270,16 +277,16 @@ class PresetsStorage extends ChangeNotifier {
       if (_presetsEquality(presetData, _p)) return;
 
       //difference - find free name and save as that
-      name = _findFreeName(name, category);
+      _name = _findFreeName(name, category);
     }
 
     //highlight that the preset is new
     presetData["new"] = true;
     //save preset
-    savePreset(presetData, name, category);
+    if (_name != null) savePreset(presetData, _name, category);
   }
 
-  String _findFreeName(String name, String category) {
+  String? _findFreeName(String name, String category) {
     for (int i = 1; i < 1000; i++) {
       String _name = "$name ($i)";
       if (findPreset(category, _name) == null) return _name;

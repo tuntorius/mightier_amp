@@ -10,12 +10,12 @@ class WaveformData {
   int maxValue;
   List<int> data;
   WaveformData({
-    this.maxValue,
-    this.data,
+    required this.maxValue,
+    required this.data,
   });
 
-  Path _overallPath;
-  Path _cachedPath;
+  Path? _overallPath;
+  Path? _cachedPath;
   int _oldFromFrame = -1, _oldToFrame = -1;
   bool _needsUpdate = false;
 
@@ -44,7 +44,7 @@ class WaveformData {
     return size.width * percentage;
   }
 
-  Path path(Size size, {int toFrame, int fromFrame = 0}) {
+  Path? path(Size size, {int? toFrame, int fromFrame = 0}) {
     if (toFrame == _oldToFrame && fromFrame == _oldFromFrame && !_needsUpdate)
       return _cachedPath;
 
@@ -114,7 +114,7 @@ class WaveformData {
     return path;
   }
 
-  Path overallPath(Size size) {
+  Path? overallPath(Size size) {
     //TODO: have a separate flag as this can cause shared usage problems
     if (!_needsUpdate) return _overallPath;
     _overallPath = _path(data, size);

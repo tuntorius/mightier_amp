@@ -1,1 +1,2 @@
 -keep class androidx.lifecycle.** { *; }
+-keep class com.pauldemarco.flutter_blue.Protos* { *; }

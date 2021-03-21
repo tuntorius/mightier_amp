@@ -13,6 +13,7 @@ class AudioPicker {
   static Future<List<String>> pickAudioMultiple() async {
     final absolutePath = await _channel.invokeMethod('pick_audio_multiple');
     if (absolutePath is String) return [absolutePath];
-    return List<String>.from(absolutePath);
+    if (absolutePath != null) return List<String>.from(absolutePath);
+    return [];
   }
 }

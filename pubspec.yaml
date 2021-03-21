@@ -28,7 +28,6 @@ dependencies:
   just_audio: ^0.7.1
 
   #upgrade to null-safety
-  #tinycolor: ^1.0.3
   tinycolor:
     path: ./tinycolor
   wakelock: ^0.5.0+2
@@ -39,6 +38,8 @@ dependencies:
     path: ./audio_picker
   page_view_indicators: ^2.0.0
   audiotagger: ^2.1.0
+  uuid: ^3.0.1
+  
 # https://github.com/lukhof/flutter_audio_query/tree/development - version of flutter_audio_query with ios support
 
 # https://pub.dev/packages/direct_select - possibility to use for selecting effects

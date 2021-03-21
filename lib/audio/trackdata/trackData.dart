@@ -6,10 +6,13 @@ import 'dart:io';
 import 'package:mighty_plug_manager/audio/models/jamTrack.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:uuid/uuid.dart';
 
 class TrackData {
   static final TrackData _storage = TrackData._();
   static const tracksFile = "tracks.json";
+
+  final Uuid uuid = Uuid();
 
   factory TrackData() {
     return _storage;
@@ -56,12 +59,25 @@ class TrackData {
   }
 
   addTrack(String file, String name) {
-    _tracksData.add(JamTrack(name: name, path: file));
+    _tracksData.add(JamTrack(name: name, path: file, uuid: _generateUuid()));
     _saveTracks();
   }
 
   _saveTracks() async {
     String _json = json.encode(_tracksData);
     await _tracksFile.writeAsString(_json);
+  }
+
+  String _generateUuid() {
+    String id = "";
+    bool unique = true;
+    do {
+      String id = uuid.v4();
+      // check unique
+      _tracksData.forEach((element) {
+        if (element.uuid == id) unique = false;
+      });
+    } while (unique == false);
+    return id;
   }
 }

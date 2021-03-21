@@ -532,7 +532,8 @@ class _PresetListState extends State<PresetList>
               selected: selected && !widget.simplified,
               onTap: () {
                 //remove the new marker if exists
-                PresetsStorage().clearNewFlag(item["category"], item["name"]);
+                if (!widget.simplified)
+                  PresetsStorage().clearNewFlag(item["category"], item["name"]);
                 widget.onTap(item);
                 setState(() {});
               },

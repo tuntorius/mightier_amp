@@ -45,7 +45,7 @@ class _PresetEditorState extends State<PresetEditor> {
 
   @override
   Widget build(BuildContext context) {
-    bool savePresetEnabled =
+    bool uploadPresetEnabled =
         device.deviceControl.isConnected && device.presetSaveSupport;
 
     List<bool> _instrumentSelection =
@@ -61,7 +61,7 @@ class _PresetEditorState extends State<PresetEditor> {
               children: [
                 ElevatedButton(
                   child: Icon(Icons.save_alt),
-                  onPressed: !savePresetEnabled
+                  onPressed: !uploadPresetEnabled
                       ? null
                       : () {
                           //TODO: move to method

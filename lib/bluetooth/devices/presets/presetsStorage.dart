@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:uuid/uuid.dart';
 
 class PresetsStorage extends ChangeNotifier {
   static final PresetsStorage _storage = PresetsStorage._();
@@ -14,6 +15,8 @@ class PresetsStorage extends ChangeNotifier {
 
   static const presetsSingle = "preset-single";
   static const presetsMultiple = "preset-multiple";
+
+  final Uuid uuid = Uuid();
 
   factory PresetsStorage() {
     return _storage;
@@ -99,6 +102,8 @@ class PresetsStorage extends ChangeNotifier {
   savePreset(Map<String, dynamic> preset, String name, String category) async {
     preset["name"] = name;
     preset["category"] = category;
+
+    _addUuid(preset);
 
     var index = findPreset(name, category);
     if (index != null) {
@@ -315,7 +320,21 @@ class PresetsStorage extends ChangeNotifier {
     //old style preset didn't contain mighty plug
     if (!presetData.containsKey("product_id"))
       presetData["product_id"] = NuxMightyPlug.defaultNuxId;
-
+    if (!presetData.containsKey("uuid")) {
+      _addUuid(presetData);
+    }
     return presetData;
+  }
+
+  void _addUuid(Map<String, dynamic> preset) {
+    bool unique = true;
+    do {
+      String id = uuid.v4();
+      // check unique
+      presetsData.forEach((element) {
+        if (element["uuid"] == id) unique = false;
+      });
+      preset["uuid"] = id;
+    } while (unique == false);
   }
 }

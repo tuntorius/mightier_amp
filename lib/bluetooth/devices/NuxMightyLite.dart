@@ -31,7 +31,7 @@ class NuxMightyLite extends NuxDevice {
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => 0;
-  bool get presetSaveSupport => true;
+  bool get presetSaveSupport => false;
 
   List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;

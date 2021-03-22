@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mighty_plug_manager/audio/automationController.dart';
 import 'package:mighty_plug_manager/audio/widgets/presetsPanel.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
@@ -15,16 +16,18 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:page_view_indicators/circle_page_indicator.dart';
 
 import 'audioDecoder.dart';
+import 'models/jamTrack.dart';
 import 'models/trackAutomation.dart';
 import 'models/waveform_data.dart';
+import 'widgets/eventEditor.dart';
 import 'widgets/painted_waveform.dart';
 import 'widgets/speedPanel.dart';
 
-enum EditorState { play, insert }
+enum EditorState { play, insert, duplicateInsert }
 
 class AudioEditor extends StatefulWidget {
-  final String path;
-  AudioEditor(this.path);
+  final JamTrack track;
+  AudioEditor(this.track);
   @override
   _AudioEditorState createState() => _AudioEditorState();
 }
@@ -32,7 +35,7 @@ class AudioEditor extends StatefulWidget {
 class _AudioEditorState extends State<AudioEditor> {
   WaveformData? wfData;
   AudioDecoder decoder = AudioDecoder();
-  TrackAutomation automation = TrackAutomation();
+  late AutomationController automation;
 
   final controller = PageController(
     initialPage: 0,
@@ -56,11 +59,13 @@ class _AudioEditorState extends State<AudioEditor> {
   //stuff for inserting
   EditorState state = EditorState.play;
   dynamic selectedPreset;
+  AutomationEvent? duplicatedEvent;
 
   @override
   void initState() {
     super.initState();
 
+    automation = AutomationController(widget.track.automation);
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -68,7 +73,7 @@ class _AudioEditorState extends State<AudioEditor> {
     device = NuxDeviceControl().device;
 
     decodeAudio();
-    automation.setAudioFile(widget.path, 100);
+    automation.setAudioFile(widget.track.path, 100);
 
     //set latency only when a device is connected
     if (BLEMidiHandler().connectedDevice != null)
@@ -82,7 +87,7 @@ class _AudioEditorState extends State<AudioEditor> {
   }
 
   Future decodeAudio() async {
-    await decoder.open(widget.path);
+    await decoder.open(widget.track.path);
 
     decoder.decode(() {
       wfData = WaveformData(maxValue: 1, data: decoder.samples);
@@ -123,8 +128,19 @@ class _AudioEditorState extends State<AudioEditor> {
   }
 
   void eventUpdate(AutomationEvent event) {
-    print(event.presetName);
-    device.presetFromJson(event.preset);
+    switch (event.type) {
+      case AutomationEventType.preset:
+        var preset = event.getPreset();
+        if (preset != null && preset["product_id"] == device.productStringId)
+          device.presetFromJson(
+              preset,
+              event.cabinetLevelOverrideEnable
+                  ? event.cabinetLevelOverride
+                  : null);
+        break;
+      case AutomationEventType.loop:
+        break;
+    }
   }
 
   void timingData(double samplesPerPixel, double msPerSample) {
@@ -136,12 +152,13 @@ class _AudioEditorState extends State<AudioEditor> {
     var event = automation.selectedEvent;
     if (event == null) return;
     var subtract =
-        Duration(milliseconds: (_samplesPerPixel * _msPerSample).round());
+        Duration(milliseconds: (_samplesPerPixel / _msPerSample).ceil());
     if (event.eventTime > subtract)
       event.eventTime -= subtract;
     else
       event.eventTime = Duration(milliseconds: 0);
 
+    automation.sortEvents();
     setState(() {});
   }
 
@@ -149,13 +166,27 @@ class _AudioEditorState extends State<AudioEditor> {
     var event = automation.selectedEvent;
     if (event == null) return;
     var subtract =
-        Duration(milliseconds: (_samplesPerPixel * _msPerSample).round());
+        Duration(milliseconds: (_samplesPerPixel / _msPerSample).ceil());
     var songLength = automation.duration;
     if (event.eventTime < songLength - subtract)
       event.eventTime += subtract;
     else
       event.eventTime = songLength;
 
+    automation.sortEvents();
+    setState(() {});
+  }
+
+  void editEvent(AutomationEvent event) {
+    var editor = EventEditor(event: event);
+    editor.buildDialog(context).then((value) {
+      setState(() {});
+    });
+  }
+
+  void duplicateEvent(AutomationEvent event) {
+    state = EditorState.duplicateInsert;
+    duplicatedEvent = event;
     setState(() {});
   }
 
@@ -193,6 +224,9 @@ class _AudioEditorState extends State<AudioEditor> {
                       currentSample: currentSample,
                       automation: automation,
                       onTimingData: timingData,
+                      onEventSelectionChanged: () {
+                        setState(() {});
+                      },
                       onWaveformTap: (sample) {
                         switch (state) {
                           case EditorState.play:
@@ -203,17 +237,22 @@ class _AudioEditorState extends State<AudioEditor> {
                               state = EditorState.play;
                               automation.addEvent(
                                   Duration(milliseconds: sampleToMs(sample)),
-                                  AutomationEventType.changePreset)
-                                ..presetCategory = selectedPreset["category"]
-                                ..presetName = selectedPreset["name"]
-                                ..channel = selectedPreset["channel"]
-                                ..preset = selectedPreset;
+                                  AutomationEventType.preset)
+                                ..setPresetUuid(selectedPreset["uuid"]);
+                            });
+                            break;
+                          case EditorState.duplicateInsert:
+                            if (duplicatedEvent == null) break;
+                            setState(() {
+                              state = EditorState.play;
+                              automation.addEventFromOther(duplicatedEvent!,
+                                  Duration(milliseconds: sampleToMs(sample)));
                             });
                             break;
                         }
                       },
                     ),
-                    if (state == EditorState.insert)
+                    if (state != EditorState.play)
                       Container(
                           color: Colors.grey[700],
                           child: Padding(
@@ -313,57 +352,69 @@ class _AudioEditorState extends State<AudioEditor> {
             ),
             Expanded(
                 flex: 2,
-                child: PageView(
-                  controller: controller,
-                  onPageChanged: (int index) {
-                    _currentPageNotifier.value = index;
-                  },
+                child: IndexedStack(
+                  index: state == EditorState.play ? 0 : 1,
+                  alignment: Alignment.center,
                   children: [
-                    PresetsPanel(
-                        state: state,
-                        onDelete: () {
-                          if (automation.selectedEvent != null)
-                            automation.removeEvent(automation.selectedEvent!);
-                          setState(() {});
-                        },
-                        onSelectedPreset: (_preset) {
-                          if (_preset != null) {
-                            setState(() {
-                              selectedPreset = _preset;
-                              state = EditorState.insert;
-                            });
-                          } else {
-                            setState(() {
-                              state = EditorState.play;
-                            });
-                          }
-                        }),
-                    SpeedPanel(
-                      semitones: semitones,
-                      speed: speed,
-                      onSpeedChanged: (_speed) {
-                        setState(() {
-                          speed = _speed;
-                          automation.setSpeed(speed);
-                        });
+                    PageView(
+                      controller: controller,
+                      onPageChanged: (int index) {
+                        _currentPageNotifier.value = index;
                       },
-                      onSemitonesChanged: (_semitones, pitch) {
-                        setState(() {
-                          semitones = _semitones;
-                          automation.setPitch(pitch);
-                        });
-                      },
+                      children: [
+                        PresetsPanel(
+                            automation: automation,
+                            onDelete: () {
+                              if (automation.selectedEvent != null)
+                                automation
+                                    .removeEvent(automation.selectedEvent!);
+                              setState(() {});
+                            },
+                            onEditEvent: editEvent,
+                            onDuplicateEvent: duplicateEvent,
+                            onSelectedPreset: (_preset) {
+                              setState(() {
+                                selectedPreset = _preset;
+                                state = EditorState.insert;
+                              });
+                            }),
+                        SpeedPanel(
+                          semitones: semitones,
+                          speed: speed,
+                          onSpeedChanged: (_speed) {
+                            setState(() {
+                              speed = _speed;
+                              automation.setSpeed(speed);
+                            });
+                          },
+                          onSemitonesChanged: (_semitones, pitch) {
+                            setState(() {
+                              semitones = _semitones;
+                              automation.setPitch(pitch);
+                            });
+                          },
+                        ),
+                        Text("TODO"),
+                      ],
                     ),
-                    Text("TODO"),
+                    ElevatedButton(
+                      child: Text("Cancel"),
+                      onPressed: () {
+                        state = EditorState.play;
+                        setState(() {});
+                      },
+                    )
                   ],
                 )),
             Container(
               height: 30,
               alignment: Alignment.center,
-              child: CirclePageIndicator(
-                itemCount: 3,
-                currentPageNotifier: _currentPageNotifier,
-              ),
+              child: state != EditorState.play
+                  ? null
+                  : CirclePageIndicator(
+                      itemCount: 3,
+                      currentPageNotifier: _currentPageNotifier,
+                    ),
             )
             /*ElevatedButton(onPressed: () {}, child: Text("Do other stuff here"))*/
           ]),

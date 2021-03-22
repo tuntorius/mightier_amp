@@ -25,6 +25,7 @@ class PresetsStorage extends ChangeNotifier {
   String presetsPath = "";
   Directory? storageDirectory;
   File? _presetsFile;
+  bool _presetsReady = false;
 
   List<dynamic> presetsData = <dynamic>[];
   List<String> categoriesCache = <String>[];
@@ -64,8 +65,10 @@ class PresetsStorage extends ChangeNotifier {
           presetsData[i] = fixPresetCompatibility(presetsData[i]);
 
         _buildCategoryCache();
+        _presetsReady = true;
       }
     } catch (e) {
+      _presetsReady = true;
       //   //no file
       //   print("Presets file not available");
     }
@@ -76,6 +79,13 @@ class PresetsStorage extends ChangeNotifier {
     String _json = json.encode(presetsData);
     await _presetsFile!.writeAsString(_json);
     notifyListeners();
+  }
+
+  Future waitLoading() async {
+    for (int i = 0; i < 20; i++) {
+      if (_presetsReady) break;
+      await Future.delayed(Duration(milliseconds: 200));
+    }
   }
 
   List<String> getCategories() {
@@ -95,6 +105,13 @@ class PresetsStorage extends ChangeNotifier {
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["name"] == name &&
           presetsData[i]["category"] == category) return i;
+    }
+    return null;
+  }
+
+  dynamic findPresetByUuid(String uuid) {
+    for (int i = 0; i < presetsData.length; i++) {
+      if (presetsData[i]["uuid"] == uuid) return presetsData[i];
     }
     return null;
   }

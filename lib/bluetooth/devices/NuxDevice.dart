@@ -307,7 +307,7 @@ abstract class NuxDevice extends ChangeNotifier {
     return productStringId == productId;
   }
 
-  presetFromJson(dynamic _preset) {
+  presetFromJson(dynamic _preset, double? overrideLevel) {
     presetName = _preset["name"];
     presetCategory = _preset["category"];
     var nuxChannel = _preset["channel"];
@@ -332,8 +332,15 @@ abstract class NuxDevice extends ChangeNotifier {
       Processor fx;
       fx = p.getEffectsForSlot(i)[p.getSelectedEffectForSlot(i)];
 
-      for (int f = 0; f < fx.parameters.length; f++)
-        fx.parameters[f].value = _effect[fx.parameters[f].handle];
+      for (int f = 0; f < fx.parameters.length; f++) {
+        if (overrideLevel != null &&
+            cabinetSupport &&
+            i == cabinetSlotIndex &&
+            fx.parameters[f].handle == "level")
+          fx.parameters[f].value = overrideLevel;
+        else
+          fx.parameters[f].value = _effect[fx.parameters[f].handle];
+      }
 
       deviceControl.sendFullEffectSettings(i, false);
     }

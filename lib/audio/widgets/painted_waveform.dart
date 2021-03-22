@@ -2,22 +2,25 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 import 'package:mighty_plug_manager/audio/models/waveform_data.dart';
 import 'package:mighty_plug_manager/audio/widgets/waveform_painter.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
 
+import '../automationController.dart';
+
 class PaintedWaveform extends StatefulWidget {
   final double dragHandlesheight = 56;
   final Function(int) onWaveformTap;
+  final Function onEventSelectionChanged;
   final WaveformData? sampleData;
   final int currentSample;
-  final TrackAutomation automation;
+  final AutomationController automation;
   final Function(double, double) onTimingData;
   PaintedWaveform(
       {Key? key,
       required this.sampleData,
       required this.onWaveformTap,
+      required this.onEventSelectionChanged,
       required this.currentSample,
       required this.automation,
       required this.onTimingData})
@@ -150,7 +153,6 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
           widget.automation.duration.inMilliseconds;
 
       var samplesPerPixel = ((endPosition - startPosition) / canvasSize);
-
       widget.onTimingData(samplesPerPixel, msPerSample);
       //time = (widget.currentSample / msPerSample) / 1000;
       //create automation event handles (TODO: move them in separate widget)
@@ -175,6 +177,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
             },
             onHorizontalDragEnd: (d) {
               widget.automation.selectedEvent = widget.automation.events[i];
+              widget.onEventSelectionChanged();
               widget.automation.sortEvents();
               //update automation
               setState(() {});
@@ -182,6 +185,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
             child: FloatingActionButton(
               onPressed: () {
                 widget.automation.selectedEvent = widget.automation.events[i];
+                widget.onEventSelectionChanged();
                 setState(() {});
               },
               backgroundColor: Preset.channelColors[element.channel],

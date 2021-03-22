@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/selectPreset.dart';
-
-import '../audioEditor.dart';
+import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
+import '../automationController.dart';
 
 class PresetsPanel extends StatelessWidget {
-  final EditorState state;
-  final Function(Map<String, dynamic>?) onSelectedPreset;
+  final AutomationController automation;
+  final Function(Map<String, dynamic>) onSelectedPreset;
+  final Function(AutomationEvent) onDuplicateEvent;
+  final Function(AutomationEvent) onEditEvent;
   final Function onDelete;
   PresetsPanel(
-      {required this.state,
-      required this.onSelectedPreset,
-      required this.onDelete});
+      {required this.onSelectedPreset,
+      required this.automation,
+      required this.onDelete,
+      required this.onEditEvent,
+      required this.onDuplicateEvent});
 
   @override
   Widget build(BuildContext context) {
@@ -24,21 +28,17 @@ class PresetsPanel extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    if (state != EditorState.insert) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            SelectPresetDialog().buildDialog(context),
-                      ).then((value) {
-                        if (value != null) {
-                          onSelectedPreset(value);
-                        }
-                      });
-                    } else
-                      onSelectedPreset(null);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => SelectPresetDialog()
+                          .buildDialog(context, noneOption: false),
+                    ).then((value) {
+                      if (value != null) {
+                        onSelectedPreset(value);
+                      }
+                    });
                   },
-                  child: Text(
-                      state != EditorState.insert ? "Insert Event" : "Cancel"),
+                  child: Text("Insert Event"),
                 ),
               ),
               SizedBox(
@@ -47,7 +47,11 @@ class PresetsPanel extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   child: Text("Duplicate"),
-                  onPressed: null,
+                  onPressed: automation.selectedEvent != null
+                      ? () {
+                          onDuplicateEvent(automation.selectedEvent!);
+                        }
+                      : null,
                 ),
               ),
             ],
@@ -57,7 +61,11 @@ class PresetsPanel extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   child: Text("Edit"),
-                  onPressed: null,
+                  onPressed: automation.selectedEvent == null
+                      ? null
+                      : () {
+                          onEditEvent(automation.selectedEvent!);
+                        },
                 ),
               ),
               SizedBox(
@@ -66,16 +74,24 @@ class PresetsPanel extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   child: Text("Delete"),
-                  onPressed: () {
-                    onDelete();
-                  },
+                  onPressed: automation.selectedEvent == null
+                      ? null
+                      : () {
+                          onDelete();
+                        },
                 ),
               )
             ],
           ),
-          ElevatedButton(
-            child: Text("Set Initial Parameters"),
-            onPressed: null,
+          MaterialButton(
+            color: automation.initialEvent.getPresetUuid() == ""
+                ? Colors.orange[700]
+                : Colors.blue,
+            textColor: Colors.white,
+            child: Text("Edit Initial Parameters"),
+            onPressed: () {
+              onEditEvent(automation.initialEvent);
+            },
           ),
         ],
       ),

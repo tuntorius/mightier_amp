@@ -19,7 +19,13 @@ import '../../../bluetooth/devices/presets/presetsStorage.dart';
 class PresetList extends StatefulWidget {
   final void Function(dynamic) onTap;
   final bool simplified;
-  PresetList({required this.onTap, this.simplified = false});
+  final bool noneOption;
+  final String? customProductId;
+  PresetList(
+      {required this.onTap,
+      this.simplified = false,
+      this.noneOption = false,
+      this.customProductId});
   @override
   _PresetListState createState() => _PresetListState();
 }
@@ -456,9 +462,10 @@ class _PresetListState extends State<PresetList>
 
   Widget _buildList(BuildContext context) {
     if (PresetsStorage().getCategories().length == 0)
-      return Center(child: Text("Empty"));
+      return Center(child: Text("Empty", style: TextStyle(color: Colors.grey)));
     late Offset _position;
-    return GestureDetector(
+
+    Widget out = GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapDown: (details) {
         _position = details.globalPosition;
@@ -483,7 +490,12 @@ class _PresetListState extends State<PresetList>
           var device = NuxDeviceControl().device;
           bool newItem = false;
           //check if enabled and desaturate color if needed
-          bool enabled = item["product_id"] == device.productStringId;
+
+          bool enabled = true;
+          if (widget.customProductId == null)
+            enabled = item["product_id"] == device.productStringId;
+          else
+            enabled = item["product_id"] == widget.customProductId;
 
           Color color = Preset.channelColors[item["channel"]];
           if (!enabled) color = TinyColor(color).desaturate(90).color;
@@ -559,12 +571,6 @@ class _PresetListState extends State<PresetList>
               subtitle: Row(
                 children: buildEffectsPreview(item),
               ),
-              /*Text(
-              //NuxDeviceControl().getDeviceNameFromId(item["product_id"]),
-              NuxDeviceControl().device.channelName(item["channel"]),
-              //Channel.values[item["channel"]].toString().split('.')[1],
-              style: TextStyle(color: color),
-            )*/
               trailing: trailingWidget);
           return out;
         },
@@ -575,5 +581,26 @@ class _PresetListState extends State<PresetList>
             arrowIcon: Icon(Icons.keyboard_arrow_down, color: Colors.white)),
       ),
     );
+
+    if (widget.noneOption) {
+      out = Column(
+        children: [
+          ListTile(
+            contentPadding: EdgeInsets.only(left: 16, right: 4),
+            leading: Icon(
+              Icons.close,
+              color: Colors.white,
+            ),
+            title: Transform.translate(
+                offset: Offset(-16, 0), child: Text("None")),
+            onTap: () {
+              widget.onTap(false);
+            },
+          ),
+          out
+        ],
+      );
+    }
+    return out;
   }
 }

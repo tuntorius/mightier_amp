@@ -14,6 +14,7 @@ class ThickSlider extends StatefulWidget {
   final ValueChanged<double>? onChanged;
   final String Function(double) labelFormatter;
   final int skipEmitting;
+  final bool enabled;
 
   ThickSlider(
       {required this.activeColor,
@@ -23,7 +24,8 @@ class ThickSlider extends StatefulWidget {
       required this.value,
       this.onChanged,
       required this.labelFormatter,
-      this.skipEmitting = 3});
+      this.skipEmitting = 3,
+      this.enabled = true});
 
   @override
   _ThickSliderState createState() => _ThickSliderState();
@@ -63,9 +65,6 @@ class _ThickSliderState extends State<ThickSlider> {
     super.initState();
 
     //range check
-    assert(widget.value != null);
-    assert(widget.min != null);
-    assert(widget.max != null);
     assert(widget.min < widget.max);
     assert(widget.value >= widget.min && widget.value <= widget.max);
     assert(widget.skipEmitting > 0);
@@ -95,6 +94,9 @@ class _ThickSliderState extends State<ThickSlider> {
 
       return GestureDetector(
         onTapDown: (details) {
+          if (!widget.enabled) return;
+
+          //double tap
           var now = DateTime.now().millisecondsSinceEpoch;
           if (now - lastTapDown < 300) {
             setPercentage(details.localPosition.dx, width);
@@ -103,6 +105,7 @@ class _ThickSliderState extends State<ThickSlider> {
           lastTapDown = now;
         },
         onHorizontalDragUpdate: (detail) {
+          if (!widget.enabled) return;
           addPercentage(detail.delta.dx, width);
           emitCounter++;
           if (emitCounter % widget.skipEmitting == 0) {
@@ -110,6 +113,7 @@ class _ThickSliderState extends State<ThickSlider> {
           }
         },
         onHorizontalDragEnd: (detail) {
+          if (!widget.enabled) return;
           //call the last factor value here
           widget.onChanged?.call(_lerp(factor));
         },
@@ -120,14 +124,20 @@ class _ThickSliderState extends State<ThickSlider> {
             children: [
               Container(
                 height: 30,
-                color: TinyColor(widget.activeColor).darken(15).color,
+                color: widget.enabled
+                    ? TinyColor(widget.activeColor).darken(15).color
+                    : Colors.grey[800],
                 width: factor * width,
               ),
               Positioned(
                   left: _lerp2(factor, 10, width - 10) - 10,
                   width: 20,
                   height: 40,
-                  child: Container(color: widget.activeColor, width: 20)),
+                  child: Container(
+                      color: widget.enabled
+                          ? widget.activeColor
+                          : Colors.grey[700],
+                      width: 20)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
                 child: Row(
@@ -135,11 +145,19 @@ class _ThickSliderState extends State<ThickSlider> {
                     children: [
                       Text(
                         widget.label,
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                        style: TextStyle(
+                            color: widget.enabled
+                                ? Colors.white
+                                : Colors.grey[600],
+                            fontSize: 20),
                       ),
                       Text(
                         widget.labelFormatter(_lerp(factor)),
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                        style: TextStyle(
+                            color: widget.enabled
+                                ? Colors.white
+                                : Colors.grey[600],
+                            fontSize: 20),
                       )
                     ]),
               ),

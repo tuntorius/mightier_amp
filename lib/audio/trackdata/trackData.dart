@@ -25,6 +25,8 @@ class TrackData {
   List<JamTrack> _tracksData = <JamTrack>[];
   List<JamTrack> get tracks => _tracksData;
 
+  bool _presetsReady = false;
+
   TrackData._() {
     _init();
   }
@@ -51,19 +53,36 @@ class TrackData {
       var data = json.decode(_presetJson);
       _tracksData =
           data.map<JamTrack>((json) => JamTrack.fromJson(json)).toList();
+      _presetsReady = true;
     } catch (e) {
       print(e);
+      //still ready
+      _presetsReady = true;
       //   //no file
       //   print("Presets file not available");
     }
   }
 
-  addTrack(String file, String name) {
-    _tracksData.add(JamTrack(name: name, path: file, uuid: _generateUuid()));
-    _saveTracks();
+  Future waitLoading() async {
+    for (int i = 0; i < 20; i++) {
+      if (_presetsReady) break;
+      await Future.delayed(Duration(milliseconds: 200));
+    }
   }
 
-  _saveTracks() async {
+  addTrack(String file, String name) {
+    _tracksData.add(JamTrack(name: name, path: file, uuid: _generateUuid()));
+    saveTracks();
+  }
+
+  removeTrack(JamTrack track) async {
+    if (_tracksData.contains(track)) {
+      _tracksData.remove(track);
+      await saveTracks();
+    }
+  }
+
+  saveTracks() async {
     String _json = json.encode(_tracksData);
     await _tracksFile.writeAsString(_json);
   }
@@ -72,7 +91,7 @@ class TrackData {
     String id = "";
     bool unique = true;
     do {
-      String id = uuid.v4();
+      id = uuid.v4();
       // check unique
       _tracksData.forEach((element) {
         if (element.uuid == id) unique = false;

@@ -2,11 +2,13 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 //import 'package:audio_picker/audio_picker.dart';
-import 'dart:io';
-
 import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+import 'package:mighty_plug_manager/audio/models/jamTrack.dart';
+import 'package:mighty_plug_manager/audio/setlists.dart';
 import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:path/path.dart';
 import 'package:mighty_plug_manager/audio/audioEditor.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -20,15 +22,57 @@ class JamTracks extends StatefulWidget {
 class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
   late TabController cntrl;
 
+  var popupSubmenu = <PopupMenuEntry>[
+    PopupMenuItem(
+      value: 0,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.delete,
+            color: Colors.grey[400],
+          ),
+          SizedBox(width: 5),
+          Text("Delete"),
+        ],
+      ),
+    )
+  ];
+
   @override
   void initState() {
     super.initState();
     cntrl = TabController(length: 2, vsync: this);
+
+    Stopwatch stopwatch = new Stopwatch()..start();
+    PresetsStorage().waitLoading().then((value) {
+      print('preload executed in ${stopwatch.elapsed}');
+      TrackData().waitLoading().then((value) {
+        print('load executed in ${stopwatch.elapsed}');
+        setState(() {});
+      });
+    });
   }
 
   void checkPermission() async {
     var status = await Permission.camera.status;
     print("Camera $status");
+  }
+
+  void menuActions(BuildContext context, int action, JamTrack item) async {
+    switch (action) {
+      case 0: //delete
+        AlertDialogs.showConfirmDialog(context,
+            title: "Confirm",
+            description: "Are you sure you want to delete ${item.name}?",
+            cancelButton: "Cancel",
+            confirmButton: "Delete",
+            confirmColor: Colors.red, onConfirm: (delete) {
+          if (delete) {
+            TrackData().removeTrack(item).then((value) => setState(() {}));
+          }
+        });
+        break;
+    }
   }
 
   //try to get best version of tags (mp3 only)
@@ -69,7 +113,6 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
                   },
                 ),
               );
-              break;
             case PermissionStatus.granted:
               return Column(
                 children: [
@@ -88,10 +131,33 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
                               return ListTile(
                                 title: Text(TrackData().tracks[index].name),
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => AudioEditor(
-                                          TrackData().tracks[index].path)));
+                                  Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                          builder: (context) => AudioEditor(
+                                              TrackData().tracks[index])))
+                                      .then((value) {
+                                    //save track data
+                                    TrackData().saveTracks();
+                                  });
                                 },
+                                trailing: PopupMenuButton(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12.0,
+                                        right: 4,
+                                        bottom: 10,
+                                        top: 10),
+                                    child: Icon(Icons.more_vert,
+                                        color: Colors.grey),
+                                  ),
+                                  itemBuilder: (context) {
+                                    return popupSubmenu;
+                                  },
+                                  onSelected: (pos) {
+                                    menuActions(context, pos as int,
+                                        TrackData().tracks[index]);
+                                  },
+                                ),
                               );
                             },
                           ),
@@ -127,16 +193,13 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
                           )
                         ],
                       ),
-                      Text("TODO")
+                      Setlists()
                     ]),
                   ),
                 ],
               );
-              break;
             default:
               return Text("Permission declined");
-
-              break;
           }
         }
         return Text("Unknown status");

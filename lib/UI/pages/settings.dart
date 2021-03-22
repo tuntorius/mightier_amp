@@ -149,8 +149,10 @@ class _SettingsState extends State<Settings> {
                   );
                 },
               ),
+              //Automatically set matching cabinet when changing an amp
               CheckboxListTile(
-                  title: Text("Associate Cabinets with Amps"),
+                  title: Text("Set matching cabinets automatically"),
+                  subtitle: Text("when changing an amp"),
                   value: SharedPrefs().getInt(SettingsKeys.changeCabs, 1) != 0,
                   onChanged: (value) {
                     setState(() {

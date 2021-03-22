@@ -51,7 +51,6 @@ class _AppState extends State<App> {
   NuxDeviceControl device = NuxDeviceControl();
   SharedPrefs prefs = SharedPrefs();
   PresetsStorage storage = PresetsStorage();
-  TrackData data = TrackData();
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +89,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       PresetList(onTap: (preset) {
         var dev = NuxDeviceControl().device;
         if (dev.isPresetSupported(preset))
-          NuxDeviceControl().device.presetFromJson(preset);
+          NuxDeviceControl().device.presetFromJson(preset, null);
         else
           print("Preset is for different device!");
       }),

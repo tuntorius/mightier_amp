@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import '../../bluetooth/devices/presets/Preset.dart';
-import '../models/trackAutomation.dart';
+import '../automationController.dart';
 import '../models/waveform_data.dart';
 
 class WaveformPainter extends CustomPainter {
@@ -14,7 +14,7 @@ class WaveformPainter extends CustomPainter {
   final int endingFrame;
   final int currentSample;
   final bool overallWaveform;
-  final TrackAutomation automation;
+  final AutomationController automation;
   late Paint painter;
   final Color color;
   final double strokeWidth;
@@ -98,7 +98,7 @@ class WaveformPainter extends CustomPainter {
         var paragraphBuilder = ui.ParagraphBuilder(ui.ParagraphStyle())
           ..pushStyle(
               ui.TextStyle(color: Preset.channelColors[element.channel]))
-          ..addText(element.presetName);
+          ..addText(element.name);
         final ui.Paragraph paragraph = paragraphBuilder.build()
           ..layout(ui.ParagraphConstraints(width: size.width - 12.0 - 12.0));
         canvas.drawParagraph(paragraph, Offset(dx + 2, 10));

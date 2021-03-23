@@ -33,7 +33,7 @@ class NuxMightyPlug extends NuxDevice {
   int get amplifierSlotIndex => 2;
   bool get cabinetSupport => true;
   int get cabinetSlotIndex => 3;
-  bool get presetSaveSupport => false;
+  bool get presetSaveSupport => true;
   bool get advancedSettingsSupport => true;
   bool get batterySupport => true;
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;

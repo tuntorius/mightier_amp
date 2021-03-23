@@ -114,7 +114,7 @@ class Vibe extends Modulation {
         name: "*Mix*",
         handle: "mix",
         value: 0,
-        valueType: ValueType.vibeMode,
+        valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxmix,
         midiCC: MidiCCValues.bCC_ChorusLevel),
   ];

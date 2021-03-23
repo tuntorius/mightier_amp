@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
 
 import '../NuxDeviceControl.dart';
+import 'NuxConstants.dart';
 import 'NuxDevice.dart';
 import 'effects/Processor.dart';
 import 'presets/PlugAirPreset.dart';
@@ -32,7 +33,10 @@ class NuxMightyPlug extends NuxDevice {
   int get amplifierSlotIndex => 2;
   bool get cabinetSupport => true;
   int get cabinetSlotIndex => 3;
-  bool get presetSaveSupport => true;
+  bool get presetSaveSupport => false;
+  bool get advancedSettingsSupport => true;
+  bool get batterySupport => true;
+  int get channelChangeCC => MidiCCValues.bCC_CtrlType;
 
   List<String> get groupsName => ["Guitar", "Bass"];
   List<ProcessorInfo> get processorList => _processorList;

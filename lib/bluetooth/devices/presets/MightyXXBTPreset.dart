@@ -40,14 +40,14 @@ class MXXBTPreset extends Preset {
     modulationList.addAll([Phaser(), Chorus(), Tremolo()]);
 
     amplifierList.addAll([
-      AmpClean1(),
-      AmpClean2(),
-      AmpDrive1(),
-      AmpDrive2(),
-      AmpMetal1(),
-      AmpMetal2(),
-      AmpLead1(),
-      AmpLead2()
+      Amp1(),
+      // AmpClean2(),
+      // AmpDrive1(),
+      // AmpDrive2(),
+      // AmpMetal1(),
+      // AmpMetal2(),
+      // AmpLead1(),
+      // AmpLead2()
     ]);
 
     delayList.addAll([AnalogDelay(), ModulationDelay(), DigitalDelay()]);

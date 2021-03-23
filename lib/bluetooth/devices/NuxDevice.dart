@@ -35,6 +35,10 @@ abstract class NuxDevice extends ChangeNotifier {
   bool get cabinetSupport;
   int get cabinetSlotIndex;
   bool get presetSaveSupport;
+  bool get advancedSettingsSupport;
+  bool get batterySupport;
+
+  int get channelChangeCC;
 
   int get groupsCount;
   List<String> groupsName = <String>[];
@@ -223,7 +227,7 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void onDataReceived(List<int> data) {
-    assert(data != null && data.length > 0);
+    assert(data.length > 0);
 
     switch (data[0]) {
       case MidiMessageValues.sysExStart:
@@ -285,10 +289,8 @@ abstract class NuxDevice extends ChangeNotifier {
         }
         break;
       case MidiMessageValues.controlChange:
-        switch (data[1]) {
-          case MidiCCValues.bCC_CtrlType: //preset changed
-            _setSelectedChannelNuxIndex(data[2], true);
-        }
+        if (data[1] == channelChangeCC)
+          _setSelectedChannelNuxIndex(data[2], true);
         break;
     }
   }

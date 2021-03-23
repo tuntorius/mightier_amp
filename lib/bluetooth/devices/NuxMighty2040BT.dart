@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
+import 'NuxConstants.dart';
 import 'presets/MightyXXBTPreset.dart';
 
 import '../NuxDeviceControl.dart';
@@ -41,6 +42,9 @@ class NuxMighty2040BT extends NuxDevice {
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => 0;
   bool get presetSaveSupport => false;
+  bool get advancedSettingsSupport => false;
+  bool get batterySupport => false;
+  int get channelChangeCC => MidiCCValues.bCC_AmpMode;
 
   List<String> get groupsName => ["1", "2"];
   List<ProcessorInfo> get processorList => _processorList;

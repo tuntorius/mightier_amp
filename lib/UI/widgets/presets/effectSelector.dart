@@ -203,7 +203,7 @@ class _EffectSelectorState extends State<EffectSelector> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_selectedEffect != 0)
+            if (_selectedEffect != 0 && _effectItems.length > 1)
               custom.PopupMenuButton(
                 child: effectSelectButton,
                 itemBuilder: (context) => _effectItems,
@@ -213,7 +213,7 @@ class _EffectSelectorState extends State<EffectSelector> {
               effectSelectButton,
             Row(
               children: [
-                if (_selectedEffect != 0)
+                if (_selectedEffect != 0 && _effectItems.length > 1)
                   IconButton(
                     onPressed: () {
                       var effect =
@@ -227,7 +227,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                             color: TinyColor(_effectColor).brighten(20).color)),
                     iconSize: 30,
                   ),
-                if (_selectedEffect != 0)
+                if (_selectedEffect != 0 && _effectItems.length > 1)
                   IconButton(
                     onPressed: () {
                       var effect =

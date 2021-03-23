@@ -11,11 +11,13 @@ AppBar getAppBar(BLEMidiHandler handler) {
   return AppBar(
     title: Text("Mightier Amp"),
     actions: [
+      //battery percentage
       StreamBuilder<int>(
         builder: (context, value) {
-          if (NuxDeviceControl().device.deviceControl.isConnected &&
+          if (NuxDeviceControl().isConnected &&
               value.connectionState == ConnectionState.active &&
-              value.data != 0) {
+              value.data != 0 &&
+              NuxDeviceControl().device.batterySupport) {
             return Stack(
               alignment: Alignment.center,
               children: [

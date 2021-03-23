@@ -162,72 +162,76 @@ class _SettingsState extends State<Settings> {
                     });
                   }),
               Divider(),
-              ListTile(
-                enabled: device.deviceControl.isConnected,
-                title: Text("USB Audio Settings"),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                onTap: () {
-                  //if (midiHandler.connectedDevice != null) {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => UsbSettings()));
-                  //}
-                },
-              ),
+              if (device.advancedSettingsSupport)
+                ListTile(
+                  enabled: device.deviceControl.isConnected,
+                  title: Text("USB Audio Settings"),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    //if (midiHandler.connectedDevice != null) {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => UsbSettings()));
+                    //}
+                  },
+                ),
               //Divider(),
-              ListTile(
-                enabled: device.deviceControl.isConnected,
-                title: Text("Bluetooth Audio EQ"),
-                subtitle: Text(eqOptions[device.btEq]),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                onTap: () {
-                  var dialog = AlertDialogs.showOptionDialog(context,
-                      confirmButton: "OK",
-                      cancelButton: "Cancel",
-                      title: "Bluetooth Audio EQ",
-                      value: device.btEq,
-                      options: eqOptions, onConfirm: (changed, newValue) {
-                    if (changed) {
-                      setState(() {
-                        device.setBtEq(newValue);
+              if (device.advancedSettingsSupport)
+                ListTile(
+                  enabled: device.deviceControl.isConnected,
+                  title: Text("Bluetooth Audio EQ"),
+                  subtitle: Text(eqOptions[device.btEq]),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    var dialog = AlertDialogs.showOptionDialog(context,
+                        confirmButton: "OK",
+                        cancelButton: "Cancel",
+                        title: "Bluetooth Audio EQ",
+                        value: device.btEq,
+                        options: eqOptions, onConfirm: (changed, newValue) {
+                      if (changed) {
+                        setState(() {
+                          device.setBtEq(newValue);
+                        });
+                      }
+                    });
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => dialog,
+                    );
+                  },
+                ),
+              //Divider(),
+              if (device.advancedSettingsSupport)
+                ListTile(
+                  enabled: device.deviceControl.isConnected,
+                  title: Text("Reset Device Presets"),
+                  onTap: () {
+                    if (midiHandler.connectedDevice != null) {
+                      AlertDialogs.showConfirmDialog(context,
+                          title: "Reset device presets",
+                          cancelButton: "Cancel",
+                          confirmButton: "Reset",
+                          confirmColor: Colors.red,
+                          description: "Are you sure?", onConfirm: (val) {
+                        if (val) device.resetNuxPresets();
                       });
                     }
-                  });
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => dialog,
-                  );
-                },
-              ),
+                  },
+                ),
               //Divider(),
-              ListTile(
-                enabled: device.deviceControl.isConnected,
-                title: Text("Reset Device Presets"),
-                onTap: () {
-                  if (midiHandler.connectedDevice != null) {
-                    AlertDialogs.showConfirmDialog(context,
-                        title: "Reset device presets",
-                        cancelButton: "Cancel",
-                        confirmButton: "Reset",
-                        confirmColor: Colors.red,
-                        description: "Are you sure?", onConfirm: (val) {
-                      if (val) device.resetNuxPresets();
-                    });
-                  }
-                },
-              ),
-              //Divider(),
-              SwitchListTile(
-                  title: Text("Eco Mode"),
-                  value: device.ecoMode,
-                  onChanged: device.deviceControl.isConnected
-                      ? (val) {
-                          setState(
-                            () {
-                              device.setEcoMode(val);
-                            },
-                          );
-                        }
-                      : null),
+              if (device.advancedSettingsSupport)
+                SwitchListTile(
+                    title: Text("Eco Mode"),
+                    value: device.ecoMode,
+                    onChanged: device.deviceControl.isConnected
+                        ? (val) {
+                            setState(
+                              () {
+                                device.setEcoMode(val);
+                              },
+                            );
+                          }
+                        : null),
               //Divider(),
               ListTile(
                 enabled: device.deviceControl.isConnected,

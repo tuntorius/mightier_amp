@@ -10,8 +10,8 @@ abstract class MXXBTAmplifier extends Amplifier {
   int get defaultCab => 0;
 }
 
-class AmpDrive1 extends MXXBTAmplifier {
-  final name = "Amp - OverDrive 1";
+class Amp1 extends MXXBTAmplifier {
+  final name = "Amplifier";
 
   int get nuxIndex => 1;
 
@@ -59,7 +59,7 @@ class AmpDrive1 extends MXXBTAmplifier {
         midiCC: MidiCCValues.bCC_AmpHigh),
   ];
 }
-
+/*
 class AmpDrive2 extends MXXBTAmplifier {
   final name = "Amp - OverDrive 2";
 
@@ -409,3 +409,4 @@ class AmpLead2 extends MXXBTAmplifier {
         midiCC: MidiCCValues.bCC_AmpHigh),
   ];
 }
+*/

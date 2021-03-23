@@ -127,7 +127,7 @@ class _ThickSliderState extends State<ThickSlider> {
                 color: widget.enabled
                     ? TinyColor(widget.activeColor).darken(15).color
                     : Colors.grey[800],
-                width: factor * width,
+                width: max(factor * width, 0),
               ),
               Positioned(
                   left: _lerp2(factor, 10, width - 10) - 10,

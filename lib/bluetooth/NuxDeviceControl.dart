@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -168,6 +169,9 @@ class NuxDeviceControl extends ChangeNotifier {
     device.onConnect();
     connectStatus.add(DeviceConnectionState.connectedStart);
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
+
+    //manually call on presets ready if device doesn't support them
+    if (!device.presetSaveSupport) onPresetsReady();
   }
 
   void _onDisconnect() {
@@ -187,6 +191,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void _onBatteryTimer(Timer? t) {
+    if (!device.batterySupport) return;
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
         [SysCtrlState.syscmd_dsprun_battery, 0, 0, 0, 0]);
     _midiHandler.sendData(data);
@@ -205,19 +210,33 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void onPresetsReady() async {
-    batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
-    _onBatteryTimer(null);
+    if (device.batterySupport) {
+      batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
+      if (device.presetSaveSupport) _onBatteryTimer(null);
+    }
     print("Presets received");
 
     connectStatus.add(DeviceConnectionState.presetsLoaded);
+
+    if (!device.presetSaveSupport) {
+      await Future.delayed(Duration(milliseconds: 1500));
+      _onBatteryTimer(null);
+      device.selectedGroup = 0;
+      device.selectedChannelNormalized = 0;
+      changeDevicePreset(0);
+      sendFullPresetSettings();
+      connectStatus.add(DeviceConnectionState.configReceived);
+      return;
+    }
+
+    if (!device.advancedSettingsSupport) return;
+
     await Future.delayed(Duration(milliseconds: 200));
     //request other nux stuff
 
     //eco mode and other
     var data = createSysExMessage(DeviceMessageID.devReqManuMsgID, [0]);
     _midiHandler.sendData(data);
-    //_midiHandler.sendData(data);
-    //_midiHandler.sendData(data);
 
     await Future.delayed(Duration(milliseconds: 200));
     //usb settings. Send them 3 times as the module does not respond everytime.
@@ -225,12 +244,6 @@ class NuxDeviceControl extends ChangeNotifier {
     data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
         [SysCtrlState.syscmd_usbaudio, 0, 0, 0, 0]);
     _midiHandler.sendData(data);
-    //_midiHandler.sendData(data);
-    //_midiHandler.sendData(data);
-
-    //fw version
-    //data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID, [0, 0]);
-    //_midiHandler.sendData(data);
   }
 
   void onConfigReceived() {
@@ -284,7 +297,7 @@ class NuxDeviceControl extends ChangeNotifier {
   void changeDevicePreset(int preset) {
     if (_midiHandler.connectedDevice == null) return;
 
-    var data = createCCMessage(MidiCCValues.bCC_CtrlType, preset);
+    var data = createCCMessage(device.channelChangeCC, preset);
     _midiHandler.sendData(data);
   }
 
@@ -378,9 +391,10 @@ class NuxDeviceControl extends ChangeNotifier {
     _midiHandler.sendData(data);
 
     //show loading popup
-    connectStatus.add(DeviceConnectionState.connectedStart);
-
-    requestPresetDelayed();
+    if (device.presetSaveSupport) {
+      connectStatus.add(DeviceConnectionState.connectedStart);
+      requestPresetDelayed();
+    }
   }
 
   void sendDrumsEnabled(bool enabled) {

@@ -129,14 +129,12 @@ class _DynamicTreeViewOriState extends State<DynamicTreeView> {
   @override
   Widget build(BuildContext context) {
     _buildTreeView();
-    return treeView != null
-        ? SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: treeView,
-            ),
-          )
-        : Container();
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: treeView,
+      ),
+    );
   }
 }
 

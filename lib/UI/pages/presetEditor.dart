@@ -48,9 +48,8 @@ class _PresetEditorState extends State<PresetEditor> {
     bool uploadPresetEnabled =
         device.deviceControl.isConnected && device.presetSaveSupport;
 
-    List<bool> _instrumentSelection =
-        List<bool>.filled(device.groupsCount, false);
-    _instrumentSelection[device.selectedGroup] = true;
+    List<bool> _groupSelection = List<bool>.filled(device.groupsCount, false);
+    _groupSelection[device.selectedGroup] = true;
     return ListView(
       children: [
         Column(children: [
@@ -94,21 +93,22 @@ class _PresetEditorState extends State<PresetEditor> {
               ],
             ),
           ),
-          ToggleButtons(
-            fillColor: Colors.blue,
-            children: [
-              for (int i = 0; i < device.groupsCount; i++)
-                Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(device.groupsName[i])),
-            ],
-            isSelected: _instrumentSelection,
-            onPressed: (int index) {
-              setState(() {
-                device.selectedGroup = index;
-              });
-            },
-          ),
+          if (_groupSelection.length > 1)
+            ToggleButtons(
+              fillColor: Colors.blue,
+              children: [
+                for (int i = 0; i < device.groupsCount; i++)
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(device.groupsName[i])),
+              ],
+              isSelected: _groupSelection,
+              onPressed: (int index) {
+                setState(() {
+                  device.selectedGroup = index;
+                });
+              },
+            ),
         ]),
         ChannelSelector(device: device)
       ],

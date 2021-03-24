@@ -41,6 +41,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>The app uses music as backing tracks that are streamed to the connected guitar amplifier</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app does not use the microphone</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>  
 	<string>Needs BLE permission</string>  
 	<key>NSBluetoothPeripheralUsageDescription</key>  

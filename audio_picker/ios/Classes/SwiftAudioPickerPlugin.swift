@@ -30,7 +30,16 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
             }
             
             _flutterResult = result
-            openAudioPicker()
+            openAudioPicker(false)
+        }
+        if(call.method == "pick_audio_multiple") {
+            if (_flutterResult != nil){
+                // Return an error
+                result(nil)
+            }
+
+            _flutterResult = result
+            openAudioPicker(true)
         }
     }
     
@@ -65,29 +74,37 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
     
     public func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         mediaPicker.dismiss(animated: true, completion: nil)
-        let mediaItem = mediaItemCollection.items.first
-                
-        if (mediaItem?.assetURL != nil){
-            if let assetURL = mediaItem?.assetURL {
-                export(assetURL) { fileURL, error in
-                    guard let fileURL = fileURL, error == nil else {
-                        print("export failed: \(String(describing: error))")
-                        return
-                    }
-                                        
-                    if let result = self._flutterResult {
-                        print("\(fileURL.path)")
-                        result(fileURL.path)
-                    } else {
-                        // Return an error
-                        self._flutterResult?(nil)
-                    }
+
+        let count = mediaItemCollection.count;
+
+        if (count == 1) {
+            let mediaItem = mediaItemCollection.items.first
                     
+            if (mediaItem?.assetURL != nil) {
+                if let assetURL = mediaItem?.assetURL {
+                    export(assetURL) { fileURL, error in
+                        guard let fileURL = fileURL, error == nil else {
+                            print("export failed: \(String(describing: error))")
+                            return
+                        }
+                                            
+                        if let result = self._flutterResult {
+                            print("\(fileURL.path)")
+                            result(fileURL.path)
+                        } else {
+                            // Return an error
+                            self._flutterResult?(nil)
+                        }
+                        
+                    }
                 }
+            } else {
+                // Return an error
+                self._flutterResult?(nil)
             }
-        } else {
-            // Return an error
-            self._flutterResult?(nil)
+        }
+        else {
+            //TODO
         }
         
     }
@@ -98,11 +115,11 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
         mediaPicker.dismiss(animated: true, completion: nil)
     }
     
-    func openAudioPicker() {
+    func openAudioPicker(multiple: Bool) {
         _audioPickerController = MPMediaPickerController.self(mediaTypes:MPMediaType.music)
         _audioPickerController?.delegate = self
         _audioPickerController?.showsCloudItems = false
-        _audioPickerController?.allowsPickingMultipleItems = false
+        _audioPickerController?.allowsPickingMultipleItems = multiple
         _audioPickerController?.modalPresentationStyle = UIModalPresentationStyle.currentContext
         _viewController?.present(_audioPickerController!, animated: true, completion: nil)
     }

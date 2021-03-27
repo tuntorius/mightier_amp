@@ -12,10 +12,10 @@ Note that the app is Android only because Apple will never let an app that contr
 
 ## Supported Amps
 
-1.Mighty Plug/Mighty Air
-2.Mighty 8 BT*
-3.Mighty 20 BT*/Mighty 40 BT*
-4.Mighty BT Lite*/AirBorne Go*/GUO AN*
+1.Mighty Plug/Mighty Air  
+2.Mighty 8 BT*  
+3.Mighty 20 BT*/Mighty 40 BT*  
+4.Mighty BT Lite*/AirBorne Go*/GUO AN*  
 
 Currently only Mighty Plug and Mighty Air are confirmed as working. Due to similarities I have added the rest of the amps (excluding mighty bass) but they are not tested. Note that the process of loading/saving onboard presets is different in each model, so this functionality is disabled for amps in groups 2,3, and 4.
 

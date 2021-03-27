@@ -20,7 +20,10 @@ Note that the app is Android only because Apple will never let an app that contr
 Currently only Mighty Plug and Mighty Air are confirmed as working. Due to similarities I have added the rest of the amps (excluding mighty bass) but they are not tested. Note that the process of loading/saving onboard presets is different in each model, so this functionality is disabled for amps in groups 2,3, and 4.
 
 ## Download
-Get the latest release:
+You can install it from Google Play Store:  
+https://play.google.com/store/apps/details?id=com.tuntori.mightieramp
+
+or from here:  
 https://github.com/tuntorius/mightier_amp/releases/latest
 
 ## Donation

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/automationController.dart';
 import 'package:mighty_plug_manager/audio/widgets/presetsPanel.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
@@ -20,10 +21,11 @@ import 'models/jamTrack.dart';
 import 'models/trackAutomation.dart';
 import 'models/waveform_data.dart';
 import 'widgets/eventEditor.dart';
+import 'widgets/loopPanel.dart';
 import 'widgets/painted_waveform.dart';
 import 'widgets/speedPanel.dart';
 
-enum EditorState { play, insert, duplicateInsert }
+enum EditorState { play, insert, duplicateInsert, insertLoop1, insertLoop2 }
 
 class AudioEditor extends StatefulWidget {
   final JamTrack track;
@@ -61,6 +63,8 @@ class _AudioEditorState extends State<AudioEditor> {
   dynamic selectedPreset;
   AutomationEvent? duplicatedEvent;
 
+  AutomationEventType showType = AutomationEventType.preset;
+
   @override
   void initState() {
     super.initState();
@@ -75,15 +79,28 @@ class _AudioEditorState extends State<AudioEditor> {
     decodeAudio();
     automation.setAudioFile(widget.track.path, 100);
 
-    //set latency only when a device is connected
-    if (BLEMidiHandler().connectedDevice != null)
-      automation.setAudioLatency(latency);
-    else
-      automation.setAudioLatency(0);
-
     automation.positionStream.listen(playPositionUpdate);
     automation.playerStateStream.listen(playerStateUpdate);
-    automation.eventStream.listen(eventUpdate);
+    //automation.eventStream.listen(eventUpdate);
+
+    controller.addListener(() {
+      if (controller.page == null) return;
+      double p = controller.page!;
+      if (p == p.round()) {
+        print(p.round());
+        switch (p.round()) {
+          case 0:
+            showType = AutomationEventType.preset;
+            break;
+          case 1:
+            showType = AutomationEventType.loop;
+            break;
+          case 2:
+            break;
+        }
+        setState(() {});
+      }
+    });
   }
 
   Future decodeAudio() async {
@@ -127,21 +144,21 @@ class _AudioEditorState extends State<AudioEditor> {
     setState(() {});
   }
 
-  void eventUpdate(AutomationEvent event) {
-    switch (event.type) {
-      case AutomationEventType.preset:
-        var preset = event.getPreset();
-        if (preset != null && preset["product_id"] == device.productStringId)
-          device.presetFromJson(
-              preset,
-              event.cabinetLevelOverrideEnable
-                  ? event.cabinetLevelOverride
-                  : null);
-        break;
-      case AutomationEventType.loop:
-        break;
-    }
-  }
+  // void eventUpdate(AutomationEvent event) {
+  //   switch (event.type) {
+  //     case AutomationEventType.preset:
+  //       var preset = event.getPreset();
+  //       if (preset != null && preset["product_id"] == device.productStringId)
+  //         device.presetFromJson(
+  //             preset,
+  //             event.cabinetLevelOverrideEnable
+  //                 ? event.cabinetLevelOverride
+  //                 : null);
+  //       break;
+  //     case AutomationEventType.loop:
+  //       break;
+  //   }
+  // }
 
   void timingData(double samplesPerPixel, double msPerSample) {
     _samplesPerPixel = samplesPerPixel;
@@ -190,9 +207,14 @@ class _AudioEditorState extends State<AudioEditor> {
     setState(() {});
   }
 
+  void addLoopPoints() {
+    state = EditorState.insertLoop1;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return NestedWillPopScope(
       onWillPop: () async {
         pageLeft = true;
         await automation.dispose();
@@ -211,10 +233,6 @@ class _AudioEditorState extends State<AudioEditor> {
         ),
         body: Container(
           child: Column(children: [
-            // Text(
-            //   "Editor",
-            //   style: TextStyle(color: Colors.white, fontSize: 30),
-            // ),
             Expanded(
                 flex: 3,
                 child: Stack(
@@ -224,6 +242,7 @@ class _AudioEditorState extends State<AudioEditor> {
                       currentSample: currentSample,
                       automation: automation,
                       onTimingData: timingData,
+                      showType: showType,
                       onEventSelectionChanged: () {
                         setState(() {});
                       },
@@ -249,6 +268,22 @@ class _AudioEditorState extends State<AudioEditor> {
                                   Duration(milliseconds: sampleToMs(sample)));
                             });
                             break;
+                          case EditorState.insertLoop1:
+                            setState(() {
+                              state = EditorState.insertLoop2;
+                              automation.addEvent(
+                                  Duration(milliseconds: sampleToMs(sample)),
+                                  AutomationEventType.loop);
+                            });
+                            break;
+                          case EditorState.insertLoop2:
+                            setState(() {
+                              state = EditorState.play;
+                              automation.addEvent(
+                                  Duration(milliseconds: sampleToMs(sample)),
+                                  AutomationEventType.loop);
+                            });
+                            break;
                         }
                       },
                     ),
@@ -259,7 +294,6 @@ class _AudioEditorState extends State<AudioEditor> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               "Tap here to insert event",
-                              style: TextStyle(color: Colors.white),
                             ),
                           ))
                   ],
@@ -316,38 +350,6 @@ class _AudioEditorState extends State<AudioEditor> {
                     size: 60,
                   ),
                 ),
-                /*PopupMenuButton(
-                  padding: Theme.of(context).buttonTheme.padding,
-                  itemBuilder: (context) {
-                    return [
-                      PopupMenuItem<int>(
-                        child: Text("Not implemented"),
-                        value: 1,
-                      )
-                    ];
-                  },
-                  child: Stack(
-                    //mainAxisSize: MainAxisSize.min,
-                    alignment: Alignment.centerRight,
-                    children: [
-                      MaterialButton(
-                        onPressed: null,
-                        height: 70,
-                        child: Icon(
-                          Icons.repeat,
-                          color: Colors.white,
-                          size: 50,
-                        ),
-                      ),
-                      // Icon(
-                      //   Icons.repeat,
-                      //   color: Colors.white,
-                      //   size: 50,
-                      // ),
-                      Icon(Icons.arrow_drop_down, color: Colors.white)
-                    ],
-                  ),
-                ),*/
               ],
             ),
             Expanded(
@@ -378,6 +380,11 @@ class _AudioEditorState extends State<AudioEditor> {
                                 state = EditorState.insert;
                               });
                             }),
+                        LoopPanel(
+                          automation: automation,
+                          onAddLoop: addLoopPoints,
+                          onDeleteLoop: () {},
+                        ),
                         SpeedPanel(
                           semitones: semitones,
                           speed: speed,
@@ -394,7 +401,6 @@ class _AudioEditorState extends State<AudioEditor> {
                             });
                           },
                         ),
-                        Text("TODO"),
                       ],
                     ),
                     ElevatedButton(

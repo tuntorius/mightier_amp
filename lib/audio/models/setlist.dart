@@ -12,7 +12,7 @@ class Setlist {
   String name = "";
   List<SetlistItem> items = <SetlistItem>[];
 
-  Setlist(_name, List<String> _items) {
+  Setlist(_name, List _items) {
     name = _name;
     for (int i = 0; i < _items.length; i++) addTrackByUuid(_items[i]);
   }
@@ -29,8 +29,12 @@ class Setlist {
     items.add(SetlistItem(trackUuid: track.uuid, trackReference: track));
   }
 
+  void clear() {
+    items.clear();
+  }
+
   factory Setlist.fromJson(Map<String, dynamic> json) {
-    return Setlist(json["name"] ?? "Untitled", json["tracks"] ?? []);
+    return Setlist(json["name"] ?? "Untitled", json["tracks"]);
   }
 
   Map<String, dynamic> toJson() {

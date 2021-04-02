@@ -11,13 +11,21 @@ class AutomationEvent {
 
   bool cabinetLevelOverrideEnable = false;
   double cabinetLevelOverride = 0;
-  String get name => _preset.containsKey("name") ? _preset["name"] : "";
-  int get channel => _preset.containsKey("channel") ? _preset["channel"] : 0;
+  String get name => _preset == null
+      ? ""
+      : _preset!.containsKey("name")
+          ? _preset!["name"]
+          : "";
+  int get channel => _preset == null
+      ? 0
+      : _preset!.containsKey("channel")
+          ? _preset!["channel"]
+          : 0;
   //uuids for presets per each device
   String _presetUuid = "";
 
   //values if type is presetChange
-  Map _preset = {};
+  Map? _preset = {};
 
   AutomationEvent({required this.eventTime, required this.type});
 
@@ -34,6 +42,11 @@ class AutomationEvent {
 
   String getPresetUuid() {
     return _presetUuid;
+  }
+
+  void clearPreset() {
+    _preset = null;
+    _presetUuid = "";
   }
 
   dynamic getPreset() {

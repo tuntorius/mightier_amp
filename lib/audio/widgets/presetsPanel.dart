@@ -41,7 +41,7 @@ class PresetsPanel extends StatelessWidget {
                   child: Text("Insert Event"),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
               Expanded(
@@ -68,7 +68,7 @@ class PresetsPanel extends StatelessWidget {
                         },
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
               Expanded(

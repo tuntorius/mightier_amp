@@ -205,10 +205,10 @@ class MidiCCValues {
   static const bCC_GateThresold = 23;
   static const bCC_GateDecay = 24;
   static const bCC_CabMode = 71;
-  static const bCC_CabMicsel = 70;
+  static const bCC_CabMicsel = 70; //???
   static const bCC_CabEnable = 101;
   static const bCC_AmpModeSetup = 75;
-  static const bCC_AmpMode = 78;
+  static const bCC_AmpMode = 78; //??? - try for plug??
   static const bCC_AmpDrive = 79;
   static const bCC_AmpPresence = 80;
   static const bCC_AmpMaster = 81;

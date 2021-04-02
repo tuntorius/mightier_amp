@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/presets/Preset.dart';
@@ -57,7 +58,7 @@ class _CalibrationState extends State<Calibration> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return NestedWillPopScope(
       onWillPop: () async {
         await player.stop();
         await player.dispose();
@@ -80,7 +81,7 @@ class _CalibrationState extends State<Calibration> {
                 "Make sure the NUX device is connected in both Audio and App mode!",
                 textAlign: TextAlign.center,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Text(

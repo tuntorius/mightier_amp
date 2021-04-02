@@ -291,6 +291,7 @@ abstract class NuxDevice extends ChangeNotifier {
       case MidiMessageValues.controlChange:
         if (data[1] == channelChangeCC)
           _setSelectedChannelNuxIndex(data[2], true);
+        //TODO: add knob manipulations here
         break;
     }
   }

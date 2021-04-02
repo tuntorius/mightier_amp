@@ -24,6 +24,8 @@ class JamTrack {
   String get path => _path;
   String get uuid => _uuid;
 
+  set name(value) => _name = value;
+
   factory JamTrack.fromJson(dynamic json) {
     return JamTrack(
         name: json['name'] as String,

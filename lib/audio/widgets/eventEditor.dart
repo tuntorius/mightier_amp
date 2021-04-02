@@ -71,7 +71,6 @@ class EventEditor {
                     Text("Edit Event", style: TextStyle(color: Colors.white)),
                   ],
                 ),
-                backgroundColor: Colors.grey[900],
                 contentPadding:
                     EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 30),
                 content: ListTileTheme(

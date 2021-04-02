@@ -2,11 +2,12 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 
 import 'bleMidiHandler.dart';
 
@@ -30,6 +31,9 @@ class NuxDeviceControl extends ChangeNotifier {
   Timer? batteryTimer;
 
   double _masterVolume = 100;
+
+  bool developer = false;
+  Function(List<int>)? onDataReceiveDebug;
 
   double get masterVolume => _masterVolume;
   set masterVolume(double vol) {
@@ -66,6 +70,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   set deviceIndex(int index) {
     _device = _deviceInstances[index];
+    SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
     notifyListeners();
   }
 
@@ -107,24 +112,21 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMightyLite(this));
 
     //make it read from config
-    _device = _deviceInstances[0];
+    String _dev = SharedPrefs()
+        .getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
+    _device = getDeviceFromId(_dev) ?? _deviceInstances[0];
 
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
-      if (dev != null) {
-        _deviceInstances[i]
-            .presetChangedNotifier
-            .addListener(presetChangedListener);
-        _deviceInstances[i]
-            .parameterChanged
-            .stream
-            .listen(parameterChangedListener);
-        _deviceInstances[i].effectChanged.stream.listen(effectChangedListener);
-        _deviceInstances[i]
-            .effectSwitched
-            .stream
-            .listen(effectSwitchedListener);
-      }
+      _deviceInstances[i]
+          .presetChangedNotifier
+          .addListener(presetChangedListener);
+      _deviceInstances[i]
+          .parameterChanged
+          .stream
+          .listen(parameterChangedListener);
+      _deviceInstances[i].effectChanged.stream.listen(effectChangedListener);
+      _deviceInstances[i].effectSwitched.stream.listen(effectSwitchedListener);
     }
   }
 
@@ -135,7 +137,6 @@ class NuxDeviceControl extends ChangeNotifier {
         print("Devices found " + _midiHandler.scanResults.toString());
         _midiHandler.scanResults.forEach((dev) {
           if (dev.device.type != BluetoothDeviceType.classic &&
-              dev.advertisementData.localName != null &&
               deviceFromBLEId(dev.advertisementData.localName) != null) {
             //don't autoconnect on manual scan
             if (!_midiHandler.manualScan) {
@@ -150,6 +151,7 @@ class NuxDeviceControl extends ChangeNotifier {
         if (_midiHandler.connectedDevice != null) {
           print("${_midiHandler.connectedDevice!.name} connected");
           _device = deviceFromBLEId(_midiHandler.connectedDevice!.name);
+          SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
           _masterVolume = 100;
           notifyListeners();
           _onConnect();
@@ -182,6 +184,8 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void _onDataReceive(List<int> data) {
+    if (kDebugMode && developer) onDataReceiveDebug?.call(data);
+
     if (data.length > 2)
       _device.onDataReceived(data.sublist(2));
     else if (!_device.nuxPresetsReceived && _device.presetSaveSupport) {

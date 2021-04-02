@@ -207,15 +207,20 @@ class PresetsStorage extends ChangeNotifier {
     return Future.error("Preset not found");
   }
 
-  Future deleteCategory(String category) {
+  Future<List<String>> deleteCategory(String category) async {
     bool modified = false;
+    List<String> uuids = [];
     for (int i = presetsData.length - 1; i >= 0; i--) {
       if (presetsData[i]["category"] == category) {
+        uuids.add(presetsData[i]["uuid"]);
         presetsData.removeAt(i);
         modified = true;
       }
     }
-    if (modified) return _savePresets();
+    if (modified) {
+      await _savePresets();
+      return uuids;
+    }
     return Future.error("Category not found");
   }
 

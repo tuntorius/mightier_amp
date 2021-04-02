@@ -12,6 +12,7 @@ class SettingsKeys {
   static const String screenAlwaysOn = "screenAlwaysOn";
   static const String timeUnit = "timeUnit";
   static const String changeCabs = "changeCabs";
+  static const String device = "device";
 }
 
 class SharedPrefs {
@@ -25,6 +26,7 @@ class SharedPrefs {
   String prefsPath = "";
   Directory? storageDirectory;
   File? _prefsFile;
+  bool _prefsReady = false;
 
   Map<String, dynamic> _prefsData = {};
 
@@ -57,10 +59,19 @@ class SharedPrefs {
       if (_prefsFile != null) {
         var _presetJson = await _prefsFile!.readAsString();
         _prefsData = json.decode(_presetJson);
+        _prefsReady = true;
       }
     } catch (e) {
+      _prefsReady = true;
       //   //no file
       //   print("Presets file not available");
+    }
+  }
+
+  Future waitLoading() async {
+    for (int i = 0; i < 20; i++) {
+      if (_prefsReady) break;
+      await Future.delayed(Duration(milliseconds: 200));
     }
   }
 

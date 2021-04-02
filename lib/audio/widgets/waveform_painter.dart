@@ -4,6 +4,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 import '../../bluetooth/devices/presets/Preset.dart';
 import '../automationController.dart';
 import '../models/waveform_data.dart';
@@ -15,6 +16,7 @@ class WaveformPainter extends CustomPainter {
   final int currentSample;
   final bool overallWaveform;
   final AutomationController automation;
+  final AutomationEventType showType;
   late Paint painter;
   final Color color;
   final double strokeWidth;
@@ -24,6 +26,7 @@ class WaveformPainter extends CustomPainter {
     ..style = PaintingStyle.stroke;
 
   final List<Paint> channelPaints = <Paint>[];
+  final Paint greyPaint = Paint();
 
   WaveformPainter(this.data,
       {this.strokeWidth = 1.0,
@@ -31,6 +34,7 @@ class WaveformPainter extends CustomPainter {
       this.endingFrame = 1,
       this.currentSample = 0,
       required this.automation,
+      required this.showType,
       this.overallWaveform = false,
       this.color = Colors.blue}) {
     painter = Paint()
@@ -46,6 +50,11 @@ class WaveformPainter extends CustomPainter {
         ..style = PaintingStyle.stroke;
       channelPaints.add(_paint);
     }
+
+    greyPaint
+      ..color = Colors.grey
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
   }
 
   @override
@@ -85,13 +94,20 @@ class WaveformPainter extends CustomPainter {
     var msPerSample = data!.data.length / automation.duration.inMilliseconds;
 
     //draw events
-    automation.events.forEach((element) {
+    int realIndex = 0;
+    for (int i = 0; i < automation.events.length; i++) {
+      var element = automation.events[i];
+
+      var paint = channelPaints[element.channel];
+      if (element.type == AutomationEventType.preset &&
+          element.getPresetUuid().isEmpty) paint = greyPaint;
+
+      if (element.type != showType) continue;
       var dx = (((element.eventTime.inMilliseconds * msPerSample) - _start) /
               (_end - _start)) *
           size.width;
-      if (dx < 0 || dx > size.width - 1) return;
-      canvas.drawLine(Offset(dx, 0), Offset(dx, size.height),
-          channelPaints[element.channel]);
+      if (dx < 0 || dx > size.width - 1) continue;
+      canvas.drawLine(Offset(dx, 0), Offset(dx, size.height), paint);
 
       //add labels
       if (!overallWaveform) {
@@ -101,9 +117,10 @@ class WaveformPainter extends CustomPainter {
           ..addText(element.name);
         final ui.Paragraph paragraph = paragraphBuilder.build()
           ..layout(ui.ParagraphConstraints(width: size.width - 12.0 - 12.0));
-        canvas.drawParagraph(paragraph, Offset(dx + 2, 10));
+        canvas.drawParagraph(paragraph, Offset(dx + 2, 6 + realIndex % 3 * 13));
       }
-    });
+      realIndex++;
+    }
   }
 
   @override

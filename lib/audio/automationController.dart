@@ -1,16 +1,19 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 
 class AutomationController {
   final TrackAutomation automation;
   final player = AudioPlayer();
 
   StreamController<Duration> _positionController = StreamController<Duration>();
-  StreamController<AutomationEvent> _eventController =
-      StreamController<AutomationEvent>();
+  //StreamController<AutomationEvent> _eventController =
+  //    StreamController<AutomationEvent>();
 
   List<AutomationEvent> get events => automation.events;
   AutomationEvent get initialEvent => automation.initialEvent;
@@ -23,7 +26,7 @@ class AutomationController {
   AutomationController(this.automation);
 
   Stream<Duration> get positionStream => _positionController.stream;
-  Stream<AutomationEvent> get eventStream => _eventController.stream;
+  //Stream<AutomationEvent> get eventStream => _eventController.stream;
 
   Duration get duration => player.duration ?? Duration();
   PlayerState get playerState => player.playerState;
@@ -39,19 +42,24 @@ class AutomationController {
   void setAudioFile(String path, int positionResolution) async {
     await player.setFilePath(path);
 
+    if (NuxDeviceControl().isConnected)
+      _latency = SharedPrefs().getInt(SettingsKeys.latency, 0);
+    else
+      _latency = 0;
+
     //force 1ms precision. It's needed for accurate event switch
     player.createPositionStream(
         steps: 99999999999,
-        minPeriod: Duration(milliseconds: 1),
+        minPeriod: Duration(microseconds: 1),
         maxPeriod: Duration(milliseconds: 200))
       ..listen(playPositionUpdate);
 
     _positionResolution = max(1, positionResolution);
   }
 
-  void setAudioLatency(int latency) {
-    _latency = latency;
-  }
+  // void setAudioLatency(int latency) {
+  //   _latency = latency;
+  // }
 
   //stream listener for track position updates
   void playPositionUpdate(Duration position) {
@@ -61,27 +69,60 @@ class AutomationController {
 
     _positionReport++;
 
+    //execute loop events without latency calc
     if (_nextEvent < automation.events.length) {
-      if (automation.events[_nextEvent].eventTime.inMilliseconds <=
-          position.inMilliseconds - _latency * (1 / _speed)) {
-        //set event
-        executeEvent(automation.events[_nextEvent]);
-        //increment expected event
-        _nextEvent++;
-        print("!!!!!!next event $_nextEvent");
+      switch (automation.events[_nextEvent].type) {
+        case AutomationEventType.preset:
+          if (automation.events[_nextEvent].eventTime.inMilliseconds <=
+              position.inMilliseconds - _latency * (1 / _speed)) {
+            //set event
+            executeEvent(automation.events[_nextEvent]);
+            //increment expected event
+            _nextEvent++;
+            if (kDebugMode) print("FKT next event $_nextEvent");
+          }
+          break;
+        case AutomationEventType.loop:
+          //loops should not be compensated for latency
+          if (automation.events[_nextEvent].eventTime.inMilliseconds <=
+              position.inMilliseconds) {
+            //set event
+            executeEvent(automation.events[_nextEvent]);
+            //increment expected event
+            _nextEvent++;
+            if (kDebugMode) print("FKT next event $_nextEvent");
+          }
+          break;
       }
     }
   }
 
   void executeEvent(AutomationEvent event) {
+    var device = NuxDeviceControl().device;
+
     switch (event.type) {
       case AutomationEventType.preset:
-        print("Changing preset");
+        if (kDebugMode) print("FKT Changing preset ${event.name}");
+        var preset = event.getPreset();
+        if (preset != null && preset["product_id"] == device.productStringId)
+          device.presetFromJson(
+              preset,
+              event.cabinetLevelOverrideEnable
+                  ? event.cabinetLevelOverride
+                  : null);
         break;
       case AutomationEventType.loop:
+        if (kDebugMode) print("FKT loop");
+        //find previous loop point
+        for (int i = _nextEvent - 1; i >= 0; i--)
+          if (events[i].type == AutomationEventType.loop) {
+            seek(events[i].eventTime);
+            _nextEvent = i;
+            break;
+          }
         break;
     }
-    _eventController.add(event);
+    //_eventController.add(event);
   }
 
   void play() async {
@@ -132,11 +173,22 @@ class AutomationController {
       }
     }
 
-    print("!!!!!!next event $_nextEvent");
+    if (kDebugMode) print("FKT next event $_nextEvent");
+
+    //find previous preset event
+    int _prevEvent = -1;
+    for (int i = _nextEvent - 1; i >= 0; i--) {
+      if (automation.events[i].type == AutomationEventType.preset) {
+        _prevEvent = i;
+        break;
+      }
+    }
+
     //execute the previous
-    if (_nextEvent > 0)
-      executeEvent(automation.events[_nextEvent - 1]);
-    else
+    if (_prevEvent >= 0) {
+      //find last
+      executeEvent(automation.events[_prevEvent]);
+    } else
       executeEvent(automation.initialEvent);
   }
 
@@ -175,6 +227,6 @@ class AutomationController {
     await player.stop();
     await player.dispose();
     _positionController.close();
-    _eventController.close();
+    //_eventController.close();
   }
 }

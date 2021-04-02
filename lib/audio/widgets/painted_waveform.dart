@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 import 'package:mighty_plug_manager/audio/models/waveform_data.dart';
 import 'package:mighty_plug_manager/audio/widgets/waveform_painter.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
@@ -14,6 +15,7 @@ class PaintedWaveform extends StatefulWidget {
   final Function onEventSelectionChanged;
   final WaveformData? sampleData;
   final int currentSample;
+  final AutomationEventType showType;
   final AutomationController automation;
   final Function(double, double) onTimingData;
   PaintedWaveform(
@@ -23,6 +25,7 @@ class PaintedWaveform extends StatefulWidget {
       required this.onEventSelectionChanged,
       required this.currentSample,
       required this.automation,
+      required this.showType,
       required this.onTimingData})
       : super(key: key);
 
@@ -156,8 +159,12 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
       widget.onTimingData(samplesPerPixel, msPerSample);
       //time = (widget.currentSample / msPerSample) / 1000;
       //create automation event handles (TODO: move them in separate widget)
+      int realIndex = 0;
       for (int i = 0; i < widget.automation.events.length; i++) {
         var element = widget.automation.events[i];
+        bool empty = element.type == AutomationEventType.preset &&
+            element.getPresetUuid().isEmpty;
+        if (element.type != widget.showType) continue;
         Widget w = Positioned(
           left: (((element.eventTime.inMilliseconds * msPerSample) -
                           startPosition) /
@@ -183,22 +190,23 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
               setState(() {});
             },
             child: FloatingActionButton(
-              onPressed: () {
-                widget.automation.selectedEvent = widget.automation.events[i];
-                widget.onEventSelectionChanged();
-                setState(() {});
-              },
-              backgroundColor: Preset.channelColors[element.channel],
-              child: Icon(
-                  widget.automation.selectedEvent == widget.automation.events[i]
-                      ? Icons.circle
-                      : null),
-              heroTag: "dragTag$i",
-            ),
+                onPressed: () {
+                  widget.automation.selectedEvent = widget.automation.events[i];
+                  widget.onEventSelectionChanged();
+                  setState(() {});
+                },
+                backgroundColor:
+                    empty ? Colors.grey : Preset.channelColors[element.channel],
+                child: Icon(widget.automation.selectedEvent ==
+                        widget.automation.events[i]
+                    ? Icons.circle
+                    : null),
+                heroTag: "dragTag$i"),
           ),
         );
 
         automationEventButtons.add(w);
+        realIndex++;
       }
     }
     return Container(
@@ -232,6 +240,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
                         startingFrame: startPosition,
                         currentSample: widget.currentSample,
                         automation: widget.automation,
+                        showType: widget.showType,
                         overallWaveform: true,
                         color: Color(0xff3994DB),
                       ),
@@ -255,7 +264,9 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
                         endingFrame: endPosition,
                         startingFrame: startPosition,
                         currentSample: widget.currentSample,
+                        overallWaveform: false,
                         automation: widget.automation,
+                        showType: widget.showType,
                         color: Color(0xff3994DB),
                       ),
                     ),

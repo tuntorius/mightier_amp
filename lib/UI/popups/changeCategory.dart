@@ -11,12 +11,15 @@ class ChangeCategoryDialog {
   final parentScroll = ScrollController();
   String category;
   String name;
+  final Color? confirmColor;
+
   Function(String) onCategoryChange;
 
   ChangeCategoryDialog(
       {required this.category,
       required this.name,
-      required this.onCategoryChange}) {
+      required this.onCategoryChange,
+      this.confirmColor}) {
     categoryCtrl.text = category;
   }
 
@@ -39,13 +42,10 @@ class ChangeCategoryDialog {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 key: _formKey,
                 child: Column(
-                  //mainAxisSize: MainAxisSize.max,
-                  //crossAxisAlignment: CrossAxisAlignment.start,
-                  //reverse: true,
                   children: [
                     Text("Categories",
                         style: TextStyle(color: Theme.of(context).hintColor)),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Container(
@@ -56,7 +56,6 @@ class ChangeCategoryDialog {
                       child: ScrollParent(
                         controller: parentScroll,
                         child: ListTileTheme(
-                          textColor: Colors.black,
                           child: ListView.builder(
                             physics: ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
@@ -77,7 +76,6 @@ class ChangeCategoryDialog {
                     TextFormField(
                       decoration: InputDecoration(labelText: "Category"),
                       controller: categoryCtrl,
-                      style: TextStyle(color: Colors.black),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter preset category';
@@ -95,8 +93,7 @@ class ChangeCategoryDialog {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("Cancel",
-                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -109,7 +106,10 @@ class ChangeCategoryDialog {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text('Change'),
+              child: Text(
+                'Change',
+                style: TextStyle(color: confirmColor),
+              ),
             ),
           ],
         );

@@ -60,7 +60,6 @@ class _EffectSelectorState extends State<EffectSelector> {
               ),
               Text(
                 widget.device.processorList[i].shortName,
-                style: TextStyle(color: Colors.white),
               ),
             ],
           ),
@@ -135,7 +134,6 @@ class _EffectSelectorState extends State<EffectSelector> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
             effects[f].name,
-            style: TextStyle(color: Colors.white),
           ),
         ),
       ));
@@ -156,7 +154,7 @@ class _EffectSelectorState extends State<EffectSelector> {
               widget.device.processorList[_selectedEffect].icon,
               color: _effectColor,
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             Text(
@@ -165,11 +163,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                   TextStyle(color: _effectColor, fontWeight: FontWeight.bold),
             ),
             if (_selectedEffect != 0) SizedBox(height: 1, width: 8),
-            if (_selectedEffect != 0)
-              Text(
-                _selectedEffectName,
-                style: TextStyle(color: Colors.white),
-              )
+            if (_selectedEffect != 0) Text(_selectedEffectName)
           ],
         ),
       ),

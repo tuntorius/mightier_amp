@@ -76,13 +76,14 @@ class _PresetEditorState extends State<PresetEditor> {
                           }
                         },
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 2,
                 ),
                 ElevatedButton(
                   child: Icon(Icons.playlist_add),
                   onPressed: () {
-                    var saveDialog = SavePresetDialog(device: device);
+                    var saveDialog = SavePresetDialog(
+                        device: device, confirmColor: Colors.blue);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) =>

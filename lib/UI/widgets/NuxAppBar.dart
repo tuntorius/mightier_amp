@@ -41,7 +41,7 @@ AppBar getAppBar(BLEMidiHandler handler) {
         },
         stream: NuxDeviceControl().batteryPercentage.stream,
       ),
-      SizedBox(width: 8),
+      const SizedBox(width: 8),
       StreamBuilder<midiSetupStatus>(
         builder: (context, snapshot) {
           IconData icon = Icons.bluetooth_disabled;
@@ -87,7 +87,7 @@ AppBar getAppBar(BLEMidiHandler handler) {
         },
         stream: handler.status,
       ),
-      SizedBox(
+      const SizedBox(
         width: 15,
       )
     ],

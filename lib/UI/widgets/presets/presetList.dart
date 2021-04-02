@@ -1,6 +1,7 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 
 import '../../../UI/popups/alertDialogs.dart';
@@ -12,6 +13,7 @@ import '../../../platform/fileSaver.dart';
 
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../../mightierIcons.dart';
+import '../../theme.dart';
 import '../dynamic_treeview.dart';
 import 'package:flutter/material.dart';
 import '../../../bluetooth/devices/presets/presetsStorage.dart';
@@ -40,9 +42,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.save_alt,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Export"),
         ],
       ),
@@ -53,9 +55,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.open_in_browser,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Import"),
         ],
       ),
@@ -69,9 +71,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.delete,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Delete"),
         ],
       ),
@@ -82,9 +84,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.drive_file_rename_outline,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Rename"),
         ],
       ),
@@ -95,9 +97,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.save_alt,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Export Category"),
         ],
       ),
@@ -112,9 +114,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.delete,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Delete"),
         ],
       ),
@@ -125,9 +127,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.circle,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Change Channel"),
         ],
       ),
@@ -138,9 +140,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             MightierIcons.tag,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Change Category"),
         ],
       ),
@@ -151,9 +153,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.drive_file_rename_outline,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Rename"),
         ],
       ),
@@ -164,9 +166,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.copy,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Duplicate"),
         ],
       ),
@@ -177,9 +179,9 @@ class _PresetListState extends State<PresetList>
         children: <Widget>[
           Icon(
             Icons.save_alt,
-            color: Colors.grey[400],
+            color: AppThemeConfig.contextMenuIconColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text("Export Preset"),
         ],
       ),
@@ -226,7 +228,10 @@ class _PresetListState extends State<PresetList>
               if (delete) {
                 PresetsStorage()
                     .deleteCategory(item)
-                    .then((value) => setState(() {}));
+                    .then((List<String> uuids) {
+                  TrackData().removeMultiplePresetsInstances(uuids);
+                  setState(() {});
+                });
               }
             });
             break;
@@ -258,14 +263,22 @@ class _PresetListState extends State<PresetList>
         //preset
         switch (action) {
           case 0:
+            bool inUse = TrackData().isPresetInUse(item["uuid"]);
+            String description =
+                "Are you sure you want to delete ${item["name"]}?";
+            if (inUse)
+              description += "\n\nThe preset is used in one or more Jamtracks!";
+
             AlertDialogs.showConfirmDialog(context,
                 title: "Confirm",
-                description: "Are you sure you want to delete ${item["name"]}?",
+                description: description,
                 cancelButton: "Cancel",
                 confirmButton: "Delete",
                 confirmColor: Colors.red, onConfirm: (delete) {
               if (delete) {
                 if (item is Map) {
+                  String uuid = item["uuid"];
+                  TrackData().removePresetInstances(uuid);
                   PresetsStorage()
                       .deletePreset(item["category"], item["name"])
                       .then((value) => setState(() {}));
@@ -305,6 +318,7 @@ class _PresetListState extends State<PresetList>
                   confirmButton: "Change",
                   cancelButton: "Cancel",
                   title: "Select Channel",
+                  confirmColor: Colors.blue,
                   options: channelList,
                   value: nuxChannel, onConfirm: (changed, newValue) {
                 if (changed) {
@@ -340,6 +354,7 @@ class _PresetListState extends State<PresetList>
             var categoryDialog = ChangeCategoryDialog(
                 category: item["category"],
                 name: item["name"],
+                confirmColor: Colors.blue,
                 onCategoryChange: (newCategory) {
                   setState(() {
                     PresetsStorage().changePresetCategory(
@@ -415,7 +430,7 @@ class _PresetListState extends State<PresetList>
                   padding: const EdgeInsets.only(right: 8.0),
                   child: Text(
                     name,
-                    style: TextStyle(color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ));
           } else if (pi.keyName == "cabinet")
@@ -444,7 +459,11 @@ class _PresetListState extends State<PresetList>
             contentPadding: EdgeInsets.only(left: 16, right: 12),
             title: Text("Presets"),
             trailing: PopupMenuButton(
-              child: Icon(Icons.more_vert, color: Colors.grey),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 12.0, right: 4, bottom: 10, top: 10),
+                child: Icon(Icons.more_vert, color: Colors.grey),
+              ),
               itemBuilder: (context) {
                 return presetsMenu;
               },
@@ -462,7 +481,8 @@ class _PresetListState extends State<PresetList>
 
   Widget _buildList(BuildContext context) {
     if (PresetsStorage().getCategories().length == 0)
-      return Center(child: Text("Empty", style: TextStyle(color: Colors.grey)));
+      return Center(
+          child: Text("Empty", style: Theme.of(context).textTheme.bodyText1));
     late Offset _position;
 
     Widget out = GestureDetector(
@@ -508,7 +528,11 @@ class _PresetListState extends State<PresetList>
             trailingWidget = null;
           else {
             var button = PopupMenuButton(
-              child: Icon(Icons.more_vert, color: Colors.grey),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 16.0, right: 0, bottom: 10, top: 10),
+                child: Icon(Icons.more_vert, color: Colors.grey),
+              ),
               itemBuilder: (context) {
                 return popupSubmenu;
               },
@@ -526,7 +550,7 @@ class _PresetListState extends State<PresetList>
                     color: Colors.blue,
                     size: 16,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   button
@@ -576,7 +600,7 @@ class _PresetListState extends State<PresetList>
         },
         config: Config(
             parentTextStyle: TextStyle(color: Colors.white),
-            parentPaddingEdgeInsets: EdgeInsets.only(left: 16, right: 4),
+            parentPaddingEdgeInsets: EdgeInsets.only(left: 16, right: 16),
             childrenPaddingEdgeInsets: EdgeInsets.only(left: 0, right: 0),
             arrowIcon: Icon(Icons.keyboard_arrow_down, color: Colors.white)),
       ),

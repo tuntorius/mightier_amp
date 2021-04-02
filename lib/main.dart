@@ -7,8 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import 'UI/pages/developerPage.dart';
 import 'UI/popups/alertDialogs.dart';
 import 'UI/widgets/NuxAppBar.dart' as NuxAppBar;
+import 'UI/widgets/nestedWillPopScope.dart';
 import 'UI/widgets/presets/presetList.dart';
 import 'UI/widgets/thickSlider.dart';
 import 'audio/trackdata/trackData.dart';
@@ -37,7 +39,10 @@ void showMessageDialog(String title, String content) {
 }
 
 void main() {
-  runApp(new App());
+  //configuration data is needed before start of the app
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPrefs prefs = SharedPrefs();
+  prefs.waitLoading().then((value) => runApp(new App()));
 }
 
 class App extends StatefulWidget {
@@ -57,6 +62,7 @@ class _AppState extends State<App> {
     return MaterialApp(
       title: 'Mightier Amp',
       theme: getTheme(),
+      //theme: ThemeData.dark(),
       home: MainTabs(),
       navigatorKey: navigatorKey,
     );
@@ -95,10 +101,13 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       }),
       DrumEditor(),
       JamTracks(),
-      Settings()
+      Settings(),
+      if (kDebugMode) DeveloperPage()
     ]);
 
-    controller = TabController(initialIndex: 0, length: 5, vsync: this);
+    controller =
+        TabController(initialIndex: 0, length: kDebugMode ? 6 : 5, vsync: this);
+
     controller.addListener(() {
       _currentIndex = controller.index;
       setState(() {});
@@ -122,7 +131,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
           barrierDismissible: false,
           builder: (BuildContext context) {
             dialogContext = context;
-            return WillPopScope(
+            return NestedWillPopScope(
               onWillPop: () => Future.value(false),
               child: Dialog(
                 backgroundColor: Colors.grey[700],
@@ -133,13 +142,10 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircularProgressIndicator(),
-                      SizedBox(
+                      const SizedBox(
                         width: 8,
                       ),
-                      Text(
-                        "Connecting",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      Text("Connecting"),
                     ],
                   ),
                 ),
@@ -187,7 +193,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return NestedWillPopScope(
       onWillPop: _willPopCallback,
       child: Scaffold(
         appBar: NuxAppBar.getAppBar(widget.handler),
@@ -252,6 +258,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                           },
                           min: 0,
                           max: 100,
+                          handleVerticalDrag: false,
                           onChanged: (value) {
                             setState(() {
                               NuxDeviceControl().masterVolume = value;

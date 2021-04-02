@@ -1,6 +1,7 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/mightierIcons.dart';
 
@@ -42,7 +43,12 @@ class _BottomBarState extends State<BottomBar> {
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: "Settings",
-          )
+          ),
+          if (kDebugMode)
+            BottomNavigationBarItem(
+              icon: Icon(Icons.developer_mode),
+              label: "Developer",
+            )
         ]);
   }
 }

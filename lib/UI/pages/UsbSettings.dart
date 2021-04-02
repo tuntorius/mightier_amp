@@ -36,6 +36,7 @@ class _UsbSettingsState extends State<UsbSettings> {
                       cancelButton: "Cancel",
                       title: "Select Routing Mode",
                       value: device.usbMode,
+                      confirmColor: Colors.blue,
                       options: usbModes, onConfirm: (changed, newValue) {
                     if (changed) {
                       setState(() {

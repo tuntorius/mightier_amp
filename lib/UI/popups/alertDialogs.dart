@@ -126,10 +126,10 @@ class AlertDialogs {
         child: TextFormField(
           decoration: InputDecoration(labelText: description),
           controller: nameCtrl,
-          style: TextStyle(color: Colors.black),
+          //style: TextStyle(color: Colors.black),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter preset name';
+              return 'Please enter name';
             }
             if (validation != null && !validation(value)) {
               return validationErrorMessage;
@@ -204,7 +204,7 @@ class AlertDialogs {
         content: Container(
           width: double.maxFinite,
           child: ListTileTheme(
-            textColor: Colors.black,
+            iconColor: Colors.white,
             child: ListView(
               shrinkWrap: true,
               children: widgets,

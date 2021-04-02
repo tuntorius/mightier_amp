@@ -2,18 +2,13 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 //import 'package:audio_picker/audio_picker.dart';
-import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
-import 'package:mighty_plug_manager/audio/models/jamTrack.dart';
 import 'package:mighty_plug_manager/audio/setlistsPage.dart';
 import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 import 'package:mighty_plug_manager/audio/tracksPage.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:path/path.dart';
-import 'package:mighty_plug_manager/audio/audioEditor.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:audiotagger/audiotagger.dart';
 
 class JamTracks extends StatefulWidget {
   @override
@@ -28,14 +23,21 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
     super.initState();
     cntrl = TabController(length: 2, vsync: this);
 
-    Stopwatch stopwatch = new Stopwatch()..start();
+    cntrl.addListener(() {
+      if (cntrl.index == 0) setState(() {});
+    });
+
     PresetsStorage().waitLoading().then((value) {
-      print('preload executed in ${stopwatch.elapsed}');
       TrackData().waitLoading().then((value) {
-        print('load executed in ${stopwatch.elapsed}');
-        setState(() {});
+        if (mounted) setState(() {});
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    cntrl.dispose();
   }
 
   void checkPermission() async {
@@ -63,8 +65,25 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
     return fn;
   }
 
+  Widget showSetlists(bool hasTracks) {
+    if (hasTracks) return Setlists();
+    return Stack(
+      children: [
+        Setlists(),
+        TextButton(
+          child: Center(child: Text("")),
+          onPressed: () {
+            cntrl.index = 1;
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool hasTracks = TrackData().tracks.length > 0;
+
     return FutureBuilder<PermissionStatus>(
       future: Permission.storage.status,
       builder:
@@ -85,13 +104,13 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
               return Column(
                 children: [
                   TabBar(
-                    tabs: [Tab(text: "Tracks"), Tab(text: "Setlists")],
+                    tabs: [Tab(text: "Setlists"), Tab(text: "Tracks")],
                     controller: cntrl,
                   ),
                   Expanded(
                     child: TabBarView(
                         controller: cntrl,
-                        children: [TracksPage(), Setlists()]),
+                        children: [showSetlists(hasTracks), TracksPage()]),
                   ),
                 ],
               );

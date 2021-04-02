@@ -9,7 +9,6 @@ class SelectPresetDialog {
       {required bool noneOption, String? customProduct}) {
     return AlertDialog(
       contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
-      backgroundColor: Colors.grey[900],
       title: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -19,10 +18,7 @@ class SelectPresetDialog {
                 color: Colors.white,
               ),
               onPressed: () => Navigator.of(context).pop()),
-          Text(
-            'Select preset',
-            style: TextStyle(color: Colors.white),
-          ),
+          Text('Select preset'),
         ],
       ),
       content: PresetList(

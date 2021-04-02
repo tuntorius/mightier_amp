@@ -4,6 +4,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:tinycolor/tinycolor.dart';
 
 class ThickSlider extends StatefulWidget {
@@ -15,6 +16,7 @@ class ThickSlider extends StatefulWidget {
   final String Function(double) labelFormatter;
   final int skipEmitting;
   final bool enabled;
+  final bool handleVerticalDrag;
 
   ThickSlider(
       {required this.activeColor,
@@ -23,6 +25,7 @@ class ThickSlider extends StatefulWidget {
       this.max = 1,
       required this.value,
       this.onChanged,
+      this.handleVerticalDrag = true,
       required this.labelFormatter,
       this.skipEmitting = 3,
       this.enabled = true});
@@ -36,6 +39,11 @@ class _ThickSliderState extends State<ThickSlider> {
   double pos = 0;
   int lastTapDown = 0;
   int emitCounter = 0;
+  double scale = 1;
+
+  Offset startDragPos = Offset(0, 0);
+  double width = 0;
+
   // Returns a number between min and max, proportional to value, which must
   // be between 0.0 and 1.0.
   double _lerp(double value) {
@@ -83,40 +91,82 @@ class _ThickSliderState extends State<ThickSlider> {
     factor = pos / width;
   }
 
+  void dragStart(DragDownDetails details) {
+    startDragPos = details.localPosition;
+  }
+
+  void dragUpdate(DragUpdateDetails details) {
+    Offset delta = details.localPosition - startDragPos;
+    startDragPos = details.localPosition;
+
+    scale = 1;
+    if (details.localPosition.dy.abs() > 80) scale = 0.5;
+    if (details.localPosition.dy.abs() > 160) scale = 0.25;
+    if (details.localPosition.dy.abs() > 240) scale = 0.125;
+    if (details.localPosition.dy.abs() > 320) scale = 0.0625;
+    if (!widget.enabled) return;
+    addPercentage(delta.dx * scale, width);
+    emitCounter++;
+    if (emitCounter % widget.skipEmitting == 0) {
+      widget.onChanged?.call(_lerp(factor));
+    }
+  }
+
+  void dragEnd(DragEndDetails details) {
+    if (!widget.enabled) return;
+    scale = 1;
+    //call the last factor value here
+    widget.onChanged?.call(_lerp(factor));
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      double width = constraints.maxWidth - 1;
+      width = constraints.maxWidth - 1;
 
       factor = _unlerp(widget.value);
       pos = factor * width;
 
       return GestureDetector(
+        onDoubleTap: () {
+          print("Double Tap");
+          AlertDialogs.showInputDialog(context,
+              title: "Enter Value",
+              description: "Enter new value for ${widget.label}",
+              cancelButton: "Cancel",
+              confirmButton: "Set",
+              value: _lerp(factor).toString(),
+              validation: (value) {
+                double? val = double.tryParse(value);
+                if (val == null) return false;
+                if (val < widget.min || val > widget.max) return false;
+                return true;
+              },
+              validationErrorMessage: "Value not valid",
+              confirmColor: Colors.blue,
+              onConfirm: (value) {
+                var val = double.parse(value);
+                widget.onChanged?.call(val);
+              });
+        },
         onTapDown: (details) {
           if (!widget.enabled) return;
 
           //double tap
-          var now = DateTime.now().millisecondsSinceEpoch;
-          if (now - lastTapDown < 300) {
-            setPercentage(details.localPosition.dx, width);
-            widget.onChanged?.call(_lerp(factor));
-          }
-          lastTapDown = now;
+          // var now = DateTime.now().millisecondsSinceEpoch;
+          // if (now - lastTapDown < 300) {
+          //   setPercentage(details.localPosition.dx, width);
+          //   widget.onChanged?.call(_lerp(factor));
+          // }
+          // lastTapDown = now;
         },
-        onHorizontalDragUpdate: (detail) {
-          if (!widget.enabled) return;
-          addPercentage(detail.delta.dx, width);
-          emitCounter++;
-          if (emitCounter % widget.skipEmitting == 0) {
-            widget.onChanged?.call(_lerp(factor));
-          }
-        },
-        onHorizontalDragEnd: (detail) {
-          if (!widget.enabled) return;
-          //call the last factor value here
-          widget.onChanged?.call(_lerp(factor));
-        },
+        onVerticalDragDown: widget.handleVerticalDrag ? dragStart : null,
+        onVerticalDragUpdate: widget.handleVerticalDrag ? dragUpdate : null,
+        onVerticalDragEnd: widget.handleVerticalDrag ? dragEnd : null,
+        onHorizontalDragDown: dragStart,
+        onHorizontalDragUpdate: dragUpdate,
+        onHorizontalDragEnd: dragEnd,
         child: Container(
           color: Colors.transparent,
           height: 50,
@@ -161,6 +211,7 @@ class _ThickSliderState extends State<ThickSlider> {
                       )
                     ]),
               ),
+              Center(child: Text(scale < 1 ? "x$scale" : ""))
             ],
             alignment: Alignment.centerLeft,
           ),

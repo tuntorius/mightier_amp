@@ -277,7 +277,10 @@ class _ParentWidgetState extends State<ParentWidget>
       trailingWidget = null;
     else {
       var button = PopupMenuButton(
-        icon: Icon(Icons.more_vert, color: Colors.grey),
+        icon: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16),
+          child: Icon(Icons.more_vert, color: Colors.grey),
+        ),
         itemBuilder: widget.itemBuilder,
         onSelected: (pos) {
           if (pos is int) widget.onSelected(pos, widget.title);

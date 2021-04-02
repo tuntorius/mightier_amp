@@ -12,9 +12,10 @@ class SavePresetDialog {
   final categoryCtrl = TextEditingController();
   final nameCtrl = TextEditingController();
   final parentScroll = ScrollController();
-  NuxDevice device;
+  final NuxDevice device;
+  final Color? confirmColor;
 
-  SavePresetDialog({required this.device}) {
+  SavePresetDialog({required this.device, this.confirmColor}) {
     categoryCtrl.text = device.presetCategory;
     nameCtrl.text = device.presetName;
   }
@@ -39,13 +40,10 @@ class SavePresetDialog {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 key: _formKey,
                 child: Column(
-                  //mainAxisSize: MainAxisSize.max,
-                  //crossAxisAlignment: CrossAxisAlignment.start,
-                  //reverse: true,
                   children: [
                     Text("Categories",
                         style: TextStyle(color: Theme.of(context).hintColor)),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Container(
@@ -56,7 +54,6 @@ class SavePresetDialog {
                       child: ScrollParent(
                         controller: parentScroll,
                         child: ListTileTheme(
-                          textColor: Colors.black,
                           child: ListView.builder(
                             physics: ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
@@ -77,7 +74,6 @@ class SavePresetDialog {
                     TextFormField(
                       decoration: InputDecoration(labelText: "Category"),
                       controller: categoryCtrl,
-                      style: TextStyle(color: Colors.black),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter preset category';
@@ -89,7 +85,6 @@ class SavePresetDialog {
                     TextFormField(
                       decoration: InputDecoration(labelText: "Name"),
                       controller: nameCtrl,
-                      style: TextStyle(color: Colors.black),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter preset name';
@@ -105,8 +100,7 @@ class SavePresetDialog {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("Cancel",
-                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -133,7 +127,10 @@ class SavePresetDialog {
                   }
                 }
               },
-              child: Text('Save'),
+              child: Text(
+                'Save',
+                style: TextStyle(color: confirmColor),
+              ),
             ),
           ],
         );

@@ -110,6 +110,7 @@ class _SettingsState extends State<Settings> {
                       confirmButton: "OK",
                       cancelButton: "Cancel",
                       title: "Delay Time Unit",
+                      confirmColor: Colors.blue,
                       value: SharedPrefs()
                           .getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index),
                       options: timeUnit, onConfirm: (changed, newValue) {
@@ -135,6 +136,7 @@ class _SettingsState extends State<Settings> {
                       confirmButton: "OK",
                       cancelButton: "Cancel",
                       title: "Select Device",
+                      confirmColor: Colors.blue,
                       value: NuxDeviceControl().deviceIndex,
                       options: NuxDeviceControl().deviceNameList,
                       onConfirm: (changed, newValue) {
@@ -152,7 +154,6 @@ class _SettingsState extends State<Settings> {
               //Automatically set matching cabinet when changing an amp
               CheckboxListTile(
                   title: Text("Set matching cabinets automatically"),
-                  subtitle: Text("when changing an amp"),
                   value: SharedPrefs().getInt(SettingsKeys.changeCabs, 1) != 0,
                   onChanged: (value) {
                     setState(() {
@@ -186,6 +187,7 @@ class _SettingsState extends State<Settings> {
                         confirmButton: "OK",
                         cancelButton: "Cancel",
                         title: "Bluetooth Audio EQ",
+                        confirmColor: Colors.blue,
                         value: device.btEq,
                         options: eqOptions, onConfirm: (changed, newValue) {
                       if (changed) {
@@ -235,7 +237,7 @@ class _SettingsState extends State<Settings> {
               //Divider(),
               ListTile(
                 enabled: device.deviceControl.isConnected,
-                title: Text("Calibrate Latency"),
+                title: Text("Calibrate BT Audio Latency"),
                 trailing: Icon(Icons.keyboard_arrow_right),
                 onTap: () {
                   Navigator.of(context).push(
@@ -282,7 +284,19 @@ class _SettingsState extends State<Settings> {
           ],
         ),
         Divider(),
-        ListTile(title: Text("App Version"), trailing: Text(_version))
+        ListTile(title: Text("App Version"), trailing: Text(_version)),
+        // ListTile(
+        //   title: Text("More Info"),
+        //   onTap: () {
+        //     showAboutDialog(
+        //       context: context,
+        //       applicationIcon:
+        //           Icon(MightierIcons.amp, color: Colors.blue, size: 30),
+        //       applicationVersion: _version,
+        //       applicationLegalese: "© 2021 Dian Iliev (Tuntori)",
+        //     );
+        //   },
+        // )
       ],
     );
   }

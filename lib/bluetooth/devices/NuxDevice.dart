@@ -91,6 +91,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
   set selectedChannelNormalized(int chan) {
     presetChangedNotifier.value = selectedChannelP;
+    sendAmpLevel();
   }
 
   void _setSelectedChannelNuxIndex(int chan, bool notify) {
@@ -128,12 +129,12 @@ abstract class NuxDevice extends ChangeNotifier {
   //drum stuff
   bool _drumsEnabled = false;
   int _selectedDrumStyle = 0;
-  int _drumsVolume = 50;
+  double _drumsVolume = 50;
   double _drumsTempo = 120;
 
   bool get drumsEnabled => _drumsEnabled;
   int get selectedDrumStyle => _selectedDrumStyle;
-  int get drumsVolume => _drumsVolume;
+  double get drumsVolume => _drumsVolume;
   double get drumsTempo => _drumsTempo;
 
   void onConnect() {
@@ -164,7 +165,7 @@ abstract class NuxDevice extends ChangeNotifier {
     deviceControl.sendDrumsStyle(style);
   }
 
-  void setDrumsLevel(int level) {
+  void setDrumsLevel(double level) {
     _drumsVolume = level;
     deviceControl.sendDrumsLevel(level);
   }
@@ -279,7 +280,7 @@ abstract class NuxDevice extends ChangeNotifier {
                     _usbMode = data[9];
                     _inputVol = data[10];
                     _outputVol = data[11];
-                    deviceControl.onConfigReceived();
+                    deviceControl.deviceConnectionReady();
                     notifyListeners();
                     break;
                 }
@@ -289,8 +290,11 @@ abstract class NuxDevice extends ChangeNotifier {
         }
         break;
       case MidiMessageValues.controlChange:
-        if (data[1] == channelChangeCC)
+        if (data[1] == channelChangeCC) {
           _setSelectedChannelNuxIndex(data[2], true);
+          //immediately set the amp level
+          sendAmpLevel();
+        }
         //TODO: add knob manipulations here
         break;
     }

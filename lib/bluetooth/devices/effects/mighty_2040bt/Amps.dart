@@ -47,7 +47,6 @@ class Amp1 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpMid),
     Parameter(
@@ -97,7 +96,6 @@ class AmpDrive2 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpMid),
     Parameter(
@@ -147,7 +145,6 @@ class AmpClean1 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpMid),
     Parameter(
@@ -197,7 +194,6 @@ class AmpClean2 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpMid),
     Parameter(
@@ -232,7 +228,6 @@ class AmpMetal1 extends MXXBTAmplifier {
         handle: "level",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.drivetone,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
@@ -247,7 +242,6 @@ class AmpMetal1 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpMid),
     Parameter(
@@ -297,7 +291,6 @@ class AmpMetal2 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpMid),
     Parameter(
@@ -347,7 +340,6 @@ class AmpLead1 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpMid),
     Parameter(
@@ -397,7 +389,6 @@ class AmpLead2 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpMid),
     Parameter(

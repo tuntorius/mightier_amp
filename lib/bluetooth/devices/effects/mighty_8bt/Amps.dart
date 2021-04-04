@@ -32,7 +32,6 @@ class AmpClean extends M8BTAmplifier {
         handle: "tone",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.drivetone,
         midiCC: MidiCCValues.bCC_OverDriveTone),
     Parameter(
@@ -40,6 +39,7 @@ class AmpClean extends M8BTAmplifier {
         handle: "level",
         value: 50,
         valueType: ValueType.percentage,
+        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.drivelevel,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
     Parameter(
@@ -47,7 +47,6 @@ class AmpClean extends M8BTAmplifier {
         handle: "miclevel",
         value: 50,
         valueType: ValueType.percentage,
-        masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.miclevel,
         midiCC: MidiCCValues.bCC_AmpDrive),
     Parameter(

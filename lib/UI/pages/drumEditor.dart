@@ -100,7 +100,7 @@ class _DrumEditorState extends State<DrumEditor> {
                 labelFormatter: (val) => "${device.drumsVolume}",
                 onChanged: (val) {
                   setState(() {
-                    device.setDrumsLevel(val.round());
+                    device.setDrumsLevel(val);
                   });
                 },
               ),

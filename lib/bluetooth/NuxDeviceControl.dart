@@ -152,8 +152,6 @@ class NuxDeviceControl extends ChangeNotifier {
           print("${_midiHandler.connectedDevice!.name} connected");
           _device = deviceFromBLEId(_midiHandler.connectedDevice!.name);
           SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
-          _masterVolume = 100;
-          notifyListeners();
           _onConnect();
         }
         break;
@@ -229,7 +227,7 @@ class NuxDeviceControl extends ChangeNotifier {
       device.selectedChannelNormalized = 0;
       changeDevicePreset(0);
       sendFullPresetSettings();
-      connectStatus.add(DeviceConnectionState.configReceived);
+      deviceConnectionReady();
       return;
     }
 
@@ -250,7 +248,8 @@ class NuxDeviceControl extends ChangeNotifier {
     _midiHandler.sendData(data);
   }
 
-  void onConfigReceived() {
+  void deviceConnectionReady() {
+    device.sendAmpLevel();
     connectStatus.add(DeviceConnectionState.configReceived);
   }
 
@@ -414,9 +413,10 @@ class NuxDeviceControl extends ChangeNotifier {
     _midiHandler.sendData(data);
   }
 
-  void sendDrumsLevel(int volume) {
+  void sendDrumsLevel(double volume) {
     if (_midiHandler.connectedDevice == null) return;
-    var data = createCCMessage(MidiCCValues.bCC_drumLevel_No, volume);
+    int val = percentageTo7Bit(volume);
+    var data = createCCMessage(MidiCCValues.bCC_drumLevel_No, val);
     _midiHandler.sendData(data);
   }
 

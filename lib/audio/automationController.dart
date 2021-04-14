@@ -26,12 +26,13 @@ class AutomationController {
   AutomationController(this.automation);
 
   Stream<Duration> get positionStream => _positionController.stream;
-  //Stream<AutomationEvent> get eventStream => _eventController.stream;
 
   Duration get duration => player.duration ?? Duration();
   PlayerState get playerState => player.playerState;
   Stream<PlayerState> get playerStateStream => player.playerStateStream;
   bool get playing => player.playing;
+
+  Function? onTrackComplete;
 
   int _latency = 0;
   int _speed = 1;
@@ -39,8 +40,10 @@ class AutomationController {
   //editor use only. don't serialize
   AutomationEvent? selectedEvent;
 
-  void setAudioFile(String path, int positionResolution) async {
-    await player.setFilePath(path);
+  Future setAudioFile(String path, int positionResolution) async {
+    //await player.setFilePath(path);
+    var source = ProgressiveAudioSource(Uri.parse(path));
+    await player.setAudioSource(source);
 
     if (NuxDeviceControl().isConnected)
       _latency = SharedPrefs().getInt(SettingsKeys.latency, 0);
@@ -57,9 +60,9 @@ class AutomationController {
     _positionResolution = max(1, positionResolution);
   }
 
-  // void setAudioLatency(int latency) {
-  //   _latency = latency;
-  // }
+  void setTrackCompleteEvent(Function onComplete) {
+    onTrackComplete = onComplete;
+  }
 
   //stream listener for track position updates
   void playPositionUpdate(Duration position) {
@@ -69,6 +72,11 @@ class AutomationController {
 
     _positionReport++;
 
+    if (position == player.duration) {
+      //call and lose ref to prevent double calling
+      onTrackComplete?.call();
+      onTrackComplete = null;
+    }
     //execute loop events without latency calc
     if (_nextEvent < automation.events.length) {
       switch (automation.events[_nextEvent].type) {
@@ -125,19 +133,19 @@ class AutomationController {
     //_eventController.add(event);
   }
 
-  void play() async {
+  Future play() async {
     if (playerState.processingState == ProcessingState.completed)
       await player.seek(Duration(seconds: 0));
     player.play();
     seek(player.position);
   }
 
-  void playPause() {
+  Future playPause() async {
     if (playerState.playing == false ||
         playerState.processingState == ProcessingState.completed)
-      play();
+      await play();
     else
-      player.pause();
+      await player.pause();
   }
 
   void setSpeed(double speed) {
@@ -146,7 +154,7 @@ class AutomationController {
 
   void setPitch(double pitch) {
     //TODO: just_audio library will implement this soon
-    //player.setPitch(pitch);
+    player.setPitch(pitch);
   }
 
   void seek(Duration position) {

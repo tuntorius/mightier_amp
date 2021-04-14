@@ -13,6 +13,8 @@ class Setlists extends StatefulWidget {
 }
 
 class _SetlistsState extends State<Setlists> {
+  Offset _position = Offset(0, 0);
+
   @override
   void initState() {
     super.initState();
@@ -79,6 +81,25 @@ class _SetlistsState extends State<Setlists> {
       ),
     )
   ];
+
+  void showContextMenu(
+      BuildContext context, dynamic item, List<PopupMenuEntry> _menu) {
+    final RenderBox? overlay =
+        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    //open menu
+    if (overlay != null) {
+      var rect = RelativeRect.fromRect(
+          _position & const Size(40, 40), // smaller rect, the touch area
+          Offset.zero & overlay.size);
+      showMenu(
+        position: rect,
+        items: _menu,
+        context: context,
+      ).then((value) {
+        if (value != null) menuActions(context, value, item);
+      });
+    }
+  }
 
   void menuActions(BuildContext context, int action, Setlist item) async {
     switch (action) {
@@ -168,8 +189,12 @@ class _SetlistsState extends State<Setlists> {
                                         readOnly: false,
                                       )));
                             },
+                            onTapDown: (details) {
+                              _position = details.globalPosition;
+                            },
                             onLongPress: () {
-                              //TODO: menu
+                              showContextMenu(
+                                  context, setlists[index], popupSubmenu);
                             },
                             child: Row(
                               children: [

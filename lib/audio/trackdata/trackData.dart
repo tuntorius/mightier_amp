@@ -128,10 +128,30 @@ class TrackData {
         }
       }
 
-      if (tracklistChanged) saveSetlists();
+      if (tracklistChanged) await saveSetlists();
 
       await saveTracks();
     }
+  }
+
+  removeTracks(List<JamTrack> tracks) async {
+    bool tracklistChanged = false;
+    tracks.forEach((element) {
+      _tracksData.remove(element);
+
+      //remove any setlist instances
+      for (int i = 0; i < _setlistsData.length; i++) {
+        for (int j = _setlistsData[i].items.length - 1; j >= 0; j--) {
+          if (_setlistsData[i].items[j].trackUuid == element.uuid) {
+            _setlistsData[i].items.removeAt(j);
+            tracklistChanged = true;
+          }
+        }
+      }
+    });
+
+    if (tracklistChanged) await saveSetlists();
+    await saveTracks();
   }
 
   bool isPresetInUse(String presetUuid) {

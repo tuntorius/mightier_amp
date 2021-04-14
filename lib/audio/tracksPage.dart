@@ -161,7 +161,7 @@ class _TracksPageState extends State<TracksPage> {
   void renameTrack(BuildContext context, JamTrack track) {
     AlertDialogs.showInputDialog(context,
         title: "Rename",
-        description: "Enter category name:",
+        description: "Enter track name:",
         cancelButton: "Cancel",
         confirmButton: "Rename",
         value: track.name,
@@ -278,12 +278,14 @@ class _TracksPageState extends State<TracksPage> {
                                 confirmColor: Colors.red,
                                 onConfirm: (delete) async {
                               if (delete) {
+                                List<JamTrack> delTracks = [];
                                 for (int i = 0; i < selected.length; i++) {
                                   var item = TrackData()
                                       .tracks[selected.keys.elementAt(i)];
-                                  await TrackData().removeTrack(item);
+                                  delTracks.add(item);
                                 }
-                                setState(() {});
+                                await TrackData().removeTracks(delTracks);
+                                deselectAll();
                               }
                             });
                             return;
@@ -297,6 +299,7 @@ class _TracksPageState extends State<TracksPage> {
                                 await tagger.readTagsAsMap(path: path[i]);
 
                             var name = getProperTags(tags, path[i]);
+
                             TrackData().addTrack(path[i], name);
 
                             //asd - clear filter and scroll to bottom

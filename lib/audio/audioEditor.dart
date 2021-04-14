@@ -11,7 +11,6 @@ import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/automationController.dart';
 import 'package:mighty_plug_manager/audio/widgets/presetsPanel.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
-import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:page_view_indicators/circle_page_indicator.dart';

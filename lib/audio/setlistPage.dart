@@ -1,13 +1,136 @@
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/popups/selectTrack.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/automationController.dart';
-import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
-import 'models/jamTrack.dart';
 import 'models/setlist.dart';
 import 'trackdata/trackData.dart';
 import 'widgets/setlistPlayer.dart';
+
+enum PlayerState { idle, play, pause }
+
+class SetlistPlayerState extends ChangeNotifier {
+  PlayerState state = PlayerState.idle;
+  Setlist setlist;
+  int currentTrack = 0;
+  Duration currentPosition = Duration(seconds: 0);
+  bool _autoAdvance = true;
+  bool _inPositionUpdateMode = false;
+
+  bool get autoAdvance => _autoAdvance;
+  set autoAdvance(bool val) {
+    _autoAdvance = val;
+    notifyListeners();
+  }
+
+  AutomationController? _automation;
+
+  SetlistPlayerState({required this.setlist}) {
+    openTrack(0);
+  }
+
+  Future openTrack(int index) async {
+    currentTrack = index;
+    var track = setlist.items[index].trackReference;
+    if (track != null) {
+      _automation = AutomationController(track.automation);
+      await _automation?.setAudioFile(track.path, 2000);
+      _automation?.setTrackCompleteEvent(_onTrackComplete);
+      _automation?.positionStream.listen(_onPosition);
+    }
+  }
+
+  Future play() async {
+    await _automation?.play();
+    state = PlayerState.play;
+    notifyListeners();
+  }
+
+  Future playPause() async {
+    print("PlayPause");
+    await _automation?.playPause();
+    if (_automation!.player.playerState.playing == false)
+      state = PlayerState.pause;
+    else
+      state = PlayerState.play;
+    print(state);
+    notifyListeners();
+  }
+
+  void previous() async {
+    if (_automation == null) return;
+    if (currentTrack == 0 || _automation!.player.position.inSeconds > 2)
+      _automation!.seek(Duration(seconds: 0));
+    else if (currentTrack > 0) {
+      await closeTrack();
+      currentTrack--;
+      await openTrack(currentTrack);
+      if (state == PlayerState.play) await play();
+    }
+
+    notifyListeners();
+  }
+
+  void next() async {
+    if (currentTrack < setlist.items.length - 1) {
+      await closeTrack();
+      currentTrack++;
+      await openTrack(currentTrack);
+      if (state == PlayerState.play) await play();
+      notifyListeners();
+    }
+  }
+
+  Future? closeTrack() {
+    return _automation?.dispose();
+  }
+
+  void _onPosition(Duration pos) {
+    if (!_inPositionUpdateMode) currentPosition = pos;
+    notifyListeners();
+  }
+
+  String getMMSS(Duration d) {
+    var m = d.inMinutes.toString().padLeft(2, "0");
+    var s = d.inSeconds.remainder(60).toString().padLeft(2, "0");
+    return "$m:$s";
+  }
+
+  Duration getDuration() {
+    return _automation?.duration ?? Duration(seconds: 0);
+  }
+
+  void setPosition(int positionMS) {
+    currentPosition = Duration(milliseconds: positionMS);
+    _automation?.seek(currentPosition);
+    notifyListeners();
+  }
+
+  void setPositionUpdateMode(bool enabled) {
+    _inPositionUpdateMode = enabled;
+    if (!enabled) _automation?.seek(currentPosition);
+  }
+
+  void _onTrackComplete() async {
+    await closeTrack();
+    currentPosition = Duration(milliseconds: 0);
+    if (currentTrack < setlist.items.length - 1) {
+      currentTrack++;
+      await openTrack(currentTrack);
+      if (_autoAdvance) {
+        await play();
+        state = PlayerState.play;
+      } else
+        state = PlayerState.pause;
+    } else {
+      await openTrack(currentTrack);
+      currentTrack = 0;
+      state = PlayerState.pause;
+    }
+    notifyListeners();
+  }
+}
 
 class SetlistPage extends StatefulWidget {
   final Setlist setlist;
@@ -20,21 +143,72 @@ class SetlistPage extends StatefulWidget {
 
 class _SetlistPageState extends State<SetlistPage> {
   //player state
+
+  static const int expandThreshold = 20;
   bool playerExpanded = false;
-  int currentTrack = 0;
   final animationDuration = const Duration(milliseconds: 200);
-  AutomationController? _automation;
+
+  late SetlistPlayerState playerState;
+
+  //multiselection stuff
+  bool _multiselectMode = false;
+  Offset dragStart = Offset(0, 0);
+  Map<int, bool> selected = {};
+
+  var popupSubmenu = <PopupMenuEntry>[
+    PopupMenuItem(
+      value: 0,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.highlight_remove_outlined,
+            color: AppThemeConfig.contextMenuIconColor,
+          ),
+          const SizedBox(width: 5),
+          Text("Remove"),
+        ],
+      ),
+    )
+  ];
+
+  void menuActions(BuildContext context, int action, SetlistItem item) async {
+    switch (action) {
+      case 0: //delete
+        AlertDialogs.showConfirmDialog(context,
+            title: "Confirm",
+            description:
+                "Are you sure you want to remove ${item.trackReference!.name}?",
+            cancelButton: "Cancel",
+            confirmButton: "Delete",
+            confirmColor: Colors.red, onConfirm: (delete) {
+          if (delete) {
+            widget.setlist.items.remove(item);
+            TrackData().saveSetlists().then((value) {
+              setState(() {});
+            });
+          }
+        });
+        break;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+
+    playerState = SetlistPlayerState(setlist: widget.setlist);
+    playerState.addListener(onPlayerStateChange);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
-    _automation?.dispose();
+    playerState.closeTrack();
+    playerState.removeListener(onPlayerStateChange);
+  }
+
+  void onPlayerStateChange() {
+    setState(() {});
   }
 
   void collapse() {
@@ -62,15 +236,55 @@ class _SetlistPageState extends State<SetlistPage> {
     });
   }
 
-  void openTrack(JamTrack track) {
-    if (_automation != null) {
-      _automation!.dispose();
+  void openTrack(int setlistIndex) async {
+    await playerState.closeTrack();
+
+    await playerState.openTrack(setlistIndex);
+
+    await playerState.play();
+    setState(() {});
+  }
+
+  void multiselectHandler(int index) {
+    if (selected.length == 0 || !selected.containsKey(index)) {
+      //fill it first if not created
+      selected[index] = true;
+      _multiselectMode = true;
+    } else {
+      selected.remove(index);
+      if (selected.length == 0) _multiselectMode = false;
     }
+    setState(() {});
+  }
 
-    _automation = AutomationController(track.automation);
-    _automation?.setAudioFile(track.path, 500);
+  void deselectAll() {
+    selected.clear();
+    _multiselectMode = false;
+    setState(() {});
+  }
 
-    _automation?.play();
+  Widget? createTrailingWidget(BuildContext context, int index) {
+    if (_multiselectMode)
+      return Icon(
+        selected.containsKey(index)
+            ? Icons.check_circle
+            : Icons.brightness_1_outlined,
+        color: selected.containsKey(index) ? null : Colors.grey[800],
+      );
+
+    return PopupMenuButton(
+      child: Padding(
+        padding:
+            const EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
+        child: Icon(Icons.more_vert, color: Colors.grey),
+      ),
+      itemBuilder: (context) {
+        return popupSubmenu;
+      },
+      onSelected: (pos) {
+        menuActions(context, pos as int, widget.setlist.items[index]);
+      },
+    );
   }
 
   @override
@@ -82,6 +296,12 @@ class _SetlistPageState extends State<SetlistPage> {
           collapse();
           return Future.value(false);
         }
+
+        if (_multiselectMode) {
+          deselectAll();
+          return Future.value(false);
+        }
+
         return Future.value(true);
       },
       child: Scaffold(
@@ -95,6 +315,8 @@ class _SetlistPageState extends State<SetlistPage> {
             fit: StackFit.expand,
             children: [
               ListTileTheme(
+                selectedTileColor: Color.fromARGB(255, 9, 51, 116),
+                selectedColor: Colors.white,
                 iconColor: Colors.white,
                 child: IndexedStack(
                   index: widget.setlist.items.length > 0 ? 0 : 1,
@@ -111,17 +333,20 @@ class _SetlistPageState extends State<SetlistPage> {
                               key: Key("$index"),
                               child: InkWell(
                                 onTap: () {
-                                  currentTrack = index;
+                                  if (_multiselectMode) {
+                                    multiselectHandler(index);
+                                    return;
+                                  }
+                                  playerState.currentTrack = index;
                                   var track = widget
                                       .setlist.items[index].trackReference;
-                                  if (track != null)
-                                    openTrack(widget
-                                        .setlist.items[index].trackReference!);
+                                  if (track != null) openTrack(index);
                                   setState(() {});
                                 },
+                                onLongPress: () => multiselectHandler(index),
                                 child: Row(
                                   children: [
-                                    if (!widget.readOnly)
+                                    if (!widget.readOnly && !_multiselectMode)
                                       ReorderableDragStartListener(
                                         child: InkWell(
                                           child: Container(
@@ -139,11 +364,18 @@ class _SetlistPageState extends State<SetlistPage> {
                                       ),
                                     Expanded(
                                       child: ListTile(
+                                        selected: _multiselectMode &&
+                                            selected.containsKey(index),
                                         contentPadding: EdgeInsets.only(
-                                            left: widget.readOnly ? 16 : 0,
+                                            left: widget.readOnly ||
+                                                    _multiselectMode
+                                                ? 16
+                                                : 0,
                                             right: 16),
                                         title: Text(widget.setlist.items[index]
                                             .trackReference!.name),
+                                        trailing: createTrailingWidget(
+                                            context, index),
                                       ),
                                     ),
                                   ],
@@ -152,6 +384,8 @@ class _SetlistPageState extends State<SetlistPage> {
                             );
                           },
                           onReorder: (int oldIndex, int newIndex) {
+                            var currentItem = playerState
+                                .setlist.items[playerState.currentTrack];
                             if (oldIndex < newIndex) {
                               // removing the item at oldIndex will shorten the list by 1.
                               newIndex -= 1;
@@ -159,6 +393,10 @@ class _SetlistPageState extends State<SetlistPage> {
                             final element =
                                 widget.setlist.items.removeAt(oldIndex);
                             widget.setlist.items.insert(newIndex, element);
+
+                            playerState.currentTrack =
+                                playerState.setlist.items.indexOf(currentItem);
+
                             TrackData().saveSetlists();
                           }),
                     ),
@@ -186,14 +424,53 @@ class _SetlistPageState extends State<SetlistPage> {
                 child: FloatingActionButton(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
-                  onPressed: playerExpanded ? collapse : addTrack,
+                  onPressed: playerExpanded
+                      ? collapse
+                      : () {
+                          if (_multiselectMode) {
+                            //delete mode
+                            AlertDialogs.showConfirmDialog(context,
+                                title: "Confirm",
+                                description:
+                                    "Are you sure you want to remove ${selected.length} items?",
+                                cancelButton: "Cancel",
+                                confirmButton: "Delete",
+                                confirmColor: Colors.red,
+                                onConfirm: (delete) async {
+                              if (delete) {
+                                for (int i = selected.length - 1; i >= 0; i--) {
+                                  widget.setlist.items
+                                      .removeAt(selected.keys.elementAt(i));
+                                }
+                                await TrackData().saveSetlists();
+                                deselectAll();
+                              }
+                            });
+                            return;
+                          }
+                          addTrack();
+                        },
                   child: Icon(
-                    Icons.add,
+                    _multiselectMode ? Icons.delete : Icons.add,
                     size: 28,
                   ),
                 ),
               ),
         bottomNavigationBar: GestureDetector(
+          onVerticalDragStart: (details) {
+            dragStart = details.globalPosition;
+          },
+          onVerticalDragUpdate: (details) {
+            Offset delta = details.globalPosition - dragStart;
+            if (delta.dy < -expandThreshold && !playerExpanded)
+              setState(() {
+                playerExpanded = true;
+              });
+            else if (delta.dy > expandThreshold && playerExpanded)
+              setState(() {
+                playerExpanded = false;
+              });
+          },
           onTap: () {
             //expand only
             if (playerExpanded) return;
@@ -203,9 +480,8 @@ class _SetlistPageState extends State<SetlistPage> {
           },
           //AnimatedSwitcher
           child: SetlistPlayer(
+            state: playerState,
             duration: animationDuration,
-            setlist: widget.setlist,
-            index: currentTrack,
             expanded: playerExpanded,
           ),
         ),

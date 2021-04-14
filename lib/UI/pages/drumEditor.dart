@@ -97,7 +97,7 @@ class _DrumEditorState extends State<DrumEditor> {
                 activeColor: Colors.blue,
                 label: "Volume",
                 value: device.drumsVolume.toDouble(),
-                labelFormatter: (val) => "${device.drumsVolume}",
+                labelFormatter: (val) => "${device.drumsVolume.round()} %",
                 onChanged: (val) {
                   setState(() {
                     device.setDrumsLevel(val);

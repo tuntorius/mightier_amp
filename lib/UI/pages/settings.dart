@@ -10,13 +10,17 @@ import '../../platform/simpleSharedPrefs.dart';
 import 'package:wakelock/wakelock.dart';
 import '../../bluetooth/bleMidiHandler.dart';
 import '../widgets/deviceList.dart';
+import 'DebugConsolePage.dart';
 import 'calibration.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info/package_info.dart';
 
+import 'developerPage.dart';
+
 enum TimeUnit { BPM, Seconds }
 
 class Settings extends StatefulWidget {
+  static bool devMode = false;
   static String output = "";
   static void print(String value) {
     if (output.isNotEmpty) output += "\n";
@@ -46,6 +50,8 @@ class _SettingsState extends State<Settings> {
 
   String _version = "";
 
+  int devCounter = 0;
+
   @override
   void initState() {
     super.initState();
@@ -71,8 +77,7 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     final NuxDevice device = NuxDeviceControl().device;
-    List<String> items =
-        Settings.output != null ? Settings.output.split('\n') : <String>[];
+    List<String> items = Settings.output.split('\n');
     return ListView(
       children: [
         if (kDebugMode)
@@ -284,7 +289,33 @@ class _SettingsState extends State<Settings> {
           ],
         ),
         Divider(),
-        ListTile(title: Text("App Version"), trailing: Text(_version)),
+        ListTile(
+          title: Text("App Version"),
+          trailing: Text(_version),
+          onTap: () {
+            devCounter++;
+            if (devCounter == 7) {
+              Settings.devMode = true;
+              setState(() {});
+            }
+          },
+        ),
+        if (Settings.devMode)
+          ListTile(
+              title: Text("Debug Console"),
+              trailing: Icon(Icons.keyboard_arrow_right),
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => DebugConsole()));
+              }),
+        if (Settings.devMode)
+          ListTile(
+              title: Text("MIDI Commands Utility"),
+              trailing: Icon(Icons.keyboard_arrow_right),
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => DeveloperPage()));
+              }),
         // ListTile(
         //   title: Text("More Info"),
         //   onTap: () {

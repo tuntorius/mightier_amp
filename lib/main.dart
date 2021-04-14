@@ -5,15 +5,15 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
-import 'UI/pages/developerPage.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'UI/popups/alertDialogs.dart';
 import 'UI/widgets/NuxAppBar.dart' as NuxAppBar;
 import 'UI/widgets/nestedWillPopScope.dart';
 import 'UI/widgets/presets/presetList.dart';
 import 'UI/widgets/thickSlider.dart';
-import 'audio/trackdata/trackData.dart';
 import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
 
@@ -25,6 +25,9 @@ import 'UI/pages/presetEditor.dart';
 import 'UI/pages/drumEditor.dart';
 import 'UI/pages/jamTracks.dart';
 import 'UI/pages/settings.dart';
+
+//recreate this file with your own api keys
+import 'configKeys.dart';
 
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -42,7 +45,47 @@ void main() {
   //configuration data is needed before start of the app
   WidgetsFlutterBinding.ensureInitialized();
   SharedPrefs prefs = SharedPrefs();
-  prefs.waitLoading().then((value) => runApp(new App()));
+
+  //capture flutter errors
+  if (!kDebugMode)
+    FlutterError.onError = (FlutterErrorDetails details) {
+      print("");
+      DebugConsole.print("Flutter error: ${details.toString()}");
+      // Send report
+      Sentry.captureException(
+        details,
+        stackTrace: details.stack,
+      );
+    };
+
+  if (!kDebugMode) {
+    runZonedGuarded(() {
+      prefs.waitLoading().then((value) async {
+        if (!kDebugMode) {
+          await SentryFlutter.init((options) {
+            options.dsn = sentryDsn;
+          });
+        }
+        runApp(App());
+      });
+    }, (Object error, StackTrace stackTrace) async {
+      // Whenever an error occurs, call the `_reportError` function. This sends
+      // Dart errors to the dev console or Sentry depending on the environment.
+      //_reportError(error, stackTrace);
+
+      DebugConsole.print("Dart error: ${error.toString()}");
+      DebugConsole.print(stackTrace);
+
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
+    });
+  } else {
+    prefs.waitLoading().then((value) {
+      runApp(App());
+    });
+  }
 }
 
 class App extends StatefulWidget {
@@ -101,12 +144,10 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       }),
       DrumEditor(),
       JamTracks(),
-      Settings(),
-      if (kDebugMode) DeveloperPage()
+      Settings()
     ]);
 
-    controller =
-        TabController(initialIndex: 0, length: kDebugMode ? 6 : 5, vsync: this);
+    controller = TabController(initialIndex: 0, length: 5, vsync: this);
 
     controller.addListener(() {
       _currentIndex = controller.index;
@@ -249,21 +290,25 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                       duration: Duration(milliseconds: 100),
                       height: openDrawer ? 60 : 0,
                       child: ThickSlider(
-                          activeColor: Colors.blue,
-                          value: NuxDeviceControl().masterVolume,
-                          skipEmitting: 3,
-                          label: "Volume",
-                          labelFormatter: (value) {
-                            return value.round().toString();
-                          },
-                          min: 0,
-                          max: 100,
-                          handleVerticalDrag: false,
-                          onChanged: (value) {
-                            setState(() {
-                              NuxDeviceControl().masterVolume = value;
-                            });
-                          }),
+                        activeColor: Colors.blue,
+                        value: NuxDeviceControl().masterVolume,
+                        skipEmitting: 3,
+                        label: "Volume",
+                        labelFormatter: (value) {
+                          return value.round().toString();
+                        },
+                        min: 0,
+                        max: 100,
+                        handleVerticalDrag: false,
+                        onChanged: (value) {
+                          setState(() {
+                            NuxDeviceControl().masterVolume = value;
+                          });
+                        },
+                        onDragEnd: (value) {
+                          //TODO: save it to config
+                        },
+                      ),
                     ),
                   ],
                 ),

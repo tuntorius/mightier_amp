@@ -182,7 +182,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void _onDataReceive(List<int> data) {
-    if (kDebugMode && developer) onDataReceiveDebug?.call(data);
+    if (developer) onDataReceiveDebug?.call(data);
 
     if (data.length > 2)
       _device.onDataReceived(data.sublist(2));

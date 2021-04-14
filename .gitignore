@@ -15,8 +15,13 @@
 *.iws
 .idea/
 
+just_audio/
+
 #ignore sign key
 /android/key.properties
+
+#ignore api keys and similar
+/lib/configKeys.dart
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line

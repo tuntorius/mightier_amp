@@ -91,11 +91,17 @@ class AlertDialogs {
       required String confirmButton,
       required String cancelButton,
       required String value,
+      bool selectAll = false,
       Function(String)? onConfirm,
       bool Function(String)? validation,
+      TextInputType? keyboardType,
       String validationErrorMessage = "",
       Color? confirmColor}) {
-    nameCtrl = TextEditingController(text: value);
+    final nameCtrl = TextEditingController(text: value);
+
+    if (selectAll)
+      nameCtrl.selection =
+          TextSelection(baseOffset: 0, extentOffset: value.length);
     // set up the buttons
     Widget cancel = TextButton(
       child: Text(cancelButton),
@@ -111,7 +117,7 @@ class AlertDialogs {
       onPressed: () {
         if (_inputFormKey.currentState!.validate()) {
           Navigator.of(context).pop();
-          onConfirm?.call(nameCtrl?.text ?? "");
+          onConfirm?.call(nameCtrl.text);
         } else {
           //error
         }
@@ -126,6 +132,8 @@ class AlertDialogs {
         child: TextFormField(
           decoration: InputDecoration(labelText: description),
           controller: nameCtrl,
+          autofocus: true,
+          keyboardType: keyboardType,
           //style: TextStyle(color: Colors.black),
           validator: (value) {
             if (value == null || value.isEmpty) {

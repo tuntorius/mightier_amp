@@ -13,6 +13,7 @@ class ThickSlider extends StatefulWidget {
   final double min, max;
   final double value;
   final ValueChanged<double>? onChanged;
+  final ValueChanged<double>? onDragEnd;
   final String Function(double) labelFormatter;
   final int skipEmitting;
   final bool enabled;
@@ -25,6 +26,7 @@ class ThickSlider extends StatefulWidget {
       this.max = 1,
       required this.value,
       this.onChanged,
+      this.onDragEnd,
       this.handleVerticalDrag = true,
       required this.labelFormatter,
       this.skipEmitting = 3,
@@ -117,6 +119,7 @@ class _ThickSliderState extends State<ThickSlider> {
     scale = 1;
     //call the last factor value here
     widget.onChanged?.call(_lerp(factor));
+    widget.onDragEnd?.call(_lerp(factor));
   }
 
   @override
@@ -136,6 +139,8 @@ class _ThickSliderState extends State<ThickSlider> {
               description: "Enter new value for ${widget.label}",
               cancelButton: "Cancel",
               confirmButton: "Set",
+              selectAll: true,
+              keyboardType: TextInputType.number,
               value: _lerp(factor).toString(),
               validation: (value) {
                 double? val = double.tryParse(value);

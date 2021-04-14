@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.6.7+6
+version: 0.7.6+7
 
 environment:
   sdk: ">=2.12.2 <3.0.0"
@@ -25,8 +25,8 @@ dependencies:
     sdk: flutter
   permission_handler: ^6.1.0
   path_provider: ^2.0.1
-  just_audio: ^0.7.3
-
+  just_audio:
+    path: ./just_audio/just_audio
   #upgrade to null-safety
   tinycolor:
     path: ./tinycolor
@@ -39,9 +39,9 @@ dependencies:
   page_view_indicators: ^2.0.0
   audiotagger: ^2.1.0
   uuid: ^3.0.1
+  marquee_text: ^2.0.0
+  sentry_flutter: ^5.0.0
   
-# https://github.com/lukhof/flutter_audio_query/tree/development - version of flutter_audio_query with ios support
-
 # https://pub.dev/packages/direct_select - possibility to use for selecting effects
 
   #some fixes added to flutter_blue library,

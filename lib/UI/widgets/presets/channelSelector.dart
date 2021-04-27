@@ -1,9 +1,11 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
+//
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
+import '../../theme.dart';
 import 'effectSelector.dart';
 
 class ChannelSelector extends StatefulWidget {
@@ -26,6 +28,8 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
   @override
   Widget build(BuildContext context) {
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    var vpHeight = MediaQuery.of(context).size.height;
     _buttons.clear();
 
     _presets = widget.device.getGroupPresets(widget.device.selectedGroup);
@@ -48,9 +52,12 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
     return Column(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         ToggleButtons(
+          constraints: BoxConstraints(
+              minHeight:
+                  AppThemeConfig.toggleButtonHeight(isPortrait, vpHeight)),
           selectedColor:
               _presets[widget.device.selectedChannelNormalized].channelColor,
           selectedBorderColor:
@@ -74,9 +81,16 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             });
           },
         ),
-        EffectSelector(
-            device: widget.device,
-            preset: _presets[widget.device.selectedChannelNormalized])
+        if (isPortrait)
+          Expanded(
+            child: EffectSelector(
+                device: widget.device,
+                preset: _presets[widget.device.selectedChannelNormalized]),
+          )
+        else
+          EffectSelector(
+              device: widget.device,
+              preset: _presets[widget.device.selectedChannelNormalized])
       ],
     );
   }

@@ -4,8 +4,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Amps.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import 'package:undo/undo.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import 'effectEditor.dart';
@@ -26,8 +26,8 @@ class EffectSelector extends StatefulWidget {
 class _EffectSelectorState extends State<EffectSelector> {
   late List<bool> _effectSelection;
 
-  int get _selectedEffect => widget.device.selectedEffect;
-  set _selectedEffect(val) => widget.device.selectedEffect = val;
+  int get _selectedSlot => widget.device.selectedSlot;
+  set _selectedSlot(val) => widget.device.selectedSlot = val;
 
   late List<Widget> _buttons;
   late Preset _preset;
@@ -50,7 +50,7 @@ class _EffectSelectorState extends State<EffectSelector> {
       Color? c = _preset.slotEnabled(i) ? _preset.effectColor(i) : null;
       btns.add(
         Container(
-          width: width / _effectSelection.length - 3,
+          width: max(width / _effectSelection.length - 3, 0),
           child: Column(
             children: [
               Icon(
@@ -70,39 +70,63 @@ class _EffectSelectorState extends State<EffectSelector> {
   }
 
   void setSelectedEffect(dynamic index) {
+    //the index param is always int, it's dynamic because the menu widget requires that
+
     setState(() {
       var device = NuxDeviceControl().device;
-      _preset.setSelectedEffectForSlot(_selectedEffect, index, true);
+
+      //put new effect in stack
+      var oldEffect = _preset.getSelectedEffectForSlot(_selectedSlot);
+      List<Change<int>> totalChanges = [];
+
+      totalChanges.add(Change<int>(
+          oldEffect,
+          () => _preset.setSelectedEffectForSlot(_selectedSlot, index, true),
+          (oldVal) =>
+              _preset.setSelectedEffectForSlot(_selectedSlot, oldVal, true)));
 
       if (device.cabinetSupport &&
           SharedPrefs().getInt(SettingsKeys.changeCabs, 1) == 1) {
-        if (_selectedEffect == device.amplifierSlotIndex) {
+        if (_selectedSlot == device.amplifierSlotIndex) {
           //get the cabinet for this amp and set it
-          Processor amp = _preset.getEffectsForSlot(_selectedEffect)[index];
+          Processor amp = _preset.getEffectsForSlot(_selectedSlot)[index];
           if (amp is Amplifier) {
-            _preset.setSelectedEffectForSlot(
-                device.cabinetSlotIndex, amp.defaultCab, true);
+            var oldEffect =
+                _preset.getSelectedEffectForSlot(device.cabinetSlotIndex);
+            totalChanges.add(Change<int>(
+                oldEffect,
+                () => _preset.setSelectedEffectForSlot(
+                    device.cabinetSlotIndex, amp.defaultCab, true),
+                (oldVal) => _preset.setSelectedEffectForSlot(
+                    device.cabinetSlotIndex, oldVal, true)));
           }
         }
       }
+      if (totalChanges.length == 1)
+        NuxDeviceControl().changes.add(totalChanges[0]);
+      else
+        NuxDeviceControl().changes.addGroup(totalChanges);
+      NuxDeviceControl().undoStackChanged();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
     _preset = widget.preset;
 
     _effectSelection =
         List<bool>.filled(widget.device.processorList.length, false);
-    _effectSelection[_selectedEffect] = true;
+    _effectSelection[_selectedSlot] = true;
 
-    _effectColor = _preset.effectColor(_selectedEffect);
+    _effectColor = _preset.effectColor(_selectedSlot);
 
     //create effect buttons
     _buttons = createSlotButtons();
 
     //create effect models dropdown list
-    List<Processor> effects = _preset.getEffectsForSlot(_selectedEffect);
+    List<Processor> effects = _preset.getEffectsForSlot(_selectedSlot);
 
     //effect color for popup menu. Make sure it's contrasty to the text
     var _popupEffectColor = _effectColor;
@@ -112,7 +136,7 @@ class _EffectSelectorState extends State<EffectSelector> {
 
     _selectedEffectName = _preset
         .getEffectsForSlot(
-            _selectedEffect)[_preset.getSelectedEffectForSlot(_selectedEffect)]
+            _selectedSlot)[_preset.getSelectedEffectForSlot(_selectedSlot)]
         .name;
 
     //create popup menu
@@ -127,7 +151,7 @@ class _EffectSelectorState extends State<EffectSelector> {
 
       _effectItems.add(custom.PopupMenuItem(
         value: f,
-        backgroundColor: f == _preset.getSelectedEffectForSlot(_selectedEffect)
+        backgroundColor: f == _preset.getSelectedEffectForSlot(_selectedSlot)
             ? _popupEffectColor
             : null,
         child: Padding(
@@ -151,27 +175,27 @@ class _EffectSelectorState extends State<EffectSelector> {
         child: Row(
           children: [
             Icon(
-              widget.device.processorList[_selectedEffect].icon,
+              widget.device.processorList[_selectedSlot].icon,
               color: _effectColor,
             ),
             const SizedBox(
               width: 5,
             ),
             Text(
-              widget.device.processorList[_selectedEffect].longName,
+              widget.device.processorList[_selectedSlot].longName,
               style:
                   TextStyle(color: _effectColor, fontWeight: FontWeight.bold),
             ),
-            if (_selectedEffect != 0) SizedBox(height: 1, width: 8),
-            if (_selectedEffect != 0) Text(_selectedEffectName)
+            if (_selectedSlot != 0) SizedBox(height: 1, width: 8),
+            if (_selectedSlot != 0) Text(_selectedEffectName)
           ],
         ),
       ),
     );
 
     return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         ToggleButtons(
           selectedColor: Colors.grey[600],
@@ -179,17 +203,25 @@ class _EffectSelectorState extends State<EffectSelector> {
           children: _buttons,
           isSelected: _effectSelection,
           onPressed: (int index) {
+            var old = _selectedSlot;
             setState(() {
+              var selected = -1;
               for (int buttonIndex = 0;
                   buttonIndex < _effectSelection.length;
                   buttonIndex++) {
                 if (buttonIndex == index) {
                   _effectSelection[buttonIndex] = true;
-                  _selectedEffect = buttonIndex;
+                  _selectedSlot = buttonIndex;
+                  selected = buttonIndex;
                 } else {
                   _effectSelection[buttonIndex] = false;
                 }
               }
+              NuxDeviceControl().changes.add(Change<int>(
+                  old,
+                  () => _selectedSlot = selected,
+                  (oldVal) => _selectedSlot = oldVal));
+              NuxDeviceControl().undoStackChanged();
             });
           },
         ),
@@ -197,7 +229,7 @@ class _EffectSelectorState extends State<EffectSelector> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_selectedEffect != 0 && _effectItems.length > 1)
+            if (_selectedSlot != 0 && _effectItems.length > 1)
               custom.PopupMenuButton(
                 child: effectSelectButton,
                 itemBuilder: (context) => _effectItems,
@@ -207,11 +239,11 @@ class _EffectSelectorState extends State<EffectSelector> {
               effectSelectButton,
             Row(
               children: [
-                if (_selectedEffect != 0 && _effectItems.length > 1)
+                if (_selectedSlot != 0 && _effectItems.length > 1)
                   IconButton(
                     onPressed: () {
                       var effect =
-                          _preset.getSelectedEffectForSlot(_selectedEffect) - 1;
+                          _preset.getSelectedEffectForSlot(_selectedSlot) - 1;
                       if (effect < 0) effect = effects.length - 1;
                       setSelectedEffect(effect);
                     },
@@ -221,11 +253,11 @@ class _EffectSelectorState extends State<EffectSelector> {
                             color: TinyColor(_effectColor).brighten(20).color)),
                     iconSize: 30,
                   ),
-                if (_selectedEffect != 0 && _effectItems.length > 1)
+                if (_selectedSlot != 0 && _effectItems.length > 1)
                   IconButton(
                     onPressed: () {
                       var effect =
-                          _preset.getSelectedEffectForSlot(_selectedEffect) + 1;
+                          _preset.getSelectedEffectForSlot(_selectedSlot) + 1;
                       if (effect > effects.length - 1) effect = 0;
                       setSelectedEffect(effect);
                     },
@@ -233,12 +265,18 @@ class _EffectSelectorState extends State<EffectSelector> {
                         color: TinyColor(_effectColor).brighten(20).color),
                     iconSize: 30,
                   ),
-                if (_preset.slotSwitchable(_selectedEffect))
+                if (_preset.slotSwitchable(_selectedSlot))
                   Switch(
-                    value: _preset.slotEnabled(_selectedEffect),
+                    value: _preset.slotEnabled(_selectedSlot),
                     onChanged: (val) {
                       setState(() {
-                        _preset.setSlotEnabled(_selectedEffect, val, true);
+                        NuxDeviceControl().changes.add(Change<bool>(
+                            !val,
+                            () => _preset.setSlotEnabled(
+                                _selectedSlot, val, true),
+                            (oldVal) => _preset.setSlotEnabled(
+                                _selectedSlot, oldVal, true)));
+                        NuxDeviceControl().undoStackChanged();
                       });
                     },
                     activeColor: TinyColor(_effectColor).brighten(20).color,
@@ -249,10 +287,17 @@ class _EffectSelectorState extends State<EffectSelector> {
             ),
           ],
         ),
-        EffectEditor(
-          preset: _preset,
-          slot: _selectedEffect,
-        )
+        if (isPortrait)
+          Expanded(
+              child: EffectEditor(
+            preset: _preset,
+            slot: _selectedSlot,
+          ))
+        else
+          EffectEditor(
+            preset: _preset,
+            slot: _selectedSlot,
+          )
       ],
     );
   }

@@ -15,7 +15,7 @@ class NumberPicker extends StatefulWidget {
   final int value;
 
   /// Called when selected value changes
-  final ValueChanged<int> onChanged;
+  final ValueChanged<int>? onChanged;
 
   /// Specifies how many items should be shown - defaults to 3
   final int itemCount;
@@ -54,6 +54,9 @@ class NumberPicker extends StatefulWidget {
   /// display the number in hex format
   final bool hex;
 
+  /// Symbol to display instead of zero
+  final String? zeroSymbol;
+
   /// Decoration to apply to central box where the selected value is placed
   final Decoration? decoration;
 
@@ -73,6 +76,7 @@ class NumberPicker extends StatefulWidget {
     this.haptics = false,
     this.decoration,
     this.hex = false,
+    this.zeroSymbol,
     this.zeroPad = false,
     this.textMapper,
   })  : assert(minValue <= value),
@@ -101,7 +105,7 @@ class _NumberPickerState extends State<NumberPicker> {
     final intValueInTheMiddle = _intValueFromIndex(indexOfMiddleElement + 1);
 
     if (widget.value != intValueInTheMiddle) {
-      widget.onChanged(intValueInTheMiddle);
+      widget.onChanged?.call(intValueInTheMiddle);
       if (widget.haptics) {
         HapticFeedback.selectionClick();
       }
@@ -198,7 +202,7 @@ class _NumberPickerState extends State<NumberPicker> {
 
   String _getDisplayedValue(int value) {
     String text = "";
-
+    if (value == 0 && widget.zeroSymbol != null) return widget.zeroSymbol!;
     if (widget.hex) {
       text = value.toRadixString(16).padLeft(2, '0');
       return text;

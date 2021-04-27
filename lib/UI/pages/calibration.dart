@@ -63,9 +63,8 @@ class _CalibrationState extends State<Calibration> {
         await player.stop();
         await player.dispose();
 
-        int channel = NuxDeviceControl().device.selectedChannel;
-        NuxDeviceControl().changeDevicePreset(channel);
-        NuxDeviceControl().sendFullPresetSettings();
+        //reset to prevent device losing sync
+        NuxDeviceControl().resetToChannelDefaults();
         return true;
       },
       child: Scaffold(

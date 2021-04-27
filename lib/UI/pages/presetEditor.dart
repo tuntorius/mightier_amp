@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../popups/savePreset.dart';
+import '../theme.dart';
 import '../widgets/presets/channelSelector.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 
@@ -43,76 +44,164 @@ class _PresetEditorState extends State<PresetEditor> {
     setState(() {});
   }
 
+  Widget wrapContainer(bool isPortrait, List<Widget> children) {
+    if (isPortrait) {
+      return ConstrainedBox(
+        child: Column(children: children),
+        constraints: BoxConstraints(minHeight: 592),
+      );
+    } else
+      return ListView(children: children);
+  }
+
   @override
   Widget build(BuildContext context) {
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    var vpHeight = MediaQuery.of(context).size.height;
+
     bool uploadPresetEnabled =
         device.deviceControl.isConnected && device.presetSaveSupport;
 
     List<bool> _groupSelection = List<bool>.filled(device.groupsCount, false);
     _groupSelection[device.selectedGroup] = true;
-    return ListView(
-      children: [
-        Column(children: [
-          ListTile(
-            title: Text("Preset Editor"),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ElevatedButton(
-                  child: Icon(Icons.save_alt),
-                  onPressed: !uploadPresetEnabled
-                      ? null
-                      : () {
-                          //TODO: move to method
-                          if (device.deviceControl.isConnected) {
-                            AlertDialogs.showConfirmDialog(context,
-                                title: "Save preset to device",
-                                cancelButton: "Cancel",
-                                confirmButton: "Save",
-                                confirmColor: Colors.red,
-                                description: "Are you sure?", onConfirm: (val) {
-                              if (val) device.saveNuxPreset();
-                            });
+    return wrapContainer(isPortrait, [
+      Column(children: [
+        ButtonTheme(
+          minWidth: 45,
+          height: 45,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  MaterialButton(
+                    onPressed: NuxDeviceControl().changes.canUndo
+                        ? () {
+                            var changes = NuxDeviceControl().changes;
+                            if (changes.canUndo) changes.undo();
+                            setState(() {});
                           }
+                        : null,
+                    color: Colors.blue,
+                    child: Icon(Icons.undo),
+                    //padding: EdgeInsets.zero,
+                  ),
+                  MaterialButton(
+                    onPressed: NuxDeviceControl().changes.canRedo
+                        ? () {
+                            var changes = NuxDeviceControl().changes;
+                            if (changes.canRedo) changes.redo();
+                            setState(() {});
+                          }
+                        : null,
+                    color: Colors.blue,
+                    child: Icon(Icons.redo),
+                    //padding: EdgeInsets.zero,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  ToggleButtons(
+                    constraints: BoxConstraints(
+                        minWidth: 55,
+                        maxWidth: 55,
+                        minHeight: 45,
+                        maxHeight: 45),
+                    children: [Icon(Icons.compare)],
+                    isSelected: [!NuxDeviceControl().changes.canUndo],
+                    selectedBorderColor: Colors.transparent,
+                    borderColor: Colors.blue,
+                    borderRadius: BorderRadius.circular(3),
+                    color: Colors.white,
+                    fillColor: Colors.blue,
+                    disabledColor: Colors.grey,
+                    onPressed: NuxDeviceControl().changes.canUndo ||
+                            NuxDeviceControl().changes.canRedo
+                        ? (val) {
+                            var changes = NuxDeviceControl().changes;
+                            if (changes.canUndo) {
+                              //we can go back (that's bad though)
+                              while (changes.canUndo) changes.undo();
+                            } else
+                              while (changes.canRedo) changes.redo();
+                            setState(() {});
+                          }
+                        : null,
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      MaterialButton(
+                        child: Icon(Icons.save_alt),
+                        onPressed: !uploadPresetEnabled
+                            ? null
+                            : () {
+                                //TODO: move to method
+                                if (device.deviceControl.isConnected) {
+                                  AlertDialogs.showConfirmDialog(context,
+                                      title: "Save preset to device",
+                                      cancelButton: "Cancel",
+                                      confirmButton: "Save",
+                                      confirmColor: Colors.red,
+                                      description: "Are you sure?",
+                                      onConfirm: (val) {
+                                    if (val) device.saveNuxPreset();
+                                  });
+                                }
+                              },
+                      ),
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      MaterialButton(
+                        color: Colors.blue,
+                        child: Icon(Icons.playlist_add),
+                        onPressed: () {
+                          var saveDialog = SavePresetDialog(
+                              device: device, confirmColor: Colors.blue);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) =>
+                                saveDialog.buildDialog(device, context),
+                          );
                         },
-                ),
-                const SizedBox(
-                  width: 2,
-                ),
-                ElevatedButton(
-                  child: Icon(Icons.playlist_add),
-                  onPressed: () {
-                    var saveDialog = SavePresetDialog(
-                        device: device, confirmColor: Colors.blue);
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          saveDialog.buildDialog(device, context),
-                    );
-                  },
-                )
-              ],
-            ),
+                      )
+                    ],
+                  ),
+                ],
+              )
+            ],
           ),
-          if (_groupSelection.length > 1)
-            ToggleButtons(
-              fillColor: Colors.blue,
-              children: [
-                for (int i = 0; i < device.groupsCount; i++)
-                  Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(device.groupsName[i])),
-              ],
-              isSelected: _groupSelection,
-              onPressed: (int index) {
-                setState(() {
-                  device.selectedGroup = index;
-                });
-              },
-            ),
-        ]),
+        ),
+        if (_groupSelection.length > 1)
+          ToggleButtons(
+            constraints: BoxConstraints(
+                minHeight:
+                    AppThemeConfig.toggleButtonHeight(isPortrait, vpHeight)),
+            fillColor: Colors.blue,
+            children: [
+              for (int i = 0; i < device.groupsCount; i++)
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(device.groupsName[i])),
+            ],
+            isSelected: _groupSelection,
+            onPressed: (int index) {
+              setState(() {
+                device.selectedGroup = index;
+              });
+            },
+          ),
+      ]),
+      if (isPortrait)
+        Flexible(child: ChannelSelector(device: device))
+      else
         ChannelSelector(device: device)
-      ],
-    );
+    ]);
   }
 }

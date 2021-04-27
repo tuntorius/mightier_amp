@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:undo/undo.dart';
 
 import 'bleMidiHandler.dart';
 
@@ -20,10 +22,30 @@ import 'devices/effects/Processor.dart';
 
 enum DeviceConnectionState { connectedStart, presetsLoaded, configReceived }
 
+class NuxDiagnosticData {
+  String device = "";
+  bool connected = false;
+  String lastNuxPreset = "";
+
+  Map<String, dynamic> toMap(bool includeJsonPreset) {
+    var data = Map<String, dynamic>();
+    data['device'] = device;
+    data['connected'] = connected;
+    data['lastNuxPreset'] = lastNuxPreset;
+
+    if (includeJsonPreset)
+      data['jsonPreset'] = NuxDeviceControl().device.presetToJson();
+
+    return data;
+  }
+}
+
 class NuxDeviceControl extends ChangeNotifier {
   static final NuxDeviceControl _nuxDeviceControl = NuxDeviceControl._();
 
   final BLEMidiHandler _midiHandler = BLEMidiHandler();
+
+  NuxDiagnosticData diagData = NuxDiagnosticData();
 
   //holds current device
   late NuxDevice _device;
@@ -32,13 +54,15 @@ class NuxDeviceControl extends ChangeNotifier {
 
   double _masterVolume = 100;
 
+  var changes = new ChangeStack();
+
   bool developer = false;
   Function(List<int>)? onDataReceiveDebug;
 
   double get masterVolume => _masterVolume;
   set masterVolume(double vol) {
     _masterVolume = vol;
-    if (_midiHandler.connectedDevice != null) {
+    if (isConnected) {
       device.sendAmpLevel();
     }
   }
@@ -69,8 +93,13 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   set deviceIndex(int index) {
+    clearUndoStack();
     _device = _deviceInstances[index];
+
+    diagData.device = _device.productName;
+    updateDiagnosticsData();
     SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
+
     notifyListeners();
   }
 
@@ -98,11 +127,22 @@ class NuxDeviceControl extends ChangeNotifier {
     return null;
   }
 
+  clearUndoStack() {
+    changes.clearHistory();
+    notifyListeners();
+  }
+
+  undoStackChanged() {
+    notifyListeners();
+  }
+
   factory NuxDeviceControl() {
     return _nuxDeviceControl;
   }
 
   NuxDeviceControl._() {
+    masterVolume = SharedPrefs().getValue(SettingsKeys.masterVolume, 100.0);
+
     _midiHandler.status.listen(_statusListener);
 
     //create all supported devices
@@ -115,6 +155,10 @@ class NuxDeviceControl extends ChangeNotifier {
     String _dev = SharedPrefs()
         .getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
     _device = getDeviceFromId(_dev) ?? _deviceInstances[0];
+
+    diagData.device = _device.productName;
+    diagData.connected = false;
+    updateDiagnosticsData();
 
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
@@ -136,8 +180,7 @@ class NuxDeviceControl extends ChangeNotifier {
         // check if this is valid nux device
         print("Devices found " + _midiHandler.scanResults.toString());
         _midiHandler.scanResults.forEach((dev) {
-          if (dev.device.type != BluetoothDeviceType.classic &&
-              deviceFromBLEId(dev.advertisementData.localName) != null) {
+          if (dev.device.type != BluetoothDeviceType.classic) {
             //don't autoconnect on manual scan
             if (!_midiHandler.manualScan) {
               _midiHandler.connectToDevice(dev.device);
@@ -146,16 +189,26 @@ class NuxDeviceControl extends ChangeNotifier {
         });
         break;
       case midiSetupStatus.deviceConnected:
-        //which device connected?
+        clearUndoStack();
+
         //find which device connected
-        if (_midiHandler.connectedDevice != null) {
+        if (isConnected) {
           print("${_midiHandler.connectedDevice!.name} connected");
           _device = deviceFromBLEId(_midiHandler.connectedDevice!.name);
+
+          diagData.device = _device.productName;
+          diagData.connected = true;
+          updateDiagnosticsData();
           SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
+          notifyListeners();
           _onConnect();
         }
         break;
       case midiSetupStatus.deviceDisconnected:
+        clearUndoStack();
+        diagData.device = _device.productName;
+        diagData.connected = false;
+        updateDiagnosticsData();
         notifyListeners();
         _onDisconnect();
         break;
@@ -288,24 +341,26 @@ class NuxDeviceControl extends ChangeNotifier {
 
   //preset editing listeners
   void parameterChangedListener(Parameter param) {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     sendParameter(param, false);
   }
 
   void presetChangedListener() {
-    if (_midiHandler.connectedDevice == null) return;
+    clearUndoStack();
+    if (!isConnected) return;
     changeDevicePreset(device.presetChangedNotifier.value);
   }
 
   void changeDevicePreset(int preset) {
-    if (_midiHandler.connectedDevice == null) return;
+    clearUndoStack();
+    if (!isConnected) return;
 
     var data = createCCMessage(device.channelChangeCC, preset);
     _midiHandler.sendData(data);
   }
 
   void effectSwitchedListener(int slot) {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     var preset = device.getPreset(device.selectedChannel);
     var swIndex = preset
         .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
@@ -322,13 +377,13 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void sendFullPresetSettings() {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     for (var i = 0; i < device.processorList.length; i++)
       sendFullEffectSettings(i, false);
   }
 
   void sendFullEffectSettings(int slot, bool force) {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     var preset = device.getPreset(device.selectedChannel);
     var effect;
     int index;
@@ -365,6 +420,12 @@ class NuxDeviceControl extends ChangeNotifier {
     }
   }
 
+  void resetToChannelDefaults() {
+    int channel = device.selectedChannel;
+    changeDevicePreset(channel);
+    sendFullPresetSettings();
+  }
+
   List<int> sendParameter(Parameter param, bool returnOnly) {
     int outVal;
     double value = param.value;
@@ -382,14 +443,14 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void saveNuxPreset() {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
     _midiHandler.sendData(data);
     requestPreset(device.selectedChannel);
   }
 
   void resetNuxPresets() {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7f);
     _midiHandler.sendData(data);
 
@@ -401,27 +462,27 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void sendDrumsEnabled(bool enabled) {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     var data =
         createCCMessage(MidiCCValues.bCC_drumOnOff_No, enabled ? 0x7f : 0);
     _midiHandler.sendData(data);
   }
 
   void sendDrumsStyle(int style) {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     var data = createCCMessage(MidiCCValues.bCC_drumType_No, style);
     _midiHandler.sendData(data);
   }
 
   void sendDrumsLevel(double volume) {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
     int val = percentageTo7Bit(volume);
     var data = createCCMessage(MidiCCValues.bCC_drumLevel_No, val);
     _midiHandler.sendData(data);
   }
 
   void sendDrumsTempo(double tempo) {
-    if (_midiHandler.connectedDevice == null) return;
+    if (!isConnected) return;
 
     int tempoNux = (((tempo - 40) / 200) * 16384).floor();
     //these must be sent as 2 7bit values
@@ -486,6 +547,14 @@ class NuxDeviceControl extends ChangeNotifier {
     msg.add(MidiMessageValues.sysExEnd);
 
     return msg;
+  }
+
+  void updateDiagnosticsData(
+      {String? nuxPreset, bool includeJsonPreset = false}) {
+    if (nuxPreset != null) diagData.lastNuxPreset = nuxPreset;
+
+    Sentry.configureScope(
+        (scope) => scope.setContexts('NUX', diagData.toMap(includeJsonPreset)));
   }
 
   NuxDevice get device => _device;

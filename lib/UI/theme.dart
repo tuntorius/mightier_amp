@@ -1,11 +1,21 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class AppThemeConfig {
   static double dragHandlesWidth = 56;
   static Color contextMenuIconColor = Colors.grey[400]!;
+  static bool allowRotation = false;
+
+  static double toggleButtonHeight(bool isPortrait, double viewportHeight) {
+    if (!isPortrait) return 35;
+
+    var ratio = (viewportHeight - 592) / 140;
+    return 35 + max(0, min(ratio, 1)) * 15;
+  }
 }
 
 ThemeData getTheme() {

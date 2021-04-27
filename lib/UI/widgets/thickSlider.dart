@@ -12,6 +12,7 @@ class ThickSlider extends StatefulWidget {
   final String label;
   final double min, max;
   final double value;
+  final ValueChanged<double>? onDragStart;
   final ValueChanged<double>? onChanged;
   final ValueChanged<double>? onDragEnd;
   final String Function(double) labelFormatter;
@@ -25,6 +26,7 @@ class ThickSlider extends StatefulWidget {
       this.min = 0,
       this.max = 1,
       required this.value,
+      this.onDragStart,
       this.onChanged,
       this.onDragEnd,
       this.handleVerticalDrag = true,
@@ -45,6 +47,7 @@ class _ThickSliderState extends State<ThickSlider> {
 
   Offset startDragPos = Offset(0, 0);
   double width = 0;
+  double height = 0;
 
   // Returns a number between min and max, proportional to value, which must
   // be between 0.0 and 1.0.
@@ -95,6 +98,7 @@ class _ThickSliderState extends State<ThickSlider> {
 
   void dragStart(DragDownDetails details) {
     startDragPos = details.localPosition;
+    widget.onDragStart?.call(widget.value);
   }
 
   void dragUpdate(DragUpdateDetails details) {
@@ -102,10 +106,11 @@ class _ThickSliderState extends State<ThickSlider> {
     startDragPos = details.localPosition;
 
     scale = 1;
-    if (details.localPosition.dy.abs() > 80) scale = 0.5;
-    if (details.localPosition.dy.abs() > 160) scale = 0.25;
-    if (details.localPosition.dy.abs() > 240) scale = 0.125;
-    if (details.localPosition.dy.abs() > 320) scale = 0.0625;
+    var posAbs = (details.localPosition.dy - height / 2.0).abs();
+    if (posAbs > height) scale = 0.5;
+    if (posAbs > height * 2.5) scale = 0.25;
+    if (posAbs > height * 4) scale = 0.125;
+    if (posAbs > height * 5.5) scale = 0.0625;
     if (!widget.enabled) return;
     addPercentage(delta.dx * scale, width);
     emitCounter++;
@@ -122,106 +127,113 @@ class _ThickSliderState extends State<ThickSlider> {
     widget.onDragEnd?.call(_lerp(factor));
   }
 
+  void manualValueEnter() {
+    AlertDialogs.showInputDialog(context,
+        title: "Enter Value",
+        description: "Enter new value for ${widget.label}",
+        cancelButton: "Cancel",
+        confirmButton: "Set",
+        selectAll: true,
+        keyboardType: TextInputType.number,
+        value: _lerp(factor).toStringAsFixed(2),
+        validation: (value) {
+          double? val = double.tryParse(value);
+          if (val == null) return false;
+          if (val < widget.min || val > widget.max) return false;
+          return true;
+        },
+        validationErrorMessage: "Value not valid",
+        confirmColor: Colors.blue,
+        onConfirm: (value) {
+          var val = double.parse(value);
+          widget.onDragStart?.call(widget.value);
+          widget.onChanged?.call(val);
+          widget.onDragEnd?.call(val);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-      width = constraints.maxWidth - 1;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: 50),
+      child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        width = constraints.maxWidth - 1;
+        height = constraints.maxHeight;
+        factor = _unlerp(widget.value);
+        pos = factor * width;
 
-      factor = _unlerp(widget.value);
-      pos = factor * width;
+        return GestureDetector(
+          onDoubleTap: manualValueEnter,
+          //onLongPress: manualValueEnter,
+          onTapDown: (details) {
+            if (!widget.enabled) return;
 
-      return GestureDetector(
-        onDoubleTap: () {
-          print("Double Tap");
-          AlertDialogs.showInputDialog(context,
-              title: "Enter Value",
-              description: "Enter new value for ${widget.label}",
-              cancelButton: "Cancel",
-              confirmButton: "Set",
-              selectAll: true,
-              keyboardType: TextInputType.number,
-              value: _lerp(factor).toString(),
-              validation: (value) {
-                double? val = double.tryParse(value);
-                if (val == null) return false;
-                if (val < widget.min || val > widget.max) return false;
-                return true;
-              },
-              validationErrorMessage: "Value not valid",
-              confirmColor: Colors.blue,
-              onConfirm: (value) {
-                var val = double.parse(value);
-                widget.onChanged?.call(val);
-              });
-        },
-        onTapDown: (details) {
-          if (!widget.enabled) return;
-
-          //double tap
-          // var now = DateTime.now().millisecondsSinceEpoch;
-          // if (now - lastTapDown < 300) {
-          //   setPercentage(details.localPosition.dx, width);
-          //   widget.onChanged?.call(_lerp(factor));
-          // }
-          // lastTapDown = now;
-        },
-        onVerticalDragDown: widget.handleVerticalDrag ? dragStart : null,
-        onVerticalDragUpdate: widget.handleVerticalDrag ? dragUpdate : null,
-        onVerticalDragEnd: widget.handleVerticalDrag ? dragEnd : null,
-        onHorizontalDragDown: dragStart,
-        onHorizontalDragUpdate: dragUpdate,
-        onHorizontalDragEnd: dragEnd,
-        child: Container(
-          color: Colors.transparent,
-          height: 50,
-          child: Stack(
-            children: [
-              Container(
-                height: 30,
-                color: widget.enabled
-                    ? TinyColor(widget.activeColor).darken(15).color
-                    : Colors.grey[800],
-                width: max(factor * width, 0),
-              ),
-              Positioned(
-                  left: _lerp2(factor, 10, width - 10) - 10,
-                  width: 20,
-                  height: 40,
-                  child: Container(
-                      color: widget.enabled
-                          ? widget.activeColor
-                          : Colors.grey[700],
-                      width: 20)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.label,
-                        style: TextStyle(
-                            color: widget.enabled
-                                ? Colors.white
-                                : Colors.grey[600],
-                            fontSize: 20),
-                      ),
-                      Text(
-                        widget.labelFormatter(_lerp(factor)),
-                        style: TextStyle(
-                            color: widget.enabled
-                                ? Colors.white
-                                : Colors.grey[600],
-                            fontSize: 20),
-                      )
-                    ]),
-              ),
-              Center(child: Text(scale < 1 ? "x$scale" : ""))
-            ],
-            alignment: Alignment.centerLeft,
+            //double tap
+            // var now = DateTime.now().millisecondsSinceEpoch;
+            // if (now - lastTapDown < 300) {
+            //   setPercentage(details.localPosition.dx, width);
+            //   widget.onChanged?.call(_lerp(factor));
+            // }
+            // lastTapDown = now;
+          },
+          onVerticalDragDown: widget.handleVerticalDrag ? dragStart : null,
+          onVerticalDragUpdate: widget.handleVerticalDrag ? dragUpdate : null,
+          onVerticalDragEnd: widget.handleVerticalDrag ? dragEnd : null,
+          onHorizontalDragDown: dragStart,
+          onHorizontalDragUpdate: dragUpdate,
+          onHorizontalDragEnd: dragEnd,
+          child: Container(
+            color: Colors.transparent,
+            height: height,
+            child: Stack(
+              children: [
+                Container(
+                  height: height * 0.75,
+                  color: widget.enabled
+                      ? TinyColor(widget.activeColor).darken(15).color
+                      : Colors.grey[800],
+                  width: max(factor * width, 0),
+                ),
+                Positioned(
+                    left: _lerp2(factor, 10, width - 10) - 10,
+                    width: 20,
+                    height: height * 0.9,
+                    child: Container(
+                        color: widget.enabled
+                            ? widget.activeColor
+                            : Colors.grey[700],
+                        width: 20)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.label,
+                          style: TextStyle(
+                              color: widget.enabled
+                                  ? Colors.white
+                                  : Colors.grey[600],
+                              fontSize: 20),
+                        ),
+                        Text(
+                          widget.labelFormatter(_lerp(factor)),
+                          style: TextStyle(
+                              color: widget.enabled
+                                  ? Colors.white
+                                  : Colors.grey[600],
+                              fontSize: 20),
+                        )
+                      ]),
+                ),
+                Center(child: Text(scale < 1 ? "x$scale" : ""))
+              ],
+              alignment: Alignment.centerLeft,
+            ),
           ),
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 }

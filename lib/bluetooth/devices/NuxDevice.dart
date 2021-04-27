@@ -91,7 +91,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
   set selectedChannelNormalized(int chan) {
     presetChangedNotifier.value = selectedChannelP;
-    sendAmpLevel();
+    if (deviceControl.isConnected) sendAmpLevel();
   }
 
   void _setSelectedChannelNuxIndex(int chan, bool notify) {
@@ -107,7 +107,7 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   //UI Stuff
-  int selectedEffect = 0;
+  int selectedSlot = 0;
 
   //TODO: these should not be here
   String presetName = "";
@@ -139,6 +139,9 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void onConnect() {
     _nuxPresetsReceived = false;
+
+    //reset nux data
+    for (int i = 0; i < presets.length; i++) presets[i].resetNuxData();
     resetDrumSettings();
   }
 
@@ -291,6 +294,7 @@ abstract class NuxDevice extends ChangeNotifier {
         break;
       case MidiMessageValues.controlChange:
         if (data[1] == channelChangeCC) {
+          NuxDeviceControl().clearUndoStack();
           _setSelectedChannelNuxIndex(data[2], true);
           //immediately set the amp level
           sendAmpLevel();

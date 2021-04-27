@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AlertDialogs {
   static TextEditingController? nameCtrl;
@@ -227,5 +228,27 @@ class AlertDialogs {
 
       return alert;
     });
+  }
+
+  static showLocationPrompt(
+      BuildContext context, bool skipPrompt, Function? onPromptFinished) {
+    if (skipPrompt) {
+      _askLocation(onPromptFinished);
+      return;
+    }
+    AlertDialogs.showConfirmDialog(context,
+        title: "Location is required for Bluetooth",
+        description:
+            "Please, consider granting location permission. It is required for Bluetooth connection to work.",
+        confirmButton: "Grant",
+        cancelButton: "Keep denying", onConfirm: (val) {
+      if (val) _askLocation(onPromptFinished);
+    });
+  }
+
+  static _askLocation(Function? onPromptFinished) async {
+    var status = await Permission.location.request();
+    if (status.isPermanentlyDenied) await openAppSettings();
+    onPromptFinished?.call();
   }
 }

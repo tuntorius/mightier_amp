@@ -3,8 +3,10 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mighty_plug_manager/main.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../UI/pages/settings.dart';
 
 enum midiSetupStatus {
@@ -30,6 +32,9 @@ class BLEMidiHandler {
   StreamController<midiSetupStatus> _status = StreamController.broadcast();
   Stream<midiSetupStatus> get status => _status.stream;
 
+  StreamController<bool> _scanStatus = StreamController.broadcast();
+  Stream<bool> get scanStatus => _scanStatus.stream;
+
   BluetoothState bluetoothState = BluetoothState.unknown;
 
   BluetoothDevice? _device;
@@ -39,6 +44,22 @@ class BLEMidiHandler {
   bool queueFree = true;
 
   bool manualScan = false;
+
+  bool _granted = false;
+
+  bool _permanentlyDenied = false;
+
+  bool _isOn = false;
+
+  bool _isScanning = false;
+
+  bool get permissionGranted => _granted;
+  bool get permanentlyDenied => _permanentlyDenied;
+
+  bool get bluetoothOn => _isOn;
+  bool get isScanning => _isScanning;
+
+  bool _connectInProgress = false;
 
   factory BLEMidiHandler() {
     return _bleHandler;
@@ -54,9 +75,26 @@ class BLEMidiHandler {
   }
 
   StreamSubscription<List<ScanResult>>? _scanSubscription;
+  StreamSubscription<bool>? _scanningStatusSubscription;
+  BLEMidiHandler._();
 
-  BLEMidiHandler._() {
-    //_midiCommand.teardown();
+  initBle(Function(PermissionStatus) onPermissionDenied) async {
+    PermissionStatus pStatus;
+    bool askOneTime = false;
+    do {
+      pStatus = await Permission.location.status;
+      if (pStatus.isGranted) break;
+      if (!askOneTime) {
+        pStatus = await Permission.location.request();
+        if (pStatus.isPermanentlyDenied) _permanentlyDenied = true;
+        askOneTime = true;
+        if (!pStatus.isGranted) onPermissionDenied(pStatus);
+      }
+      Future.delayed(Duration(milliseconds: 500));
+    } while (!pStatus.isGranted);
+    print("Location permission granted!");
+    _granted = true;
+    _permanentlyDenied = false;
 
     flutterBlue.isAvailable.then((value) {
       if (value == false) {
@@ -71,29 +109,32 @@ class BLEMidiHandler {
       bluetoothState = event;
       switch (event) {
         case BluetoothState.unknown:
-          // TODO: Handle this case.
-          _status.add(midiSetupStatus.bluetoothOff);
-          break;
         case BluetoothState.unavailable:
-          // TODO: Handle this case.
-          _status.add(midiSetupStatus.bluetoothOff);
-          break;
         case BluetoothState.unauthorized:
-          // TODO: Handle this case.
+          _isOn = false;
           _status.add(midiSetupStatus.bluetoothOff);
           break;
         case BluetoothState.turningOn:
-          break;
         case BluetoothState.on:
+          _isOn = true;
           _status.add(midiSetupStatus.deviceSearching);
           startScanning(false);
           break;
         case BluetoothState.turningOff:
+          flutterBlue.stopScan();
+          break;
         case BluetoothState.off:
+          _isOn = false;
           _status.add(midiSetupStatus.bluetoothOff);
           _device = null;
+          _connectInProgress = false;
           break;
       }
+    });
+
+    _scanningStatusSubscription = flutterBlue.isScanning.listen((event) {
+      _isScanning = event;
+      _scanStatus.add(event);
     });
 
     _scanSubscription = flutterBlue.scanResults.listen((results) {
@@ -107,6 +148,7 @@ class BLEMidiHandler {
   }
 
   void startScanning(bool manual) {
+    if (!_granted) return;
     manualScan = manual;
     _status.add(midiSetupStatus.deviceSearching);
     if (bluetoothState != BluetoothState.on) return;
@@ -119,49 +161,67 @@ class BLEMidiHandler {
   }
 
   void stopScanning() {
+    if (!_granted) return;
     if (bluetoothState != BluetoothState.on) return;
     flutterBlue.stopScan();
   }
 
   void connectToDevice(BluetoothDevice device) async {
+    if (!_granted) return;
     if (bluetoothState != BluetoothState.on) return;
+    if (_connectInProgress || _device != null) {
+      print("Denying secondary connection!");
+      return;
+    }
+
+    _connectInProgress = true;
     stopScanning();
     _status.add(midiSetupStatus.deviceConnecting);
     try {
-      await device.connect(autoConnect: false);
+      await device.connect(autoConnect: false, timeout: Duration(seconds: 5));
+    } on Exception catch (err) {
+      _connectInProgress = false;
+      return;
     } catch (e) {
+      print("Connect error $e");
+      _connectInProgress = false;
       if (e == 'already_connected') return;
       throw (e);
-    } finally {
-      _device = device;
-
-      List<BluetoothService> services = await device.discoverServices();
-      //find midi service
-      services.forEach((element) {
-        if (element.uuid == Guid(midiService)) _midiService = element;
-      });
-
-      _midiService?.characteristics.forEach((element) {
-        if (element.uuid == Guid(midiCharacteristic))
-          _midiCharacteristic = element;
-
-        _midiCharacteristic?.setNotifyValue(true);
-
-        queueFree = true;
-        _status.add(midiSetupStatus.deviceConnected);
-        device.state.listen((event) {
-          if (event == BluetoothDeviceState.disconnected) {
-            _device = null;
-            queueFree = true;
-            _status.add(midiSetupStatus.deviceDisconnected);
-          }
-        });
-      });
     }
+    if (_device != null) return;
+    _device = device;
+
+    List<BluetoothService> services = await device.discoverServices();
+    //find midi service
+    services.forEach((element) {
+      if (element.uuid == Guid(midiService)) _midiService = element;
+    });
+
+    _midiService?.characteristics.forEach((element) {
+      if (element.uuid == Guid(midiCharacteristic))
+        _midiCharacteristic = element;
+
+      _midiCharacteristic?.setNotifyValue(true);
+
+      queueFree = true;
+      _connectInProgress = false;
+
+      _status.add(midiSetupStatus.deviceConnected);
+      device.state.listen((event) {
+        if (event == BluetoothDeviceState.disconnected) {
+          _device = null;
+          _connectInProgress = false;
+          queueFree = true;
+          _status.add(midiSetupStatus.deviceDisconnected);
+        }
+      });
+    });
   }
 
   void disconnectDevice() async {
+    if (!_granted) return;
     if (_device != null) {
+      _connectInProgress = false;
       await _device!.disconnect();
       queueFree = true;
       _device = null;
@@ -176,6 +236,7 @@ class BLEMidiHandler {
   ListQueue<List<int>> dataQueue = ListQueue<List<int>>();
 
   void sendData(List<int> _data) {
+    if (!_granted) return;
     dataQueue.addLast(_data);
     if (queueFree) queueSender();
   }
@@ -185,16 +246,22 @@ class BLEMidiHandler {
     Stopwatch stopwatch = new Stopwatch()..start();
     //List<int> currentData = List<int>();
     while (dataQueue.isNotEmpty) {
-      await _midiCharacteristic!
-          .write(dataQueue.removeFirst(), withoutResponse: true);
+      if (_midiCharacteristic != null)
+        await _midiCharacteristic!
+            .write(dataQueue.removeFirst(), withoutResponse: true);
+      else
+        dataQueue.clear();
     }
 
-    Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
+    if (kDebugMode)
+      Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
     queueFree = true;
   }
 
   void dispose() {
     _scanSubscription?.cancel();
+    _scanningStatusSubscription?.cancel();
     _device?.disconnect();
+    _connectInProgress = false;
   }
 }

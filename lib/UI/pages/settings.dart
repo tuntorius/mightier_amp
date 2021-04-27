@@ -252,42 +252,81 @@ class _SettingsState extends State<Settings> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-            height: 150,
-            child: StreamBuilder<midiSetupStatus>(
-                builder: (BuildContext context, snapshot) {
-                  return DeviceList();
-                },
-                stream: midiHandler.status),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              child: Text("Scan"),
-              onPressed: () {
-                midiHandler.startScanning(true);
-              },
+        if (midiHandler.permissionGranted)
+          StreamBuilder<midiSetupStatus>(
+              stream: midiHandler.status,
+              builder: (BuildContext context, snapshot) {
+                return StreamBuilder<bool>(
+                    builder: (BuildContext context, snapshot) {
+                      var btOn = midiHandler.bluetoothOn;
+                      if (!btOn) {
+                        return ListTile(
+                          title: Text("Please, turn bluetooth on!"),
+                        );
+                      }
+                      bool scanning = midiHandler.isScanning;
+                      bool connected = NuxDeviceControl().isConnected;
+
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey)),
+                              height: 150,
+                              child: DeviceList(),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                child: Text("Scan"),
+                                onPressed: connected || scanning
+                                    ? null
+                                    : () {
+                                        midiHandler.startScanning(true);
+                                      },
+                              ),
+                              ElevatedButton(
+                                child: Text("Stop Scanning"),
+                                onPressed: connected || !scanning
+                                    ? null
+                                    : () {
+                                        midiHandler.stopScanning();
+                                      },
+                              ),
+                              ElevatedButton(
+                                child: Text("Disconnect"),
+                                onPressed: !connected
+                                    ? null
+                                    : () {
+                                        midiHandler.disconnectDevice();
+                                        setState(() {});
+                                      },
+                              ),
+                            ],
+                          )
+                        ],
+                      );
+                    },
+                    stream: midiHandler.scanStatus);
+              }),
+
+        if (!midiHandler.permissionGranted)
+          ListTile(
+            title: Text(
+              "Please, grant location permission",
+              style: TextStyle(color: Colors.orange),
             ),
-            ElevatedButton(
-              child: Text("Stop Scanning"),
-              onPressed: () {
-                midiHandler.stopScanning();
-              },
-            ),
-            ElevatedButton(
-              child: Text("Disconnect"),
-              onPressed: () {
-                midiHandler.disconnectDevice();
+            onTap: () async {
+              AlertDialogs.showLocationPrompt(context, true, () async {
+                await Future.delayed(Duration(milliseconds: 1000));
                 setState(() {});
-              },
-            ),
-          ],
-        ),
+              });
+            },
+          ),
         Divider(),
         ListTile(
           title: Text("App Version"),

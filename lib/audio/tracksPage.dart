@@ -1,11 +1,16 @@
 import 'package:audio_picker/audio_picker.dart';
 import 'package:audiotagger/audiotagger.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
+import 'package:mighty_plug_manager/UI/widgets/fabMenu.dart';
 import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/UI/widgets/searchTextField.dart';
+import 'package:mighty_plug_manager/audio/widgets/media_library/media_browse.dart';
 import 'package:path/path.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'audioEditor.dart';
 import 'models/jamTrack.dart';
 import 'trackdata/trackData.dart';
@@ -22,13 +27,19 @@ class TracksPage extends StatefulWidget {
   _TracksPageState createState() => _TracksPageState();
 }
 
-class _TracksPageState extends State<TracksPage> {
+class _TracksPageState extends State<TracksPage>
+    with SingleTickerProviderStateMixin {
   //search (filter) stuff
   String filter = "";
   final TextEditingController searchCtrl = TextEditingController(text: "");
+  final scrollController = ScrollController();
 
   //multiselection stuff
   bool _multiselectMode = false;
+
+  //menu anim
+  late Animation<double> _animation;
+  late AnimationController _animationController;
 
   bool get multiselectMode => _multiselectMode;
   set multiselectMode(value) {
@@ -129,6 +140,15 @@ class _TracksPageState extends State<TracksPage> {
       filter = searchCtrl.value.text.toLowerCase();
       setState(() {});
     });
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 260),
+    );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
   }
 
   void multiselectHandler(int index) {
@@ -202,6 +222,73 @@ class _TracksPageState extends State<TracksPage> {
     );
   }
 
+  void deleteSelected(BuildContext context) {
+    AlertDialogs.showConfirmDialog(context,
+        title: "Confirm",
+        description:
+            "Are you sure you want to delete ${selected.length} items?",
+        cancelButton: "Cancel",
+        confirmButton: "Delete",
+        confirmColor: Colors.red, onConfirm: (delete) async {
+      if (delete) {
+        List<JamTrack> delTracks = [];
+        for (int i = 0; i < selected.length; i++) {
+          var item = TrackData().tracks[selected.keys.elementAt(i)];
+          delTracks.add(item);
+        }
+        await TrackData().removeTracks(delTracks);
+        deselectAll();
+      }
+    });
+  }
+
+  void addFromFile() async {
+    //add track mode
+    var path = await AudioPicker.pickAudioMultiple();
+    Map<String, String> data = {};
+    path.map((e) => data["file${data.length}"] = e);
+    Sentry.addBreadcrumb(Breadcrumb(message: "Picked files", data: data));
+    final tagger = new Audiotagger();
+    for (int i = 0; i < path.length; i++) {
+      //audiotagger
+      Map? tags = await tagger.readTagsAsMap(path: path[i]);
+
+      var name = getProperTags(tags, path[i]);
+
+      TrackData().addTrack(path[i], name);
+
+      //clear filter and scroll to bottom
+      searchCtrl.text = "";
+      setState(() {});
+    }
+    _scollToNewSongs();
+  }
+
+  void addFromMediaLibrary(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => MediaLibraryBrowser()))
+        .then((value) {
+      if (value is List<SongInfo>) {
+        for (int i = 0; i < value.length; i++) {
+          var name = value[i].artist != "<unknown>"
+              ? "${value[i].artist} - ${value[i].title}"
+              : value[i].title;
+          TrackData().addTrack(value[i].filePath, name);
+        }
+        //clear filter and scroll to bottom
+        searchCtrl.text = "";
+        setState(() {});
+        _scollToNewSongs();
+      }
+    });
+  }
+
+  void _scollToNewSongs() async {
+    await Future.delayed(Duration(milliseconds: 300));
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300), curve: Curves.easeInCubic);
+  }
+
   @override
   Widget build(BuildContext context) {
     return NestedWillPopScope(
@@ -212,110 +299,129 @@ class _TracksPageState extends State<TracksPage> {
         }
         return Future.value(true);
       },
-      child: Column(
+      child: Stack(
         children: [
-          if (TrackData().tracks.length > 0)
-            SearchTextField(controller: searchCtrl),
-          Expanded(
-            child: ListTileTheme(
-              selectedTileColor: Color.fromARGB(255, 9, 51, 116),
-              selectedColor: Colors.white,
-              child: Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  IndexedStack(
-                    index: TrackData().tracks.length == 0 ? 0 : 1,
+          Column(
+            children: [
+              if (TrackData().tracks.length > 0)
+                SearchTextField(controller: searchCtrl),
+              Expanded(
+                child: ListTileTheme(
+                  selectedTileColor: Color.fromARGB(255, 9, 51, 116),
+                  selectedColor: Colors.white,
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
                     children: [
-                      Center(
-                          child: Text("No Tracks",
-                              style: Theme.of(context).textTheme.bodyText1)),
-                      ListView.builder(
-                        itemCount: TrackData().tracks.length,
-                        itemBuilder: (context, index) {
-                          if (filter != "" &&
-                              !TrackData()
-                                  .tracks[index]
-                                  .name
-                                  .toLowerCase()
-                                  .contains(filter)) return const SizedBox();
-                          return ListTile(
-                            selected:
-                                multiselectMode && selected.containsKey(index),
-                            title: Text(TrackData().tracks[index].name),
-                            onTap: () {
-                              if (multiselectMode) {
-                                multiselectHandler(index);
-                                return;
-                              }
-                              if (widget.selectorOnly)
-                                widget.onSelectedTrack
-                                    ?.call(TrackData().tracks[index]);
-                              else
-                                editTrack(context, TrackData().tracks[index]);
+                      IndexedStack(
+                        index: TrackData().tracks.length == 0 ? 0 : 1,
+                        children: [
+                          Center(
+                              child: Text("No Tracks",
+                                  style:
+                                      Theme.of(context).textTheme.bodyText1)),
+                          ListView.builder(
+                            controller: scrollController,
+                            itemCount: TrackData().tracks.length,
+                            itemBuilder: (context, index) {
+                              if (filter != "" &&
+                                  !TrackData()
+                                      .tracks[index]
+                                      .name
+                                      .toLowerCase()
+                                      .contains(filter))
+                                return const SizedBox();
+                              return ListTile(
+                                selected: multiselectMode &&
+                                    selected.containsKey(index),
+                                title: Text(TrackData().tracks[index].name),
+                                onTap: () {
+                                  if (multiselectMode) {
+                                    multiselectHandler(index);
+                                    return;
+                                  }
+                                  if (widget.selectorOnly)
+                                    widget.onSelectedTrack
+                                        ?.call(TrackData().tracks[index]);
+                                  else
+                                    editTrack(
+                                        context, TrackData().tracks[index]);
+                                },
+                                onLongPress: () => multiselectHandler(index),
+                                trailing: createTrailingWidget(context, index),
+                              );
                             },
-                            onLongPress: () => multiselectHandler(index),
-                            trailing: createTrailingWidget(context, index),
-                          );
-                        },
+                          ),
+                        ],
                       ),
+                      if (!widget.selectorOnly)
+                        FloatingActionBubble(
+                          // Menu items
+                          items: [
+                            // Floating action menu item
+                            /*Bubble(
+                              title: "Website Search",
+                              iconColor: Colors.white,
+                              bubbleColor: Colors.blue,
+                              icon: Icons.cloud,
+                              titleStyle:
+                                  TextStyle(fontSize: 16, color: Colors.white),
+                              onPress: () {
+                                _animationController.reverse();
+                              },
+                            ),*/
+                            // Floating action menu item
+                            Bubble(
+                              title: "Media Library",
+                              iconColor: Colors.white,
+                              bubbleColor: Colors.blue,
+                              icon: Icons.library_music,
+                              titleStyle:
+                                  TextStyle(fontSize: 16, color: Colors.white),
+                              onPress: () {
+                                _animationController.reverse();
+                                addFromMediaLibrary(context);
+                              },
+                            ),
+                            //Floating action menu item
+                            Bubble(
+                              title: "File Browser",
+                              iconColor: Colors.white,
+                              bubbleColor: Colors.blue,
+                              icon: Icons.folder,
+                              titleStyle:
+                                  TextStyle(fontSize: 16, color: Colors.white),
+                              onPress: () {
+                                _animationController.reverse();
+                                addFromFile();
+                              },
+                            ),
+                          ],
+
+                          // animation controller
+                          animation: _animation,
+
+                          // On pressed change animation state
+                          onPress: () {
+                            if (multiselectMode) {
+                              deleteSelected(context);
+                            } else
+                              _animationController.isCompleted
+                                  ? _animationController.reverse()
+                                  : _animationController.forward();
+                          },
+
+                          // Floating Action button Icon color
+                          iconColor: Colors.white,
+
+                          // Flaoting Action button Icon
+                          iconData: multiselectMode ? Icons.delete : Icons.add,
+                          backGroundColor: Colors.blue,
+                        )
                     ],
                   ),
-                  if (!widget.selectorOnly)
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: FloatingActionButton(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        onPressed: () async {
-                          if (multiselectMode) {
-                            //delete mode
-                            AlertDialogs.showConfirmDialog(context,
-                                title: "Confirm",
-                                description:
-                                    "Are you sure you want to delete ${selected.length} items?",
-                                cancelButton: "Cancel",
-                                confirmButton: "Delete",
-                                confirmColor: Colors.red,
-                                onConfirm: (delete) async {
-                              if (delete) {
-                                List<JamTrack> delTracks = [];
-                                for (int i = 0; i < selected.length; i++) {
-                                  var item = TrackData()
-                                      .tracks[selected.keys.elementAt(i)];
-                                  delTracks.add(item);
-                                }
-                                await TrackData().removeTracks(delTracks);
-                                deselectAll();
-                              }
-                            });
-                            return;
-                          }
-                          //add track mode
-                          var path = await AudioPicker.pickAudioMultiple();
-                          final tagger = new Audiotagger();
-                          for (int i = 0; i < path.length; i++) {
-                            //audiotagger
-                            Map? tags =
-                                await tagger.readTagsAsMap(path: path[i]);
-
-                            var name = getProperTags(tags, path[i]);
-
-                            TrackData().addTrack(path[i], name);
-
-                            //asd - clear filter and scroll to bottom
-                            searchCtrl.text = "";
-                            setState(() {});
-                          }
-                        },
-                        child: Icon(
-                          multiselectMode ? Icons.delete : Icons.add,
-                          size: 28,
-                        ),
-                      ),
-                    )
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

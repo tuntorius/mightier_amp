@@ -4,6 +4,7 @@ import 'package:mighty_plug_manager/UI/popups/selectTrack.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/automationController.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'models/setlist.dart';
 import 'trackdata/trackData.dart';
 import 'widgets/setlistPlayer.dart';
@@ -18,6 +19,23 @@ class SetlistPlayerState extends ChangeNotifier {
   bool _autoAdvance = true;
   bool _inPositionUpdateMode = false;
 
+  int _pitch = 1;
+  double _speed = 1;
+
+  int get pitch => _pitch;
+  set pitch(val) {
+    _pitch = val;
+    notifyListeners();
+  }
+
+  double get speed => _speed;
+  set speed(val) {
+    _speed = val;
+    notifyListeners();
+  }
+
+  AutomationController? get automation => _automation;
+
   bool get autoAdvance => _autoAdvance;
   set autoAdvance(bool val) {
     _autoAdvance = val;
@@ -27,17 +45,19 @@ class SetlistPlayerState extends ChangeNotifier {
   AutomationController? _automation;
 
   SetlistPlayerState({required this.setlist}) {
-    openTrack(0);
+    if (this.setlist.items.length > 0) openTrack(0);
   }
 
   Future openTrack(int index) async {
     currentTrack = index;
     var track = setlist.items[index].trackReference;
     if (track != null) {
-      _automation = AutomationController(track.automation);
+      _automation = AutomationController(track, track.automation);
       await _automation?.setAudioFile(track.path, 2000);
       _automation?.setTrackCompleteEvent(_onTrackComplete);
       _automation?.positionStream.listen(_onPosition);
+      pitch = _automation?.pitch ?? 1;
+      speed = _automation?.speed ?? 1;
     }
   }
 
@@ -49,6 +69,7 @@ class SetlistPlayerState extends ChangeNotifier {
 
   Future playPause() async {
     print("PlayPause");
+    if (_automation == null) await openTrack(currentTrack);
     await _automation?.playPause();
     if (_automation!.player.playerState.playing == false)
       state = PlayerState.pause;
@@ -61,7 +82,7 @@ class SetlistPlayerState extends ChangeNotifier {
   void previous() async {
     if (_automation == null) return;
     if (currentTrack == 0 || _automation!.player.position.inSeconds > 2)
-      _automation!.seek(Duration(seconds: 0));
+      _automation!.rewind();
     else if (currentTrack > 0) {
       await closeTrack();
       currentTrack--;
@@ -264,6 +285,7 @@ class _SetlistPageState extends State<SetlistPage> {
   }
 
   Widget? createTrailingWidget(BuildContext context, int index) {
+    if (widget.readOnly) return null;
     if (_multiselectMode)
       return Icon(
         selected.containsKey(index)
@@ -302,6 +324,7 @@ class _SetlistPageState extends State<SetlistPage> {
           return Future.value(false);
         }
 
+        NuxDeviceControl().resetToChannelDefaults();
         return Future.value(true);
       },
       child: Scaffold(
@@ -343,7 +366,9 @@ class _SetlistPageState extends State<SetlistPage> {
                                   if (track != null) openTrack(index);
                                   setState(() {});
                                 },
-                                onLongPress: () => multiselectHandler(index),
+                                onLongPress: widget.readOnly
+                                    ? null
+                                    : () => multiselectHandler(index),
                                 child: Row(
                                   children: [
                                     if (!widget.readOnly && !_multiselectMode)
@@ -456,35 +481,37 @@ class _SetlistPageState extends State<SetlistPage> {
                   ),
                 ),
               ),
-        bottomNavigationBar: GestureDetector(
-          onVerticalDragStart: (details) {
-            dragStart = details.globalPosition;
-          },
-          onVerticalDragUpdate: (details) {
-            Offset delta = details.globalPosition - dragStart;
-            if (delta.dy < -expandThreshold && !playerExpanded)
-              setState(() {
-                playerExpanded = true;
-              });
-            else if (delta.dy > expandThreshold && playerExpanded)
-              setState(() {
-                playerExpanded = false;
-              });
-          },
-          onTap: () {
-            //expand only
-            if (playerExpanded) return;
-            setState(() {
-              playerExpanded = !playerExpanded;
-            });
-          },
-          //AnimatedSwitcher
-          child: SetlistPlayer(
-            state: playerState,
-            duration: animationDuration,
-            expanded: playerExpanded,
-          ),
-        ),
+        bottomNavigationBar: widget.setlist.items.length == 0
+            ? null
+            : GestureDetector(
+                onVerticalDragStart: (details) {
+                  dragStart = details.globalPosition;
+                },
+                onVerticalDragUpdate: (details) {
+                  Offset delta = details.globalPosition - dragStart;
+                  if (delta.dy < -expandThreshold && !playerExpanded)
+                    setState(() {
+                      playerExpanded = true;
+                    });
+                  else if (delta.dy > expandThreshold && playerExpanded)
+                    setState(() {
+                      playerExpanded = false;
+                    });
+                },
+                onTap: () {
+                  //expand only
+                  if (playerExpanded) return;
+                  setState(() {
+                    playerExpanded = !playerExpanded;
+                  });
+                },
+                //AnimatedSwitcher
+                child: SetlistPlayer(
+                  state: playerState,
+                  duration: animationDuration,
+                  expanded: playerExpanded,
+                ),
+              ),
       ),
     );
   }

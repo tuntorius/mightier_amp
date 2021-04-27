@@ -102,7 +102,11 @@ class TrackData {
   }
 
   addTrack(String file, String name) {
-    _tracksData.add(JamTrack(name: name, path: file, uuid: _generateUuid()));
+    _tracksData.add(JamTrack(
+      name: name,
+      path: file,
+      uuid: _generateUuid(),
+    ));
     saveTracks();
   }
 

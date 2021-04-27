@@ -6,7 +6,7 @@ class SpeedPanel extends StatelessWidget {
   final double speed;
   final int semitones;
   final Function(double) onSpeedChanged;
-  final Function(int, double) onSemitonesChanged;
+  final Function(int) onSemitonesChanged;
 
   SpeedPanel(
       {required this.speed,
@@ -25,6 +25,7 @@ class SpeedPanel extends StatelessWidget {
             children: [
               ElevatedButton(
                   onPressed: () {
+                    if (speed <= 0.2) return;
                     var _speed = speed - 0.02;
                     _speed = max(_speed, 0.01);
                     onSpeedChanged(_speed);
@@ -32,6 +33,7 @@ class SpeedPanel extends StatelessWidget {
                   child: Text("-")),
               ElevatedButton(
                   onPressed: () {
+                    if (speed > 3) return;
                     var _speed = speed + 0.02;
                     onSpeedChanged(_speed);
                   },
@@ -46,16 +48,16 @@ class SpeedPanel extends StatelessWidget {
             children: [
               ElevatedButton(
                   onPressed: () {
+                    if (semitones == -12) return;
                     var _semitones = semitones - 1;
-                    double pitch = pow(2, _semitones / 12).toDouble();
-                    onSemitonesChanged(_semitones, pitch);
+                    onSemitonesChanged(_semitones);
                   },
                   child: Text("-")),
               ElevatedButton(
                   onPressed: () {
+                    if (semitones == 12) return;
                     var _semitones = semitones + 1;
-                    double pitch = pow(2, _semitones / 12).toDouble();
-                    onSemitonesChanged(_semitones, pitch);
+                    onSemitonesChanged(_semitones);
                   },
                   child: Text("+"))
             ],

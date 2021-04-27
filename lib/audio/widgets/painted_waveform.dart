@@ -15,7 +15,7 @@ class PaintedWaveform extends StatefulWidget {
   final Function onEventSelectionChanged;
   final WaveformData? sampleData;
   final int currentSample;
-  final AutomationEventType showType;
+  final AutomationEventType? showType;
   final AutomationController automation;
   final Function(double, double) onTimingData;
   PaintedWaveform(

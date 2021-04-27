@@ -6,9 +6,11 @@ import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import 'models/jamTrack.dart';
 
 class AutomationController {
   final TrackAutomation automation;
+  final JamTrack track;
   final player = AudioPlayer();
 
   StreamController<Duration> _positionController = StreamController<Duration>();
@@ -23,7 +25,10 @@ class AutomationController {
   int _positionReport = 0;
   int _positionResolution = 1;
 
-  AutomationController(this.automation);
+  int _currentLoop = 0;
+  bool _forceLoopDisable = false;
+
+  AutomationController(this.track, this.automation);
 
   Stream<Duration> get positionStream => _positionController.stream;
 
@@ -37,6 +42,35 @@ class AutomationController {
   int _latency = 0;
   int _speed = 1;
 
+  //loop variables
+
+  bool get loopEnable => _forceLoopDisable ? false : track.loopEnable;
+
+  set loopEnable(val) {
+    track.loopEnable = val;
+    _currentLoop = 0;
+  }
+
+  bool get useLoopPoints => track.useLoopPoints;
+  set useLoopPoints(val) {
+    track.useLoopPoints = val;
+    _currentLoop = 0;
+  }
+
+  int get loopTimes => track.loopTimes;
+  set loopTimes(val) {
+    track.loopTimes = val;
+    if (_currentLoop > track.loopTimes) _currentLoop = track.loopTimes;
+  }
+
+  int get currentLoop => _currentLoop;
+
+  double get speed => track.speed;
+  set speed(val) => track.speed = val;
+
+  int get pitch => track.pitch;
+  set pitch(val) => track.pitch = val;
+
   //editor use only. don't serialize
   AutomationEvent? selectedEvent;
 
@@ -49,6 +83,9 @@ class AutomationController {
       _latency = SharedPrefs().getInt(SettingsKeys.latency, 0);
     else
       _latency = 0;
+
+    setSpeed(speed);
+    setPitch(pitch);
 
     //force 1ms precision. It's needed for accurate event switch
     player.createPositionStream(
@@ -73,11 +110,25 @@ class AutomationController {
     _positionReport++;
 
     if (position == player.duration) {
+      //check for looping
+
+      bool looped = false;
+      if (loopEnable && !useLoopPoints) {
+        if (loopTimes == 0 || _currentLoop < loopTimes) {
+          //seek to beginning
+          seek(Duration(seconds: 0));
+          looped = true;
+          if (loopTimes > 0) _currentLoop++;
+        }
+      }
+
       //call and lose ref to prevent double calling
-      onTrackComplete?.call();
-      onTrackComplete = null;
+      if (!looped) {
+        onTrackComplete?.call();
+        onTrackComplete = null;
+      }
     }
-    //execute loop events without latency calc
+
     if (_nextEvent < automation.events.length) {
       switch (automation.events[_nextEvent].type) {
         case AutomationEventType.preset:
@@ -95,7 +146,8 @@ class AutomationController {
           if (automation.events[_nextEvent].eventTime.inMilliseconds <=
               position.inMilliseconds) {
             //set event
-            executeEvent(automation.events[_nextEvent]);
+            if (loopEnable && useLoopPoints)
+              executeEvent(automation.events[_nextEvent]);
             //increment expected event
             _nextEvent++;
             if (kDebugMode) print("FKT next event $_nextEvent");
@@ -124,8 +176,11 @@ class AutomationController {
         //find previous loop point
         for (int i = _nextEvent - 1; i >= 0; i--)
           if (events[i].type == AutomationEventType.loop) {
-            seek(events[i].eventTime);
-            _nextEvent = i;
+            if (loopTimes == 0 || loopTimes > 0 && _currentLoop < loopTimes) {
+              seek(events[i].eventTime);
+              _nextEvent = i;
+              _currentLoop++;
+            }
             break;
           }
         break;
@@ -152,14 +207,32 @@ class AutomationController {
     player.setSpeed(speed);
   }
 
-  void setPitch(double pitch) {
-    //TODO: just_audio library will implement this soon
-    player.setPitch(pitch);
+  void setPitch(int pitch) {
+    double _pitch = pow(2, pitch / 12).toDouble();
+    player.setPitch(_pitch);
+  }
+
+  void rewind() {
+    _currentLoop = 0;
+    seek(Duration(seconds: 0));
+  }
+
+  void forceLoopDisable() {
+    _forceLoopDisable = true;
   }
 
   void seek(Duration position) {
     player.seek(position);
     _updateActiveEvent();
+
+    //check if seek before the first loop and if so - reset the loop counter
+    if (useLoopPoints && loopTimes > 0) {
+      for (int i = 0; i < events.length; i++)
+        if (events[i].type == AutomationEventType.loop) {
+          if (position < events[i].eventTime) _currentLoop = 0;
+          break;
+        }
+    }
   }
 
   void sortEvents() {
@@ -229,6 +302,34 @@ class AutomationController {
     if (selectedEvent == event) selectedEvent = null;
     automation.events.remove(event);
     sortEvents();
+  }
+
+  //TODO: make sure there are always 2 loop events
+  void removeAllLoopEvents() {
+    for (int i = events.length - 1; i >= 0; i--) {
+      if (events[i].type == AutomationEventType.loop) events.removeAt(i);
+    }
+  }
+
+  bool hasLoopPoints() {
+    int loops = 0;
+    for (int i = 0; i < events.length; i++) {
+      if (events[i].type == AutomationEventType.loop) loops++;
+    }
+
+    //check for errors
+    if (loops > 0 && loops != 2) removeAllLoopEvents();
+
+    return loops == 2;
+  }
+
+  List<AutomationEvent> getLoopPoints() {
+    List<AutomationEvent> loopPoints = [];
+    for (int i = 0; i < events.length; i++) {
+      if (events[i].type == AutomationEventType.loop) loopPoints.add(events[i]);
+    }
+
+    return loopPoints;
   }
 
   Future dispose() async {

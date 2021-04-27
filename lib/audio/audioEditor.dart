@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/automationController.dart';
 import 'package:mighty_plug_manager/audio/widgets/presetsPanel.dart';
@@ -53,10 +54,6 @@ class _AudioEditorState extends State<AudioEditor> {
   //screen stuff
   double _samplesPerPixel = 0, _msPerSample = 0;
 
-  //speed and pitch shifting stuff
-  double speed = 1;
-  int semitones = 0;
-
   //stuff for inserting
   EditorState state = EditorState.play;
   dynamic selectedPreset;
@@ -68,10 +65,12 @@ class _AudioEditorState extends State<AudioEditor> {
   void initState() {
     super.initState();
 
-    automation = AutomationController(widget.track.automation);
+    automation = AutomationController(widget.track, widget.track.automation);
     WidgetsFlutterBinding.ensureInitialized();
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+    if (AppThemeConfig.allowRotation)
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
     device = NuxDeviceControl().device;
 
@@ -143,22 +142,6 @@ class _AudioEditorState extends State<AudioEditor> {
     setState(() {});
   }
 
-  // void eventUpdate(AutomationEvent event) {
-  //   switch (event.type) {
-  //     case AutomationEventType.preset:
-  //       var preset = event.getPreset();
-  //       if (preset != null && preset["product_id"] == device.productStringId)
-  //         device.presetFromJson(
-  //             preset,
-  //             event.cabinetLevelOverrideEnable
-  //                 ? event.cabinetLevelOverride
-  //                 : null);
-  //       break;
-  //     case AutomationEventType.loop:
-  //       break;
-  //   }
-  // }
-
   void timingData(double samplesPerPixel, double msPerSample) {
     _samplesPerPixel = samplesPerPixel;
     _msPerSample = msPerSample;
@@ -206,9 +189,16 @@ class _AudioEditorState extends State<AudioEditor> {
     setState(() {});
   }
 
-  void addLoopPoints() {
-    state = EditorState.insertLoop1;
+  void useLoopPoints(bool enable) {
+    automation.useLoopPoints = enable;
+    if (!automation.hasLoopPoints()) state = EditorState.insertLoop1;
     setState(() {});
+  }
+
+  AutomationEventType? showEventType() {
+    if (showType == AutomationEventType.loop &&
+        (!automation.loopEnable || !automation.useLoopPoints)) return null;
+    return showType;
   }
 
   @override
@@ -218,12 +208,15 @@ class _AudioEditorState extends State<AudioEditor> {
         pageLeft = true;
         await automation.dispose();
         //revert back to orientation change
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight
-        ]);
+        if (AppThemeConfig.allowRotation)
+          SystemChrome.setPreferredOrientations([
+            DeviceOrientation.portraitUp,
+            DeviceOrientation.portraitDown,
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight
+          ]);
+
+        NuxDeviceControl().resetToChannelDefaults();
         return true;
       },
       child: Scaffold(
@@ -241,7 +234,7 @@ class _AudioEditorState extends State<AudioEditor> {
                       currentSample: currentSample,
                       automation: automation,
                       onTimingData: timingData,
-                      showType: showType,
+                      showType: showEventType(),
                       onEventSelectionChanged: () {
                         setState(() {});
                       },
@@ -278,6 +271,7 @@ class _AudioEditorState extends State<AudioEditor> {
                           case EditorState.insertLoop2:
                             setState(() {
                               state = EditorState.play;
+                              automation.useLoopPoints = true;
                               automation.addEvent(
                                   Duration(milliseconds: sampleToMs(sample)),
                                   AutomationEventType.loop);
@@ -304,7 +298,7 @@ class _AudioEditorState extends State<AudioEditor> {
               children: [
                 MaterialButton(
                   onPressed: () {
-                    automation.seek(Duration(milliseconds: 0));
+                    automation.rewind();
                     setState(() {
                       currentSample = 0;
                     });
@@ -361,6 +355,9 @@ class _AudioEditorState extends State<AudioEditor> {
                       controller: controller,
                       onPageChanged: (int index) {
                         _currentPageNotifier.value = index;
+
+                        //clear selected event
+                        automation.selectedEvent = null;
                       },
                       children: [
                         PresetsPanel(
@@ -381,22 +378,31 @@ class _AudioEditorState extends State<AudioEditor> {
                             }),
                         LoopPanel(
                           automation: automation,
-                          onAddLoop: addLoopPoints,
-                          onDeleteLoop: () {},
-                        ),
-                        SpeedPanel(
-                          semitones: semitones,
-                          speed: speed,
-                          onSpeedChanged: (_speed) {
+                          onUseLoopPoints: useLoopPoints,
+                          onLoopEnable: (value) {
                             setState(() {
-                              speed = _speed;
-                              automation.setSpeed(speed);
+                              automation.loopEnable = value ?? false;
                             });
                           },
-                          onSemitonesChanged: (_semitones, pitch) {
+                          onLoopTimes: (value) {
                             setState(() {
-                              semitones = _semitones;
-                              automation.setPitch(pitch);
+                              automation.loopTimes = value;
+                            });
+                          },
+                        ),
+                        SpeedPanel(
+                          semitones: automation.pitch,
+                          speed: automation.speed,
+                          onSpeedChanged: (_speed) {
+                            setState(() {
+                              automation.speed = _speed;
+                              automation.setSpeed(_speed);
+                            });
+                          },
+                          onSemitonesChanged: (_semitones) {
+                            setState(() {
+                              automation.pitch = _semitones;
+                              automation.setPitch(_semitones);
                             });
                           },
                         ),
@@ -405,6 +411,10 @@ class _AudioEditorState extends State<AudioEditor> {
                     ElevatedButton(
                       child: Text("Cancel"),
                       onPressed: () {
+                        if (state == EditorState.insertLoop1 ||
+                            state == EditorState.insertLoop2)
+                          automation.removeAllLoopEvents();
+
                         state = EditorState.play;
                         setState(() {});
                       },
@@ -421,7 +431,6 @@ class _AudioEditorState extends State<AudioEditor> {
                       currentPageNotifier: _currentPageNotifier,
                     ),
             )
-            /*ElevatedButton(onPressed: () {}, child: Text("Do other stuff here"))*/
           ]),
         ),
       ),

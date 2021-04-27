@@ -16,7 +16,7 @@ class WaveformPainter extends CustomPainter {
   final int currentSample;
   final bool overallWaveform;
   final AutomationController automation;
-  final AutomationEventType showType;
+  final AutomationEventType? showType;
   late Paint painter;
   final Color color;
   final double strokeWidth;

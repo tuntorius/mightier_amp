@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marquee_text/marquee_text.dart';
 import '../setlistPage.dart';
+import 'speedPanel.dart';
 
 class SetlistPlayer extends StatelessWidget {
   final SetlistPlayerState state;
@@ -12,10 +13,8 @@ class SetlistPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double height = 90;
-    if (expanded) height = MediaQuery.of(context).size.height - 400;
+    if (expanded) height = 420;
 
-    bool hasTracks = state.setlist.items.length > 0;
-    bool stopped = state.state == PlayerState.idle;
     return AnimatedContainer(
         duration: duration,
         height: height,
@@ -46,7 +45,7 @@ class SetlistPlayer extends StatelessWidget {
         physics: NeverScrollableScrollPhysics(),
         children: [
           Icon(Icons.keyboard_arrow_down),
-          Container(height: 50, child: Center(child: createTitle())),
+          Container(height: 30, child: Center(child: createTitle())),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: createFullTrackControls(),
@@ -57,19 +56,23 @@ class SetlistPlayer extends StatelessWidget {
               children: [
                 Text(state.getMMSS(state.currentPosition)),
                 Expanded(
-                    child: Slider(
-                  value: state.currentPosition.inMilliseconds.toDouble(),
-                  onChanged: (value) {
-                    state.setPosition(value.round());
-                  },
-                  max: state.getDuration().inMilliseconds.toDouble(),
-                  onChangeStart: (val) {
-                    //state.setPositionUpdateMode(true);
-                  },
-                  onChangeEnd: (val) {
-                    //state.currentPosition = Duration(milliseconds: val.round());
-                    //state.setPositionUpdateMode(false);
-                  },
+                    child: SliderTheme(
+                  data: SliderThemeData(
+                      trackShape: SliderRepeatTrackShape(state: state)),
+                  child: Slider(
+                    value: state.currentPosition.inMilliseconds.toDouble(),
+                    onChanged: (value) {
+                      state.setPosition(value.round());
+                    },
+                    max: state.getDuration().inMilliseconds.toDouble(),
+                    onChangeStart: (val) {
+                      //state.setPositionUpdateMode(true);
+                    },
+                    onChangeEnd: (val) {
+                      //state.currentPosition = Duration(milliseconds: val.round());
+                      //state.setPositionUpdateMode(false);
+                    },
+                  ),
                 )),
                 Text(state.getMMSS(state.getDuration()))
               ],
@@ -83,7 +86,29 @@ class SetlistPlayer extends StatelessWidget {
               value: state.autoAdvance,
               onChanged: (value) {
                 state.autoAdvance = value ?? true;
-              })
+              }),
+          if (state.automation != null && state.automation!.loopEnable)
+            ListTile(
+              title: Text("Loop ${createLoopLabel()}"),
+              trailing: ElevatedButton(
+                child: Text("Cancel Loop"),
+                onPressed: () {
+                  state.automation?.forceLoopDisable();
+                },
+              ),
+            ),
+          SpeedPanel(
+            onSemitonesChanged: (val) {
+              state.pitch = val;
+              state.automation?.setPitch(val);
+            },
+            onSpeedChanged: (speed) {
+              state.speed = speed;
+              state.automation?.setSpeed(speed);
+            },
+            semitones: state.pitch,
+            speed: state.speed,
+          )
         ],
       );
     return Column(
@@ -101,24 +126,19 @@ class SetlistPlayer extends StatelessWidget {
     );
   }
 
+  String createLoopLabel() {
+    if (state.automation!.loopTimes == 0) return "∞";
+    return "${state.automation!.currentLoop}/${state.automation!.loopTimes}";
+  }
+
   List<Widget> createFullTrackControls() {
     return [
-      /*MaterialButton(
-        onPressed: () {},
-        minWidth: 0,
-        height: 60,
-        child: Icon(
-          Icons.shuffle,
-          color: Colors.white,
-          size: 30,
-        ),
-      ),*/
       MaterialButton(
         onPressed: () {
           state.previous();
         },
         minWidth: 0,
-        height: 100,
+        height: 80,
         child: Icon(
           Icons.skip_previous,
           color: Colors.white,
@@ -130,35 +150,23 @@ class SetlistPlayer extends StatelessWidget {
           state.playPause();
         },
         minWidth: 0,
-        height: 100,
+        height: 80,
         child: Icon(
           state.state == PlayerState.play ? Icons.pause : Icons.play_arrow,
           color: Colors.white,
-          size: 90,
+          size: 80,
         ),
       ),
       MaterialButton(
-        onPressed: () {
-          state.next();
-        },
+        onPressed: state.next,
         minWidth: 0,
-        height: 100,
+        height: 80,
         child: Icon(
           Icons.skip_next,
           color: Colors.white,
           size: 70,
         ),
       ),
-      /*MaterialButton(
-        onPressed: () {},
-        minWidth: 0,
-        height: 60,
-        child: Icon(
-          Icons.repeat,
-          color: Colors.white,
-          size: 30,
-        ),
-      )*/
     ];
   }
 
@@ -177,7 +185,7 @@ class SetlistPlayer extends StatelessWidget {
         ),
       ),
       MaterialButton(
-        onPressed: () {},
+        onPressed: state.next,
         //height: 70,
         minWidth: 0,
         child: Icon(
@@ -187,5 +195,86 @@ class SetlistPlayer extends StatelessWidget {
         ),
       )
     ];
+  }
+}
+
+class SliderRepeatTrackShape extends RoundedRectSliderTrackShape {
+  final SetlistPlayerState state;
+  double p1 = 0, p2 = 0;
+  bool loopEnabled = false;
+  final Paint repeatPaintOff = Paint()
+    ..style = PaintingStyle.stroke
+    ..color = Colors.grey[700]!
+    ..strokeWidth = 2;
+  final Paint repeatPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..color = Colors.green
+    ..strokeWidth = 2;
+  SliderRepeatTrackShape({required this.state}) {
+    if (state.automation != null && state.automation!.loopEnable == true) {
+      loopEnabled = true;
+      var points = state.automation!.getLoopPoints();
+      var dur = state.automation!.duration.inMicroseconds;
+      if (points.length == 2 && state.automation!.useLoopPoints) {
+        p1 = points[0].eventTime.inMicroseconds / dur;
+        p2 = points[1].eventTime.inMicroseconds / dur;
+      } else if (!state.automation!.useLoopPoints) {
+        p1 = 0;
+        p2 = 1;
+      }
+    }
+  }
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required TextDirection textDirection,
+    required Offset thumbCenter,
+    bool isDiscrete = false,
+    bool isEnabled = false,
+    double additionalActiveTrackHeight = 2,
+  }) {
+    final Rect trackRect = getPreferredRect(
+      parentBox: parentBox,
+      offset: offset,
+      sliderTheme: sliderTheme,
+      isEnabled: isEnabled,
+      isDiscrete: isDiscrete,
+    );
+
+    if (state.automation != null && loopEnabled) {
+      var pos1 = (trackRect.right - trackRect.left) * p1 + trackRect.left;
+      var pos2 = (trackRect.right - trackRect.left) * p2 + trackRect.left;
+      var posPercentage = state.currentPosition.inMicroseconds /
+          state.automation!.duration.inMicroseconds;
+
+      var paint = repeatPaintOff;
+      if (posPercentage >= p1 &&
+          (state.automation!.loopTimes == 0 ||
+              state.automation!.currentLoop < state.automation!.loopTimes))
+        paint = repeatPaint;
+      context.canvas.drawRect(
+          Rect.fromLTRB(
+            pos1,
+            (textDirection == TextDirection.ltr)
+                ? trackRect.top - additionalActiveTrackHeight * 4
+                : trackRect.top,
+            pos2,
+            (textDirection == TextDirection.ltr)
+                ? trackRect.bottom + additionalActiveTrackHeight * 4
+                : trackRect.bottom,
+          ),
+          paint);
+    }
+    super.paint(context, offset,
+        parentBox: parentBox,
+        sliderTheme: sliderTheme,
+        enableAnimation: enableAnimation,
+        textDirection: textDirection,
+        thumbCenter: thumbCenter);
   }
 }

@@ -3,8 +3,8 @@
 
 import 'dart:ui';
 
-import '../effects/plug_air/Amps.dart';
-
+import 'package:convert/convert.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
@@ -58,9 +58,7 @@ abstract class Preset {
   void setParameterValue(Parameter param, double value) {
     param.value = value;
 
-    if (device != null) {
-      device.parameterChanged.add(param);
-    }
+    device.parameterChanged.add(param);
   }
 
   Color effectColor(int index);
@@ -76,6 +74,12 @@ abstract class Preset {
 
   void setupPresetFromNuxData() {
     if (nuxData.length < 10) return;
+
+    var loadedPreset = hex.encode(nuxData);
+
+    NuxDeviceControl().diagData.lastNuxPreset = loadedPreset;
+    NuxDeviceControl().updateDiagnosticsData(nuxPreset: loadedPreset);
+
     for (int i = 0; i < device.effectsChainLength; i++) {
       //set proper effect
       int effectIndex = nuxData[PresetDataIndexPlugAir.effectTypesIndex[i]];

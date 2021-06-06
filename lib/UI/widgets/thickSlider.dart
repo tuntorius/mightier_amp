@@ -3,6 +3,7 @@
 
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:tinycolor/tinycolor.dart';
@@ -96,7 +97,7 @@ class _ThickSliderState extends State<ThickSlider> {
     factor = pos / width;
   }
 
-  void dragStart(DragDownDetails details) {
+  void dragStart(DragStartDetails details) {
     startDragPos = details.localPosition;
     widget.onDragStart?.call(widget.value);
   }
@@ -164,6 +165,8 @@ class _ThickSliderState extends State<ThickSlider> {
         pos = factor * width;
 
         return GestureDetector(
+          dragStartBehavior: DragStartBehavior.start,
+
           onDoubleTap: manualValueEnter,
           //onLongPress: manualValueEnter,
           onTapDown: (details) {
@@ -177,10 +180,10 @@ class _ThickSliderState extends State<ThickSlider> {
             // }
             // lastTapDown = now;
           },
-          onVerticalDragDown: widget.handleVerticalDrag ? dragStart : null,
+          onVerticalDragStart: widget.handleVerticalDrag ? dragStart : null,
           onVerticalDragUpdate: widget.handleVerticalDrag ? dragUpdate : null,
           onVerticalDragEnd: widget.handleVerticalDrag ? dragEnd : null,
-          onHorizontalDragDown: dragStart,
+          onHorizontalDragStart: dragStart,
           onHorizontalDragUpdate: dragUpdate,
           onHorizontalDragEnd: dragEnd,
           child: Container(

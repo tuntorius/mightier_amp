@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/UsbSettings.dart';
+import 'package:mighty_plug_manager/UI/pages/tuner.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
@@ -131,6 +132,18 @@ class _SettingsState extends State<Settings> {
                   );
                 },
               ),
+              if (kDebugMode)
+                ListTile(
+                  title: Text("Guitar Tuner"),
+                  subtitle: Text("Uses Phone Mic"),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    //if (midiHandler.connectedDevice != null) {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => GuitarTuner()));
+                    //}
+                  },
+                ),
               ListTile(
                 enabled: !device.deviceControl.isConnected,
                 title: Text("Device"),

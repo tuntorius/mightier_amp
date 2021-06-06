@@ -112,7 +112,8 @@ public class FileUtils {
             // MediaProvider
             else if (isMediaDocument(uri)) {
                 Log.i("MIGHTIER", "MediaProvider");
-                final String docId = DocumentsContract.getDocumentId(uri);
+                return uri.toString();
+                /*final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
 
@@ -130,7 +131,7 @@ public class FileUtils {
 
 
                 return getDataColumn(context, contentUri, selection,
-                        selectionArgs);
+                        selectionArgs);*/
             } else if (isGoogleDriveUri(uri)) {
                 Log.i("MIGHTIER", "GoogleDrive");
                 return getDriveFilePath(uri, context);

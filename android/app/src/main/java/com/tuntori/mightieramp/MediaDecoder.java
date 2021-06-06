@@ -24,6 +24,9 @@ import android.media.MediaCodec.BufferInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.AudioFormat;
+import android.net.Uri;
+
+import android.content.Context;
 
 public class MediaDecoder {
 
@@ -42,11 +45,11 @@ public class MediaDecoder {
 
     public MediaDecoder(){}
 
-    public void open(String inputFilename) {
+    public void open(String inputFilename, Context context) {
         extractor = new MediaExtractor();
 
         try {
-        extractor.setDataSource(inputFilename);
+        extractor.setDataSource(context, Uri.parse(inputFilename), null);
         }
         catch(Exception e)
         {

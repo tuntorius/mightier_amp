@@ -5,7 +5,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
-import 'package:just_audio/just_audio.dart';
 
 import 'artistAlbums.dart';
 
@@ -17,11 +16,6 @@ class MediaLibraryBrowser extends StatefulWidget {
 class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
   final StreamController<String> _refreshController =
       new StreamController<String>();
-  AudioPlayer player = AudioPlayer();
-  int refreshTime = 1;
-  String path = "";
-
-  RangeValues range = new RangeValues(0, 10000);
 
   //Future<List<SongInfo>> songs;
   static List<ArtistInfo> artists = [];

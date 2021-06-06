@@ -53,7 +53,7 @@ class MainActivity: FlutterActivity() {
             var arguments = methodCall.arguments<Map<String, String>>();
             if (methodCall.method == "open")
             {
-                decoder.open(arguments["path"]);
+                decoder.open(arguments["path"], this);
                 result.success(null);
             }
             else if (methodCall.method == "next") {

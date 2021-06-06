@@ -1,8 +1,7 @@
 import 'package:audio_picker/audio_picker.dart';
-import 'package:audiotagger/audiotagger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/fabMenu.dart';
@@ -10,10 +9,11 @@ import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/UI/widgets/searchTextField.dart';
 import 'package:mighty_plug_manager/audio/widgets/media_library/media_browse.dart';
 import 'package:path/path.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'audioEditor.dart';
 import 'models/jamTrack.dart';
+import 'online_sources/onlineTrack.dart';
 import 'trackdata/trackData.dart';
+import 'widgets/online_source/online_source.dart';
 
 class TracksPage extends StatefulWidget {
   final bool selectorOnly;
@@ -40,6 +40,7 @@ class _TracksPageState extends State<TracksPage>
   //menu anim
   late Animation<double> _animation;
   late AnimationController _animationController;
+  static List<SongInfo>? songList;
 
   bool get multiselectMode => _multiselectMode;
   set multiselectMode(value) {
@@ -149,6 +150,15 @@ class _TracksPageState extends State<TracksPage>
     final curvedAnimation =
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
+    querySongs();
+  }
+
+  void querySongs() async {
+    if (songList != null) return;
+    final FlutterAudioQuery audioQuery = FlutterAudioQuery();
+    songList = await audioQuery.getSongs();
+    print(songList?.length);
   }
 
   void multiselectHandler(int index) {
@@ -245,18 +255,39 @@ class _TracksPageState extends State<TracksPage>
   void addFromFile() async {
     //add track mode
     var path = await AudioPicker.pickAudioMultiple();
-    Map<String, String> data = {};
-    path.map((e) => data["file${data.length}"] = e);
-    Sentry.addBreadcrumb(Breadcrumb(message: "Picked files", data: data));
-    final tagger = new Audiotagger();
+
     for (int i = 0; i < path.length; i++) {
-      //audiotagger
-      Map? tags = await tagger.readTagsAsMap(path: path[i]);
+      SongInfo? libSong;
 
-      var name = getProperTags(tags, path[i]);
+      if (path[i].contains("com.android.providers.media")) {
+        var spl = path[i].split("%3A");
+        if (spl.length < 2) continue;
+        var id = path[i].split("%3A")[1];
+        for (var s = 0; s < (songList?.length ?? 0); s++) {
+          if (songList![s].id == id) {
+            libSong = songList![s];
+            break;
+          }
+        }
+      } else {
+        //find song in media library
+        String file = basename(path[i]);
 
-      TrackData().addTrack(path[i], name);
+        for (var s = 0; s < (songList?.length ?? 0); s++) {
+          if (songList![s].filePath.contains(file)) {
+            libSong = songList![s];
+            break;
+          }
+        }
+      }
 
+      if (libSong != null) {
+        var name = libSong.artist != "<unknown>"
+            ? "${libSong.artist} - ${libSong.title}"
+            : libSong.title;
+
+        TrackData().addTrack(libSong.uri, name);
+      }
       //clear filter and scroll to bottom
       searchCtrl.text = "";
       setState(() {});
@@ -273,7 +304,24 @@ class _TracksPageState extends State<TracksPage>
           var name = value[i].artist != "<unknown>"
               ? "${value[i].artist} - ${value[i].title}"
               : value[i].title;
-          TrackData().addTrack(value[i].filePath, name);
+          TrackData().addTrack(value[i].uri, name);
+        }
+        //clear filter and scroll to bottom
+        searchCtrl.text = "";
+        setState(() {});
+        _scollToNewSongs();
+      }
+    });
+  }
+
+  void addFromOnlineSource(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => OnlineSourceSearch()))
+        .then((value) {
+      if (value is List<OnlineTrack>) {
+        for (int i = 0; i < value.length; i++) {
+          var name = "${value[i].artist} - ${value[i].title}";
+          TrackData().addTrack(value[i].url, name);
         }
         //clear filter and scroll to bottom
         searchCtrl.text = "";
@@ -358,18 +406,19 @@ class _TracksPageState extends State<TracksPage>
                           // Menu items
                           items: [
                             // Floating action menu item
-                            /*Bubble(
-                              title: "Website Search",
-                              iconColor: Colors.white,
-                              bubbleColor: Colors.blue,
-                              icon: Icons.cloud,
-                              titleStyle:
-                                  TextStyle(fontSize: 16, color: Colors.white),
-                              onPress: () {
-                                _animationController.reverse();
-                              },
-                            ),*/
-                            // Floating action menu item
+                            if (kDebugMode)
+                              Bubble(
+                                title: "Online Source",
+                                iconColor: Colors.white,
+                                bubbleColor: Colors.blue,
+                                icon: Icons.cloud,
+                                titleStyle: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                                onPress: () {
+                                  _animationController.reverse();
+                                  addFromOnlineSource(context);
+                                },
+                              ),
                             Bubble(
                               title: "Media Library",
                               iconColor: Colors.white,

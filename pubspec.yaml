@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.8.0+9
+version: 0.8.2+11
 
 environment:
   sdk: ">=2.12.2 <3.0.0"
@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   permission_handler: ^6.1.0
   path_provider: ^2.0.1
+  html: ^0.15.0
   just_audio:
     path: ./just_audio/just_audio
   #upgrade to null-safety
@@ -39,10 +40,11 @@ dependencies:
   flutter_audio_query:
     path: ./flutter_audio_query
   page_view_indicators: ^2.0.0
-  audiotagger: ^2.1.0
   uuid: ^3.0.1
   marquee_text: ^2.0.0
   sentry_flutter: ^5.0.0
+  pitchdetector:
+    path: ./pitchdetector
   
 # https://pub.dev/packages/direct_select - possibility to use for selecting effects
 
@@ -51,6 +53,7 @@ dependencies:
   flutter_blue:
     path: ./flutter_blue
   undo: ^1.4.0
+  flutter_typeahead: ^3.1.2
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

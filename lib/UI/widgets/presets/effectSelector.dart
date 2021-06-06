@@ -130,6 +130,8 @@ class _EffectSelectorState extends State<EffectSelector> {
 
     //effect color for popup menu. Make sure it's contrasty to the text
     var _popupEffectColor = _effectColor;
+
+    //try to darken up to 2 times until the color is not light anymore
     for (int i = 0; i < 2; i++)
       if (TinyColor(_popupEffectColor).isLight())
         _popupEffectColor = TinyColor(_popupEffectColor).darken(15).color;
@@ -186,8 +188,8 @@ class _EffectSelectorState extends State<EffectSelector> {
               style:
                   TextStyle(color: _effectColor, fontWeight: FontWeight.bold),
             ),
-            if (_selectedSlot != 0) SizedBox(height: 1, width: 8),
-            if (_selectedSlot != 0) Text(_selectedEffectName)
+            if (_effectItems.length > 1) SizedBox(height: 1, width: 8),
+            if (_effectItems.length > 1) Text(_selectedEffectName)
           ],
         ),
       ),
@@ -237,6 +239,9 @@ class _EffectSelectorState extends State<EffectSelector> {
               )
             else
               effectSelectButton,
+            SizedBox(
+                width: 1,
+                height: 48), //used to even out sizes when switch is not visible
             Row(
               children: [
                 if (_selectedSlot != 0 && _effectItems.length > 1)

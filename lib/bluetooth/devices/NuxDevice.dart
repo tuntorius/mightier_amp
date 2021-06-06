@@ -207,8 +207,8 @@ abstract class NuxDevice extends ChangeNotifier {
   void sendAmpLevel() {
     //amps are at slot 1
     var preset = getPreset(selectedChannel);
-    var amp = preset.getEffectsForSlot(
-        amplifierSlotIndex)[preset.getSelectedEffectForSlot(2)];
+    var amp = preset.getEffectsForSlot(amplifierSlotIndex)[
+        preset.getSelectedEffectForSlot(amplifierSlotIndex)];
     for (int i = 0; i < amp.parameters.length; i++) {
       if (amp.parameters[i].masterVolume) {
         deviceControl.sendParameter(amp.parameters[i], false);

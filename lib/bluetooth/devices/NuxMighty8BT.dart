@@ -22,6 +22,7 @@ class NuxMighty8BT extends NuxDevice {
   String get productNameShort => "Mighty 8 BT";
   IconData get productIcon => MightierIcons.amp_8bt;
   String get productStringId => "mighty_8bt";
+  int get productVersion => 0;
   List<String> get productBLENames => ["NUX MIGHTY8BT MIDI"];
 
   int get channelsCount => 3;
@@ -136,4 +137,10 @@ class NuxMighty8BT extends NuxDevice {
   String channelName(int channel) {
     return channelNames[channel];
   }
+
+  @override
+  void setFirmwareVersion(int ver) {}
+
+  @override
+  void setFirmwareVersionByIndex(int ver) {}
 }

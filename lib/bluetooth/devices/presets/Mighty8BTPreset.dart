@@ -154,4 +154,7 @@ class M8BTPreset extends Preset {
     else
       return channelColor;
   }
+
+  @override
+  setFirmwareVersion(int ver) {}
 }

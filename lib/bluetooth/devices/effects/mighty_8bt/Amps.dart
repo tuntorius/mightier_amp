@@ -6,7 +6,7 @@ import '../Processor.dart';
 
 abstract class M8BTAmplifier extends Amplifier {
   int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;
-  int get midiCCSelectionValue => MidiCCValues.bCC_AmpModeSetup;
+  int get midiCCSelectionValue => MidiCCValues.bCC_NotUsed;
   int get defaultCab => 0;
 }
 

@@ -13,6 +13,7 @@ class SettingsKeys {
   static const String timeUnit = "timeUnit";
   static const String changeCabs = "changeCabs";
   static const String device = "device";
+  static const String deviceVersion = "deviceVersion";
   static const String masterVolume = "volume";
 }
 

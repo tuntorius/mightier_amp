@@ -40,13 +40,17 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     for (int i = 0; i < _channelsSelection.length; i++) {
       _buttons.add(
         Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              children: [
-                Icon(Icons.circle),
-                Text(_presets[i].channelName),
-              ],
-            )),
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.circle),
+              Text(
+                _presets[i].channelName,
+              ),
+            ],
+          ),
+        ),
       );
     }
 

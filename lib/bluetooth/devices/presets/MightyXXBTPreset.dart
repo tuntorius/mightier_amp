@@ -162,4 +162,7 @@ class MXXBTPreset extends Preset {
     else
       return channelColor;
   }
+
+  @override
+  setFirmwareVersion(int ver) {}
 }

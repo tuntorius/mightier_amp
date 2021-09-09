@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import '../../NuxConstants.dart';
+import '../../NuxMightyPlugAir.dart';
 import '../Processor.dart';
 
 abstract class Reverb extends Processor {
@@ -92,14 +93,14 @@ class SpringReverb extends Reverb {
         handle: "decay",
         value: 32,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.reverbdecay,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar1decay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 50,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.reverbmix,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar2damp,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];
 }
@@ -122,6 +123,91 @@ class ShimmerReverb extends Reverb {
         value: 50,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbmix,
+        midiCC: MidiCCValues.bCC_ReverbLevel)
+  ];
+  int? getEquivalentEffect(int version) {
+    if (version == PlugAirVersion.PlugAir21.index)
+      return SpringReverb().nuxIndex;
+    return nuxIndex;
+  }
+}
+
+class RoomReverbv2 extends Reverb {
+  final name = "Room";
+
+  int get nuxIndex => 0;
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Decay",
+        handle: "decay",
+        value: 35,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar1decay,
+        midiCC: MidiCCValues.bCC_ReverbDecay),
+    Parameter(
+        name: "Mix",
+        handle: "mix",
+        value: 25,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar2damp,
+        midiCC: MidiCCValues.bCC_ReverbLevel),
+    Parameter(
+        name: "Tone",
+        handle: "tone",
+        value: 45,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar3mix,
+        midiCC: MidiCCValues.bCC_ReverbRouting)
+  ];
+}
+
+class HallReverbv2 extends Reverb {
+  final name = "Hall";
+
+  int get nuxIndex => 1;
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Decay",
+        handle: "decay",
+        value: 70,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar1decay,
+        midiCC: MidiCCValues.bCC_ReverbDecay),
+    Parameter(
+        name: "Mix",
+        handle: "mix",
+        value: 45,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar2damp,
+        midiCC: MidiCCValues.bCC_ReverbLevel),
+    Parameter(
+        name: "Damp",
+        handle: "damp",
+        value: 85,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar3mix,
+        midiCC: MidiCCValues.bCC_ReverbRouting)
+  ];
+}
+
+class PlateReverbv2 extends Reverb {
+  final name = "Plate";
+
+  int get nuxIndex => 2;
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Decay",
+        handle: "decay",
+        value: 81,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar1decay,
+        midiCC: MidiCCValues.bCC_ReverbDecay),
+    Parameter(
+        name: "Mix",
+        handle: "mix",
+        value: 66,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.reverbvar2damp,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];
 }

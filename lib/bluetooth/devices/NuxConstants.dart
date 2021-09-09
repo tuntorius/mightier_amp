@@ -103,18 +103,27 @@ class PresetDataIndexPlugAir {
   static const modfxenable = 19;
   static const modfxtype = 20;
   static const modfxrate = 21;
+  static const modfxvar1rate = 21;
   static const modfxdepth = 22;
+  static const modfxvar2depth = 22;
   static const modfxmix = 23;
+  static const modfxvar3mix = 23;
   static const delayenable = 24;
   static const delaytype = 25;
   static const delaytime = 26;
+  static const delayvar1time = 26;
   static const delayfeedback = 27;
+  static const delayvar2feedback = 27;
   static const delaymix = 28;
+  static const delayvar3mix = 28;
   static const reverbenable = 29;
   static const reverbtype = 30;
   static const reverbdecay = 31;
+  static const reverbvar1decay = 31;
   static const reverbdamp = 32;
+  static const reverbvar2damp = 32;
   static const reverbmix = 33;
+  static const reverbvar3mix = 33;
 }
 
 class PresetDataIndex8BT {
@@ -182,6 +191,7 @@ class MidiMessageValues {
 }
 
 class MidiCCValues {
+  static const bCC_NotUsed = -1; //for LITE amp
   static const bCC_OverDriveEnable = 111;
   static const bCC_OverDriveDrive = 13;
   static const bCC_OverDriveTone = 14;
@@ -263,4 +273,13 @@ class MidiCCValues {
   static const bcc_mChrType = 63;
   static const bcc_gRevType = 37;
   static const bcc_mRevType = 39;
+}
+
+class NuxDeviceEntry {
+  int index;
+  int version;
+  String name;
+
+  NuxDeviceEntry(
+      {required this.index, required this.version, required this.name});
 }

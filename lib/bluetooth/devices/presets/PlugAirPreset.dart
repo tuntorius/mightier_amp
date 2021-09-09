@@ -3,10 +3,14 @@
 
 import 'dart:ui';
 
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Ampsv2.dart';
+
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
 import '../effects/plug_air/EFX.dart';
+import '../effects/plug_air/EFXv2.dart';
 import '../effects/plug_air/Amps.dart';
 import '../effects/plug_air/Cabinet.dart';
 import '../effects/plug_air/Modulation.dart';
@@ -20,12 +24,33 @@ class PlugAirPreset extends Preset {
   String channelName;
   Color get channelColor => Preset.channelColors[channel];
   final NoiseGate2Param noiseGate = NoiseGate2Param();
-  final List<EFX> efxList = <EFX>[];
-  final List<Amplifier> amplifierList = <Amplifier>[];
+
+  List<EFX> get efxList =>
+      version == PlugAirVersion.PlugAir21 ? efxListv2 : efxListv1;
+  List<Amplifier> get amplifierList =>
+      version == PlugAirVersion.PlugAir21 ? amplifierListv2 : amplifierListv1;
   final List<Cabinet> cabinetList = <Cabinet>[];
-  final List<Modulation> modulationList = <Modulation>[];
-  final List<Delay> delayList = <Delay>[];
-  final List<Reverb> reverbList = <Reverb>[];
+  List<Modulation> get modulationList =>
+      version == PlugAirVersion.PlugAir21 ? modulationListv2 : modulationListv1;
+  List<Delay> get delayList =>
+      version == PlugAirVersion.PlugAir21 ? delayList2 : delayList1;
+  List<Reverb> get reverbList =>
+      version == PlugAirVersion.PlugAir21 ? reverbListv2 : reverbListv1;
+
+  final List<EFX> efxListv1 = <EFX>[];
+  final List<EFX> efxListv2 = <EFX>[];
+
+  final List<Amplifier> amplifierListv1 = <Amplifier>[];
+  final List<Amplifier> amplifierListv2 = <Amplifier>[];
+
+  final List<Modulation> modulationListv1 = <Modulation>[];
+  final List<Modulation> modulationListv2 = <Modulation>[];
+
+  final List<Delay> delayList1 = <Delay>[];
+  final List<Delay> delayList2 = <Delay>[];
+
+  final List<Reverb> reverbListv1 = <Reverb>[];
+  final List<Reverb> reverbListv2 = <Reverb>[];
 
   bool noiseGateEnabled = true;
   bool efxEnabled = true;
@@ -40,14 +65,17 @@ class PlugAirPreset extends Preset {
   int selectedDelay = 0;
   int selectedReverb = 0;
 
+  PlugAirVersion version = PlugAirVersion.PlugAir15;
+
   PlugAirPreset(
       {required this.device, required this.channel, required this.channelName})
       : super(channel: channel, channelName: channelName, device: device) {
-    //modulation is available everywhere
-    modulationList
+    modulationListv1
         .addAll([Phaser(), Chorus(), STChorus(), Flanger(), Vibe(), Tremolo()]);
+    modulationListv2
+        .addAll([PH100(), Chorus(), STChorus(), SCF(), Vibe(), Tremolo()]);
 
-    efxList.addAll([
+    efxListv1.addAll([
       TouchWah(),
       UniVibe(),
       TremoloEFX(),
@@ -60,10 +88,27 @@ class PlugAirPreset extends Preset {
       Crunch(),
       RedDist(),
       MorningDrive(),
-      DistOne()
+      DistOne(),
     ]);
 
-    amplifierList.addAll([
+    efxListv2.addAll([
+      TouchWah(),
+      UniVibe(),
+      TremoloEFX(),
+      PH100EFX(),
+      STSinger(),
+      TSDrive(),
+      Katana(),
+      ThreeBandEQ(),
+      Muff(),
+      Crunch(),
+      RedDirt(),
+      MorningDrive(),
+      DistOne(),
+      RoseComp()
+    ]);
+
+    amplifierListv1.addAll([
       TwinVerb(),
       JZ120(),
       TweedDlx(),
@@ -77,6 +122,22 @@ class PlugAirPreset extends Preset {
       Stageman(),
       MLD(),
       AGL()
+    ]);
+
+    amplifierListv2.addAll([
+      JazzClean(),
+      DeluxeRvb(),
+      TwinRvbV2(),
+      ClassA30(),
+      Brit800(),
+      Plexi1987x50(),
+      FiremanHBE(),
+      DualRect(),
+      DIEVH4v2(),
+      AGLv2(),
+      Starlift(),
+      MLDv2(),
+      Stagemanv2(),
     ]);
 
     cabinetList.addAll([
@@ -101,16 +162,21 @@ class PlugAirPreset extends Preset {
       MHD28()
     ]);
 
-    delayList.addAll([AnalogDelay(), TapeEcho(), DigitalDelay(), PingPong()]);
+    delayList1.addAll([AnalogDelay(), TapeEcho(), DigitalDelay(), PingPong()]);
+    delayList2
+        .addAll([AnalogDelay(), DigitalDelayv2(), ModDelay(), PingPong()]);
 
     //reverb is available in all presets
-    reverbList.addAll([
+    reverbListv1.addAll([
       RoomReverb(),
       HallReverb(),
       PlateReverb(),
       SpringReverb(),
       ShimmerReverb()
     ]);
+
+    reverbListv2.addAll(
+        [RoomReverbv2(), HallReverbv2(), PlateReverbv2(), SpringReverb()]);
   }
 
   /// checks if the effect slot can be switched on and off
@@ -237,5 +303,10 @@ class PlugAirPreset extends Preset {
       return device.processorList[index].color;
     else
       return channelColor;
+  }
+
+  @override
+  setFirmwareVersion(int ver) {
+    version = PlugAirVersion.values[ver];
   }
 }

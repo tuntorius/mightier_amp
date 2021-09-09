@@ -12,6 +12,7 @@ import 'presets/PlugAirPreset.dart';
 import 'presets/Preset.dart';
 
 enum PlugAirChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
+enum PlugAirVersion { PlugAir15, PlugAir21 }
 
 class NuxMightyPlug extends NuxDevice {
   static const defaultNuxId = "mighty_plug_air";
@@ -20,16 +21,19 @@ class NuxMightyPlug extends NuxDevice {
   static const _guitarGroup = 0;
   static const _bassGroup = 1;
 
+  PlugAirVersion version = PlugAirVersion.PlugAir21;
+
   String get productName => "NUX Mighty Plug/Air";
   String get productNameShort => "Mighty Plug/Air";
   String get productStringId => "mighty_plug_air";
+  int get productVersion => version.index;
   IconData get productIcon => MightierIcons.amp_plugair;
   List<String> get productBLENames =>
       ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
 
   int get channelsCount => 7;
   int get effectsChainLength => 7;
-  int get groupsCount => 2;
+  int get groupsCount => 1;
   int get amplifierSlotIndex => 2;
   bool get cabinetSupport => true;
   int get cabinetSlotIndex => 3;
@@ -38,7 +42,7 @@ class NuxMightyPlug extends NuxDevice {
   bool get batterySupport => true;
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
 
-  List<String> get groupsName => ["Guitar", "Bass"];
+  List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [
@@ -52,7 +56,7 @@ class NuxMightyPlug extends NuxDevice {
         shortName: "EFX",
         longName: "EFX",
         keyName: "efx",
-        color: Colors.deepPurpleAccent,
+        color: Colors.deepPurpleAccent[100]!,
         icon: MightierIcons.pedal),
     ProcessorInfo(
         shortName: "Amp",
@@ -113,47 +117,47 @@ class NuxMightyPlug extends NuxDevice {
 
     //clean
     guitarPresets.add(PlugAirPreset(
-        device: this,
-        channel: PlugAirChannel.Clean.index,
-        channelName: "Clean"));
+        device: this, channel: PlugAirChannel.Clean.index, channelName: "1"));
 
     //OD
     guitarPresets.add(PlugAirPreset(
         device: this,
         channel: PlugAirChannel.Overdrive.index,
-        channelName: "Drive"));
+        channelName: "2"));
 
     //Dist
     guitarPresets.add(PlugAirPreset(
         device: this,
         channel: PlugAirChannel.Distortion.index,
-        channelName: "Dist"));
+        channelName: "3"));
 
     //AGSim
     guitarPresets.add(PlugAirPreset(
-        device: this,
-        channel: PlugAirChannel.AGSim.index,
-        channelName: "AGSim"));
+        device: this, channel: PlugAirChannel.AGSim.index, channelName: "4"));
 
     //Pop Bass
     bassPresets.add(PlugAirPreset(
-        device: this, channel: PlugAirChannel.Pop.index, channelName: "Pop"));
+        device: this, channel: PlugAirChannel.Pop.index, channelName: "5"));
 
     //Rock Bass
     bassPresets.add(PlugAirPreset(
-        device: this, channel: PlugAirChannel.Rock.index, channelName: "Rock"));
+        device: this, channel: PlugAirChannel.Rock.index, channelName: "6"));
 
     //Funk Bass
     bassPresets.add(PlugAirPreset(
-        device: this, channel: PlugAirChannel.Funk.index, channelName: "Funk"));
+        device: this, channel: PlugAirChannel.Funk.index, channelName: "7"));
 
     presets.addAll(guitarPresets);
     presets.addAll(bassPresets);
+
+    for (var preset in presets)
+      (preset as PlugAirPreset).setFirmwareVersion(version.index);
   }
 
   List<String> getDrumStyles() => drumStyles;
 
   List<Preset> getGroupPresets(int instr) {
+    return presets;
     switch (instr) {
       case _guitarGroup:
         return guitarPresets;
@@ -197,5 +201,42 @@ class NuxMightyPlug extends NuxDevice {
   @override
   String channelName(int channel) {
     return channelNames[channel];
+  }
+
+  @override
+  void setFirmwareVersion(int ver) {
+    if (ver < 21)
+      version = PlugAirVersion.PlugAir15;
+    else if (ver == 21) {
+      version = PlugAirVersion.PlugAir21;
+    }
+
+    //set all presets with that firmware
+    for (var preset in presets)
+      (preset as PlugAirPreset).setFirmwareVersion(version.index);
+  }
+
+  @override
+  void setFirmwareVersionByIndex(int ver) {
+    version = PlugAirVersion.values[ver];
+
+    //set all presets with that firmware
+    for (var preset in presets)
+      (preset as PlugAirPreset).setFirmwareVersion(version.index);
+  }
+
+  @override
+  int getAvailableVersions() {
+    return 2;
+  }
+
+  @override
+  String getProductNameVersion(int version) {
+    switch (PlugAirVersion.values[version]) {
+      case PlugAirVersion.PlugAir15:
+        return "$productNameShort v1.5";
+      case PlugAirVersion.PlugAir21:
+        return "$productNameShort v2.1";
+    }
   }
 }

@@ -26,6 +26,7 @@ abstract class NuxDevice extends ChangeNotifier {
   String get productNameShort;
   IconData get productIcon;
   String get productStringId;
+  int get productVersion;
   List<String> get productBLENames;
 
   int get channelsCount;
@@ -78,6 +79,18 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void setChannelFromGroup(int instr);
   void setGroupFromChannel(int chan);
+
+  void setFirmwareVersion(int ver);
+
+  void setFirmwareVersionByIndex(int ver);
+
+  int getAvailableVersions() {
+    return 1;
+  }
+
+  String getProductNameVersion(int version) {
+    return productNameShort;
+  }
 
   set selectedGroup(int instr) {
     if (instr != selectedGroupP) {
@@ -319,6 +332,8 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   presetFromJson(dynamic _preset, double? overrideLevel) {
+    var pVersion = _preset["version"] ?? 0;
+
     presetName = _preset["name"];
     presetCategory = _preset["category"];
     var nuxChannel = _preset["channel"];
@@ -335,22 +350,53 @@ abstract class NuxDevice extends ChangeNotifier {
       Map<String, dynamic> _effect = _preset[processorList[i].keyName];
 
       int fxType = _effect["fx_type"];
+      bool enabled = _effect["enabled"];
+
+      //check if preset conversion is needed
+      if (pVersion != productVersion) {
+        //temporarily switch the preset to the other version
+        //to get equivalent from this one
+        p.setFirmwareVersion(pVersion);
+        //2 things - either switch the version or convert the preset
+        int? newfxType =
+            p.getEffectsForSlot(i)[fxType].getEquivalentEffect(productVersion);
+
+        if (newfxType != null)
+          fxType = newfxType;
+        else {
+          //if we don't know equivalent then disable it
+          fxType = 0; //set to 0 to avoid null references
+          enabled = false;
+        }
+
+        //revert the preset back
+        p.setFirmwareVersion(productVersion);
+      }
+
       p.setSelectedEffectForSlot(i, fxType, false);
 
-      bool enabled = _effect["enabled"];
       p.setSlotEnabled(i, enabled, false);
 
       Processor fx;
       fx = p.getEffectsForSlot(i)[p.getSelectedEffectForSlot(i)];
 
       for (int f = 0; f < fx.parameters.length; f++) {
+        //this is only for cabs override level
         if (overrideLevel != null &&
             cabinetSupport &&
             i == cabinetSlotIndex &&
             fx.parameters[f].handle == "level")
           fx.parameters[f].value = overrideLevel;
-        else
-          fx.parameters[f].value = _effect[fx.parameters[f].handle];
+        else {
+          if (pVersion == productVersion)
+            fx.parameters[f].value = _effect[fx.parameters[f].handle];
+          else {
+            //ask the effect for the proper handle
+            var handle = fx.parameters[f].handle;
+            if (_effect.containsKey(handle))
+              fx.parameters[f].value = _effect[handle];
+          }
+        }
       }
 
       deviceControl.sendFullEffectSettings(i, false);
@@ -362,7 +408,8 @@ abstract class NuxDevice extends ChangeNotifier {
   Map<String, dynamic> presetToJson() {
     Map<String, dynamic> mainJson = {
       "channel": selectedChannel,
-      "product_id": productStringId
+      "product_id": productStringId,
+      "version": productVersion
     };
 
     Preset p = getPreset(selectedChannel);

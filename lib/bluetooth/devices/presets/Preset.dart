@@ -12,9 +12,9 @@ import '../effects/Processor.dart';
 abstract class Preset {
   static const List<Color> channelColors = [
     Color.fromARGB(255, 0, 255, 0),
-    Color.fromARGB(255, 255, 180, 0),
+    Color.fromARGB(255, 240, 160, 10),
     Color.fromARGB(255, 255, 0, 0),
-    Color.fromARGB(230, 230, 230, 255),
+    Color.fromARGB(220, 230, 230, 255),
     Color.fromARGB(255, 130, 225, 255),
     Color.fromARGB(255, 210, 140, 250),
     Color.fromARGB(255, 71, 167, 245),
@@ -53,6 +53,8 @@ abstract class Preset {
   void setSelectedEffectForSlot(int slot, int index, bool notifyBT) {
     if (notifyBT) device.effectChanged.add(slot);
   }
+
+  void setFirmwareVersion(int version);
 
   //change a parameter and announce it
   void setParameterValue(Parameter param, double value) {

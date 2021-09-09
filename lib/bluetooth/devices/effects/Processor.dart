@@ -3,7 +3,15 @@
 
 import 'package:flutter/material.dart';
 
-enum ValueType { percentage, db, tempo, vibeMode }
+enum ValueType {
+  percentage,
+  db,
+  tempo,
+  vibeMode,
+  boostMode,
+  brightMode,
+  contourMode
+}
 
 class Parameter {
   static const delayTimeMstable = [
@@ -116,6 +124,11 @@ abstract class Processor {
         parameters[i].value =
             (nuxData[parameters[i].devicePresetIndex].toDouble() - 50) / 8.3334;
     }
+  }
+
+  //this is used for version transition
+  int? getEquivalentEffect(int version) {
+    return nuxIndex;
   }
 }
 

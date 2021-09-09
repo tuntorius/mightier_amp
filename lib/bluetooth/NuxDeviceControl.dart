@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
@@ -99,8 +100,23 @@ class NuxDeviceControl extends ChangeNotifier {
     diagData.device = _device.productName;
     updateDiagnosticsData();
     SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
-
+    SharedPrefs().setValue(SettingsKeys.deviceVersion, _device.productVersion);
     notifyListeners();
+  }
+
+  List<String> get deviceVersionsList {
+    var names = <String>[];
+    for (int i = 0; i < device.getAvailableVersions(); i++)
+      names.add(device.getProductNameVersion(i));
+    return names;
+  }
+
+  int get deviceFirmwareVersion => device.productVersion;
+
+  set deviceFirmwareVersion(int ver) {
+    clearUndoStack();
+    device.setFirmwareVersionByIndex(ver);
+    SharedPrefs().setValue(SettingsKeys.deviceVersion, ver);
   }
 
   NuxDevice deviceFromBLEId(String id) {
@@ -155,7 +171,9 @@ class NuxDeviceControl extends ChangeNotifier {
     String _dev = SharedPrefs()
         .getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
     _device = getDeviceFromId(_dev) ?? _deviceInstances[0];
-
+    int ver = SharedPrefs().getValue(
+        SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
+    _device.setFirmwareVersionByIndex(ver);
     diagData.device = _device.productName;
     diagData.connected = false;
     updateDiagnosticsData();
@@ -200,6 +218,7 @@ class NuxDeviceControl extends ChangeNotifier {
           diagData.connected = true;
           updateDiagnosticsData();
           SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
+          //can't set version yet, firmware is unknown
           notifyListeners();
           _onConnect();
         }
@@ -237,11 +256,23 @@ class NuxDeviceControl extends ChangeNotifier {
   void _onDataReceive(List<int> data) {
     if (developer) onDataReceiveDebug?.call(data);
 
-    if (data.length > 2)
-      _device.onDataReceived(data.sublist(2));
-    else if (!_device.nuxPresetsReceived && _device.presetSaveSupport) {
+    if (data.length > 2) {
+      //check for firmware message
+      if (data[2] == MidiMessageValues.sysExStart &&
+          data[3] == 0 &&
+          data[8] == 16 &&
+          data.length == 12) {
+        //firmware version is in the 9th bit
+        device.setFirmwareVersion(data[9]);
+        //save device version since we know it already
+        SharedPrefs()
+            .setValue(SettingsKeys.deviceVersion, _device.productVersion);
+        requestPresetDelayed();
+      } else
+        _device.onDataReceived(data.sublist(2));
+    } else if (!_device.nuxPresetsReceived && _device.presetSaveSupport) {
       //ask the presets now
-      requestPresetDelayed();
+      requestFirmwareVersion();
     }
   }
 
@@ -249,6 +280,12 @@ class NuxDeviceControl extends ChangeNotifier {
     if (!device.batterySupport) return;
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
         [SysCtrlState.syscmd_dsprun_battery, 0, 0, 0, 0]);
+    _midiHandler.sendData(data);
+  }
+
+  void requestFirmwareVersion() {
+    var data = createFirmwareMessage();
+
     _midiHandler.sendData(data);
   }
 
@@ -400,7 +437,7 @@ class NuxDeviceControl extends ChangeNotifier {
     send = true; //still buggy, fix it first
 
     //send effect type
-    if (slot != 0 && send) {
+    if (slot != 0 && send && effect.midiCCSelectionValue >= 0) {
       var data = createCCMessage(effect.midiCCSelectionValue, index);
       _midiHandler.sendData(data);
     }
@@ -541,6 +578,29 @@ class NuxDeviceControl extends ChangeNotifier {
       msg.add(data);
     else
       msg.addAll(data);
+
+    //add termination symbol
+    msg.add(0x80);
+    msg.add(MidiMessageValues.sysExEnd);
+
+    return msg;
+  }
+
+  List<int> createFirmwareMessage() {
+    List<int> msg = [];
+
+    //create header
+    msg.addAll([
+      0x80,
+      0x80,
+      MidiMessageValues.sysExStart,
+      0,
+      device.vendorID & 255,
+      device.vendorID >> 8 & 255,
+      device.productVID & 255,
+      device.productVID >> 8 & 255,
+      0
+    ]);
 
     //add termination symbol
     msg.add(0x80);

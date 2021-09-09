@@ -417,6 +417,8 @@ class _PresetListState extends State<PresetList>
   List<Widget> buildEffectsPreview(Map<String, dynamic> preset) {
     var widgets = <Widget>[];
     NuxDevice? dev = devices[preset["product_id"]];
+    int presetVersion = preset["version"] ?? 0;
+
     if (dev != null) {
       for (int i = 0; i < dev.processorList.length; i++) {
         ProcessorInfo pi = dev.processorList[i];
@@ -508,6 +510,8 @@ class _PresetListState extends State<PresetList>
         items: PresetsStorage().presetsData,
         childBuilder: (item) {
           var device = NuxDeviceControl().device;
+          var pVersion = item["version"] ?? 0;
+          var devVersion = device.productVersion;
           bool newItem = false;
           //check if enabled and desaturate color if needed
 
@@ -581,12 +585,26 @@ class _PresetListState extends State<PresetList>
               leading: Container(
                 height:
                     double.infinity, //strange hack to center icon vertically
-                child: Icon(
-                  NuxDeviceControl()
-                      .getDeviceFromId(item["product_id"])!
-                      .productIcon,
-                  size: 30,
-                  color: color,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(
+                      NuxDeviceControl()
+                          .getDeviceFromId(item["product_id"])!
+                          .productIcon,
+                      size: 30,
+                      color: color,
+                    ),
+                    if (pVersion != devVersion)
+                      Transform(
+                        transform: Matrix4.translationValues(10, 10, 0),
+                        child: Icon(
+                          Icons.warning,
+                          color: Colors.amber,
+                          size: 20,
+                        ),
+                      )
+                  ],
                 ),
               ),
               title: Text(item["name"],

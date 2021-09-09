@@ -178,6 +178,9 @@ class _PresetEditorState extends State<PresetEditor> {
             ],
           ),
         ),
+        SizedBox(
+          height: 10,
+        ),
         if (_groupSelection.length > 1)
           ToggleButtons(
             constraints: BoxConstraints(

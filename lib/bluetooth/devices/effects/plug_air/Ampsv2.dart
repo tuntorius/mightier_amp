@@ -1,23 +1,14 @@
-// (c) 2020-2021 Dian Iliev (Tuntorius)
-// This code is licensed under MIT license (see LICENSE.md for details)
-
 import '../../NuxConstants.dart';
 import '../../NuxMightyPlugAir.dart';
 import '../Processor.dart';
-import 'Ampsv2.dart';
+import 'Amps.dart';
 import 'Cabinet.dart';
 
-abstract class PlugAirAmplifier extends Amplifier {
-  int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;
-  int get midiCCSelectionValue => MidiCCValues.bCC_AmpModeSetup;
-  int get defaultCab;
-}
+class JazzClean extends PlugAirAmplifier {
+  final name = "Jazz Clean";
 
-class TwinVerb extends PlugAirAmplifier {
-  final name = "Twin Verb";
-
-  int get defaultCab => TR212.cabIndex;
   int get nuxIndex => 0;
+  int get defaultCab => JZ120IR.cabIndex;
 
   bool isSeparator = true;
   String category = "Clean";
@@ -27,7 +18,66 @@ class TwinVerb extends PlugAirAmplifier {
     Parameter(
         name: "Gain",
         handle: "gain",
-        value: 78,
+        value: 65,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
+        midiCC: MidiCCValues.bCC_AmpDrive),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 70,
+        valueType: ValueType.percentage,
+        masterVolume: true,
+        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
+        midiCC: MidiCCValues.bCC_AmpMaster),
+    Parameter(
+        name: "Bass",
+        handle: "bass",
+        value: 50,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
+        midiCC: MidiCCValues.bCC_OverDriveDrive),
+    Parameter(
+        name: "Middle",
+        handle: "mid",
+        value: 65,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
+        midiCC: MidiCCValues.bCC_OverDriveTone),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 55,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
+        midiCC: MidiCCValues.bCC_OverDriveLevel),
+    Parameter(
+        name: "Bright",
+        handle: "tone",
+        value: 100,
+        valueType: ValueType.brightMode,
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
+        midiCC: MidiCCValues.bCC_AmpPresence),
+  ];
+
+  int? getEquivalentEffect(int version) {
+    if (version == PlugAirVersion.PlugAir15.index) return JZ120().nuxIndex;
+    return nuxIndex;
+  }
+}
+
+class DeluxeRvb extends PlugAirAmplifier {
+  final name = "Deluxe Rvb";
+
+  int get nuxIndex => 1;
+  int get defaultCab => DR112.cabIndex;
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Gain",
+        handle: "gain",
+        value: 65,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
         midiCC: MidiCCValues.bCC_AmpDrive),
@@ -40,84 +90,38 @@ class TwinVerb extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
-        name: "Tone",
-        handle: "tone",
-        value: 68,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
-  ];
-
-  int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return TwinRvbV2().nuxIndex;
-    return nuxIndex;
-  }
-}
-
-class JZ120 extends PlugAirAmplifier {
-  final name = "JZ 120";
-
-  int get nuxIndex => 1;
-  int get defaultCab => JZ120IR.cabIndex;
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 76,
-        valueType: ValueType.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
         name: "Bass",
         handle: "bass",
-        value: 75,
+        value: 50,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
         midiCC: MidiCCValues.bCC_OverDriveDrive),
     Parameter(
         name: "Middle",
         handle: "mid",
-        value: 62,
+        value: 70,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
         midiCC: MidiCCValues.bCC_OverDriveTone),
     Parameter(
         name: "Treble",
         handle: "treble",
-        value: 50,
+        value: 60,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
-    Parameter(
-        name: "Tone",
-        handle: "tone",
-        value: 54,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
   ];
-
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return JazzClean().nuxIndex;
+    if (version == PlugAirVersion.PlugAir15.index) return TweedDlx().nuxIndex;
     return nuxIndex;
   }
 }
 
-class TweedDlx extends PlugAirAmplifier {
-  final name = "Tweed Dlx";
+class TwinRvbV2 extends PlugAirAmplifier {
+  final name = "Twin Rvb";
 
+  int get defaultCab => TR212.cabIndex;
   int get nuxIndex => 2;
-  int get defaultCab => DR112.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -131,7 +135,7 @@ class TweedDlx extends PlugAirAmplifier {
     Parameter(
         name: "Level",
         handle: "level",
-        value: 92,
+        value: 85,
         valueType: ValueType.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
@@ -139,85 +143,98 @@ class TweedDlx extends PlugAirAmplifier {
     Parameter(
         name: "Bass",
         handle: "bass",
-        value: 42,
+        value: 60,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass, //check this
         midiCC: MidiCCValues.bCC_OverDriveDrive),
     Parameter(
         name: "Middle",
-        handle: "mid",
-        value: 59,
+        handle: "middle",
+        value: 70,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
+        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle, //check this
         midiCC: MidiCCValues.bCC_OverDriveTone),
     Parameter(
         name: "Treble",
         handle: "treble",
-        value: 66,
+        value: 55,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble, //check this
         midiCC: MidiCCValues.bCC_OverDriveLevel),
     Parameter(
-        name: "Tone",
+        name: "Bright",
         handle: "tone",
-        value: 49,
-        valueType: ValueType.percentage,
+        value: 100,
+        valueType: ValueType.brightMode,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
-
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return DeluxeRvb().nuxIndex;
+    if (version == PlugAirVersion.PlugAir15.index) return TwinVerb().nuxIndex;
     return nuxIndex;
   }
 }
 
-class Plexi extends PlugAirAmplifier {
-  final name = "Plexi";
-
-  bool isSeparator = true;
-  String category = "Overdrive";
+class ClassA30 extends PlugAirAmplifier {
+  final name = "Class A30";
 
   int get nuxIndex => 3;
-  int get defaultCab => GB412.cabIndex;
+  int get defaultCab => A212.cabIndex;
+
+  bool isSeparator = true;
+  String category = "Drive";
 
   @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
         handle: "gain",
-        value: 26,
+        value: 50,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
         midiCC: MidiCCValues.bCC_AmpDrive),
     Parameter(
         name: "Level",
         handle: "level",
-        value: 53,
+        value: 80,
         valueType: ValueType.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
     Parameter(
-        name: "Tone",
-        handle: "tone",
-        value: 70,
+        name: "Bass",
+        handle: "bass",
+        value: 60,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
+        midiCC: MidiCCValues.bCC_OverDriveDrive),
+    Parameter(
+        name: "Cut",
+        handle: "cut",
+        value: 40,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
         midiCC: MidiCCValues.bCC_AmpPresence),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 60,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
+        midiCC: MidiCCValues.bCC_OverDriveLevel),
   ];
+
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index)
-      return Plexi1987x50().nuxIndex;
+    if (version == PlugAirVersion.PlugAir15.index) return TopBoost().nuxIndex;
     return nuxIndex;
   }
 }
 
-class TopBoost extends PlugAirAmplifier {
-  final name = "Top Boost 30";
+class Brit800 extends PlugAirAmplifier {
+  final name = "Brit 800";
 
   int get nuxIndex => 4;
-  int get defaultCab => A212.cabIndex;
+  int get defaultCab => V1960.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -245,7 +262,7 @@ class TopBoost extends PlugAirAmplifier {
         midiCC: MidiCCValues.bCC_OverDriveDrive),
     Parameter(
         name: "Middle",
-        handle: "mdl",
+        handle: "middle",
         value: 71,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
@@ -258,39 +275,38 @@ class TopBoost extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
     Parameter(
-        name: "Tone (Presence)",
+        name: "Presence",
         handle: "tone",
         value: 58,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
-
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return ClassA30().nuxIndex;
+    if (version == PlugAirVersion.PlugAir15.index) return Lead100().nuxIndex;
     return nuxIndex;
   }
 }
 
-class Lead100 extends PlugAirAmplifier {
-  final name = "Lead 100";
+class Plexi1987x50 extends PlugAirAmplifier {
+  final name = "1987x50";
 
   int get nuxIndex => 5;
-  int get defaultCab => BS410.cabIndex;
+  int get defaultCab => GB412.cabIndex;
 
   @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
         handle: "gain",
-        value: 71,
+        value: 44,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
         midiCC: MidiCCValues.bCC_AmpDrive),
     Parameter(
         name: "Level",
         handle: "level",
-        value: 66,
+        value: 81,
         valueType: ValueType.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
@@ -298,306 +314,43 @@ class Lead100 extends PlugAirAmplifier {
     Parameter(
         name: "Bass",
         handle: "bass",
-        value: 60,
+        value: 35,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
         midiCC: MidiCCValues.bCC_OverDriveDrive),
     Parameter(
         name: "Middle",
-        handle: "middle",
-        value: 62,
+        handle: "mid",
+        value: 71,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
         midiCC: MidiCCValues.bCC_OverDriveTone),
     Parameter(
         name: "Treble",
         handle: "treble",
-        value: 53,
+        value: 52,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
     Parameter(
-        name: "Tone (Presence)",
+        name: "Presence",
         handle: "tone",
-        value: 67,
+        value: 58,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return Brit800().nuxIndex;
+    if (version == PlugAirVersion.PlugAir15.index) return Plexi().nuxIndex;
     return nuxIndex;
   }
 }
 
-class Fireman extends PlugAirAmplifier {
-  final name = "Fireman";
-
-  bool isSeparator = true;
-  String category = "Distortion";
+class FiremanHBE extends PlugAirAmplifier {
+  final name = "Fireman HBE";
 
   int get nuxIndex => 6;
   int get defaultCab => V412.cabIndex;
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 54,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 69,
-        valueType: ValueType.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Tone",
-        handle: "tone",
-        value: 53,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
-  ];
-}
-
-class DIEVH4 extends PlugAirAmplifier {
-  final name = "DIE VH4";
-
-  int get nuxIndex => 7;
-  int get defaultCab => V412.cabIndex;
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 68,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 72,
-        valueType: ValueType.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 41,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
-    Parameter(
-        name: "Middle",
-        handle: "mid",
-        value: 64,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
-    Parameter(
-        name: "Treble",
-        handle: "treble",
-        value: 55,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
-    Parameter(
-        name: "Tone (Presence)",
-        handle: "tone",
-        value: 51,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
-  ];
-  int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return DIEVH4v2().nuxIndex;
-    return nuxIndex;
-  }
-}
-
-class Recto extends PlugAirAmplifier {
-  final name = "Recto";
-
-  int get nuxIndex => 8;
-  int get defaultCab => V412.cabIndex;
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 73,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 60,
-        valueType: ValueType.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 69,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
-    Parameter(
-        name: "Middle",
-        handle: "mid",
-        value: 35,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
-    Parameter(
-        name: "Treble",
-        handle: "treble",
-        value: 46,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
-    Parameter(
-        name: "Tone (Presence)",
-        handle: "tone",
-        value: 63,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
-  ];
-
-  //this is used for version transition
-  int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return DualRect().nuxIndex;
-    return nuxIndex;
-  }
-}
-
-class Optima extends PlugAirAmplifier {
-  final name = "Optima";
-
-  bool isSeparator = true;
-  String category = "Acoustic";
-
-  int get nuxIndex => 9;
-  int get defaultCab => MD45.cabIndex;
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 72,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 100,
-        valueType: ValueType.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
-    Parameter(
-        name: "Middle",
-        handle: "mid",
-        value: 50,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
-    Parameter(
-        name: "Treble",
-        handle: "treble",
-        value: 50,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
-  ];
-  int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return Stagemanv2().nuxIndex;
-    return nuxIndex;
-  }
-}
-
-class Stageman extends PlugAirAmplifier {
-  final name = "Stageman";
-
-  int get nuxIndex => 10;
-  int get defaultCab => MD45.cabIndex;
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 60,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 90,
-        valueType: ValueType.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
-    Parameter(
-        name: "Middle",
-        handle: "mid",
-        value: 50,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
-    Parameter(
-        name: "Treble",
-        handle: "treble",
-        value: 50,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
-  ];
-
-  int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return Stagemanv2().nuxIndex;
-    return nuxIndex;
-  }
-}
-
-class MLD extends PlugAirAmplifier {
-  final name = "MLD";
-
-  bool isSeparator = true;
-  String category = "Bass";
-
-  int get nuxIndex => 11;
-  int get defaultCab => TRC410.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -611,7 +364,7 @@ class MLD extends PlugAirAmplifier {
     Parameter(
         name: "Level",
         handle: "level",
-        value: 91,
+        value: 77,
         valueType: ValueType.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
@@ -619,44 +372,158 @@ class MLD extends PlugAirAmplifier {
     Parameter(
         name: "Bass",
         handle: "bass",
-        value: 59,
+        value: 55,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
         midiCC: MidiCCValues.bCC_OverDriveDrive),
     Parameter(
         name: "Middle",
         handle: "mid",
-        value: 50,
+        value: 65,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
         midiCC: MidiCCValues.bCC_OverDriveTone),
     Parameter(
         name: "Treble",
         handle: "treble",
-        value: 61,
+        value: 60,
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
     Parameter(
-        name: "Mid Freq",
-        handle: "mid_freq",
-        value: 63,
+        name: "Presence",
+        handle: "tone",
+        value: 70,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
+}
 
+class DualRect extends PlugAirAmplifier {
+  final name = "Dual Rect";
+
+  int get nuxIndex => 7;
+  int get defaultCab => V412.cabIndex;
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Gain",
+        handle: "gain",
+        value: 60,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
+        midiCC: MidiCCValues.bCC_AmpDrive),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 70,
+        valueType: ValueType.percentage,
+        masterVolume: true,
+        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
+        midiCC: MidiCCValues.bCC_AmpMaster),
+    Parameter(
+        name: "Bass",
+        handle: "bass",
+        value: 55,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
+        midiCC: MidiCCValues.bCC_OverDriveDrive),
+    Parameter(
+        name: "Middle",
+        handle: "mid",
+        value: 65,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
+        midiCC: MidiCCValues.bCC_OverDriveTone),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 50,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
+        midiCC: MidiCCValues.bCC_OverDriveLevel),
+    Parameter(
+        name: "Presence",
+        handle: "tone",
+        value: 65,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
+        midiCC: MidiCCValues.bCC_AmpPresence),
+  ];
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return MLDv2().nuxIndex;
+    if (version == PlugAirVersion.PlugAir15.index) return Recto().nuxIndex;
     return nuxIndex;
   }
 }
 
-class AGL extends PlugAirAmplifier {
+class DIEVH4v2 extends PlugAirAmplifier {
+  final name = "DIE VH4";
+
+  int get nuxIndex => 8;
+  int get defaultCab => GB412.cabIndex;
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Gain",
+        handle: "gain",
+        value: 65,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
+        midiCC: MidiCCValues.bCC_AmpDrive),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 80,
+        valueType: ValueType.percentage,
+        masterVolume: true,
+        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
+        midiCC: MidiCCValues.bCC_AmpMaster),
+    Parameter(
+        name: "Bass",
+        handle: "bass",
+        value: 55,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
+        midiCC: MidiCCValues.bCC_OverDriveDrive),
+    Parameter(
+        name: "Middle",
+        handle: "mid",
+        value: 60,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
+        midiCC: MidiCCValues.bCC_OverDriveTone),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 60,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
+        midiCC: MidiCCValues.bCC_OverDriveLevel),
+    Parameter(
+        name: "Presence",
+        handle: "tone",
+        value: 65,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
+        midiCC: MidiCCValues.bCC_AmpPresence),
+  ];
+  int? getEquivalentEffect(int version) {
+    if (version == PlugAirVersion.PlugAir15.index) return DIEVH4().nuxIndex;
+    return nuxIndex;
+  }
+}
+
+class AGLv2 extends PlugAirAmplifier {
   final name = "AGL";
 
-  int get nuxIndex => 12;
+  int get nuxIndex => 9;
   int get defaultCab => AGLDB810.cabIndex;
+
+  bool isSeparator = true;
+  String category = "Bass";
 
   @override
   List<Parameter> parameters = [
@@ -683,6 +550,13 @@ class AGL extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
         midiCC: MidiCCValues.bCC_OverDriveDrive),
     Parameter(
+        name: "Mid Freq",
+        handle: "mid_freq",
+        value: 63,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
+        midiCC: MidiCCValues.bCC_AmpPresence),
+    Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
@@ -696,16 +570,179 @@ class AGL extends PlugAirAmplifier {
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
+  ];
+  int? getEquivalentEffect(int version) {
+    if (version == PlugAirVersion.PlugAir15.index) return AGL().nuxIndex;
+    return nuxIndex;
+  }
+}
+
+class Starlift extends PlugAirAmplifier {
+  final name = "Starlift";
+
+  int get nuxIndex => 10;
+  int get defaultCab => MKB410.cabIndex;
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Bass",
+        handle: "bass",
+        value: 60,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
+        midiCC: MidiCCValues.bCC_OverDriveDrive),
+    Parameter(
+        name: "Mid Freq",
+        handle: "mid_freq",
+        value: 45,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
+        midiCC: MidiCCValues.bCC_AmpPresence),
+    Parameter(
+        name: "Middle",
+        handle: "mid",
+        value: 70,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
+        midiCC: MidiCCValues.bCC_OverDriveTone),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 55,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
+        midiCC: MidiCCValues.bCC_OverDriveLevel),
+    Parameter(
+        name: "Contour",
+        handle: "contour",
+        value: 0,
+        valueType: ValueType.contourMode,
+        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
+        midiCC: MidiCCValues.bCC_AmpDrive),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 80,
+        valueType: ValueType.percentage,
+        masterVolume: true,
+        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
+        midiCC: MidiCCValues.bCC_AmpMaster),
+  ];
+  int? getEquivalentEffect(int version) {
+    if (version == PlugAirVersion.PlugAir15.index) return AGL().nuxIndex;
+    return nuxIndex;
+  }
+}
+
+class MLDv2 extends PlugAirAmplifier {
+  final name = "MLD";
+
+  int get nuxIndex => 11;
+  int get defaultCab => TRC410.cabIndex;
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Gain",
+        handle: "gain",
+        value: 61,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
+        midiCC: MidiCCValues.bCC_AmpDrive),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 89,
+        valueType: ValueType.percentage,
+        masterVolume: true,
+        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
+        midiCC: MidiCCValues.bCC_AmpMaster),
+    Parameter(
+        name: "Bass",
+        handle: "bass",
+        value: 72,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
+        midiCC: MidiCCValues.bCC_OverDriveDrive),
     Parameter(
         name: "Mid Freq",
         handle: "mid_freq",
         value: 63,
         valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
         midiCC: MidiCCValues.bCC_AmpPresence),
+    Parameter(
+        name: "Middle",
+        handle: "mid",
+        value: 50,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
+        midiCC: MidiCCValues.bCC_OverDriveTone),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 63,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
+        midiCC: MidiCCValues.bCC_OverDriveLevel),
   ];
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index) return AGLv2().nuxIndex;
+    if (version == PlugAirVersion.PlugAir15.index) return MLD().nuxIndex;
+    return nuxIndex;
+  }
+}
+
+class Stagemanv2 extends PlugAirAmplifier {
+  final name = "Stageman";
+
+  int get nuxIndex => 12;
+  int get defaultCab => MD45.cabIndex;
+
+  bool isSeparator = true;
+  String category = "Acoustic";
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Gain",
+        handle: "gain",
+        value: 60,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampgain,
+        midiCC: MidiCCValues.bCC_AmpDrive),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 70,
+        valueType: ValueType.percentage,
+        masterVolume: true,
+        devicePresetIndex: PresetDataIndexPlugAir.amplevel,
+        midiCC: MidiCCValues.bCC_AmpMaster),
+    Parameter(
+        name: "Bass",
+        handle: "bass",
+        value: 60,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass,
+        midiCC: MidiCCValues.bCC_OverDriveDrive),
+    Parameter(
+        name: "Middle",
+        handle: "mid",
+        value: 40,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
+        midiCC: MidiCCValues.bCC_OverDriveTone),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 45,
+        valueType: ValueType.percentage,
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble,
+        midiCC: MidiCCValues.bCC_OverDriveLevel),
+  ];
+  int? getEquivalentEffect(int version) {
+    if (version == PlugAirVersion.PlugAir15.index) return Stageman().nuxIndex;
     return nuxIndex;
   }
 }

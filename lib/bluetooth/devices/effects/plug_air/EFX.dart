@@ -1,6 +1,9 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/EFXv2.dart';
+
 import '../../NuxConstants.dart';
 import '../Processor.dart';
 
@@ -145,10 +148,15 @@ class Boost extends EFX {
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
         midiCC: MidiCCValues.bCC_DistTone),
   ];
+
+  int? getEquivalentEffect(int version) {
+    if (version == PlugAirVersion.PlugAir21.index) return Katana().nuxIndex;
+    return nuxIndex;
+  }
 }
 
 class TSDrive extends EFX {
-  final name = "TS Drive";
+  final name = "T Screamer";
 
   int get nuxIndex => 5;
   List<Parameter> parameters = [
@@ -203,6 +211,11 @@ class BassTS extends EFX {
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
         midiCC: MidiCCValues.bCC_DistLevel),
   ];
+
+  int? getEquivalentEffect(int version) {
+    if (version == PlugAirVersion.PlugAir21.index) return null;
+    return nuxIndex;
+  }
 }
 
 class ThreeBandEQ extends EFX {
@@ -235,7 +248,7 @@ class ThreeBandEQ extends EFX {
 }
 
 class Muff extends EFX {
-  final name = "Muff";
+  final name = "Muff Fuzz";
 
   int get nuxIndex => 8;
   List<Parameter> parameters = [

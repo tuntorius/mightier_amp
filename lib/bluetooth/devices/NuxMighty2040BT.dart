@@ -31,6 +31,7 @@ class NuxMighty2040BT extends NuxDevice {
   String get productName => "NUX Mighty 20/40 BT";
   String get productNameShort => "Mighty 20/40 BT";
   String get productStringId => "mighty_20_40bt";
+  int get productVersion => 0;
   IconData get productIcon => MightierIcons.amp_20bt;
   List<String> get productBLENames =>
       ["NUX MIGHTY20BT MIDI", "NUX MIGHTY40BT MIDI"];
@@ -46,7 +47,7 @@ class NuxMighty2040BT extends NuxDevice {
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpMode;
 
-  List<String> get groupsName => ["1", "2"];
+  List<String> get groupsName => ["Group 1", "Group 2"];
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [
@@ -211,4 +212,10 @@ class NuxMighty2040BT extends NuxDevice {
   String channelName(int channel) {
     return _channelNames[channel];
   }
+
+  @override
+  void setFirmwareVersion(int ver) {}
+
+  @override
+  void setFirmwareVersionByIndex(int ver) {}
 }

@@ -151,4 +151,7 @@ class MLitePreset extends Preset {
     else
       return channelColor;
   }
+
+  @override
+  setFirmwareVersion(int ver) {}
 }

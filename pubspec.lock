@@ -35,7 +35,7 @@ packages:
       name: audio_session
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.0"
+    version: "0.1.6"
   boolean_selector:
     dependency: transitive
     description:
@@ -229,24 +229,24 @@ packages:
   just_audio:
     dependency: "direct main"
     description:
-      path: "just_audio/just_audio"
-      relative: true
-    source: path
-    version: "0.7.3"
+      name: just_audio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.10"
   just_audio_platform_interface:
     dependency: transitive
     description:
-      path: "just_audio/just_audio_platform_interface"
-      relative: true
-    source: path
-    version: "3.0.0"
+      name: just_audio_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   just_audio_web:
     dependency: transitive
     description:
-      path: "just_audio/just_audio_web"
-      relative: true
-    source: path
-    version: "0.3.1"
+      name: just_audio_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.2"
   marquee_text:
     dependency: "direct main"
     description:
@@ -274,7 +274,7 @@ packages:
       name: package_info
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.2"
   package_info_plus:
     dependency: transitive
     description:
@@ -337,7 +337,7 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.3"
   path_provider_linux:
     dependency: transitive
     description:
@@ -442,14 +442,14 @@ packages:
       name: sentry
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0"
+    version: "6.0.0"
   sentry_flutter:
     dependency: "direct main"
     description:
       name: sentry_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0"
+    version: "6.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -538,28 +538,28 @@ packages:
       name: wakelock
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.0+2"
+    version: "0.5.3+3"
   wakelock_macos:
     dependency: transitive
     description:
       name: wakelock_macos
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.0"
+    version: "0.1.0+2"
   wakelock_platform_interface:
     dependency: transitive
     description:
       name: wakelock_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0"
+    version: "0.2.1+2"
   wakelock_web:
     dependency: transitive
     description:
       name: wakelock_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0"
+    version: "0.2.0+2"
   wakelock_windows:
     dependency: transitive
     description:

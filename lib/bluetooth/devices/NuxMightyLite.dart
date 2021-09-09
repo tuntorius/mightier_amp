@@ -21,6 +21,7 @@ class NuxMightyLite extends NuxDevice {
   String get productName => "NUX Mighty Lite BT";
   String get productNameShort => "Mighty Lite";
   String get productStringId => "mighty_lite";
+  int get productVersion => 0;
   IconData get productIcon => MightierIcons.amp_lite;
 
   List<String> get productBLENames =>
@@ -132,4 +133,10 @@ class NuxMightyLite extends NuxDevice {
   String channelName(int channel) {
     return channelNames[channel];
   }
+
+  @override
+  void setFirmwareVersion(int ver) {}
+
+  @override
+  void setFirmwareVersionByIndex(int ver) {}
 }

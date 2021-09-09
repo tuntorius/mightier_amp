@@ -169,6 +169,33 @@ class _SettingsState extends State<Settings> {
                   );
                 },
               ),
+              if (device.getAvailableVersions() > 1)
+                ListTile(
+                  enabled: !device.deviceControl.isConnected,
+                  title: Text("Firmware Version"),
+                  subtitle:
+                      Text(device.getProductNameVersion(device.productVersion)),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    var dialog = AlertDialogs.showOptionDialog(context,
+                        confirmButton: "OK",
+                        cancelButton: "Cancel",
+                        title: "Select Version",
+                        confirmColor: Colors.blue,
+                        value: NuxDeviceControl().deviceFirmwareVersion,
+                        options: NuxDeviceControl().deviceVersionsList,
+                        onConfirm: (changed, newValue) {
+                      if (changed) {
+                        NuxDeviceControl().deviceFirmwareVersion = newValue;
+                        setState(() {});
+                      }
+                    });
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => dialog,
+                    );
+                  },
+                ),
               //Automatically set matching cabinet when changing an amp
               CheckboxListTile(
                   title: Text("Set matching cabinets automatically"),

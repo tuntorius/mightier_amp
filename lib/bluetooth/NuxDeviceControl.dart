@@ -283,7 +283,8 @@ class NuxDeviceControl extends ChangeNotifier {
     _midiHandler.sendData(data);
   }
 
-  void requestFirmwareVersion() {
+  void requestFirmwareVersion() async {
+    await Future.delayed(Duration(seconds: 1));
     var data = createFirmwareMessage();
 
     _midiHandler.sendData(data);
@@ -291,7 +292,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   //for some reason we should not ask for presets immediately
   void requestPresetDelayed() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(milliseconds: 400));
     requestPreset(0);
   }
 

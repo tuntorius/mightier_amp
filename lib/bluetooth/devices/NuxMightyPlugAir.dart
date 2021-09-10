@@ -19,7 +19,7 @@ class NuxMightyPlug extends NuxDevice {
   int get productVID => 48;
 
   static const _guitarGroup = 0;
-  static const _bassGroup = 1;
+  //static const _bassGroup = 1;
 
   PlugAirVersion version = PlugAirVersion.PlugAir21;
 
@@ -158,20 +158,22 @@ class NuxMightyPlug extends NuxDevice {
 
   List<Preset> getGroupPresets(int instr) {
     return presets;
-    switch (instr) {
-      case _guitarGroup:
-        return guitarPresets;
-      case _bassGroup:
-        return bassPresets;
-    }
-    return <Preset>[];
+    // switch (instr) {
+    //   case _guitarGroup:
+    //     return guitarPresets;
+    //   case _bassGroup:
+    //     return bassPresets;
+    // }
+    // return <Preset>[];
   }
 
   void setGroupFromChannel(int chan) {
-    if (chan < 4)
-      selectedGroupP = _guitarGroup;
-    else
-      selectedGroupP = _bassGroup;
+    selectedGroupP = _guitarGroup;
+    // return;
+    // if (chan < 4)
+    //   selectedGroupP = _guitarGroup;
+    // else
+    //   selectedGroupP = _bassGroup;
   }
 
   void setChannelFromGroup(int instr) {

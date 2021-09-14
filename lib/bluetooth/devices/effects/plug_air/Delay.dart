@@ -6,6 +6,8 @@ import '../../NuxMightyPlugAir.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
+  int get nuxDataLength => 3;
+
   int get midiCCEnableValue => MidiCCValues.bCC_DelayEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_DelayMode;
 }

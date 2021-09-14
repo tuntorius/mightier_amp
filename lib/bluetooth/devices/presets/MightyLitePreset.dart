@@ -3,8 +3,6 @@
 
 import 'dart:ui';
 
-import 'package:just_audio/just_audio.dart';
-
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';

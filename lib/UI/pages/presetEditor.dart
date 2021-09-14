@@ -62,8 +62,6 @@ class _PresetEditorState extends State<PresetEditor> {
     bool uploadPresetEnabled =
         device.deviceControl.isConnected && device.presetSaveSupport;
 
-    List<bool> _groupSelection = List<bool>.filled(device.groupsCount, false);
-    _groupSelection[device.selectedGroup] = true;
     return wrapContainer(isPortrait, [
       Column(children: [
         ButtonTheme(
@@ -137,6 +135,7 @@ class _PresetEditorState extends State<PresetEditor> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       MaterialButton(
+                        color: Colors.blue,
                         child: Icon(Icons.save_alt),
                         onPressed: !uploadPresetEnabled
                             ? null
@@ -178,28 +177,6 @@ class _PresetEditorState extends State<PresetEditor> {
             ],
           ),
         ),
-        SizedBox(
-          height: 10,
-        ),
-        if (_groupSelection.length > 1)
-          ToggleButtons(
-            constraints: BoxConstraints(
-                minHeight:
-                    AppThemeConfig.toggleButtonHeight(isPortrait, vpHeight)),
-            fillColor: Colors.blue,
-            children: [
-              for (int i = 0; i < device.groupsCount; i++)
-                Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(device.groupsName[i])),
-            ],
-            isSelected: _groupSelection,
-            onPressed: (int index) {
-              setState(() {
-                device.selectedGroup = index;
-              });
-            },
-          ),
       ]),
       if (isPortrait)
         Flexible(child: ChannelSelector(device: device))

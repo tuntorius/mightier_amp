@@ -100,6 +100,8 @@ abstract class Processor {
   //the number which the nux device uses to refer to the effect
   int get nuxIndex;
 
+  int get nuxDataLength;
+
   //The CC command that switches the effect on/off
   int midiCCEnableValue = 0;
 
@@ -124,6 +126,21 @@ abstract class Processor {
         parameters[i].value =
             (nuxData[parameters[i].devicePresetIndex].toDouble() - 50) / 8.3334;
     }
+  }
+
+  List<int> getNuxPayload() {
+    List<int> list = [];
+    list.add(nuxIndex);
+    for (int i = 0; i < parameters.length; i++) {
+      if (parameters[i].valueType != ValueType.db)
+        list.add(parameters[i].value.round());
+      else
+        list.add(((parameters[i].value + 6) * 8.3333).round());
+    }
+    var padding = nuxDataLength - parameters.length;
+    for (int i = 0; i < padding; i++) list.add(0);
+
+    return list;
   }
 
   //this is used for version transition

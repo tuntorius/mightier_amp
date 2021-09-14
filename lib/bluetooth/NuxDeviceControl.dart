@@ -314,7 +314,6 @@ class NuxDeviceControl extends ChangeNotifier {
     if (!device.presetSaveSupport) {
       await Future.delayed(Duration(milliseconds: 1500));
       _onBatteryTimer(null);
-      device.selectedGroup = 0;
       device.selectedChannelNormalized = 0;
       changeDevicePreset(0);
       sendFullPresetSettings();

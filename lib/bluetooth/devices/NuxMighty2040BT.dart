@@ -36,9 +36,9 @@ class NuxMighty2040BT extends NuxDevice {
   List<String> get productBLENames =>
       ["NUX MIGHTY20BT MIDI", "NUX MIGHTY40BT MIDI"];
 
-  int get channelsCount => 3;
+  int get channelsCount => 8;
   int get effectsChainLength => 5;
-  int get groupsCount => 2;
+  int get groupsCount => 1;
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => 0;
@@ -46,8 +46,9 @@ class NuxMighty2040BT extends NuxDevice {
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpMode;
+  int get deviceQRId => 4;
 
-  List<String> get groupsName => ["Group 1", "Group 2"];
+  List<String> get groupsName => ["All"]; //, "Group 2"];
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [
@@ -118,48 +119,48 @@ class NuxMighty2040BT extends NuxDevice {
     presets1.add(MXXBTPreset(
         device: this,
         channel: M2040BTChannel.Clean1.index,
-        channelName: "Clean"));
+        channelName: "Clean 1"));
 
     //OD
     presets1.add(MXXBTPreset(
         device: this,
         channel: M2040BTChannel.Overdrive1.index,
-        channelName: "Drive"));
+        channelName: "Drive 1"));
 
     //Metal
     presets1.add(MXXBTPreset(
         device: this,
         channel: M2040BTChannel.Metal1.index,
-        channelName: "Metal"));
+        channelName: "Metal 1"));
 
     //Lead
     presets1.add(MXXBTPreset(
         device: this,
         channel: M2040BTChannel.Lead1.index,
-        channelName: "Lead"));
+        channelName: "Lead 1"));
 
     presets2.add(MXXBTPreset(
         device: this,
         channel: M2040BTChannel.Clean2.index,
-        channelName: "Clean"));
+        channelName: "Clean 2"));
 
     //OD
     presets2.add(MXXBTPreset(
         device: this,
         channel: M2040BTChannel.Overdrive2.index,
-        channelName: "Drive"));
+        channelName: "Drive 2"));
 
     //Metal
     presets2.add(MXXBTPreset(
         device: this,
         channel: M2040BTChannel.Metal2.index,
-        channelName: "Metal"));
+        channelName: "Metal 2"));
 
     //Lead
     presets2.add(MXXBTPreset(
         device: this,
         channel: M2040BTChannel.Lead2.index,
-        channelName: "Lead"));
+        channelName: "Lead 2"));
 
     presets.addAll(presets1);
     presets.addAll(presets2);
@@ -167,43 +168,16 @@ class NuxMighty2040BT extends NuxDevice {
 
   List<String> getDrumStyles() => drumStyles;
 
-  List<Preset> getGroupPresets(int instr) {
-    switch (instr) {
-      case _group1:
-        return presets1;
-      case _group2:
-        return presets2;
-    }
-    return <Preset>[];
-  }
-
-  void setGroupFromChannel(int chan) {
-    if (chan < 4)
-      selectedGroupP = _group1;
-    else
-      selectedGroupP = _group2;
-  }
-
-  void setChannelFromGroup(int instr) {
-    if (instr == _group1)
-      selectedChannelP = 0;
-    else {
-      selectedChannelP = 4;
-    }
-  }
-
-  @override
-  int get selectedChannelNormalized {
-    if (selectedGroup == _group1) return selectedChannel;
-    return selectedChannel - 4;
+  List<Preset> getPresetsList() {
+    return presets;
   }
 
   @override
   set selectedChannelNormalized(int chan) {
-    if (selectedGroupP == _group1) {
-      selectedChannelP = chan;
-    } else
-      selectedChannelP = chan + 4;
+    //if (selectedGroupP == _group1) {
+    selectedChannelP = chan;
+    //} else
+    //  selectedChannelP = chan + 4;
 
     super.selectedChannelNormalized = selectedChannelP;
   }
@@ -218,4 +192,11 @@ class NuxMighty2040BT extends NuxDevice {
 
   @override
   void setFirmwareVersionByIndex(int ver) {}
+
+  @override
+  MXXBTPreset getCustomPreset(int channel) {
+    var preset = MXXBTPreset(device: this, channel: channel, channelName: "");
+    preset.setFirmwareVersion(productVersion);
+    return preset;
+  }
 }

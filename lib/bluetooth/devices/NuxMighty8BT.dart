@@ -16,8 +16,6 @@ enum M8BTChannel { Clean, Overdrive, Distortion }
 class NuxMighty8BT extends NuxDevice {
   int get productVID => 48;
 
-  static const _group = 0;
-
   String get productName => "NUX Mighty 8 BT";
   String get productNameShort => "Mighty 8 BT";
   IconData get productIcon => MightierIcons.amp_8bt;
@@ -27,7 +25,6 @@ class NuxMighty8BT extends NuxDevice {
 
   int get channelsCount => 3;
   int get effectsChainLength => 5;
-  int get groupsCount => 1;
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => 0;
@@ -35,8 +32,8 @@ class NuxMighty8BT extends NuxDevice {
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;
+  int get deviceQRId => 3;
 
-  List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [
@@ -112,15 +109,9 @@ class NuxMighty8BT extends NuxDevice {
 
   List<String> getDrumStyles() => drumStyles;
 
-  List<Preset> getGroupPresets(int instr) {
+  List<Preset> getPresetsList() {
     return presets;
   }
-
-  void setGroupFromChannel(int chan) {
-    selectedGroupP = _group;
-  }
-
-  void setChannelFromGroup(int instr) {}
 
   @override
   int get selectedChannelNormalized {
@@ -143,4 +134,11 @@ class NuxMighty8BT extends NuxDevice {
 
   @override
   void setFirmwareVersionByIndex(int ver) {}
+
+  @override
+  M8BTPreset getCustomPreset(int channel) {
+    var preset = M8BTPreset(device: this, channel: channel, channelName: "");
+    preset.setFirmwareVersion(productVersion);
+    return preset;
+  }
 }

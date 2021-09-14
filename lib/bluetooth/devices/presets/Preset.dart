@@ -1,10 +1,12 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:convert/convert.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:qr_utils/qr_utils.dart';
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
@@ -74,25 +76,63 @@ abstract class Preset {
     nuxData.addAll(data);
   }
 
-  void setupPresetFromNuxData() {
-    if (nuxData.length < 10) return;
+  //this is for QR export
+  List<int> createNuxDataFromPreset() {
+    List<int> data = [];
+    data.add(device.deviceQRId);
+    data.add(device.productVersion);
 
-    var loadedPreset = hex.encode(nuxData);
+    for (int i = 0; i < device.effectsChainLength; i++) {
+      var payload =
+          getEffectsForSlot(i)[getSelectedEffectForSlot(i)].getNuxPayload();
+      //noise gate is specific
+      if (i == 0) payload.removeAt(0);
+
+      data.add(slotEnabled(i) ? 0 : 127);
+      data.addAll(payload);
+    }
+    //these zeros are required
+    data.addAll([0, 0, 0, 0, 0, 0]);
+    return data;
+  }
+
+  void setupPresetFromNuxData() {
+    setupPresetFromNuxDataArray(nuxData);
+  }
+
+  PresetQRError setupPresetFromQRData(String qrData) {
+    if (qrData.contains(QrUtils.nuxQRPrefix)) {
+      var b64Data = qrData.substring(QrUtils.nuxQRPrefix.length);
+      var data = base64Decode(b64Data);
+      if (data[0] == device.deviceQRId && data[1] == device.productVersion) {
+        setupPresetFromNuxDataArray(data.sublist(2));
+        return PresetQRError.Ok;
+      }
+      if (data[0] != device.deviceQRId) return PresetQRError.WrongDevice;
+      return PresetQRError.WrongFWVersion;
+    }
+    return PresetQRError.UnsupportedFormat;
+  }
+
+  void setupPresetFromNuxDataArray(List<int> _nuxData) {
+    if (_nuxData.length < 10) return;
+
+    var loadedPreset = hex.encode(_nuxData);
 
     NuxDeviceControl().diagData.lastNuxPreset = loadedPreset;
     NuxDeviceControl().updateDiagnosticsData(nuxPreset: loadedPreset);
 
     for (int i = 0; i < device.effectsChainLength; i++) {
       //set proper effect
-      int effectIndex = nuxData[PresetDataIndexPlugAir.effectTypesIndex[i]];
+      int effectIndex = _nuxData[PresetDataIndexPlugAir.effectTypesIndex[i]];
       setSelectedEffectForSlot(i, effectIndex, false);
 
       //enable/disable effect
-      setSlotEnabled(
-          i, nuxData[PresetDataIndexPlugAir.effectEnabledIndex[i]] != 0, false);
+      setSlotEnabled(i,
+          _nuxData[PresetDataIndexPlugAir.effectEnabledIndex[i]] != 0, false);
 
       getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
-          .setupFromNuxPayload(nuxData);
+          .setupFromNuxPayload(_nuxData);
     }
   }
 }

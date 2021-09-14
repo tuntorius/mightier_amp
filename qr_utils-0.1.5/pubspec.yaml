@@ -1,0 +1,30 @@
+name: qr_utils
+description: A new Flutter QR scanner and generator plugin. This plugin is use for scanning 1D barcode and 2D QR code and generating QR code as well.
+version: 0.1.5
+#authors:
+#  - Deepak Nishad <deepak@aeologic.com>
+#  - Anurag Bhatt<anurag@aeologic.com>
+homepage: https://www.aeologic.com/
+documentation: https://pub.dev/documentation/qr_utils/latest/
+repository: https://github.com/flutter-devs/qr_utils
+issue_tracker: https://github.com/flutter-devs/qr_utils/issues
+
+environment:
+  sdk: ">=2.12.2 <3.0.0"
+  flutter: ">=1.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  plugin:
+    androidPackage: com.aeologic.adhoc.qr_utils
+    pluginClass: QrUtilsPlugin
+
+

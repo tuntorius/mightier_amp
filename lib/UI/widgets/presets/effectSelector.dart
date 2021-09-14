@@ -50,7 +50,7 @@ class _EffectSelectorState extends State<EffectSelector> {
       Color? c = _preset.slotEnabled(i) ? _preset.effectColor(i) : null;
       btns.add(
         Container(
-          width: max(width / _effectSelection.length - 3, 0),
+          width: max(width / _effectSelection.length - 5, 0),
           child: Column(
             children: [
               Icon(
@@ -226,6 +226,9 @@ class _EffectSelectorState extends State<EffectSelector> {
               NuxDeviceControl().undoStackChanged();
             });
           },
+        ),
+        SizedBox(
+          height: 8,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

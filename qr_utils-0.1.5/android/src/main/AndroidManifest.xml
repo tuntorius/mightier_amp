@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.aeologic.adhoc.qr_utils">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application>
+        <activity
+            android:name=".activity.QRScannerActivity"
+            android:label="@string/qr_scanner"
+            android:theme="@style/AppTheme.NoActionBar.FullScreen" />
+    </application>
+</manifest>

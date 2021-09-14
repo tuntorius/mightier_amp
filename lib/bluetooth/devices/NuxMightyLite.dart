@@ -16,8 +16,6 @@ enum MLiteChannel { Clean, Overdrive, Distortion }
 class NuxMightyLite extends NuxDevice {
   int get productVID => 48;
 
-  static const _group = 0;
-
   String get productName => "NUX Mighty Lite BT";
   String get productNameShort => "Mighty Lite";
   String get productStringId => "mighty_lite";
@@ -37,6 +35,7 @@ class NuxMightyLite extends NuxDevice {
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;
+  int get deviceQRId => 5;
 
   List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
@@ -108,19 +107,8 @@ class NuxMightyLite extends NuxDevice {
 
   List<String> getDrumStyles() => drumStyles;
 
-  List<Preset> getGroupPresets(int instr) {
+  List<Preset> getPresetsList() {
     return presets;
-  }
-
-  void setGroupFromChannel(int chan) {
-    selectedGroupP = _group;
-  }
-
-  void setChannelFromGroup(int instr) {}
-
-  @override
-  int get selectedChannelNormalized {
-    return selectedChannel;
   }
 
   @override
@@ -139,4 +127,11 @@ class NuxMightyLite extends NuxDevice {
 
   @override
   void setFirmwareVersionByIndex(int ver) {}
+
+  @override
+  MLitePreset getCustomPreset(int channel) {
+    var preset = MLitePreset(device: this, channel: channel, channelName: "");
+    preset.setFirmwareVersion(productVersion);
+    return preset;
+  }
 }

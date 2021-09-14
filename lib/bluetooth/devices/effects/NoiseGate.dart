@@ -10,6 +10,8 @@ class NoiseGate2Param extends Processor {
 
   int get midiCCSelectionValue => 0;
 
+  int get nuxDataLength => 2;
+
   List<Parameter> parameters = [
     Parameter(
         name: "Threshold",
@@ -36,6 +38,8 @@ class NoiseGate1Param extends Processor {
   int get midiCCEnableValue => MidiCCValues.bCC_GateEnable;
 
   int get midiCCSelectionValue => 0;
+
+  int get nuxDataLength => 1;
 
   List<Parameter> parameters = [
     Parameter(

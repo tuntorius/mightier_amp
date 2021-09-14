@@ -2,8 +2,10 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:qr_utils/qr_utils.dart';
 
 import '../NuxDeviceControl.dart';
 import "NuxConstants.dart";
@@ -39,9 +41,9 @@ abstract class NuxDevice extends ChangeNotifier {
   bool get advancedSettingsSupport;
   bool get batterySupport;
 
+  int get deviceQRId;
   int get channelChangeCC;
 
-  int get groupsCount;
   List<String> groupsName = <String>[];
   String channelName(int channel);
 
@@ -58,31 +60,24 @@ abstract class NuxDevice extends ChangeNotifier {
   final StreamController<Parameter> parameterChanged =
       StreamController<Parameter>();
 
-  NuxDevice(this.deviceControl);
-
   List<Preset> presets = <Preset>[];
 
   bool _nuxPresetsReceived = false;
   bool get nuxPresetsReceived => _nuxPresetsReceived;
 
   @protected
-  int selectedGroupP = 0;
-
-  @protected
   int selectedChannelP = 0; //nux-based (0-6) channel index
 
-  int get selectedGroup => selectedGroupP;
   int get selectedChannel => selectedChannelP;
-
-  //normalized functions are to get zero-based channel from each group index
-  int get selectedChannelNormalized;
-
-  void setChannelFromGroup(int instr);
-  void setGroupFromChannel(int chan);
+  late List<bool> _activeChannels;
 
   void setFirmwareVersion(int ver);
 
   void setFirmwareVersionByIndex(int ver);
+
+  NuxDevice(this.deviceControl) {
+    _activeChannels = List<bool>.filled(channelsCount, true);
+  }
 
   int getAvailableVersions() {
     return 1;
@@ -90,16 +85,6 @@ abstract class NuxDevice extends ChangeNotifier {
 
   String getProductNameVersion(int version) {
     return productNameShort;
-  }
-
-  set selectedGroup(int instr) {
-    if (instr != selectedGroupP) {
-      setChannelFromGroup(instr);
-
-      presetChangedNotifier.value = selectedChannelP;
-
-      selectedGroupP = instr;
-    }
   }
 
   set selectedChannelNormalized(int chan) {
@@ -110,13 +95,28 @@ abstract class NuxDevice extends ChangeNotifier {
   void _setSelectedChannelNuxIndex(int chan, bool notify) {
     selectedChannelP = chan;
 
-    setGroupFromChannel(chan);
-
     //notify ui for change
     if (notify) {
       resetToNuxPreset();
       notifyListeners();
     }
+  }
+
+  bool getChannelActive(int channel) {
+    return _activeChannels[channel];
+  }
+
+  void toggleChannelActive(int channel) {
+    _activeChannels[channel] = !_activeChannels[channel];
+
+    //check for at least one channel enabled
+    bool hasEnabled = false;
+    for (var act in _activeChannels) if (act == true) hasEnabled = true;
+    if (!hasEnabled) {
+      _activeChannels[channel] = true;
+      return;
+    }
+    notifyListeners();
   }
 
   //UI Stuff
@@ -233,11 +233,14 @@ abstract class NuxDevice extends ChangeNotifier {
     return presets[index];
   }
 
+  //used for QR stuff, probably will be removed
+  Preset getCustomPreset(int channel);
+
   String getAmpNameByIndex(int index) {
     return presets[0].amplifierList[index].name;
   }
 
-  List<Preset> getGroupPresets(int instr);
+  List<Preset> getPresetsList();
 
   void resetToNuxPreset() {
     getPreset(selectedChannel).setupPresetFromNuxData();
@@ -308,7 +311,17 @@ abstract class NuxDevice extends ChangeNotifier {
       case MidiMessageValues.controlChange:
         if (data[1] == channelChangeCC) {
           NuxDeviceControl().clearUndoStack();
-          _setSelectedChannelNuxIndex(data[2], true);
+          var index = data[2];
+          while (_activeChannels[index] == false) {
+            index++;
+            if (index == channelsCount) index = 0;
+          }
+          if (index == data[2])
+            _setSelectedChannelNuxIndex(data[2], true);
+          else {
+            selectedChannelNormalized = index;
+            deviceControl.presetChangedListener();
+          }
           //immediately set the amp level
           sendAmpLevel();
         }
@@ -331,17 +344,39 @@ abstract class NuxDevice extends ChangeNotifier {
     return productStringId == productId;
   }
 
-  presetFromJson(dynamic _preset, double? overrideLevel) {
+  String? jsonToQR(dynamic _preset) {
+    var preset = presetFromJson(_preset, null, qrOnly: true);
+    if (preset != null) {
+      var data = preset.createNuxDataFromPreset();
+      return "${QrUtils.nuxQRPrefix}${base64Encode(data)}";
+    }
+    return null;
+  }
+
+  String channelToQR(int channel) {
+    var data = presets[channel].createNuxDataFromPreset();
+    return "${QrUtils.nuxQRPrefix}${base64Encode(data)}";
+  }
+
+  Preset? presetFromJson(dynamic _preset, double? overrideLevel,
+      {bool qrOnly = false}) {
     var pVersion = _preset["version"] ?? 0;
 
     presetName = _preset["name"];
     presetCategory = _preset["category"];
     var nuxChannel = _preset["channel"];
 
-    _setSelectedChannelNuxIndex(nuxChannel, false);
-    deviceControl.changeDevicePreset(nuxChannel);
+    if (!qrOnly) {
+      _setSelectedChannelNuxIndex(nuxChannel, false);
+      deviceControl.changeDevicePreset(nuxChannel);
+    }
 
-    Preset p = getPreset(selectedChannel);
+    Preset p;
+
+    if (!qrOnly)
+      p = getPreset(selectedChannel);
+    else
+      p = getCustomPreset(nuxChannel);
 
     //setup all effects
     for (int i = 0; i < effectsChainLength; i++) {
@@ -399,10 +434,13 @@ abstract class NuxDevice extends ChangeNotifier {
         }
       }
 
-      deviceControl.sendFullEffectSettings(i, false);
+      if (!qrOnly) deviceControl.sendFullEffectSettings(i, false);
     }
     //update widgets
-    notifyListeners();
+    if (!qrOnly)
+      notifyListeners();
+    else
+      return p;
   }
 
   Map<String, dynamic> presetToJson() {

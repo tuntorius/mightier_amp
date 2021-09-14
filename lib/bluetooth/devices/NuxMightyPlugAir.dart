@@ -41,6 +41,7 @@ class NuxMightyPlug extends NuxDevice {
   bool get advancedSettingsSupport => true;
   bool get batterySupport => true;
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
+  int get deviceQRId => 6;
 
   List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
@@ -156,47 +157,13 @@ class NuxMightyPlug extends NuxDevice {
 
   List<String> getDrumStyles() => drumStyles;
 
-  List<Preset> getGroupPresets(int instr) {
+  List<Preset> getPresetsList() {
     return presets;
-    // switch (instr) {
-    //   case _guitarGroup:
-    //     return guitarPresets;
-    //   case _bassGroup:
-    //     return bassPresets;
-    // }
-    // return <Preset>[];
-  }
-
-  void setGroupFromChannel(int chan) {
-    selectedGroupP = _guitarGroup;
-    // return;
-    // if (chan < 4)
-    //   selectedGroupP = _guitarGroup;
-    // else
-    //   selectedGroupP = _bassGroup;
-  }
-
-  void setChannelFromGroup(int instr) {
-    if (instr == _guitarGroup)
-      selectedChannelP = 0;
-    else {
-      selectedChannelP = 4;
-    }
-  }
-
-  @override
-  int get selectedChannelNormalized {
-    if (selectedGroup == _guitarGroup) return selectedChannel;
-    return selectedChannel - 4;
   }
 
   @override
   set selectedChannelNormalized(int chan) {
-    if (selectedGroupP == _guitarGroup) {
-      selectedChannelP = chan;
-    } else
-      selectedChannelP = chan + 4;
-
+    selectedChannelP = chan;
     super.selectedChannelNormalized = selectedChannelP;
   }
 
@@ -240,5 +207,12 @@ class NuxMightyPlug extends NuxDevice {
       case PlugAirVersion.PlugAir21:
         return "$productNameShort v2.1";
     }
+  }
+
+  @override
+  PlugAirPreset getCustomPreset(int channel) {
+    var preset = PlugAirPreset(device: this, channel: channel, channelName: "");
+    preset.setFirmwareVersion(productVersion);
+    return preset;
   }
 }

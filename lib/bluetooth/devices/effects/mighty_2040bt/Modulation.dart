@@ -5,6 +5,8 @@ import '../../NuxConstants.dart';
 import '../Processor.dart';
 
 abstract class Modulation extends Processor {
+  int get nuxDataLength => 2;
+
   int get midiCCEnableValue => MidiCCValues.bCC_ModfxEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_ModfxMode;
 }

@@ -5,6 +5,8 @@ import '../../NuxConstants.dart';
 import '../Processor.dart';
 
 abstract class MXXBTAmplifier extends Amplifier {
+  int get nuxDataLength => 5;
+
   int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_NotUsed;
   int get defaultCab => 0;

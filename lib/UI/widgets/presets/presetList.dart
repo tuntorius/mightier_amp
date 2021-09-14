@@ -1,8 +1,12 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:convert';
+
+import 'package:mighty_plug_manager/UI/popups/exportQRCode.dart';
 import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
+import 'package:qr_utils/qr_utils.dart';
 
 import '../../../UI/popups/alertDialogs.dart';
 import '../../../UI/popups/changeCategory.dart';
@@ -61,8 +65,9 @@ class _PresetListState extends State<PresetList>
           Text("Import"),
         ],
       ),
-    )
+    ),
   ];
+
   //menu for category
   var popupMenu = <PopupMenuEntry>[
     PopupMenuItem(
@@ -186,6 +191,19 @@ class _PresetListState extends State<PresetList>
         ],
       ),
     ),
+    PopupMenuItem(
+      value: 6,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.qr_code_2,
+            color: AppThemeConfig.contextMenuIconColor,
+          ),
+          const SizedBox(width: 5),
+          Text("Export QR Code"),
+        ],
+      ),
+    ),
   ];
 
   @override
@@ -200,7 +218,7 @@ class _PresetListState extends State<PresetList>
           saveFile("application/octet-stream", "presets.nuxpreset", data);
         break;
       case 2: //import
-        openFile("application/octet-stream").then((value) {
+        openFileString("application/octet-stream").then((value) {
           PresetsStorage().presetsFromJson(value).then((value) {
             setState(() {});
           }).catchError((error) {
@@ -210,6 +228,7 @@ class _PresetListState extends State<PresetList>
                 confirmButton: "OK");
           });
         });
+        break;
     }
   }
 
@@ -350,7 +369,6 @@ class _PresetListState extends State<PresetList>
                   data);
             break;
           case 5: //change category
-            //TODO:
             var categoryDialog = ChangeCategoryDialog(
                 category: item["category"],
                 name: item["name"],
@@ -366,6 +384,18 @@ class _PresetListState extends State<PresetList>
               builder: (BuildContext context) =>
                   categoryDialog.buildDialog(context),
             );
+            break;
+          case 6:
+            var qr = NuxDeviceControl().device.jsonToQR(item);
+            if (qr != null) {
+              Image img = await QrUtils.generateQR(qr);
+              var qrExport = QRExportDialog(img, item["name"]);
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    qrExport.buildDialog(context),
+              );
+            }
             break;
         }
       }

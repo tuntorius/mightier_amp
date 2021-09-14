@@ -33,6 +33,7 @@ class MainActivity: FlutterActivity() {
     
     internal var WRITE_REQUEST_CODE = 77777 //unique request code
     internal var OPEN_REQUEST_CODE = 22222
+    internal var OPEN_REQUEST_CODE_BYTEARRAY = 33333
     internal var _result: Result? = null
     internal var _data: String? = null
 
@@ -103,8 +104,9 @@ class MainActivity: FlutterActivity() {
             } else if (call.method == "openFile") {
                 _result = result
                 var mime:String? = call.argument<String?>("mime");
+                var byteArray:Boolean? = call.argument<Boolean?>("byte_array");
                 if (mime!=null)
-                    openFile(mime)
+                    openFile(mime, byteArray)
             } else {
                 result.notImplemented()
             }
@@ -127,7 +129,7 @@ class MainActivity: FlutterActivity() {
 
     //replace with ACTION_GET_CONTENT for just a temporary access
     //the other is ACTION_OPEN_DOCUMENT
-    private fun openFile(mimeType: String) {
+    private fun openFile(mimeType: String, byteArray: Boolean?) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             // Filter to only show results that can be "opened", such as
             // a file (as opposed to a list of contacts or timezones).
@@ -136,8 +138,10 @@ class MainActivity: FlutterActivity() {
             // Create a file with the requested MIME type.
             type = mimeType
         }
-
-        startActivityForResult(intent, OPEN_REQUEST_CODE)
+        if (byteArray != null && byteArray == true)
+            startActivityForResult(intent, OPEN_REQUEST_CODE_BYTEARRAY)
+        else
+            startActivityForResult(intent, OPEN_REQUEST_CODE)
     }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -157,11 +161,15 @@ class MainActivity: FlutterActivity() {
           _result?.error("CANCELED", "User cancelled", null)
         }
     }
-    else if (requestCode == OPEN_REQUEST_CODE) {
+    else if (requestCode == OPEN_REQUEST_CODE || 
+        requestCode == OPEN_REQUEST_CODE_BYTEARRAY) {
         if (resultCode == Activity.RESULT_OK) {
             if (data != null && data.getData() != null) {
                 //now write the data
-                readFile(data.getData() as Uri)
+                if (requestCode == OPEN_REQUEST_CODE)
+                    readFile(data.getData() as Uri, false)
+                else
+                    readFile(data.getData() as Uri, true)
             }else {
                 _result?.error("NO DATA", "No data", null)
             }
@@ -189,15 +197,25 @@ class MainActivity: FlutterActivity() {
     }
   }
 
-  private fun readFile(uri: Uri) {
-      val inputStream: InputStreamReader
+  private fun readFile(uri: Uri, dataArray: Boolean) {
+      val inputStream: InputStream?
+      val inputStreamReader: InputStreamReader
       try {
-            inputStream = InputStreamReader(getContentResolver().openInputStream(uri))
-            val br = BufferedReader(inputStream)
-            val fileContent = br.use { inputStream.readText() }
-
-            br.close()
-            _result?.success(fileContent)
+            inputStream = getContentResolver().openInputStream(uri)
+            inputStreamReader = InputStreamReader(inputStream)
+            if (!dataArray) {
+                val br = BufferedReader(inputStreamReader)
+                val fileContent = br.use { inputStreamReader.readText() }
+                br.close()
+                _result?.success(fileContent)
+            }
+            else {
+                if (inputStream!=null) {
+                    val array = inputStream.readBytes();
+                    inputStream.close();
+                    _result?.success(array)
+                }
+            }
       } catch (e:Exception){
       _result?.error("ERROR", "Unable to read", null)
     }

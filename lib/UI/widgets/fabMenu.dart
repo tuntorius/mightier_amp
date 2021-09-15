@@ -132,7 +132,7 @@ class FloatingActionBubble extends AnimatedWidget {
         onTap: onPress,
         child: Opacity(
           opacity: val,
-          child: Container(
+          child: ColoredBox(
             color: Colors.black54,
           ),
         ),

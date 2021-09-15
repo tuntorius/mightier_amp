@@ -11,9 +11,11 @@ import 'package:mighty_plug_manager/audio/widgets/media_library/media_browse.dar
 import 'package:path/path.dart';
 import 'audioEditor.dart';
 import 'models/jamTrack.dart';
+import 'online_sources/YoutubeSource.dart';
 import 'online_sources/onlineTrack.dart';
 import 'trackdata/trackData.dart';
 import 'widgets/online_source/online_source.dart';
+import 'widgets/online_source/search_screen.dart';
 
 class TracksPage extends StatefulWidget {
   final bool selectorOnly;
@@ -331,6 +333,24 @@ class _TracksPageState extends State<TracksPage>
     });
   }
 
+  void addFromYoutubeSource(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(
+            builder: (context) => OnlineSearchScreen(source: YoutubeSource())))
+        .then((value) {
+      if (value is List<OnlineTrack>) {
+        for (int i = 0; i < value.length; i++) {
+          var name = "${value[i].artist} - ${value[i].title}";
+          TrackData().addTrack(value[i].url, name);
+        }
+        //clear filter and scroll to bottom
+        searchCtrl.text = "";
+        setState(() {});
+        _scollToNewSongs();
+      }
+    });
+  }
+
   void _scollToNewSongs() async {
     await Future.delayed(Duration(milliseconds: 300));
     scrollController.animateTo(scrollController.position.maxScrollExtent,
@@ -406,6 +426,18 @@ class _TracksPageState extends State<TracksPage>
                           // Menu items
                           items: [
                             // Floating action menu item
+                            if (kDebugMode)
+                              Bubble(
+                                  title: "Youtube",
+                                  iconColor: Colors.white,
+                                  bubbleColor: Colors.red,
+                                  icon: Icons.ondemand_video_outlined,
+                                  titleStyle: TextStyle(
+                                      fontSize: 16, color: Colors.white),
+                                  onPress: () {
+                                    _animationController.reverse();
+                                    addFromYoutubeSource(context);
+                                  }),
                             if (kDebugMode)
                               Bubble(
                                 title: "Online Source",

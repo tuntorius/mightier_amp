@@ -37,7 +37,7 @@ AppBar getAppBar(BLEMidiHandler handler) {
               ],
             );
           }
-          return Container();
+          return SizedBox();
         },
         stream: NuxDeviceControl().batteryPercentage.stream,
       ),

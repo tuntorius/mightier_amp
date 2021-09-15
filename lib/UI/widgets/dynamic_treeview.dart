@@ -180,13 +180,10 @@ class _ChildWidgetState extends State<ChildWidget>
 
   void prepareAnimation() {
     expandController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
     Animation<double> curve =
         CurvedAnimation(parent: expandController, curve: Curves.fastOutSlowIn);
-    sizeAnimation = Tween(begin: 0.0, end: 1.0).animate(curve)
-      ..addListener(() {
-        setState(() {});
-      });
+    sizeAnimation = Tween(begin: 0.0, end: 1.0).animate(curve);
   }
 
   @override
@@ -243,7 +240,7 @@ class ParentWidget extends StatefulWidget {
 class _ParentWidgetState extends State<ParentWidget>
     with SingleTickerProviderStateMixin {
   bool shouldExpand = false;
-  late Animation<double> sizeAnimation;
+  late Animation<double> arrowAnimation;
   late AnimationController expandController;
 
   @override
@@ -263,10 +260,7 @@ class _ParentWidgetState extends State<ParentWidget>
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     Animation<double> curve =
         CurvedAnimation(parent: expandController, curve: Curves.fastOutSlowIn);
-    sizeAnimation = Tween(begin: 0.0, end: 0.5).animate(curve)
-      ..addListener(() {
-        setState(() {});
-      });
+    arrowAnimation = Tween(begin: 0.0, end: 0.5).animate(curve);
   }
 
   @override
@@ -302,45 +296,43 @@ class _ParentWidgetState extends State<ParentWidget>
         trailingWidget = button;
     }
 
-    return ListTileTheme(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ListTile(
-              tileColor: Colors.grey[850],
-              onTap: () {
-                widget.onTap?.call(widget.title);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        ListTile(
+            tileColor: Colors.grey[800],
+            onTap: () {
+              widget.onTap?.call(widget.title);
 
-                setState(() {
-                  shouldExpand = !shouldExpand;
-                });
-                if (shouldExpand) {
-                  expandController.forward();
-                } else {
-                  expandController.reverse();
-                }
-              },
-              onLongPress: () {
-                if (!widget.simplified) widget.onLongPress?.call(widget.title);
-              },
-              title: Transform.translate(
-                  offset: Offset(-16, 0), //workaround until horizontalTitleGap
-                  //is available in release channel
-                  child:
-                      Text(widget.title, style: widget.config.parentTextStyle)),
-              contentPadding: widget.config.parentPaddingEdgeInsets,
-              leading: RotationTransition(
-                turns: sizeAnimation,
-                child: widget.config.arrowIcon,
-              ),
-              trailing: trailingWidget),
-          ChildWidget(
-            children: widget.children,
-            config: widget.config,
-            shouldExpand: shouldExpand,
-          )
-        ],
-      ),
+              setState(() {
+                shouldExpand = !shouldExpand;
+              });
+              if (shouldExpand) {
+                expandController.forward();
+              } else {
+                expandController.reverse();
+              }
+            },
+            onLongPress: () {
+              if (!widget.simplified) widget.onLongPress?.call(widget.title);
+            },
+            title: Transform.translate(
+                offset: Offset(-16, 0), //workaround until horizontalTitleGap
+                //is available in release channel
+                child:
+                    Text(widget.title, style: widget.config.parentTextStyle)),
+            contentPadding: widget.config.parentPaddingEdgeInsets,
+            leading: RotationTransition(
+              turns: arrowAnimation,
+              child: widget.config.arrowIcon,
+            ),
+            trailing: trailingWidget),
+        ChildWidget(
+          children: widget.children,
+          config: widget.config,
+          shouldExpand: shouldExpand,
+        )
+      ],
     );
   }
 }

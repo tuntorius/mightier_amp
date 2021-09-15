@@ -281,8 +281,8 @@ class _AudioEditorState extends State<AudioEditor> {
                       },
                     ),
                     if (state != EditorState.play)
-                      Container(
-                          color: Colors.grey[700],
+                      ColoredBox(
+                          color: Colors.grey[700]!,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(

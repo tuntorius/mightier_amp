@@ -209,8 +209,8 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
         realIndex++;
       }
     }
-    return Container(
-      color: Colors.grey[900],
+    return ColoredBox(
+      color: Colors.grey[900]!,
       child: LayoutBuilder(
         builder: (context, BoxConstraints constraints) {
           // adjust the shape based on parent's orientation/shape
@@ -220,71 +220,69 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
             initScaling();
           }
 
-          return Container(
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTapUp: scroll,
-                    onHorizontalDragUpdate: scroll,
-                    child: CustomPaint(
-                      size: Size(
-                        constraints.maxWidth,
-                        constraints.maxHeight,
-                      ),
-                      foregroundPainter: WaveformPainter(
-                        widget.sampleData,
-                        endingFrame: endPosition,
-                        startingFrame: startPosition,
-                        currentSample: widget.currentSample,
-                        automation: widget.automation,
-                        showType: widget.showType,
-                        overallWaveform: true,
-                        color: Color(0xff3994DB),
-                      ),
+          return Column(
+            children: [
+              Expanded(
+                flex: 1,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTapUp: scroll,
+                  onHorizontalDragUpdate: scroll,
+                  child: CustomPaint(
+                    size: Size(
+                      constraints.maxWidth,
+                      constraints.maxHeight,
+                    ),
+                    foregroundPainter: WaveformPainter(
+                      widget.sampleData,
+                      endingFrame: endPosition,
+                      startingFrame: startPosition,
+                      currentSample: widget.currentSample,
+                      automation: widget.automation,
+                      showType: widget.showType,
+                      overallWaveform: true,
+                      color: Color(0xff3994DB),
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTapUp: zoomViewOnTapUp,
-                    onScaleStart: zoomViewScaleStart,
-                    onScaleUpdate: zoomViewScaleUpdate,
-                    child: CustomPaint(
-                      size: Size(
-                        constraints.maxWidth,
-                        constraints.maxHeight,
-                      ),
-                      foregroundPainter: WaveformPainter(
-                        widget.sampleData,
-                        endingFrame: endPosition,
-                        startingFrame: startPosition,
-                        currentSample: widget.currentSample,
-                        overallWaveform: false,
-                        automation: widget.automation,
-                        showType: widget.showType,
-                        color: Color(0xff3994DB),
-                      ),
+              ),
+              Expanded(
+                flex: 2,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTapUp: zoomViewOnTapUp,
+                  onScaleStart: zoomViewScaleStart,
+                  onScaleUpdate: zoomViewScaleUpdate,
+                  child: CustomPaint(
+                    size: Size(
+                      constraints.maxWidth,
+                      constraints.maxHeight,
+                    ),
+                    foregroundPainter: WaveformPainter(
+                      widget.sampleData,
+                      endingFrame: endPosition,
+                      startingFrame: startPosition,
+                      currentSample: widget.currentSample,
+                      overallWaveform: false,
+                      automation: widget.automation,
+                      showType: widget.showType,
+                      color: Color(0xff3994DB),
                     ),
                   ),
                 ),
-                //container for event handles
-                Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      color: Colors.black),
-                  height: widget.dragHandlesheight,
-                  child: Stack(
-                    children: automationEventButtons,
-                  ),
+              ),
+              //container for event handles
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    color: Colors.black),
+                height: widget.dragHandlesheight,
+                child: Stack(
+                  children: automationEventButtons,
                 ),
-                //Text(time.floor().toString())
-              ],
-            ),
+              ),
+              //Text(time.floor().toString())
+            ],
           );
         },
       ),

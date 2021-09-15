@@ -447,7 +447,7 @@ class _PresetListState extends State<PresetList>
   List<Widget> buildEffectsPreview(Map<String, dynamic> preset) {
     var widgets = <Widget>[];
     NuxDevice? dev = devices[preset["product_id"]];
-    int presetVersion = preset["version"] ?? 0;
+    //int presetVersion = preset["version"] ?? 0;
 
     if (dev != null) {
       for (int i = 0; i < dev.processorList.length; i++) {
@@ -488,6 +488,8 @@ class _PresetListState extends State<PresetList>
       children: [
         if (!widget.simplified)
           ListTile(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             contentPadding: EdgeInsets.only(left: 16, right: 12),
             title: Text("Presets"),
             trailing: PopupMenuButton(
@@ -595,55 +597,64 @@ class _PresetListState extends State<PresetList>
           }
           var out = ChildBuilderInfo();
           out.hasNewItems = newItem;
-          out.widget = ListTile(
-              enabled: enabled,
-              selectedTileColor: Color.fromARGB(
-                  255, 9, 51, 116), //Color.fromARGB(255, 45, 60, 68),
-              selected: selected && !widget.simplified,
-              onTap: () {
-                //remove the new marker if exists
-                if (!widget.simplified)
-                  PresetsStorage().clearNewFlag(item["category"], item["name"]);
-                widget.onTap(item);
-                setState(() {});
-              },
-              onLongPress: () {
-                if (!widget.simplified)
-                  showContextMenu(_position, item, popupSubmenu);
-              },
-              minLeadingWidth: 0,
-              leading: Container(
-                height:
-                    double.infinity, //strange hack to center icon vertically
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(
-                      NuxDeviceControl()
-                          .getDeviceFromId(item["product_id"])!
-                          .productIcon,
-                      size: 30,
-                      color: color,
-                    ),
-                    if (pVersion != devVersion)
-                      Transform(
-                        transform: Matrix4.translationValues(10, 10, 0),
-                        child: Icon(
-                          Icons.warning,
-                          color: Colors.amber,
-                          size: 20,
-                        ),
-                      )
-                  ],
+          int alpha = selected && !widget.simplified ? 105 : 0;
+          out.widget = ColoredBox(
+            color: Color.fromARGB(alpha, 8, 102, 232),
+            child: ListTile(
+                enabled: enabled,
+                //this is buggy
+                //selectedTileColor: Color.fromARGB(
+                //    255, 9, 51, 116), //Color.fromARGB(255, 45, 60, 68),
+                //selected: selected && !widget.simplified ? 255 : 0;,
+                onTap: () {
+                  //remove the new marker if exists
+                  if (!widget.simplified)
+                    PresetsStorage()
+                        .clearNewFlag(item["category"], item["name"]);
+                  widget.onTap(item);
+                  setState(() {});
+                },
+                onLongPress: () {
+                  if (!widget.simplified)
+                    showContextMenu(_position, item, popupSubmenu);
+                },
+                minLeadingWidth: 0,
+                leading: Container(
+                  height:
+                      double.infinity, //strange hack to center icon vertically
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        NuxDeviceControl()
+                            .getDeviceFromId(item["product_id"])!
+                            .productIcon,
+                        size: 30,
+                        color: color,
+                      ),
+                      if (pVersion != devVersion)
+                        Transform(
+                          transform: Matrix4.translationValues(10, 10, 0),
+                          child: Icon(
+                            Icons.warning,
+                            color: Colors.amber,
+                            size: 20,
+                          ),
+                        )
+                    ],
+                  ),
                 ),
-              ),
-              title: Text(item["name"],
-                  style:
-                      TextStyle(color: enabled ? Colors.white : Colors.grey)),
-              subtitle: Row(
-                children: buildEffectsPreview(item),
-              ),
-              trailing: trailingWidget);
+                title: Text(item["name"],
+                    style: TextStyle(
+                        color: enabled ? Colors.white : Colors.grey[600])),
+                subtitle: Opacity(
+                  opacity: enabled ? 1 : 0.5,
+                  child: Row(
+                    children: buildEffectsPreview(item),
+                  ),
+                ),
+                trailing: trailingWidget),
+          );
           return out;
         },
         config: Config(

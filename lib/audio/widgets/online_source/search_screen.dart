@@ -182,7 +182,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                                 Navigator.of(context).pop([tracks[index]]);
                               },
                               onLongPress: () => multiselectHandler(index),
-                              leading: Container(
+                              leading: ColoredBox(
                                 color: Colors.red,
                                 child: IconButton(
                                   icon: Icon(

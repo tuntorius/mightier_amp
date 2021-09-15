@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:qr_utils/qr_utils.dart';
 
 import '../NuxDeviceControl.dart';
@@ -238,6 +239,13 @@ abstract class NuxDevice extends ChangeNotifier {
 
   String getAmpNameByIndex(int index) {
     return presets[0].amplifierList[index].name;
+  }
+
+  void renameCabinet(int cabIndex, String name) {
+    if (cabinetSupport) {
+      SharedPrefs().setCustomCabinetName(productStringId, cabIndex, name);
+      notifyListeners();
+    }
   }
 
   List<Preset> getPresetsList();

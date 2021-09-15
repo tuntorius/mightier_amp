@@ -1,6 +1,11 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+class AppConstants {
+  static const patcherUrl =
+      "https://github.com/tuntorius/nux-ir-patcher#nux-ir-patcher";
+}
+
 class EProductNo {
   static const CHERUB_VID = 8721;
   static const TAPECORE_PID = 0;
@@ -273,13 +278,4 @@ class MidiCCValues {
   static const bcc_mChrType = 63;
   static const bcc_gRevType = 37;
   static const bcc_mRevType = 39;
-}
-
-class NuxDeviceEntry {
-  int index;
-  int version;
-  String name;
-
-  NuxDeviceEntry(
-      {required this.index, required this.version, required this.name});
 }

@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Cabinet.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -15,6 +16,7 @@ class SettingsKeys {
   static const String device = "device";
   static const String deviceVersion = "deviceVersion";
   static const String masterVolume = "volume";
+  static const String customCabinets = "customCabinets";
 }
 
 class SharedPrefs {
@@ -102,5 +104,22 @@ class SharedPrefs {
   dynamic getValue(String key, dynamic _default) {
     if (_prefsData.containsKey(key)) return _prefsData[key];
     return _default;
+  }
+
+  String? getCustomCabinetName(String productId, int cabIndex) {
+    return _prefsData[SettingsKeys.customCabinets]?[productId]
+            ?[cabIndex.toString()] ??
+        null;
+  }
+
+  setCustomCabinetName(String productId, int cabIndex, String name) {
+    if (!_prefsData.containsKey(SettingsKeys.customCabinets))
+      _prefsData[SettingsKeys.customCabinets] = <String, Map<String, String>>{};
+    if (!_prefsData[SettingsKeys.customCabinets].containsKey(productId))
+      _prefsData[SettingsKeys.customCabinets][productId] = <String, String>{};
+
+    _prefsData[SettingsKeys.customCabinets][productId][cabIndex.toString()] =
+        name;
+    _savePrefs();
   }
 }

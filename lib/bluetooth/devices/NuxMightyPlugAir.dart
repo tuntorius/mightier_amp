@@ -15,11 +15,10 @@ enum PlugAirChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
 enum PlugAirVersion { PlugAir15, PlugAir21 }
 
 class NuxMightyPlug extends NuxDevice {
+  //this is used in conversion of very old format of presets which
+  // didn't contain device id. They were always for mighty plug/air
   static const defaultNuxId = "mighty_plug_air";
   int get productVID => 48;
-
-  static const _guitarGroup = 0;
-  //static const _bassGroup = 1;
 
   PlugAirVersion version = PlugAirVersion.PlugAir21;
 
@@ -43,7 +42,6 @@ class NuxMightyPlug extends NuxDevice {
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
   int get deviceQRId => 6;
 
-  List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [

@@ -97,7 +97,7 @@ class ModeControl extends StatelessWidget {
                         getButtonItem(elements[i]),
                     ],
                     isSelected: active,
-                    fillColor: color,
+                    fillColor: TinyColor(color).darken(15).color,
                     borderColor: color,
                     selectedBorderColor: color,
                     color: color,

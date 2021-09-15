@@ -215,7 +215,7 @@ class _PresetListState extends State<PresetList>
         String? data = PresetsStorage().presetsToJson();
 
         if (data != null)
-          saveFile("application/octet-stream", "presets.nuxpreset", data);
+          saveFileString("application/octet-stream", "presets.nuxpreset", data);
         break;
       case 2: //import
         openFileString("application/octet-stream").then((value) {
@@ -276,7 +276,8 @@ class _PresetListState extends State<PresetList>
             String? data = PresetsStorage().presetsToJson(item);
 
             if (data != null)
-              saveFile("application/octet-stream", "$item.nuxpreset", data);
+              saveFileString(
+                  "application/octet-stream", "$item.nuxpreset", data);
         }
       } else {
         //preset
@@ -365,8 +366,8 @@ class _PresetListState extends State<PresetList>
                 PresetsStorage().presetToJson(item["category"], item["name"]);
 
             if (data != null)
-              saveFile("application/octet-stream", "${item["name"]}.nuxpreset",
-                  data);
+              saveFileString("application/octet-stream",
+                  "${item["name"]}.nuxpreset", data);
             break;
           case 5: //change category
             var categoryDialog = ChangeCategoryDialog(

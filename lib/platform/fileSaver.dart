@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-Future<String> saveFile(String mime, String name, String data) async {
+Future<String> saveFileString(String mime, String name, String data) async {
   const platform =
       MethodChannel("com.msvcode.filesaver/files"); //unique channel identifier
   try {
@@ -8,6 +8,26 @@ Future<String> saveFile(String mime, String name, String data) async {
       "mime": mime,
       "name": name,
       "data": data,
+      "byteArray": false
+    }); //name in native code
+
+    return result;
+  } on PlatformException catch (e) {
+    //fails native call
+    //handle error
+    return Future.error("Error saving file");
+  }
+}
+
+Future<String> saveFile(String mime, String name, List<int> data) async {
+  const platform =
+      MethodChannel("com.msvcode.filesaver/files"); //unique channel identifier
+  try {
+    final result = await platform.invokeMethod("saveFile", {
+      "mime": mime,
+      "name": name,
+      "data": data,
+      "byteArray": true
     }); //name in native code
 
     return result;

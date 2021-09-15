@@ -151,7 +151,7 @@ class _EffectEditorState extends State<EffectEditor> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
+            ElevatedButton.icon(
                 onPressed: () {
                   var _dev = NuxDeviceControl().device;
                   AlertDialogs.showInputDialog(context,
@@ -161,13 +161,15 @@ class _EffectEditorState extends State<EffectEditor> {
                     _dev.renameCabinet(cab.nuxIndex, value);
                   });
                 },
-                child: Text("Rename Cabinet")),
-            ElevatedButton(
+                icon: Icon(Icons.drive_file_rename_outline),
+                label: Text("Rename Cabinet")),
+            ElevatedButton.icon(
                 onPressed: () {
                   var _dev = NuxDeviceControl().device;
                   _dev.renameCabinet(cab.nuxIndex, cab.cabName);
                 },
-                child: Text("Reset Name"))
+                icon: Icon(Icons.restart_alt),
+                label: Text("Reset Name"))
           ],
         ),
         InkWell(

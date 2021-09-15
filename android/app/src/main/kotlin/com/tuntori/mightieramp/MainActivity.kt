@@ -26,6 +26,7 @@ import java.io.OutputStreamWriter
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.io.DataOutputStream
 
 import java.nio.ShortBuffer
 
@@ -36,6 +37,8 @@ class MainActivity: FlutterActivity() {
     internal var OPEN_REQUEST_CODE_BYTEARRAY = 33333
     internal var _result: Result? = null
     internal var _data: String? = null
+    internal var _dataBa: ByteArray? = null
+    internal var saveByteArray:Boolean = false 
 
     private val CHANNEL = "mighty_plug/decoder"
     var decoder = MediaDecoder();
@@ -96,7 +99,11 @@ class MainActivity: FlutterActivity() {
             // Note: this method is invoked on the main thread.
             if (call.method == "saveFile") {
                 _result = result
-                _data = call.argument<String>("data")
+                saveByteArray = call.argument<Boolean?>("byteArray") ?: false;
+                if (saveByteArray)
+                    _dataBa =call.argument<ByteArray>("data")
+                else
+                    _data = call.argument<String>("data");
                 var mime:String? = call.argument<String?>("mime");
                 var name:String? = call.argument<String?>("name");
                 if (mime!=null && name!=null)
@@ -184,10 +191,19 @@ class MainActivity: FlutterActivity() {
     try {
       outputStream = getContentResolver().openOutputStream(uri)
       if (outputStream!=null) {
-        val bw = BufferedWriter(OutputStreamWriter(outputStream))
-        bw.write(_data)
-        bw.flush()
-        bw.close()
+        if (saveByteArray && _dataBa!=null) {
+            val ds = DataOutputStream(outputStream)
+            ds.write(_dataBa!!, 0, _dataBa?.count() ?: 0);
+            ds.flush()
+            ds.close()
+        }
+        else{
+            val bw = BufferedWriter(OutputStreamWriter(outputStream))
+            bw.write(_data)
+            bw.flush()
+            bw.close()
+        }
+        
         _result?.success("SUCCESS");
       }
       else

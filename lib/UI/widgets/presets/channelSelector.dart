@@ -47,7 +47,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Import QR"),
+          Text("Import QR Image"),
         ],
       ),
     ),

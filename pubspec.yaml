@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.8.6+13
+version: 0.8.7+14
 
 environment:
   sdk: ">=2.12.2 <3.0.0"
@@ -27,11 +27,14 @@ dependencies:
   path_provider: ^2.0.3
   html: ^0.15.0
   just_audio: ^0.9.10
-  #upgrade to null-safety
+
+  #upgraded to null-safety
   tinycolor:
     path: ./tinycolor
+  
   wakelock: ^0.5.3+3
   package_info: ^2.0.2
+  url_launcher: ^6.0.10
   qr_flutter: ^4.0.0
   #modified to include qr scanning from gallery (for android only)
   #and to make it null safe

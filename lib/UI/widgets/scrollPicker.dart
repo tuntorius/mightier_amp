@@ -14,17 +14,19 @@ class ScrollPicker extends StatefulWidget {
     required this.initialValue,
     required this.onChanged,
     required this.onChangedFinal,
+    required this.remoteChange,
     this.showDivider: true,
   }) : super(key: key);
 
   // Events
   final ValueChanged<int> onChanged;
-  final ValueChanged<int> onChangedFinal;
+  final Function(int, bool) onChangedFinal;
 
   // Variables
   final List<String> items;
   final int initialValue;
   final bool showDivider;
+  final bool remoteChange;
 
   @override
   _ScrollPickerState createState() => _ScrollPickerState(initialValue);
@@ -38,7 +40,7 @@ class _ScrollPickerState extends State<ScrollPicker> {
 
   int selectedValue;
 
-  late ScrollController scrollController;
+  late FixedExtentScrollController scrollController;
 
   @override
   void initState() {
@@ -55,6 +57,12 @@ class _ScrollPickerState extends State<ScrollPicker> {
     TextStyle selectedStyle =
         themeData.textTheme.headline5!.copyWith(color: themeData.accentColor);
 
+    if (widget.remoteChange) {
+      selectedValue = widget.initialValue;
+      scrollController.animateToItem(widget.initialValue,
+          duration: Duration(milliseconds: 300), curve: Curves.easeInOutQuad);
+    }
+    //
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         widgetHeight = constraints.maxHeight;
@@ -66,7 +74,7 @@ class _ScrollPickerState extends State<ScrollPicker> {
               child: NotificationListener<ScrollNotification>(
                 onNotification: (scrollNotification) {
                   if (scrollNotification is ScrollEndNotification) {
-                    widget.onChangedFinal(selectedValue);
+                    widget.onChangedFinal(selectedValue, widget.remoteChange);
                   }
                   return false;
                 },
@@ -128,7 +136,7 @@ class _ScrollPickerState extends State<ScrollPicker> {
 
     // animate to and center on the selected item
     scrollController.animateTo(newPosition,
-        duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+        duration: Duration(milliseconds: 500), curve: Curves.easeInOutQuad);
   }
 
   void _onSelectedItemChanged(int index) {

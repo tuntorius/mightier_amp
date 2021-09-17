@@ -20,6 +20,8 @@ class _DrumEditorState extends State<DrumEditor> {
   //final NuxDevice device = NuxDeviceControl().device;
   DelayTapTimer timer = DelayTapTimer();
 
+  bool remoteDrumStyleChange = false;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +35,7 @@ class _DrumEditorState extends State<DrumEditor> {
   }
 
   void onDeviceChanged() {
+    remoteDrumStyleChange = true;
     setState(() {});
   }
 
@@ -59,6 +62,7 @@ class _DrumEditorState extends State<DrumEditor> {
           height: ScrollPicker.itemHeight * height,
           child: ScrollPicker(
             showDivider: false,
+            remoteChange: remoteDrumStyleChange,
             initialValue: selectedDrumPattern,
             items: device.getDrumStyles(),
             onChanged: (value) {
@@ -66,11 +70,14 @@ class _DrumEditorState extends State<DrumEditor> {
                 selectedDrumPattern = value;
               });
             },
-            onChangedFinal: (value) {
-              setState(() {
-                device.setDrumsStyle(value);
-                device.setDrumsTempo(device.drumsTempo);
-              });
+            onChangedFinal: (value, remote) {
+              if (remote)
+                remoteDrumStyleChange = false;
+              else
+                setState(() {
+                  device.setDrumsStyle(value);
+                  device.setDrumsTempo(device.drumsTempo);
+                });
             },
           ),
         ),

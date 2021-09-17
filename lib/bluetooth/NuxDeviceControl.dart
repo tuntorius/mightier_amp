@@ -97,7 +97,6 @@ class NuxDeviceControl extends ChangeNotifier {
     clearUndoStack();
     _device = _deviceInstances[index];
 
-    diagData.device = _device.productName;
     updateDiagnosticsData();
     SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
     SharedPrefs().setValue(SettingsKeys.deviceVersion, _device.productVersion);
@@ -152,6 +151,10 @@ class NuxDeviceControl extends ChangeNotifier {
     notifyListeners();
   }
 
+  forceNotifyListeners() {
+    notifyListeners();
+  }
+
   factory NuxDeviceControl() {
     return _nuxDeviceControl;
   }
@@ -174,9 +177,8 @@ class NuxDeviceControl extends ChangeNotifier {
     int ver = SharedPrefs().getValue(
         SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
     _device.setFirmwareVersionByIndex(ver);
-    diagData.device = _device.productName;
-    diagData.connected = false;
-    updateDiagnosticsData();
+
+    updateDiagnosticsData(connected: false);
 
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
@@ -214,9 +216,7 @@ class NuxDeviceControl extends ChangeNotifier {
           print("${_midiHandler.connectedDevice!.name} connected");
           _device = deviceFromBLEId(_midiHandler.connectedDevice!.name);
 
-          diagData.device = _device.productName;
-          diagData.connected = true;
-          updateDiagnosticsData();
+          updateDiagnosticsData(connected: true);
           SharedPrefs().setValue(SettingsKeys.device, _device.productStringId);
           //can't set version yet, firmware is unknown
           notifyListeners();
@@ -225,9 +225,7 @@ class NuxDeviceControl extends ChangeNotifier {
         break;
       case midiSetupStatus.deviceDisconnected:
         clearUndoStack();
-        diagData.device = _device.productName;
-        diagData.connected = false;
-        updateDiagnosticsData();
+        updateDiagnosticsData(connected: false);
         notifyListeners();
         _onDisconnect();
         break;
@@ -537,6 +535,14 @@ class NuxDeviceControl extends ChangeNotifier {
     _midiHandler.sendData(data);
   }
 
+  double sevenBitToPercentage(int val) {
+    return (val / 127) * 100;
+  }
+
+  double sevenBitToDb(int val) {
+    return (val / 127) * 12 - 6;
+  }
+
   int percentageTo7Bit(double val) {
     return (val / 100 * 127).floor();
   }
@@ -610,9 +616,11 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void updateDiagnosticsData(
-      {String? nuxPreset, bool includeJsonPreset = false}) {
+      {bool? connected, String? nuxPreset, bool includeJsonPreset = false}) {
     if (nuxPreset != null) diagData.lastNuxPreset = nuxPreset;
 
+    diagData.device = "${_device.productName} ${_device.productVersion}";
+    if (connected != null) diagData.connected = connected;
     Sentry.configureScope(
         (scope) => scope.setContexts('NUX', diagData.toMap(includeJsonPreset)));
   }

@@ -320,20 +320,48 @@ abstract class NuxDevice extends ChangeNotifier {
         if (data[1] == channelChangeCC) {
           NuxDeviceControl().clearUndoStack();
           var index = data[2];
+
+          //impement channel skipping
           while (_activeChannels[index] == false) {
             index++;
             if (index == channelsCount) index = 0;
           }
-          if (index == data[2])
+          if (index == data[2]) //not skipped
             _setSelectedChannelNuxIndex(data[2], true);
           else {
+            //skipped - update ui
             selectedChannelNormalized = index;
             deviceControl.presetChangedListener();
           }
           //immediately set the amp level
           sendAmpLevel();
+        } else if (data[1] == MidiCCValues.bCC_drumOnOff_No) {
+          _drumsEnabled = data[2] > 0 ? true : false;
+          deviceControl.forceNotifyListeners();
+          return;
+        } else if (data[1] == MidiCCValues.bCC_drumType_No) {
+          _selectedDrumStyle = data[2];
+          deviceControl.forceNotifyListeners();
+        } else {
+          //scan through the effects to find which one is controlled
+          for (int i = 0; i < effectsChainLength; i++) {
+            var preset = presets[selectedChannel];
+            var effects = preset.getEffectsForSlot(i);
+            for (var effect in effects) {
+              for (var param in effect.parameters) {
+                if (param.midiCC == data[1]) {
+                  //this is the one to change
+                  if (param.valueType == ValueType.db)
+                    param.value = deviceControl.sevenBitToDb(data[2]);
+                  else
+                    param.value = deviceControl.sevenBitToPercentage(data[2]);
+                  notifyListeners();
+                  return;
+                }
+              }
+            }
+          }
         }
-        //TODO: add knob manipulations here
         break;
     }
   }

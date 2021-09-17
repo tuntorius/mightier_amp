@@ -72,7 +72,7 @@ void main() {
             options.dsn = sentryDsn;
           });
         }
-        runApp(App());
+        mainRunApp();
       });
     }, (Object error, StackTrace stackTrace) async {
       // Whenever an error occurs, call the `_reportError` function. This sends
@@ -92,9 +92,13 @@ void main() {
     });
   } else {
     prefs.waitLoading().then((value) {
-      runApp(App());
+      mainRunApp();
     });
   }
+}
+
+mainRunApp() {
+  runApp(App());
 }
 
 class App extends StatefulWidget {

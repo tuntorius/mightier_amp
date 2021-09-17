@@ -57,48 +57,50 @@ class EventEditor {
             var preset =
                 PresetsStorage().findPresetByUuid(event.getPresetUuid());
 
-            return SafeArea(
-              child: AlertDialog(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+            return AlertDialog(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => Navigator.of(context).pop()),
+                  Text("Edit Event", style: TextStyle(color: Colors.white)),
+                ],
+              ),
+              contentPadding:
+                  EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 30),
+              content: ListTileTheme(
+                iconColor: Colors.white,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                        ),
-                        onPressed: () => Navigator.of(context).pop()),
-                    Text("Edit Event", style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-                contentPadding:
-                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 30),
-                content: ListTileTheme(
-                  iconColor: Colors.white,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text("Preset",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold)),
-                      ...createPresetTiles(context, preset, setState),
-                      if (cab) Divider(),
-                      if (cab)
-                        CheckboxListTile(
-                          title: Text("Cabinet level override"),
-                          value: event.cabinetLevelOverrideEnable,
-                          onChanged: (val) {
-                            if (val == null) return;
-                            event.cabinetLevelOverrideEnable = val;
-                            setState(() {});
-                          },
-                        ),
-                      if (cab)
-                        ListTile(
-                          enabled: event.cabinetLevelOverrideEnable,
-                          title: ThickSlider(
+                    Text("Preset",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
+                    ...createPresetTiles(context, preset, setState),
+                    if (cab) Divider(),
+                    if (cab)
+                      CheckboxListTile(
+                        title: Text("Cabinet level override"),
+                        value: event.cabinetLevelOverrideEnable,
+                        onChanged: (val) {
+                          if (val == null) return;
+                          event.cabinetLevelOverrideEnable = val;
+                          setState(() {});
+                        },
+                      ),
+                    if (cab)
+                      ListTile(
+                        enabled: event.cabinetLevelOverrideEnable,
+                        title: Container(
+                          height: 50,
+                          width: 1,
+                          child: ThickSlider(
                             enabled: event.cabinetLevelOverrideEnable,
                             activeColor: Colors.blue,
                             min: -6,
@@ -113,20 +115,20 @@ class EventEditor {
                               return "${value.toStringAsFixed(1)} db";
                             },
                           ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.replay_sharp),
-                            onPressed: !event.cabinetLevelOverrideEnable
-                                ? null
-                                : () {
-                                    if (preset != null)
-                                      event.cabinetLevelOverride =
-                                          preset["cabinet"]["level"];
-                                    setState(() {});
-                                  },
-                          ),
                         ),
-                    ],
-                  ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.replay_sharp),
+                          onPressed: !event.cabinetLevelOverrideEnable
+                              ? null
+                              : () {
+                                  if (preset != null)
+                                    event.cabinetLevelOverride =
+                                        preset["cabinet"]["level"];
+                                  setState(() {});
+                                },
+                        ),
+                      ),
+                  ],
                 ),
               ),
             );

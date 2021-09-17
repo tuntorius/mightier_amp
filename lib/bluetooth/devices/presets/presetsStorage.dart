@@ -120,13 +120,14 @@ class PresetsStorage extends ChangeNotifier {
     preset["name"] = name;
     preset["category"] = category;
 
-    _addUuid(preset);
-
     var index = findPreset(name, category);
     if (index != null) {
       //overwrite preset
-      presetsData[index] = preset;
+      for (var key in preset.keys) {
+        if (key != "uuid") presetsData[index][key] = preset[key];
+      }
     } else {
+      _addUuid(preset);
       presetsData.add(preset);
     }
 

@@ -11,7 +11,7 @@ class AppThemeConfig {
   static bool allowRotation = false;
 
   static double toggleButtonHeight(bool isPortrait, double viewportHeight) {
-    if (!isPortrait) return 35;
+    if (!isPortrait) return 48;
 
     var ratio = (viewportHeight - 592) / 140;
     return 35 + max(0, min(ratio, 1)) * 15;

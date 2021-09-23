@@ -23,6 +23,7 @@ class ChannelSelector extends StatefulWidget {
 
 class _ChannelSelectorState extends State<ChannelSelector> {
   late List<Preset> _presets;
+  bool isPortrait = false;
 
   var qrMenu = <PopupMenuEntry>[
     PopupMenuItem(
@@ -72,14 +73,14 @@ class _ChannelSelectorState extends State<ChannelSelector> {
   }
 
   List<Widget> getButtons(double _width) {
-    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     var vpHeight = MediaQuery.of(context).size.height;
     var disColor = Theme.of(context).disabledColor;
     List<Widget> _buttons = <Widget>[];
 
     _presets = widget.device.getPresetsList();
-    int row1 =
-        _presets.length > 4 ? (_presets.length / 2).ceil() : _presets.length;
+    int row1 = isPortrait && _presets.length > 4
+        ? (_presets.length / 2).ceil()
+        : _presets.length;
 
     double width = (_width / row1).floorToDouble();
     for (int i = 0; i < _presets.length; i++) {
@@ -176,7 +177,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
   @override
   Widget build(BuildContext context) {
-    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     _presets = widget.device.getPresetsList();
 

@@ -290,6 +290,8 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
     return NestedWillPopScope(
       onWillPop: _willPopCallback,
       child: Scaffold(
@@ -409,27 +411,38 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
             ],
           ),
         ),*/
-        bottomNavigationBar: GestureDetector(
-          onVerticalDragUpdate: (details) {
-            if (details.delta.dy < 0) {
-              //open
-              openDrawer = true;
-            } else {
-              //close
-              openDrawer = false;
-            }
-            setState(() {});
-          },
-          child: BottomBar(
-            index: _currentIndex,
-            onTap: (_index) {
-              setState(() {
-                _currentIndex = _index;
-                controller.animateTo(_currentIndex);
-              });
-            },
-          ),
-        ),
+        drawer: isPortrait
+            ? null
+            : SafeArea(
+                child: Drawer(
+                    child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [const DrawerHeader(child: Text("Oh My"))],
+                )),
+              ),
+        bottomNavigationBar: !isPortrait
+            ? null
+            : GestureDetector(
+                onVerticalDragUpdate: (details) {
+                  if (details.delta.dy < 0) {
+                    //open
+                    openDrawer = true;
+                  } else {
+                    //close
+                    openDrawer = false;
+                  }
+                  setState(() {});
+                },
+                child: BottomBar(
+                  index: _currentIndex,
+                  onTap: (_index) {
+                    setState(() {
+                      _currentIndex = _index;
+                      controller.animateTo(_currentIndex);
+                    });
+                  },
+                ),
+              ),
       ),
     );
   }

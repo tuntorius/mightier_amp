@@ -23,13 +23,14 @@ class SavePresetDialog {
   Widget buildDialog(NuxDevice device, BuildContext context) {
     List<String> categories = PresetsStorage().getCategories();
     var preset = device.presetToJson();
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     final _height = MediaQuery.of(context).size.height * 0.25;
     final node = FocusScope.of(context);
 
     return StatefulBuilder(
       builder: (context, setState) {
-        return AlertDialog(
+        var dialog = AlertDialog(
           title: const Text('Save preset'),
           content: Container(
             width: double.maxFinite,
@@ -134,6 +135,13 @@ class SavePresetDialog {
             ),
           ],
         );
+
+        if (isPortrait)
+          return dialog;
+        else
+          return SingleChildScrollView(
+            child: dialog,
+          );
       },
     );
   }

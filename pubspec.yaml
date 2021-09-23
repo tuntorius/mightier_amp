@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.8.8+15
+version: 0.8.7+14
 
 environment:
   sdk: ">=2.12.2 <3.0.0"
@@ -57,18 +57,17 @@ dependencies:
   sentry_flutter: ^6.0.0
   pitchdetector:
     path: ./pitchdetector
-  
-# https://pub.dev/packages/direct_select - possibility to use for selecting effects
 
   #some fixes added to flutter_blue library,
-  #besides the newer versions don't work with android 10+
   flutter_blue:
     path: ./flutter_blue
+
   undo: ^1.4.0
   flutter_typeahead: ^3.1.2
   
   screenshot: ^1.2.3
   share_plus: ^2.1.4
+  convert: ^3.0.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^0.1.3

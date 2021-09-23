@@ -5,7 +5,6 @@
 library flutter_blue;
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:convert/convert.dart';

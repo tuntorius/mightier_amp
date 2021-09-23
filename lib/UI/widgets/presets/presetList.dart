@@ -49,7 +49,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Export"),
+          Text("Export All"),
         ],
       ),
     ),

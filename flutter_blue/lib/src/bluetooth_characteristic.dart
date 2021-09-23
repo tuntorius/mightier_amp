@@ -127,11 +127,11 @@ class BluetoothCharacteristic {
     // before the previous one has completed and this will generate
     // an exception
     // For now disabling it on android, maybe on iOS it's not needed?
-    if (!Platform.isAndroid) {
-      if (type == CharacteristicWriteType.withoutResponse) {
-        return result;
-      }
+    //if (!Platform.isAndroid) {
+    if (type == CharacteristicWriteType.withoutResponse) {
+      return result;
     }
+    //}
 
     return FlutterBlue.instance._methodStream
         .where((m) => m.method == "WriteCharacteristicResponse")

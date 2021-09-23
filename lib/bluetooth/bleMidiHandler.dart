@@ -245,17 +245,27 @@ class BLEMidiHandler {
     queueFree = false;
     Stopwatch stopwatch = new Stopwatch()..start();
     //List<int> currentData = List<int>();
-    while (dataQueue.isNotEmpty) {
-      if (_midiCharacteristic != null)
-        await _midiCharacteristic!
-            .write(dataQueue.removeFirst(), withoutResponse: true);
-      else
-        dataQueue.clear();
-    }
 
-    if (kDebugMode)
-      Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
+    while (dataQueue.isNotEmpty) {
+      if (connectedDevice == null) {
+        dataQueue.clear();
+        break;
+      }
+      try {
+        if (_midiCharacteristic != null) {
+          var data = dataQueue.first;
+          await _midiCharacteristic!.write(data, withoutResponse: true);
+
+          dataQueue.removeFirst();
+        } else
+          dataQueue.clear();
+      } catch (e) {
+        print(e);
+      }
+    }
     queueFree = true;
+    //if (kDebugMode)
+    Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
   }
 
   void dispose() {

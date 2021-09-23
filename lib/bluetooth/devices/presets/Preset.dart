@@ -106,6 +106,7 @@ abstract class Preset {
       var data = base64Decode(b64Data);
       if (data[0] == device.deviceQRId && data[1] == device.productVersion) {
         setupPresetFromNuxDataArray(data.sublist(2));
+        device.deviceControl.sendFullPresetSettings();
         return PresetQRError.Ok;
       }
       if (data[0] != device.deviceQRId) return PresetQRError.WrongDevice;

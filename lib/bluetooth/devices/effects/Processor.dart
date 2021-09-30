@@ -35,6 +35,10 @@ class Parameter {
     return 60 / percentageToTime(p);
   }
 
+  static double bpmToPercentage(double b) {
+    return timeToPercentage(60 / b);
+  }
+
   static double timeToPercentage(t) {
     return (t < delayTimeMstable[0]
         ? 0

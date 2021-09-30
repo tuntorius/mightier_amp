@@ -114,17 +114,6 @@ class NuxMighty8BT extends NuxDevice {
   }
 
   @override
-  int get selectedChannelNormalized {
-    return selectedChannel;
-  }
-
-  @override
-  set selectedChannelNormalized(int chan) {
-    selectedChannelP = chan;
-    super.selectedChannelNormalized = selectedChannelP;
-  }
-
-  @override
   String channelName(int channel) {
     return channelNames[channel];
   }

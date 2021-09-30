@@ -43,6 +43,7 @@ class _EffectEditorState extends State<EffectEditor> {
       min: param.valueType == ValueType.db ? -6 : 0,
       max: param.valueType == ValueType.db ? 6 : 100,
       label: param.name,
+      tempoValue: param.valueType == ValueType.tempo,
       labelFormatter: (val) {
         switch (param.valueType) {
           case ValueType.percentage:

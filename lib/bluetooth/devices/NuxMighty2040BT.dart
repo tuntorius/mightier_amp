@@ -173,16 +173,6 @@ class NuxMighty2040BT extends NuxDevice {
   }
 
   @override
-  set selectedChannelNormalized(int chan) {
-    //if (selectedGroupP == _group1) {
-    selectedChannelP = chan;
-    //} else
-    //  selectedChannelP = chan + 4;
-
-    super.selectedChannelNormalized = selectedChannelP;
-  }
-
-  @override
   String channelName(int channel) {
     return _channelNames[channel];
   }

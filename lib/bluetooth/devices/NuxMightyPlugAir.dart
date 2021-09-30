@@ -160,12 +160,6 @@ class NuxMightyPlug extends NuxDevice {
   }
 
   @override
-  set selectedChannelNormalized(int chan) {
-    selectedChannelP = chan;
-    super.selectedChannelNormalized = selectedChannelP;
-  }
-
-  @override
   String channelName(int channel) {
     return channelNames[channel];
   }

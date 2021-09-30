@@ -5,7 +5,10 @@ import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/settings.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:tinycolor/tinycolor.dart';
 
 class ThickSlider extends StatefulWidget {
@@ -20,6 +23,7 @@ class ThickSlider extends StatefulWidget {
   final int skipEmitting;
   final bool enabled;
   final bool handleVerticalDrag;
+  final bool tempoValue;
 
   ThickSlider(
       {required this.activeColor,
@@ -33,7 +37,8 @@ class ThickSlider extends StatefulWidget {
       this.handleVerticalDrag = true,
       required this.labelFormatter,
       this.skipEmitting = 3,
-      this.enabled = true});
+      this.enabled = true,
+      this.tempoValue = false});
 
   @override
   _ThickSliderState createState() => _ThickSliderState();
@@ -129,6 +134,19 @@ class _ThickSliderState extends State<ThickSlider> {
   }
 
   void manualValueEnter() {
+    var unit = TimeUnit.values[
+        SharedPrefs().getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index)];
+
+    String dialogValue = _lerp(factor).toStringAsFixed(2);
+    if (widget.tempoValue) {
+      if (unit == TimeUnit.BPM)
+        dialogValue =
+            Parameter.percentageToBPM(_lerp(factor)).toStringAsFixed(2);
+      else if (unit == TimeUnit.Seconds)
+        dialogValue =
+            Parameter.percentageToTime(_lerp(factor)).toStringAsFixed(2);
+    }
+
     AlertDialogs.showInputDialog(context,
         title: "Enter Value",
         description: "Enter new value for ${widget.label}",
@@ -136,17 +154,43 @@ class _ThickSliderState extends State<ThickSlider> {
         confirmButton: "Set",
         selectAll: true,
         keyboardType: TextInputType.number,
-        value: _lerp(factor).toStringAsFixed(2),
+        value: dialogValue,
         validation: (value) {
           double? val = double.tryParse(value);
           if (val == null) return false;
-          if (val < widget.min || val > widget.max) return false;
+
+          double min = 0, max = 0;
+
+          //Check for range
+          if (!widget.tempoValue) {
+            min = widget.min;
+            max = widget.max;
+          } else {
+            if (unit == TimeUnit.BPM) {
+              min = Parameter.percentageToBPM(100);
+              max = Parameter.percentageToBPM(0);
+            } else if (unit == TimeUnit.Seconds) {
+              min = Parameter.percentageToTime(0);
+              max = Parameter.percentageToTime(100);
+            }
+          }
+
+          if (val < min || val > max) return false;
           return true;
         },
         validationErrorMessage: "Value not valid",
         confirmColor: Colors.blue,
         onConfirm: (value) {
           var val = double.parse(value);
+
+          if (widget.tempoValue) {
+            //unscale value back
+            if (unit == TimeUnit.BPM)
+              val = Parameter.bpmToPercentage(val);
+            else if (unit == TimeUnit.Seconds)
+              val = Parameter.timeToPercentage(val);
+          }
+
           widget.onDragStart?.call(widget.value);
           widget.onChanged?.call(val);
           widget.onDragEnd?.call(val);

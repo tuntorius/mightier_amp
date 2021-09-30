@@ -89,6 +89,7 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   set selectedChannelNormalized(int chan) {
+    selectedChannelP = chan;
     presetChangedNotifier.value = selectedChannelP;
     if (deviceControl.isConnected) sendAmpLevel();
   }
@@ -257,7 +258,7 @@ abstract class NuxDevice extends ChangeNotifier {
   void onDataReceived(List<int> data) {
     assert(data.length > 0);
 
-    switch (data[0]) {
+    switch (data[0] & 0xf0) {
       case MidiMessageValues.sysExStart:
         switch (data[1]) {
           case DeviceMessageID.devGetPresetMsgID: //preset data piece
@@ -344,20 +345,19 @@ abstract class NuxDevice extends ChangeNotifier {
           deviceControl.forceNotifyListeners();
         } else {
           //scan through the effects to find which one is controlled
+          var _preset = getPreset(selectedChannel);
           for (int i = 0; i < effectsChainLength; i++) {
-            var preset = presets[selectedChannel];
-            var effects = preset.getEffectsForSlot(i);
-            for (var effect in effects) {
-              for (var param in effect.parameters) {
-                if (param.midiCC == data[1]) {
-                  //this is the one to change
-                  if (param.valueType == ValueType.db)
-                    param.value = deviceControl.sevenBitToDb(data[2]);
-                  else
-                    param.value = deviceControl.sevenBitToPercentage(data[2]);
-                  notifyListeners();
-                  return;
-                }
+            var selected = _preset.getSelectedEffectForSlot(i);
+            var effect = _preset.getEffectsForSlot(i)[selected];
+            for (var param in effect.parameters) {
+              if (param.midiCC == data[1]) {
+                //this is the one to change
+                if (param.valueType == ValueType.db)
+                  param.value = deviceControl.sevenBitToDb(data[2]);
+                else
+                  param.value = deviceControl.sevenBitToPercentage(data[2]);
+                notifyListeners();
+                return;
               }
             }
           }

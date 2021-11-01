@@ -25,7 +25,7 @@ Unfortunately there is no iOS version at this time. I would really like to be ab
 1.I don't have the hardware. Apple doesn't let people develop iOS software on other platforms. Buying a mac, an iPhone and also paying 99$ per year for a developer account for the sole reason of publishing this app seems too much of an investment for me.  
 2.There is a high risk that Apple will reject the app since it's a 3rd party app that controls a product made by another company that has already provided a companion app. As an example there is another 3rd party app similar to mine - Katana Librarian. It also doesn't have an iOS version.
 
-If somebody is willing to help in building an iOS version, please pm me. The app is mostly platform independent and porting it will be very easy.
+If somebody is willing to help building an iOS version, please pm me. The app is mostly platform independent and porting it will be very easy.
 
 ## Download
 You can install it from Google Play Store:  

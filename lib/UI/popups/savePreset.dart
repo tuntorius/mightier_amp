@@ -99,7 +99,7 @@ class SavePresetDialog {
               ),
             ),
           ),
-          actions: <Widget>[
+          actions: [
             TextButton(
               child: Text("Cancel"),
               onPressed: () {

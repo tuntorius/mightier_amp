@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
+import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -127,6 +128,7 @@ class _AppState extends State<App> {
 
 class MainTabs extends StatefulWidget {
   final BLEMidiHandler handler = BLEMidiHandler();
+  final MidiControllerManager midiMan = MidiControllerManager();
 
   MainTabs();
   @override
@@ -294,135 +296,30 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
     return NestedWillPopScope(
       onWillPop: _willPopCallback,
-      child: Scaffold(
-        appBar: NuxAppBar.getAppBar(widget.handler),
-        body: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            TabBarView(
-              children: _children,
-              physics: NeverScrollableScrollPhysics(),
-              controller: controller,
-            ),
-            //this is the volume bar, which is not ready yet
-            GestureDetector(
-              onTap: () {
-                openDrawer = !openDrawer;
-                setState(() {});
-              },
-              onVerticalDragUpdate: (details) {
-                if (details.delta.dy < 0) {
-                  //open
-                  openDrawer = true;
-                } else {
-                  //close
-                  openDrawer = false;
-                }
-                setState(() {});
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 50,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .bottomNavigationBarTheme
-                            .backgroundColor,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(15))),
-                    child: Icon(
-                      openDrawer
-                          ? Icons.keyboard_arrow_down
-                          : Icons.keyboard_arrow_up,
-                      size: 20,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  AnimatedContainer(
-                    padding: EdgeInsets.all(8),
-                    color: Theme.of(context)
-                        .bottomNavigationBarTheme
-                        .backgroundColor,
-                    duration: Duration(milliseconds: 100),
-                    height: openDrawer ? 60 : 0,
-                    child: ThickSlider(
-                      activeColor: Colors.blue,
-                      value: NuxDeviceControl().masterVolume,
-                      skipEmitting: 3,
-                      label: "Volume",
-                      labelFormatter: (value) {
-                        return value.round().toString();
-                      },
-                      min: 0,
-                      max: 100,
-                      handleVerticalDrag: false,
-                      onChanged: (value) {
-                        setState(() {
-                          NuxDeviceControl().masterVolume = value;
-                        });
-                      },
-                      onDragEnd: (value) {
-                        SharedPrefs().setValue(SettingsKeys.masterVolume,
-                            NuxDeviceControl().masterVolume);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        /*drawer: Drawer(
-          child: ListView(
+      child: KeyboardListener(
+        focusNode: FocusNode(),
+        autofocus: true,
+        onKeyEvent: (KeyEvent event) {
+          if (event.runtimeType.toString() == 'KeyDownEvent') {
+            MidiControllerManager().onHIDData(event);
+          }
+        },
+        child: Scaffold(
+          appBar: NuxAppBar.getAppBar(widget.handler),
+          body: Stack(
+            alignment: Alignment.bottomCenter,
             children: [
-              Text("Mightier Amp"),
-              Divider(),
-              ListTile(
-                title: Text("Style editor"),
+              TabBarView(
+                children: _children,
+                physics: NeverScrollableScrollPhysics(),
+                controller: controller,
+              ),
+              //this is the volume bar, which is not ready yet
+              GestureDetector(
                 onTap: () {
-                  setTab(0);
+                  openDrawer = !openDrawer;
+                  setState(() {});
                 },
-              ),
-              ListTile(
-                title: Text("Presets"),
-                onTap: () {
-                  setTab(1);
-                },
-              ),
-              ListTile(
-                title: Text("Drums"),
-                onTap: () {
-                  setTab(2);
-                },
-              ),
-              ListTile(
-                title: Text("Jam Tracks"),
-                onTap: () {
-                  setTab(3);
-                },
-              ),
-              ListTile(
-                title: Text("Settings"),
-                onTap: () {
-                  setTab(4);
-                },
-              ),
-            ],
-          ),
-        ),*/
-        drawer: isPortrait
-            ? null
-            : SafeArea(
-                child: Drawer(
-                    child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: [const DrawerHeader(child: Text("Oh My"))],
-                )),
-              ),
-        bottomNavigationBar: !isPortrait
-            ? null
-            : GestureDetector(
                 onVerticalDragUpdate: (details) {
                   if (details.delta.dy < 0) {
                     //open
@@ -433,16 +330,130 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                   }
                   setState(() {});
                 },
-                child: BottomBar(
-                  index: _currentIndex,
-                  onTap: (_index) {
-                    setState(() {
-                      _currentIndex = _index;
-                      controller.animateTo(_currentIndex);
-                    });
-                  },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 50,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .bottomNavigationBarTheme
+                              .backgroundColor,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(15))),
+                      child: Icon(
+                        openDrawer
+                            ? Icons.keyboard_arrow_down
+                            : Icons.keyboard_arrow_up,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    AnimatedContainer(
+                      padding: EdgeInsets.all(8),
+                      color: Theme.of(context)
+                          .bottomNavigationBarTheme
+                          .backgroundColor,
+                      duration: Duration(milliseconds: 100),
+                      height: openDrawer ? 60 : 0,
+                      child: ThickSlider(
+                        activeColor: Colors.blue,
+                        value: NuxDeviceControl().masterVolume,
+                        skipEmitting: 3,
+                        label: "Volume",
+                        labelFormatter: (value) {
+                          return value.round().toString();
+                        },
+                        min: 0,
+                        max: 100,
+                        handleVerticalDrag: false,
+                        onChanged: (value) {
+                          setState(() {
+                            NuxDeviceControl().masterVolume = value;
+                          });
+                        },
+                        onDragEnd: (value) {
+                          SharedPrefs().setValue(SettingsKeys.masterVolume,
+                              NuxDeviceControl().masterVolume);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ],
+          ),
+          /*drawer: Drawer(
+            child: ListView(
+              children: [
+                Text("Mightier Amp"),
+                Divider(),
+                ListTile(
+                  title: Text("Style editor"),
+                  onTap: () {
+                    setTab(0);
+                  },
+                ),
+                ListTile(
+                  title: Text("Presets"),
+                  onTap: () {
+                    setTab(1);
+                  },
+                ),
+                ListTile(
+                  title: Text("Drums"),
+                  onTap: () {
+                    setTab(2);
+                  },
+                ),
+                ListTile(
+                  title: Text("Jam Tracks"),
+                  onTap: () {
+                    setTab(3);
+                  },
+                ),
+                ListTile(
+                  title: Text("Settings"),
+                  onTap: () {
+                    setTab(4);
+                  },
+                ),
+              ],
+            ),
+          ),*/
+          drawer: isPortrait
+              ? null
+              : SafeArea(
+                  child: Drawer(
+                      child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [const DrawerHeader(child: Text("Oh My"))],
+                  )),
+                ),
+          bottomNavigationBar: !isPortrait
+              ? null
+              : GestureDetector(
+                  onVerticalDragUpdate: (details) {
+                    if (details.delta.dy < 0) {
+                      //open
+                      openDrawer = true;
+                    } else {
+                      //close
+                      openDrawer = false;
+                    }
+                    setState(() {});
+                  },
+                  child: BottomBar(
+                    index: _currentIndex,
+                    onTap: (_index) {
+                      setState(() {
+                        _currentIndex = _index;
+                        controller.animateTo(_currentIndex);
+                      });
+                    },
+                  ),
+                ),
+        ),
       ),
     );
   }

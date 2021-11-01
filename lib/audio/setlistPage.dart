@@ -163,8 +163,6 @@ class SetlistPage extends StatefulWidget {
 }
 
 class _SetlistPageState extends State<SetlistPage> {
-  //player state
-
   static const int expandThreshold = 20;
   bool playerExpanded = false;
   final animationDuration = const Duration(milliseconds: 200);

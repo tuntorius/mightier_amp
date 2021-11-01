@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.8.8+15
+version: 0.9.0+16
 
 environment:
   sdk: ">=2.12.2 <3.0.0"
@@ -26,7 +26,7 @@ dependencies:
   permission_handler: ^6.1.0
   path_provider: ^2.0.3
   html: ^0.15.0
-  just_audio: ^0.9.10
+  just_audio: ^0.9.12
 
   #upgraded to null-safety
   tinycolor:
@@ -34,6 +34,7 @@ dependencies:
   
   wakelock: ^0.5.3+3
   package_info: ^2.0.2
+  device_info: ^2.0.2
   url_launcher: ^6.0.10
   qr_flutter: ^4.0.0
   #modified to include qr scanning from gallery (for android only)
@@ -49,12 +50,14 @@ dependencies:
     path: ./audio_picker
 
   #maybe switch to on_audio_query
+  #android only
   flutter_audio_query:
     path: ./flutter_audio_query
+
   page_view_indicators: ^2.0.0
   uuid: ^3.0.1
   marquee_text: ^2.0.0
-  sentry_flutter: ^6.0.0
+  sentry_flutter: ^6.0.1
   pitchdetector:
     path: ./pitchdetector
 
@@ -62,6 +65,9 @@ dependencies:
   flutter_blue:
     path: ./flutter_blue
 
+  flutter_midi_command:
+    path: ./flutter_midi_command/flutter_midi_command-0.3.7
+  
   undo: ^1.4.0
   flutter_typeahead: ^3.1.2
   

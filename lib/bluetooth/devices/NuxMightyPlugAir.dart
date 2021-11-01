@@ -168,7 +168,7 @@ class NuxMightyPlug extends NuxDevice {
   void setFirmwareVersion(int ver) {
     if (ver < 21)
       version = PlugAirVersion.PlugAir15;
-    else if (ver == 21) {
+    else {
       version = PlugAirVersion.PlugAir21;
     }
 

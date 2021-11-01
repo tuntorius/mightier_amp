@@ -7,20 +7,31 @@ import '../../bluetooth/bleMidiHandler.dart';
 
 class DeviceList extends StatelessWidget {
   final BLEMidiHandler midiHandler = BLEMidiHandler();
+
+  bool isConnected(DeviceIdentifier id) {
+    //check with nux device first
+    if (midiHandler.connectedDevice != null &&
+        id == midiHandler.connectedDevice?.id) return true;
+
+    for (var controller in midiHandler.controllerDevices) {
+      if (controller.device.id == id) return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       // Let the ListView know how many items it needs to build
-      itemCount: midiHandler.scanResults.length,
+      itemCount: midiHandler.nuxDevices.length,
       // Provide a builder function. This is where the magic happens! We'll
       // convert each item into a Widget based on the type of item it is.
       itemBuilder: (context, index) {
-        final result = midiHandler.scanResults[index];
+        final result = midiHandler.nuxDevices[index];
         return ListTile(
           title: Text(result.device.name,
               style: Theme.of(context).textTheme.headline6!.copyWith(
-                  color: midiHandler.connectedDevice != null &&
-                          result.device.id == midiHandler.connectedDevice?.id
+                  color: isConnected(result.device.id)
                       ? Colors.blue
                       : Colors.white)),
           trailing: result.device.type != BluetoothDeviceType.classic
@@ -28,8 +39,6 @@ class DeviceList extends StatelessWidget {
               : null,
           onTap: () {
             midiHandler.connectToDevice(result.device);
-            //Navigator.of(context).push(MaterialPageRoute<Null>(
-            //  builder: (_) => ControllerPage(),));
           },
         );
       },

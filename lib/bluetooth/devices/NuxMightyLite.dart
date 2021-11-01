@@ -31,7 +31,7 @@ class NuxMightyLite extends NuxDevice {
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => 0;
-  bool get presetSaveSupport => false;
+  bool get presetSaveSupport => true;
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;

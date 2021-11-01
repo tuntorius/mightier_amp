@@ -10,6 +10,8 @@ class AppThemeConfig {
   static Color contextMenuIconColor = Colors.grey[400]!;
   static bool allowRotation = false;
 
+  static TextStyle ListTileHeaderStyle =
+      const TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold);
   static double toggleButtonHeight(bool isPortrait, double viewportHeight) {
     if (!isPortrait) return 48;
 

@@ -3,7 +3,6 @@
 
 import 'dart:async';
 import 'dart:collection';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mighty_plug_manager/main.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -37,8 +36,8 @@ class BLEMidiHandler {
 
   BluetoothState bluetoothState = BluetoothState.unknown;
 
+  //amp device
   BluetoothDevice? _device;
-  BluetoothService? _midiService;
   BluetoothCharacteristic? _midiCharacteristic;
 
   bool queueFree = true;
@@ -61,6 +60,8 @@ class BLEMidiHandler {
 
   bool _connectInProgress = false;
 
+  late List<String> Function() deviceListProvider;
+
   factory BLEMidiHandler() {
     return _bleHandler;
   }
@@ -68,7 +69,11 @@ class BLEMidiHandler {
   // Future<List<MidiDevice>> get devices {
   //   return _midiCommand.devices;
   // }
-  List<ScanResult> scanResults = <ScanResult>[];
+  List<ScanResult> nuxDevices = <ScanResult>[];
+  //controller devices
+  List<ScanResult> _controllerDevices = <ScanResult>[];
+
+  List<ScanResult> get controllerDevices => _controllerDevices;
 
   BluetoothDevice? get connectedDevice {
     return _device;
@@ -79,6 +84,8 @@ class BLEMidiHandler {
   BLEMidiHandler._();
 
   initBle(Function(PermissionStatus) onPermissionDenied) async {
+    _controllerDevices = [];
+
     PermissionStatus pStatus;
     bool askOneTime = false;
     do {
@@ -139,12 +146,28 @@ class BLEMidiHandler {
 
     _scanSubscription = flutterBlue.scanResults.listen((results) {
       // do something with scan results
-      scanResults = results;
+
+      //filter the scan results
+      var devNames = deviceListProvider.call();
+      nuxDevices.clear();
+      controllerDevices.clear();
+
+      for (var result in results) {
+        if (devNames.contains(result.device.name))
+          nuxDevices.add(result);
+        else
+          controllerDevices.add(result);
+      }
+
       _status.add(midiSetupStatus.deviceFound);
       for (ScanResult r in results) {
         print('${r.device.name} found! rssi: ${r.rssi}');
       }
     });
+  }
+
+  void setAmpDeviceIdProvider(List<String> Function() provider) {
+    deviceListProvider = provider;
   }
 
   void startScanning(bool manual) {
@@ -169,9 +192,14 @@ class BLEMidiHandler {
   void connectToDevice(BluetoothDevice device) async {
     if (!_granted) return;
     if (bluetoothState != BluetoothState.on) return;
-    if (_connectInProgress || _device != null) {
-      print("Denying secondary connection!");
-      return;
+
+    bool ampDevice = false;
+    if (deviceListProvider.call().contains(device.name)) {
+      ampDevice = true;
+      if (_connectInProgress || _device != null) {
+        print("Denying secondary connection!");
+        return;
+      }
     }
 
     _connectInProgress = true;
@@ -179,7 +207,7 @@ class BLEMidiHandler {
     _status.add(midiSetupStatus.deviceConnecting);
     try {
       await device.connect(autoConnect: false, timeout: Duration(seconds: 5));
-    } on Exception catch (err) {
+    } on Exception {
       _connectInProgress = false;
       return;
     } catch (e) {
@@ -188,34 +216,86 @@ class BLEMidiHandler {
       if (e == 'already_connected') return;
       throw (e);
     }
-    if (_device != null) return;
-    _device = device;
+
+    if (ampDevice) {
+      if (_device != null) return;
+      _device = device;
+    }
 
     List<BluetoothService> services = await device.discoverServices();
     //find midi service
+    BluetoothService? _midiService;
     services.forEach((element) {
       if (element.uuid == Guid(midiService)) _midiService = element;
     });
 
     _midiService?.characteristics.forEach((element) {
-      if (element.uuid == Guid(midiCharacteristic))
-        _midiCharacteristic = element;
-
-      _midiCharacteristic?.setNotifyValue(true);
-
-      queueFree = true;
-      _connectInProgress = false;
-
-      _status.add(midiSetupStatus.deviceConnected);
-      device.state.listen((event) {
-        if (event == BluetoothDeviceState.disconnected) {
-          _device = null;
-          _connectInProgress = false;
-          queueFree = true;
-          _status.add(midiSetupStatus.deviceDisconnected);
-        }
-      });
+      if (element.uuid == Guid(midiCharacteristic)) {
+        _connectAmpDevice(device, element);
+      }
     });
+  }
+
+  _connectAmpDevice(
+      BluetoothDevice device, BluetoothCharacteristic characteristic) {
+    _midiCharacteristic = characteristic;
+
+    _midiCharacteristic?.setNotifyValue(true);
+
+    queueFree = true;
+    _connectInProgress = false;
+
+    _status.add(midiSetupStatus.deviceConnected);
+    device.state.listen((event) {
+      if (event == BluetoothDeviceState.disconnected) {
+        _device = null;
+        _connectInProgress = false;
+        queueFree = true;
+        _status.add(midiSetupStatus.deviceDisconnected);
+      }
+    });
+  }
+
+  Future<BluetoothCharacteristic?> connectToController(
+      BluetoothDevice device) async {
+    if (!_granted) return null;
+    if (bluetoothState != BluetoothState.on) return null;
+
+    if (deviceListProvider.call().contains(device.name)) {
+      throw ("Error, trying to connect to NUX device as a controller");
+    }
+
+    _connectInProgress = true;
+    stopScanning();
+    _status.add(midiSetupStatus.deviceConnecting);
+    try {
+      await device.connect(autoConnect: false, timeout: Duration(seconds: 5));
+    } on Exception {
+      _connectInProgress = false;
+      return null;
+    } catch (e) {
+      print("Connect error $e");
+      _connectInProgress = false;
+      if (e == 'already_connected') return null;
+      throw (e);
+    }
+
+    List<BluetoothService> services = await device.discoverServices();
+    //find midi service
+    BluetoothService? _midiService;
+    services.forEach((element) {
+      if (element.uuid == Guid(midiService)) _midiService = element;
+    });
+
+    if (_midiService != null)
+      for (var characteristic in _midiService!.characteristics) {
+        if (characteristic.uuid == Guid(midiCharacteristic)) {
+          characteristic.setNotifyValue(true);
+          _connectInProgress = false;
+          return characteristic;
+        }
+      }
+    return null;
   }
 
   void disconnectDevice() async {

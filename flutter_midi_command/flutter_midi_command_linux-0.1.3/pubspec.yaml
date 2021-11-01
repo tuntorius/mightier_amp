@@ -1,0 +1,43 @@
+name: flutter_midi_command_linux
+description: FlutterMidiCommand for Linux.
+version: 0.1.3
+homepage: https://github.com/InvisibleWrench/FlutterMidiCommand
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_midi_command_platform_interface: ^0.3.2
+  ffi: ^1.0.0
+  tuple: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  ffigen: ^2.4.0
+
+flutter:
+  plugin:
+    implements: flutter_midi_command
+    platforms:
+      linux:
+        dartPluginClass: FlutterMidiCommandLinux
+        pluginClass: none
+
+ffigen:
+  name: 'ALSA'
+  output: 'lib/alsa_generated_bindings.dart'
+  headers:
+    entry-points:
+      - '/usr/include/alsa/asoundlib.h'
+  compiler-opts: '-I/usr/lib/llvm-11/include/ -L/usr/lib/llvm-11/lib/ -I/usr/local/opt/llvm/include/ -Wno-nullability-completeness'
+  structs:
+    rename:
+      '_(.*)': '$1_'
+    member-rename:
+      '.*':
+        '_(.*)': '$1_'
+  

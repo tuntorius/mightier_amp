@@ -2,7 +2,6 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mighty_plug_manager/UI/pages/UsbSettings.dart';
 import 'package:mighty_plug_manager/UI/pages/tuner.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
@@ -18,6 +17,7 @@ import 'package:flutter/foundation.dart';
 import 'package:package_info/package_info.dart';
 
 import 'developerPage.dart';
+import 'midiControllers.dart';
 
 enum TimeUnit { BPM, Seconds }
 
@@ -288,6 +288,17 @@ class _SettingsState extends State<Settings> {
                 onTap: () {
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => Calibration()));
+                },
+              ),
+              ListTile(
+                title: Text("Remote Control"),
+                subtitle: Text("Uses HID/MIDI device to control the amp"),
+                trailing: Icon(Icons.arrow_right),
+                onTap: () {
+                  //if (midiHandler.connectedDevice != null) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => MidiControllers()));
+                  //}
                 },
               ),
             ],

@@ -32,13 +32,6 @@ class Phaser extends Modulation {
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
-    Parameter(
-        name: "*Feedback*",
-        handle: "feedback",
-        value: 32,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
   ];
 }
 
@@ -61,13 +54,6 @@ class Chorus extends Modulation {
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
-    Parameter(
-        name: "*Mix*",
-        handle: "mix",
-        value: 64,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
   ];
 }
 
@@ -112,12 +98,5 @@ class Vibe extends Modulation {
         valueType: ValueType.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
-    Parameter(
-        name: "*Mix*",
-        handle: "mix",
-        value: 0,
-        valueType: ValueType.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
   ];
 }

@@ -5,7 +5,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
@@ -79,6 +78,13 @@ class NuxDeviceControl extends ChangeNotifier {
   List<NuxDevice> _deviceInstances = <NuxDevice>[];
 
   List<NuxDevice> get deviceList => _deviceInstances;
+
+  List<String> deviceBLEName() {
+    var names = <String>[];
+    for (int i = 0; i < _deviceInstances.length; i++)
+      names.addAll(_deviceInstances[i].productBLENames);
+    return names;
+  }
 
   List<String> get deviceNameList {
     var names = <String>[];
@@ -162,6 +168,7 @@ class NuxDeviceControl extends ChangeNotifier {
   NuxDeviceControl._() {
     masterVolume = SharedPrefs().getValue(SettingsKeys.masterVolume, 100.0);
 
+    _midiHandler.setAmpDeviceIdProvider(deviceBLEName);
     _midiHandler.status.listen(_statusListener);
 
     //create all supported devices
@@ -198,8 +205,8 @@ class NuxDeviceControl extends ChangeNotifier {
     switch (statusValue) {
       case midiSetupStatus.deviceFound:
         // check if this is valid nux device
-        print("Devices found " + _midiHandler.scanResults.toString());
-        _midiHandler.scanResults.forEach((dev) {
+        print("Devices found " + _midiHandler.nuxDevices.toString());
+        _midiHandler.nuxDevices.forEach((dev) {
           if (dev.device.type != BluetoothDeviceType.classic) {
             //don't autoconnect on manual scan
             if (!_midiHandler.manualScan) {

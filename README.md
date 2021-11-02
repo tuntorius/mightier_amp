@@ -35,6 +35,6 @@ or from here:
 https://github.com/tuntorius/mightier_amp/releases/latest
 
 ## Donation
-If you find this app useful, you can buy me a coffee  :) 
+Mightier Amp is an open-source project that I am developing in my free time. If you like it you can support me by donating. 
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?hosted_button_id=FZWWAM4NUFRPC)

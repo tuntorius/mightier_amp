@@ -46,7 +46,7 @@ android {
     defaultConfig {
         applicationId "com.tuntori.mightieramp"
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true

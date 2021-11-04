@@ -30,7 +30,7 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
             }
             
             _flutterResult = result
-            openAudioPicker(false)
+            openAudioPicker(multiple:false)
         }
         if(call.method == "pick_audio_multiple") {
             if (_flutterResult != nil){
@@ -39,7 +39,7 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
             }
 
             _flutterResult = result
-            openAudioPicker(true)
+            openAudioPicker(multiple:true)
         }
     }
     

@@ -114,7 +114,7 @@ extension SwiftQrUtilsPlugin {
             qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
             qrCodeFrameView.layer.borderWidth = 2
             UIApplication.shared.keyWindow!.rootViewController?.view.addSubview(qrCodeFrameView)
-            UIApplication.shared.keyWindow!.rootViewController?.view.bringSubview(toFront: qrCodeFrameView)
+            UIApplication.shared.keyWindow!.rootViewController?.view.bringSubviewToFront(qrCodeFrameView)
         }
         }
     
@@ -144,7 +144,7 @@ extension SwiftQrUtilsPlugin {
         let scaleY = 263 / qrcodeImage.extent.size.height
         let transformedImage = qrcodeImage.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
         let img:UIImage =  convert(cmage: transformedImage)
-        let imageData: Data = UIImagePNGRepresentation(img)!
+        let imageData: Data = img.pngData()!
         self.result!(imageData)
     }
     func convert(cmage:CIImage) -> UIImage

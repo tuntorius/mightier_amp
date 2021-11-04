@@ -628,8 +628,12 @@ class NuxDeviceControl extends ChangeNotifier {
 
     diagData.device = "${_device.productName} ${_device.productVersion}";
     if (connected != null) diagData.connected = connected;
-    Sentry.configureScope(
-        (scope) => scope.setContexts('NUX', diagData.toMap(includeJsonPreset)));
+
+    Sentry.configureScope((scope) {
+      scope.setTag(
+          "nuxDevice", "${_device.productName} ${_device.productVersion}");
+      scope.setContexts('NUX', diagData.toMap(includeJsonPreset));
+    });
   }
 
   NuxDevice get device => _device;

@@ -24,7 +24,12 @@ dev_dependencies:
 flutter:
 
   plugin:
-    androidPackage: com.aeologic.adhoc.qr_utils
-    pluginClass: QrUtilsPlugin
+    platforms:
+      android:
+        package: com.aeologic.adhoc.qr_utils
+        pluginClass: QrUtilsPlugin
+      ios:
+        pluginClass: QrUtilsPlugin
+
 
 

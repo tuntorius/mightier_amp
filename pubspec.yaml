@@ -36,7 +36,6 @@ dependencies:
   package_info: ^2.0.2
   device_info: ^2.0.2
   url_launcher: ^6.0.10
-  qr_flutter: ^4.0.0
   #modified to include qr scanning from gallery (for android only)
   #and to make it null safe
   qr_utils:

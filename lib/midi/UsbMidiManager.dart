@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:device_info/device_info.dart';
@@ -23,10 +25,14 @@ class UsbMidiManager {
   }
 
   _init() async {
-    var deviceInfoPlugin = DeviceInfoPlugin();
-    final androidInfo = await deviceInfoPlugin.androidInfo;
-    usbMidiSupported = androidInfo.version.sdkInt >= 23;
-
+    if (Platform.isAndroid) {
+      var deviceInfoPlugin = DeviceInfoPlugin();
+      final androidInfo = await deviceInfoPlugin.androidInfo;
+      usbMidiSupported = androidInfo.version.sdkInt >= 23;
+    } else if (Platform.isIOS) {
+      //TODO: Check if all ios versions support midi
+      usbMidiSupported = true;
+    }
     if (usbMidiSupported) {
       MidiCommand().onMidiDataReceived!.listen(_onDataReceive);
       MidiCommand().onMidiSetupChanged!.listen(_onMidiSetupChanged);

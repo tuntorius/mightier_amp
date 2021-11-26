@@ -450,13 +450,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.2"
-  pitchdetector:
-    dependency: "direct main"
-    description:
-      path: pitchdetector
-      relative: true
-    source: path
-    version: "0.0.3+6"
   platform:
     dependency: transitive
     description:

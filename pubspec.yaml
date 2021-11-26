@@ -48,8 +48,7 @@ dependencies:
   audio_picker:
     path: ./audio_picker
 
-  #maybe switch to on_audio_query
-  #android only
+  #modified to work on ios but not tested
   flutter_audio_query:
     path: ./flutter_audio_query
 
@@ -57,8 +56,6 @@ dependencies:
   uuid: ^3.0.1
   marquee_text: ^2.0.0
   sentry_flutter: ^6.0.1
-  pitchdetector:
-    path: ./pitchdetector
 
   #some fixes added to flutter_blue library,
   flutter_blue:

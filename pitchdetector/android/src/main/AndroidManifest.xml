@@ -1,5 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.example.pitchdetector">
-    <!--uses-permission android:name="android.Manifest.permission.RECORD_AUDIO"/-->
-
-</manifest>

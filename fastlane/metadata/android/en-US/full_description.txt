@@ -1,0 +1,13 @@
+An alternative app for controlling NUX Mighty series guitar amplifiers
+
+This app aims to cover all of the functionality the original app offers plus many enhancements:
+
+• All amps and effects are enabled for all channels.
+• Ability to save and recall hundreds of presets locally on your mobile device.
+• Improved Jam Tracks functionality. Select any audio file in your device, add preset change events at any point and play along.
+
+The app is open-source. Full code available at https://github.com/tuntorius/mightier_amp
+
+
+
+"NUX" and the "Mighty" amps series are a trademark of CHERUB TECHNOLOGY COMPANY LIMITED.

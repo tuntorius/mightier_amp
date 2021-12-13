@@ -248,7 +248,12 @@ class NuxDeviceControl extends ChangeNotifier {
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
 
     //manually call on presets ready if device doesn't support them
-    if (!device.presetSaveSupport) onPresetsReady();
+    if (!device.presetSaveSupport)
+        onPresetsReady();
+    else {
+      //request the firmware version to initiate the handshake
+      requestFirmwareVersion();
+    }
   }
 
   void _onDisconnect() {
@@ -275,9 +280,6 @@ class NuxDeviceControl extends ChangeNotifier {
         requestPresetDelayed();
       } else
         _device.onDataReceived(data.sublist(2));
-    } else if (!_device.nuxPresetsReceived && _device.presetSaveSupport) {
-      //ask the presets now
-      requestFirmwareVersion();
     }
   }
 

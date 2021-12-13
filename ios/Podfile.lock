@@ -28,8 +28,6 @@ PODS:
     - Flutter
   - "permission_handler (5.1.0+2)":
     - Flutter
-  - pitchdetector (0.0.1):
-    - Flutter
   - Protobuf (3.11.4)
   - qr_utils (0.1.5):
     - Flutter
@@ -61,7 +59,6 @@ DEPENDENCIES:
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
-  - pitchdetector (from `.symlinks/plugins/pitchdetector/ios`)
   - qr_utils (from `.symlinks/plugins/qr_utils/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
@@ -100,8 +97,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider/ios"
   permission_handler:
     :path: ".symlinks/plugins/permission_handler/ios"
-  pitchdetector:
-    :path: ".symlinks/plugins/pitchdetector/ios"
   qr_utils:
     :path: ".symlinks/plugins/qr_utils/ios"
   sentry_flutter:
@@ -127,7 +122,6 @@ SPEC CHECKSUMS:
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
-  pitchdetector: ca89af540a8dcc41299f4a54438f4e577f04010a
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   qr_utils: f8364c024ea259dfe0d88d4ba4f7b34984b7a61f
   Sentry: 9a4e621430e2dae4477d791f2f7e905720b6efbf

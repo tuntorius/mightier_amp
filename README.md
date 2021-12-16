@@ -28,8 +28,13 @@ Unfortunately there is no iOS version at this time. I would really like to be ab
 If somebody is willing to help building an iOS version, please pm me. The app is mostly platform independent and porting it will be very easy.
 
 ## Download
-You can install it from Google Play Store:  
-https://play.google.com/store/apps/details?id=com.tuntori.mightieramp
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/com.tuntori.mightieramp/)
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=com.tuntori.mightieramp)
 
 or from here:  
 https://github.com/tuntorius/mightier_amp/releases/latest

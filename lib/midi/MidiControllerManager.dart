@@ -178,8 +178,7 @@ class MidiControllerManager extends ChangeNotifier {
     _onControlMessage(ctrl, code, value, name);
   }
 
-  onHIDData(KeyEvent event) {
-    print(event.physicalKey.usbHidUsage);
+  onHIDData(RawKeyEvent event) {
     _onControlMessage(_hidController, event.physicalKey.usbHidUsage, null,
         event.logicalKey.keyLabel);
   }

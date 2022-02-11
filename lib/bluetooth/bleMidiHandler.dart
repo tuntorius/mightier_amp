@@ -1,6 +1,8 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+//Good explanation for location usage
+//https://support.chefsteps.com/hc/en-us/articles/360009480814-I-have-an-Android-Why-am-I-being-asked-to-allow-location-access-
 import 'dart:async';
 import 'dart:collection';
 import 'package:flutter_blue/flutter_blue.dart';

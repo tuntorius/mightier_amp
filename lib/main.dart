@@ -294,16 +294,16 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
-    return NestedWillPopScope(
-      onWillPop: _willPopCallback,
-      child: KeyboardListener(
-        focusNode: FocusNode(),
-        autofocus: true,
-        onKeyEvent: (KeyEvent event) {
-          if (event.runtimeType.toString() == 'KeyDownEvent') {
-            MidiControllerManager().onHIDData(event);
-          }
-        },
+    return FocusScope(
+      autofocus: true,
+      onKey: (node, event) {
+        if (event.runtimeType.toString() == 'RawKeyDownEvent') {
+          MidiControllerManager().onHIDData(event);
+        }
+        return KeyEventResult.skipRemainingHandlers;
+      },
+      child: NestedWillPopScope(
+        onWillPop: _willPopCallback,
         child: Scaffold(
           appBar: NuxAppBar.getAppBar(widget.handler),
           body: Stack(

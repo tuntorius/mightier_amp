@@ -28,8 +28,9 @@ class SetlistPlayer extends StatelessWidget {
   Widget? createTitle() {
     //if (state.state != PlayerState.idle)
     return MarqueeText(
-      text: state.setlist.items[state.currentTrack].trackReference?.name ??
-          "Untitled Track",
+      text: TextSpan(
+          text: state.setlist.items[state.currentTrack].trackReference?.name ??
+              "Untitled Track"),
       speed: 20,
       // blankSpace: 40.0,
       // velocity: 30.0,

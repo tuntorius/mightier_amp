@@ -2,7 +2,6 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/midi/ControllerConstants.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
@@ -62,13 +61,13 @@ class HotkeyInputDialog {
 
     MidiControllerManager().overrideOnData(_onControllerData);
 
-    return KeyboardListener(
-      focusNode: FocusNode(),
+    return FocusScope(
       autofocus: true,
-      onKeyEvent: (KeyEvent event) {
-        if (event.runtimeType.toString() == 'KeyDownEvent') {
+      onKey: (node, event) {
+        if (event.runtimeType.toString() == 'RawKeyDownEvent') {
           MidiControllerManager().onHIDData(event);
         }
+        return KeyEventResult.skipRemainingHandlers;
       },
       child: AlertDialog(
         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),

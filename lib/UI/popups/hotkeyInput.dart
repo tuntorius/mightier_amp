@@ -64,7 +64,8 @@ class HotkeyInputDialog {
     return FocusScope(
       autofocus: true,
       onKey: (node, event) {
-        if (event.runtimeType.toString() == 'RawKeyDownEvent') {
+        if (event.runtimeType.toString() == 'RawKeyDownEvent' &&
+            event.logicalKey.keyId != 0x100001005) {
           MidiControllerManager().onHIDData(event);
         }
         return KeyEventResult.skipRemainingHandlers;

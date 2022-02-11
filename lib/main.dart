@@ -297,7 +297,9 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     return FocusScope(
       autofocus: true,
       onKey: (node, event) {
-        if (event.runtimeType.toString() == 'RawKeyDownEvent') {
+        if (event.runtimeType.toString() == 'RawKeyDownEvent' &&
+            event.logicalKey.keyId != 0x100001005) {
+          //ignore go back
           MidiControllerManager().onHIDData(event);
         }
         return KeyEventResult.skipRemainingHandlers;

@@ -61,7 +61,10 @@ android {
     }
     buildTypes {
         
-        debug { defaultConfig.minSdkVersion 19 }
+        debug {
+            defaultConfig.minSdkVersion 19
+            applicationIdSuffix ".debug"
+        }
         release {
             signingConfig signingConfigs.release
             minifyEnabled true

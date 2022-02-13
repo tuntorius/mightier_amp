@@ -26,6 +26,11 @@ class BLEMidiHandler {
   static const String midiCharacteristic =
       "7772e5db-3868-4112-a1a9-f2669d106bf3";
 
+  //List of devices that doesn't advertise its midi service
+  static const List<String> forcedDevices = [
+    "FootCtrl" //Cuvave / M-Wave Chocolate
+  ];
+
   static final BLEMidiHandler _bleHandler = BLEMidiHandler._();
 
   FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -152,13 +157,24 @@ class BLEMidiHandler {
       //filter the scan results
       var devNames = deviceListProvider.call();
       nuxDevices.clear();
-      controllerDevices.clear();
+      _controllerDevices.clear();
 
-      for (var result in results) {
+      for (ScanResult result in results) {
         if (devNames.contains(result.device.name))
           nuxDevices.add(result);
-        else
-          controllerDevices.add(result);
+        else {
+          bool validDevice = false;
+          //check if it advertises the MIDI service
+          for (var uuid in result.advertisementData.serviceUuids) {
+            if (uuid.toLowerCase() == midiService) validDevice = true;
+          }
+
+          //check if it is in the special device list
+          if (validDevice ||
+              forcedDevices.contains(result.advertisementData.localName) ||
+              forcedDevices.contains(result.device.name))
+            _controllerDevices.add(result);
+        }
       }
 
       _status.add(midiSetupStatus.deviceFound);
@@ -177,9 +193,12 @@ class BLEMidiHandler {
     manualScan = manual;
     _status.add(midiSetupStatus.deviceSearching);
     if (bluetoothState != BluetoothState.on) return;
-    flutterBlue.startScan(
-        timeout: Duration(seconds: 8),
-        withServices: [Guid(midiService)]).then((result) {
+    flutterBlue
+        .startScan(
+      timeout: Duration(seconds: 8),
+      //withServices: [Guid(midiService)]
+    )
+        .then((result) {
       //if device is not connected after the search - set to idle
       if (_device == null) _status.add(midiSetupStatus.deviceIdle);
     });

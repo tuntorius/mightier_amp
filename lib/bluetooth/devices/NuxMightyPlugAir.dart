@@ -195,9 +195,9 @@ class NuxMightyPlug extends NuxDevice {
   String getProductNameVersion(int version) {
     switch (PlugAirVersion.values[version]) {
       case PlugAirVersion.PlugAir15:
-        return "$productNameShort v1.5";
+        return "$productNameShort v1.x";
       case PlugAirVersion.PlugAir21:
-        return "$productNameShort v2.1";
+        return "$productNameShort v2.x";
     }
   }
 

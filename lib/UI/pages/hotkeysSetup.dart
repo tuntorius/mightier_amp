@@ -21,10 +21,12 @@ class HotkeysSetup extends StatefulWidget {
 
 class _HotkeysSetupState extends State<HotkeysSetup> {
   Widget buildWidget(String name, IconData? icon, Color? color,
-      HotkeyControl ctrl, int ctrlIndex, int ctrlSubIndex,
+      HotkeyControl ctrl, int ctrlIndex, int ctrlSubIndex, bool sliderMode,
       {Function()? infoButton}) {
+    //sliders are not enabled in hid mode
+    bool enabled =
+        !(sliderMode && widget.controller.type == ControllerType.Hid);
     Widget trailing;
-
     var hk =
         widget.controller.getHotkeyByFunction(ctrl, ctrlIndex, ctrlSubIndex);
     String key = hk == null ? "None" : hk.hotkeyName;
@@ -34,12 +36,14 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
       trailing = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(onPressed: infoButton, icon: Icon(Icons.info_outline)),
+          if (enabled)
+            IconButton(onPressed: infoButton, icon: Icon(Icons.info_outline)),
           Text(key)
         ],
       );
 
     return ListTile(
+        enabled: enabled,
         leading: Icon(
           icon,
           color: color,
@@ -53,26 +57,28 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
                 midiController: widget.controller,
                 ctrl: ctrl,
                 ctrlIndex: ctrlIndex,
-                ctrlSubIndex: ctrlSubIndex),
+                ctrlSubIndex: ctrlSubIndex,
+                sliderMode: sliderMode),
           ).then((value) {
             MidiControllerManager().cancelOnDataOverride();
             setState(() {});
           });
         },
         title: Text(name),
+        subtitle: enabled ? null : Text("Not supported in HID mode"),
         trailing: trailing);
   }
 
   List<Widget> _buildChannelWidgets() {
     List<Widget> widgets = [];
     widgets.add(buildWidget("Previous Channel", Icons.keyboard_arrow_left, null,
-        HotkeyControl.PreviousChannel, 0, 0));
+        HotkeyControl.PreviousChannel, 0, 0, false));
     widgets.add(buildWidget("Next Channel", Icons.keyboard_arrow_right, null,
-        HotkeyControl.NextChannel, 0, 0));
+        HotkeyControl.NextChannel, 0, 0, false));
 
     for (int i = 0; i < NuxDeviceControl().device.channelsCount; i++) {
       widgets.add(buildWidget("Channel ${i + 1}", Icons.circle,
-          Preset.channelColors[i], HotkeyControl.ChannelByIndex, i, 0));
+          Preset.channelColors[i], HotkeyControl.ChannelByIndex, i, 0, false));
     }
     return widgets;
   }
@@ -87,11 +93,11 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
         var icon = dev.processorList[i].icon;
         var color = dev.processorList[i].color;
         widgets.add(buildWidget("Switch $name on", icon, color,
-            HotkeyControl.EffectSlotEnable, i, 0));
+            HotkeyControl.EffectSlotEnable, i, 0, false));
         widgets.add(buildWidget("Switch $name off", icon, color,
-            HotkeyControl.EffectSlotDisable, i, 0));
-        widgets.add(buildWidget(
-            "Toggle $name", icon, color, HotkeyControl.EffectSlotToggle, i, 0));
+            HotkeyControl.EffectSlotDisable, i, 0, false));
+        widgets.add(buildWidget("Toggle $name", icon, color,
+            HotkeyControl.EffectSlotToggle, i, 0, false));
       }
     }
 
@@ -101,6 +107,8 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
   List<Widget> _buildParametersWidgets() {
     List<Widget> widgets = [];
     var dev = NuxDeviceControl().device;
+
+    //enumerate all the slots in the signal chain
     for (int i = 0; i < dev.processorList.length; i++) {
       var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(i);
       int maxParams = 0;
@@ -109,6 +117,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
           maxParams = effects[p].parameters.length;
       }
 
+      //enumerate each slot for available params
       for (int p = 0; p < maxParams; p++) {
         var name = dev.processorList[i].longName;
         var icon = dev.processorList[i].icon;
@@ -116,6 +125,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
         bool showInfo = false;
         String title;
 
+        //check if parameters repeat
         List<String> params = [];
         for (int pp = 0; pp < effects.length; pp++) {
           if (effects[pp].parameters.length > p) {
@@ -130,8 +140,9 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
           title = "$name parameter ${p + 1}";
           showInfo = true;
         }
+
         widgets.add(buildWidget(
-            title, icon, color, HotkeyControl.ParameterSet, i, p,
+            title, icon, color, HotkeyControl.ParameterSet, i, p, true,
             infoButton:
                 !showInfo ? null : () => _displayParameterInfo(effects, p)));
       }

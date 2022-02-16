@@ -16,6 +16,11 @@ class HotkeyInputDialog {
   late HotkeyControl _control;
   late int _index;
   late int _subindex;
+  bool _sliderMode = false;
+
+  //slider mode vars
+  int _previousCode = -1;
+  int? previousSliderValue;
 
   _applyHotkey() {
     if (_hotkeyCode != null) {
@@ -39,8 +44,18 @@ class HotkeyInputDialog {
   }
 
   _onControllerData(int code, int? sliderValue, String name) {
-    controller.text = name;
-    _hotkeyCode = code;
+    if (_sliderMode) {
+      if (code == _previousCode && previousSliderValue != sliderValue) {
+        //valid adjustment
+        controller.text = name;
+        _hotkeyCode = code;
+      }
+      _previousCode = code;
+      previousSliderValue = sliderValue;
+    } else {
+      controller.text = name;
+      _hotkeyCode = code;
+    }
   }
 
   Widget buildDialog(BuildContext context,
@@ -48,12 +63,14 @@ class HotkeyInputDialog {
       required HotkeyControl ctrl,
       required int ctrlIndex,
       required int ctrlSubIndex,
-      required String hotkeyName}) {
+      required String hotkeyName,
+      required bool sliderMode}) {
     _midiController = midiController;
     _context = context;
     _control = ctrl;
     _index = ctrlIndex;
     _subindex = ctrlSubIndex;
+    _sliderMode = sliderMode;
 
     var hk = _midiController.getHotkeyByFunction(ctrl, ctrlIndex, ctrlSubIndex);
 
@@ -85,7 +102,11 @@ class HotkeyInputDialog {
           ],
         ),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text("Press the control you wish to assign to $hotkeyName"),
+          if (sliderMode)
+            Text(
+                "Adjust the pedal/knob/slider you wish to assign to $hotkeyName")
+          else
+            Text("Press the control you wish to assign to $hotkeyName"),
           AbsorbPointer(
             child: TextField(
               controller: controller,

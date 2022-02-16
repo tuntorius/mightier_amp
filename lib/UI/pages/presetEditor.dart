@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../popups/savePreset.dart';
-import '../theme.dart';
 import '../widgets/presets/channelSelector.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 
@@ -38,6 +37,19 @@ class _PresetEditorState extends State<PresetEditor> {
     device = NuxDeviceControl().device;
     device.addListener(onDeviceDataChanged);
     setState(() {});
+  }
+
+  void savePresetToDevice() {
+    if (device.deviceControl.isConnected) {
+      AlertDialogs.showConfirmDialog(context,
+          title: "Save preset to device",
+          cancelButton: "Cancel",
+          confirmButton: "Save",
+          confirmColor: Colors.red,
+          description: "Are you sure?", onConfirm: (val) {
+        if (val) device.saveNuxPreset();
+      });
+    }
   }
 
   void onDeviceDataChanged() {
@@ -137,22 +149,8 @@ class _PresetEditorState extends State<PresetEditor> {
                       MaterialButton(
                         color: Colors.blue,
                         child: Icon(Icons.save_alt),
-                        onPressed: !uploadPresetEnabled
-                            ? null
-                            : () {
-                                //TODO: move to method
-                                if (device.deviceControl.isConnected) {
-                                  AlertDialogs.showConfirmDialog(context,
-                                      title: "Save preset to device",
-                                      cancelButton: "Cancel",
-                                      confirmButton: "Save",
-                                      confirmColor: Colors.red,
-                                      description: "Are you sure?",
-                                      onConfirm: (val) {
-                                    if (val) device.saveNuxPreset();
-                                  });
-                                }
-                              },
+                        onPressed:
+                            !uploadPresetEnabled ? null : savePresetToDevice,
                       ),
                       const SizedBox(
                         width: 2,

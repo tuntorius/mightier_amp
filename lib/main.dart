@@ -156,19 +156,8 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     super.initState();
 
     //add 5 pages widgets
-    _children.addAll([
-      PresetEditor(),
-      PresetList(onTap: (preset) {
-        var dev = NuxDeviceControl().device;
-        if (dev.isPresetSupported(preset))
-          NuxDeviceControl().device.presetFromJson(preset, null);
-        else
-          print("Preset is for different device!");
-      }),
-      DrumEditor(),
-      JamTracks(),
-      Settings()
-    ]);
+    _children.addAll(
+        [PresetEditor(), PresetList(), DrumEditor(), JamTracks(), Settings()]);
 
     controller = TabController(initialIndex: 0, length: 5, vsync: this);
 
@@ -299,7 +288,6 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       onKey: (node, event) {
         if (event.runtimeType.toString() == 'RawKeyDownEvent' &&
             event.logicalKey.keyId != 0x100001005) {
-          //ignore go back
           MidiControllerManager().onHIDData(event);
         }
         return KeyEventResult.skipRemainingHandlers;
@@ -429,7 +417,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                   child: Drawer(
                       child: ListView(
                     padding: EdgeInsets.zero,
-                    children: [const DrawerHeader(child: Text("Oh My"))],
+                    children: [const DrawerHeader(child: Text("Mightier Amp"))],
                   )),
                 ),
           bottomNavigationBar: !isPortrait

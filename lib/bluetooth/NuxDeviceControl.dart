@@ -249,7 +249,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
     //manually call on presets ready if device doesn't support them
     if (!device.presetSaveSupport)
-        onPresetsReady();
+      onPresetsReady();
     else {
       //request the firmware version to initiate the handshake
       requestFirmwareVersion();
@@ -488,8 +488,11 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void saveNuxPreset() {
     if (!isConnected) return;
+    double vol = masterVolume;
+    if (vol < 100) masterVolume = 100;
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
     _midiHandler.sendData(data);
+    masterVolume = vol;
     requestPreset(device.selectedChannel);
   }
 

@@ -23,12 +23,12 @@ import 'package:flutter/material.dart';
 import '../../../bluetooth/devices/presets/presetsStorage.dart';
 
 class PresetList extends StatefulWidget {
-  final void Function(dynamic) onTap;
+  final void Function(dynamic)? onTap;
   final bool simplified;
   final bool noneOption;
   final String? customProductId;
   PresetList(
-      {required this.onTap,
+      {this.onTap,
       this.simplified = false,
       this.noneOption = false,
       this.customProductId});
@@ -612,7 +612,14 @@ class _PresetListState extends State<PresetList>
                   if (!widget.simplified)
                     PresetsStorage()
                         .clearNewFlag(item["category"], item["name"]);
-                  widget.onTap(item);
+
+                  if (widget.onTap != null)
+                    widget.onTap!(item);
+                  else {
+                    var dev = NuxDeviceControl().device;
+                    if (dev.isPresetSupported(item))
+                      NuxDeviceControl().device.presetFromJson(item, null);
+                  }
                   setState(() {});
                 },
                 onLongPress: () {
@@ -678,7 +685,7 @@ class _PresetListState extends State<PresetList>
             title: Transform.translate(
                 offset: Offset(-16, 0), child: Text("None")),
             onTap: () {
-              widget.onTap(false);
+              widget.onTap?.call(false);
             },
           ),
           out

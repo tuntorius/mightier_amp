@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
-import 'package:tinycolor/tinycolor.dart';
+import 'package:tinycolor2/tinycolor2.dart';
 
 class ModeControl extends StatelessWidget {
   final bool enabled;

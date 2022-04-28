@@ -9,7 +9,7 @@ import 'package:mighty_plug_manager/UI/pages/settings.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
-import 'package:tinycolor/tinycolor.dart';
+import 'package:tinycolor2/tinycolor2.dart';
 
 class ThickSlider extends StatefulWidget {
   final Color activeColor;

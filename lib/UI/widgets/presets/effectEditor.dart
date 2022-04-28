@@ -12,7 +12,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Cabinet.d
 import 'package:undo/undo.dart';
 import '../../../bluetooth/devices/utilities/DelayTapTimer.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
-import 'package:tinycolor/tinycolor.dart';
+import 'package:tinycolor2/tinycolor2.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../thickSlider.dart';

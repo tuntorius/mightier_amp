@@ -12,7 +12,7 @@ import '../../../UI/popups/alertDialogs.dart';
 import '../../../UI/popups/changeCategory.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
-import 'package:tinycolor/tinycolor.dart';
+import 'package:tinycolor2/tinycolor2.dart';
 import '../../../platform/fileSaver.dart';
 
 import '../../../bluetooth/devices/presets/Preset.dart';

@@ -9,7 +9,7 @@ import 'package:undo/undo.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import 'effectEditor.dart';
-import 'package:tinycolor/tinycolor.dart';
+import 'package:tinycolor2/tinycolor2.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../customPopupMenu.dart' as custom;

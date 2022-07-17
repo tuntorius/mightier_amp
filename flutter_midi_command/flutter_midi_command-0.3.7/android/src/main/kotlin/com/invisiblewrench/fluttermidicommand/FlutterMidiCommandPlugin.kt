@@ -202,8 +202,8 @@ public class FlutterMidiCommandPlugin : FlutterPlugin, ActivityAware, MethodCall
     }
     when (call.method) {
       "sendData" -> {
-        var args = call.arguments<Map<String, Any>>()
-        sendData(args["data"] as ByteArray, args["timestamp"] as? Long, args["deviceId"]?.toString())
+        var args : Map<String,Any>? = call.arguments()
+        sendData(args?.get("data") as ByteArray, args["timestamp"] as? Long, args["deviceId"]?.toString())
         result.success(null)
       }
       "getDevices" -> {
@@ -222,8 +222,8 @@ public class FlutterMidiCommandPlugin : FlutterPlugin, ActivityAware, MethodCall
         result.success(null)
       }
       "connectToDevice" -> {
-        var args = call.arguments<Map<String, Any>>()
-        var device = (args["device"] as Map<String, Any>)
+        var args : Map<String,Any>? = call.arguments()
+        var device = (args?.get("device") as Map<String, Any>)
 //        var portList = (args["ports"] as List<Map<String, Any>>).map{
 //          Port(if (it["id"].toString() is String) it["id"].toString().toInt() else 0 , it["type"].toString())
 //        }
@@ -232,7 +232,7 @@ public class FlutterMidiCommandPlugin : FlutterPlugin, ActivityAware, MethodCall
       }
       "disconnectDevice" -> {
         var args = call.arguments<Map<String, Any>>()
-        disconnectDevice(args["id"].toString())
+        args?.get("id")?.let { disconnectDevice(it.toString()) }
         result.success(null)
       }
       "teardown" -> {

@@ -54,10 +54,10 @@ class MainActivity: FlutterActivity() {
     {
         MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
         .setMethodCallHandler { methodCall, result ->
-            var arguments = methodCall.arguments<Map<String, String>>();
+            var arguments : Map<String,Any>? = methodCall.arguments()
             if (methodCall.method == "open")
             {
-                decoder.open(arguments["path"], this);
+                decoder.open(arguments?.get("path") as String, this);
                 result.success(null);
             }
             else if (methodCall.method == "next") {

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class AppThemeConfig {
   static double dragHandlesWidth = 56;
   static Color contextMenuIconColor = Colors.grey[400]!;
-  static bool allowRotation = false;
+  static bool allowRotation = true;
 
   static TextStyle ListTileHeaderStyle =
       const TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold);

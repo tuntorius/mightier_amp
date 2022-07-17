@@ -10,13 +10,12 @@ import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'UI/popups/alertDialogs.dart';
 import 'UI/widgets/NuxAppBar.dart' as NuxAppBar;
+import 'UI/widgets/VolumeDrawer.dart';
 import 'UI/widgets/nestedWillPopScope.dart';
 import 'UI/widgets/presets/presetList.dart';
-import 'UI/widgets/thickSlider.dart';
 import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
 
@@ -35,15 +34,6 @@ import 'configKeys.dart';
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();
 
-void showMessageDialog(String title, String content) {
-  showDialog(
-      context: navigatorKey.currentContext!,
-      builder: (context) => AlertDialog(
-            title: Text(title),
-            content: Text(content),
-          ));
-}
-
 void main() {
   //configuration data is needed before start of the app
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +42,6 @@ void main() {
   //capture flutter errors
   if (!kDebugMode)
     FlutterError.onError = (FlutterErrorDetails details) {
-      print("");
       DebugConsole.print("Flutter error: ${details.toString()}");
 
       //update diagnostics with json preset
@@ -119,7 +108,6 @@ class _AppState extends State<App> {
     return MaterialApp(
       title: 'Mightier Amp',
       theme: getTheme(),
-      //theme: ThemeData.dark(),
       home: MainTabs(),
       navigatorKey: navigatorKey,
     );
@@ -152,6 +140,13 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     if (!AppThemeConfig.allowRotation)
       SystemChrome.setPreferredOrientations(
           [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    else
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight
+      ]);
 
     super.initState();
 
@@ -169,9 +164,30 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     NuxDeviceControl().connectStatus.stream.listen(connectionStateListener);
     NuxDeviceControl().addListener(onDeviceChanged);
 
-    BLEMidiHandler().initBle((PermissionStatus status) {
-      AlertDialogs.showLocationPrompt(context, false, null);
-    });
+    BLEMidiHandler().initBle(bleErrorHandler);
+  }
+
+  void bleErrorHandler(BluetoothError error, dynamic data) {
+    {
+      switch (error) {
+        case BluetoothError.unavailable:
+          AlertDialogs.showInfoDialog(context,
+              title: "Warning!",
+              description: "Your device does not support bluetooth!",
+              confirmButton: "OK");
+          break;
+        case BluetoothError.permissionDenied:
+          AlertDialogs.showLocationPrompt(context, false, null);
+          break;
+        case BluetoothError.locationServiceOff:
+          AlertDialogs.showInfoDialog(context,
+              title: "Location service is disabled!",
+              description:
+                  "Please, enable location service. It is required for Bluetooth connection to work.",
+              confirmButton: "OK");
+          break;
+      }
+    }
   }
 
   @override
@@ -237,7 +253,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         );
 
         //setup a timer incase something fails
-        _timeout = Timer(const Duration(seconds: 7), onConnectionTimeout);
+        _timeout = Timer(const Duration(seconds: 10), onConnectionTimeout);
 
         break;
       case DeviceConnectionState.presetsLoaded:
@@ -283,6 +299,9 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
+    //WARNING: Workaround for a flutter bug - if the app is started with screen off,
+    //one of the widgets throwns an exception and the app scaffold is empty
+    if (MediaQuery.of(context).size.width < 10) return Container();
     return FocusScope(
       autofocus: true,
       onKey: (node, event) {
@@ -304,73 +323,10 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                 physics: NeverScrollableScrollPhysics(),
                 controller: controller,
               ),
-              //this is the volume bar, which is not ready yet
-              GestureDetector(
-                onTap: () {
-                  openDrawer = !openDrawer;
-                  setState(() {});
-                },
-                onVerticalDragUpdate: (details) {
-                  if (details.delta.dy < 0) {
-                    //open
-                    openDrawer = true;
-                  } else {
-                    //close
-                    openDrawer = false;
-                  }
-                  setState(() {});
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 50,
-                      decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .bottomNavigationBarTheme
-                              .backgroundColor,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(15))),
-                      child: Icon(
-                        openDrawer
-                            ? Icons.keyboard_arrow_down
-                            : Icons.keyboard_arrow_up,
-                        size: 20,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    AnimatedContainer(
-                      padding: EdgeInsets.all(8),
-                      color: Theme.of(context)
-                          .bottomNavigationBarTheme
-                          .backgroundColor,
-                      duration: Duration(milliseconds: 100),
-                      height: openDrawer ? 60 : 0,
-                      child: ThickSlider(
-                        activeColor: Colors.blue,
-                        value: NuxDeviceControl().masterVolume,
-                        skipEmitting: 3,
-                        label: "Volume",
-                        labelFormatter: (value) {
-                          return value.round().toString();
-                        },
-                        min: 0,
-                        max: 100,
-                        handleVerticalDrag: false,
-                        onChanged: (value) {
-                          setState(() {
-                            NuxDeviceControl().masterVolume = value;
-                          });
-                        },
-                        onDragEnd: (value) {
-                          SharedPrefs().setValue(SettingsKeys.masterVolume,
-                              NuxDeviceControl().masterVolume);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              VolumeDrawer(
+                  expanded: openDrawer,
+                  onChanged: () => setState(() {}),
+                  onExpandChange: (val) => openDrawer = val)
             ],
           ),
           /*drawer: Drawer(

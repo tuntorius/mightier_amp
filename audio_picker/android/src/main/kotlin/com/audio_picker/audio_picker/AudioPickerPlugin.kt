@@ -64,11 +64,11 @@ class AudioPickerPlugin : MethodCallHandler {
                                         runOnUiThread("Failed to retrieve path.", false, false)
                                     }
                                 } else if (data.getClipData() != null) {
-                                    val count = data.getClipData().getItemCount()
+                                    val count = data.getClipData()!!.getItemCount()
                                     var currentItem = 0
                                     val list = arrayListOf<String>()
                                     while (currentItem < count) {
-                                        val uri = data.getClipData().getItemAt(currentItem).getUri()
+                                        val uri = data.getClipData()!!.getItemAt(currentItem).getUri()
                                         var fullPath = instance?.context()?.let { FileUtils.getPath(it, uri) }
 
                                         if (fullPath!=null) {

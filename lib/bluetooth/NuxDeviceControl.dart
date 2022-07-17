@@ -5,7 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -18,6 +18,7 @@ import 'devices/NuxDevice.dart';
 import 'devices/NuxMighty2040BT.dart';
 import 'devices/NuxMightyLite.dart';
 import 'devices/NuxMightyPlugAir.dart';
+import 'devices/NuxMightyPlugPro.dart';
 import 'devices/effects/Processor.dart';
 
 enum DeviceConnectionState { connectedStart, presetsLoaded, configReceived }
@@ -173,6 +174,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
     //create all supported devices
     _deviceInstances.add(NuxMightyPlug(this));
+    _deviceInstances.add(NuxMightyPlugPro(this));
     _deviceInstances.add(NuxMighty8BT(this));
     _deviceInstances.add(NuxMighty2040BT(this));
     _deviceInstances.add(NuxMightyLite(this));
@@ -180,7 +182,9 @@ class NuxDeviceControl extends ChangeNotifier {
     //make it read from config
     String _dev = SharedPrefs()
         .getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
+
     _device = getDeviceFromId(_dev) ?? _deviceInstances[0];
+
     int ver = SharedPrefs().getValue(
         SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
     _device.setFirmwareVersionByIndex(ver);
@@ -189,21 +193,17 @@ class NuxDeviceControl extends ChangeNotifier {
 
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
-      _deviceInstances[i]
-          .presetChangedNotifier
-          .addListener(presetChangedListener);
-      _deviceInstances[i]
-          .parameterChanged
-          .stream
-          .listen(parameterChangedListener);
+      dev.presetChangedNotifier.addListener(presetChangedListener);
+      dev.parameterChanged.stream.listen(parameterChangedListener);
       _deviceInstances[i].effectChanged.stream.listen(effectChangedListener);
       _deviceInstances[i].effectSwitched.stream.listen(effectSwitchedListener);
+      _deviceInstances[i].slotSwapped.stream.listen(slotSwappedListener);
     }
   }
 
   void _statusListener(statusValue) {
     switch (statusValue) {
-      case midiSetupStatus.deviceFound:
+      case MidiSetupStatus.deviceFound:
         // check if this is valid nux device
         print("Devices found " + _midiHandler.nuxDevices.toString());
         _midiHandler.nuxDevices.forEach((dev) {
@@ -215,7 +215,7 @@ class NuxDeviceControl extends ChangeNotifier {
           }
         });
         break;
-      case midiSetupStatus.deviceConnected:
+      case MidiSetupStatus.deviceConnected:
         clearUndoStack();
 
         //find which device connected
@@ -230,7 +230,7 @@ class NuxDeviceControl extends ChangeNotifier {
           _onConnect();
         }
         break;
-      case midiSetupStatus.deviceDisconnected:
+      case MidiSetupStatus.deviceDisconnected:
         clearUndoStack();
         updateDiagnosticsData(connected: false);
         notifyListeners();
@@ -247,13 +247,7 @@ class NuxDeviceControl extends ChangeNotifier {
     connectStatus.add(DeviceConnectionState.connectedStart);
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
 
-    //manually call on presets ready if device doesn't support them
-    if (!device.presetSaveSupport)
-      onPresetsReady();
-    else {
-      //request the firmware version to initiate the handshake
-      requestFirmwareVersion();
-    }
+    requestFirmwareVersion();
   }
 
   void _onDisconnect() {
@@ -265,36 +259,47 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void _onDataReceive(List<int> data) {
     if (developer) onDataReceiveDebug?.call(data);
-
-    if (data.length > 2) {
-      //check for firmware message
-      if (data[2] == MidiMessageValues.sysExStart &&
-          data[3] == 0 &&
-          data[8] == 16 &&
-          data.length == 12) {
-        //firmware version is in the 9th bit
-        device.setFirmwareVersion(data[9]);
-        //save device version since we know it already
-        SharedPrefs()
-            .setValue(SettingsKeys.deviceVersion, _device.productVersion);
-        requestPresetDelayed();
-      } else
-        _device.onDataReceived(data.sublist(2));
-    }
+    _device.communication.onDataReceive(data);
   }
 
   void _onBatteryTimer(Timer? t) {
-    if (!device.batterySupport) return;
-    var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
-        [SysCtrlState.syscmd_dsprun_battery, 0, 0, 0, 0]);
-    _midiHandler.sendData(data);
+    device.communication.requestBatteryStatus();
   }
 
   void requestFirmwareVersion() async {
     await Future.delayed(Duration(seconds: 1));
-    var data = createFirmwareMessage();
+    var data = device.communication.createFirmwareMessage();
+    if (data.length > 0)
+      _midiHandler.sendData(data);
+    else
+      onFirmwareVersionReady();
+  }
 
-    _midiHandler.sendData(data);
+  void onFirmwareVersionReady() {
+    //request everything else
+    device.communication.requestPrimaryData();
+  }
+
+  void onPrimaryDataReady() {
+    device.communication.requestSecondaryData();
+    if (device.batterySupport) {
+      batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
+      if (device.presetSaveSupport) _onBatteryTimer(null);
+    }
+
+    print("Primary data received");
+    onPresetsReady();
+  }
+
+  void onPresetsReady() {
+    connectStatus.add(DeviceConnectionState.presetsLoaded);
+  }
+
+  void deviceConnectionReady() {
+    _onBatteryTimer(null);
+    device.sendAmpLevel();
+    connectStatus.add(DeviceConnectionState.configReceived);
+    print("Device connection complete");
   }
 
   //for some reason we should not ask for presets immediately
@@ -304,83 +309,11 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void requestPreset(int index) {
-    var data = createSysExMessage(DeviceMessageID.devReqPresetMsgID, index);
-
-    _midiHandler.sendData(data);
-  }
-
-  void onPresetsReady() async {
-    if (device.batterySupport) {
-      batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
-      if (device.presetSaveSupport) _onBatteryTimer(null);
-    }
-    print("Presets received");
-
-    connectStatus.add(DeviceConnectionState.presetsLoaded);
-
-    if (!device.presetSaveSupport) {
-      await Future.delayed(Duration(milliseconds: 1500));
-      _onBatteryTimer(null);
-      device.selectedChannelNormalized = 0;
-      changeDevicePreset(0);
-      sendFullPresetSettings();
-      deviceConnectionReady();
-      return;
-    }
-
-    if (!device.advancedSettingsSupport) return;
-
-    await Future.delayed(Duration(milliseconds: 200));
-    //request other nux stuff
-
-    //eco mode and other
-    var data = createSysExMessage(DeviceMessageID.devReqManuMsgID, [0]);
-    _midiHandler.sendData(data);
-
-    await Future.delayed(Duration(milliseconds: 200));
-    //usb settings. Send them 3 times as the module does not respond everytime.
-    // This is what their software is doing)
-    data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
-        [SysCtrlState.syscmd_usbaudio, 0, 0, 0, 0]);
-    _midiHandler.sendData(data);
-  }
-
-  void deviceConnectionReady() {
-    device.sendAmpLevel();
-    connectStatus.add(DeviceConnectionState.configReceived);
+    _midiHandler.sendData(_device.communication.requestPresetByIndex(index));
   }
 
   void onBatteryPercentage(int val) {
     batteryPercentage.add(val);
-  }
-
-  void setEcoMode(bool enable) {
-    var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
-        [SysCtrlState.syscmd_eco_pro, enable ? 1 : 0, 0, 0, 0]);
-    _midiHandler.sendData(data);
-  }
-
-  void setBtEq(int eq) {
-    var data = createSysExMessage(
-        DeviceMessageID.devSysCtrlMsgID, [SysCtrlState.syscmd_bt, 1, eq, 0, 0]);
-    _midiHandler.sendData(data);
-  }
-
-  void setUsbAudioMode(int mode) {
-    var data = createCCMessage(MidiCCValues.bCC_VolumePedalMin, mode);
-    _midiHandler.sendData(data);
-  }
-
-  void setUsbInputVolume(int vol) {
-    var data = createCCMessage(
-        MidiCCValues.bCC_VolumePedal, percentageTo7Bit(vol.toDouble()));
-    _midiHandler.sendData(data);
-  }
-
-  void setUsbOutputVolume(int vol) {
-    var data = createCCMessage(
-        MidiCCValues.bCC_VolumePrePost, percentageTo7Bit(vol.toDouble()));
-    _midiHandler.sendData(data);
   }
 
   //preset editing listeners
@@ -398,22 +331,17 @@ class NuxDeviceControl extends ChangeNotifier {
   void changeDevicePreset(int preset) {
     clearUndoStack();
     if (!isConnected) return;
-
-    var data = createCCMessage(device.channelChangeCC, preset);
-    _midiHandler.sendData(data);
+    _midiHandler.sendData(device.communication.setChannel(preset));
   }
 
   void effectSwitchedListener(int slot) {
-    if (!isConnected) return;
-    var preset = device.getPreset(device.selectedChannel);
-    var swIndex = preset
-        .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
-        .midiCCEnableValue;
+    device.communication.sendSlotEnabledState(slot);
+  }
 
-    //in midi boolean is 00 and 7f for false and true
-    int enabled = preset.slotEnabled(slot) ? 0x7f : 0x00;
-    var data = createCCMessage(swIndex, enabled);
-    _midiHandler.sendData(data);
+  void slotSwappedListener(int slot) {
+    var proc =
+        device.getPreset(device.selectedChannel).getProcessorAtSlot(slot);
+    //TODO: send where the slot went (or maybe ALL slots?)
   }
 
   void effectChangedListener(int slot) {
@@ -508,42 +436,7 @@ class NuxDeviceControl extends ChangeNotifier {
     }
   }
 
-  void sendDrumsEnabled(bool enabled) {
-    if (!isConnected) return;
-    var data =
-        createCCMessage(MidiCCValues.bCC_drumOnOff_No, enabled ? 0x7f : 0);
-    _midiHandler.sendData(data);
-  }
-
-  void sendDrumsStyle(int style) {
-    if (!isConnected) return;
-    var data = createCCMessage(MidiCCValues.bCC_drumType_No, style);
-    _midiHandler.sendData(data);
-  }
-
-  void sendDrumsLevel(double volume) {
-    if (!isConnected) return;
-    int val = percentageTo7Bit(volume);
-    var data = createCCMessage(MidiCCValues.bCC_drumLevel_No, val);
-    _midiHandler.sendData(data);
-  }
-
-  void sendDrumsTempo(double tempo) {
-    if (!isConnected) return;
-
-    int tempoNux = (((tempo - 40) / 200) * 16384).floor();
-    //these must be sent as 2 7bit values
-    int tempoL = tempoNux & 0x7f;
-    int tempoH = (tempoNux >> 7);
-
-    //no idea what the first 2 messages are for
-    var data = createCCMessage(MidiCCValues.bCC_drumTempo1, 0x06);
-    _midiHandler.sendData(data);
-    data = createCCMessage(MidiCCValues.bCC_drumTempo2, 0x26);
-    _midiHandler.sendData(data);
-    data = createCCMessage(MidiCCValues.bCC_drumTempoH, tempoH);
-    _midiHandler.sendData(data);
-    data = createCCMessage(MidiCCValues.bCC_drumTempoL, tempoL);
+  void sendBLEData(List<int> data) {
     _midiHandler.sendData(data);
   }
 
@@ -570,60 +463,6 @@ class NuxDeviceControl extends ChangeNotifier {
     msg[2] = MidiMessageValues.controlChange;
     msg[3] = controlNumber;
     msg[4] = value;
-    return msg;
-  }
-
-  List<int> createSysExMessage(int deviceMessageId, var data,
-      {int sysExMsgId = CherubSysExMessageID.cSysExDeviceSpecMsgID}) {
-    List<int> msg = [];
-
-    //create header
-    msg.addAll([
-      0x80,
-      0x80,
-      MidiMessageValues.sysExStart,
-      0,
-      device.vendorID & 255,
-      device.vendorID >> 8 & 255,
-      device.productVID & 255,
-      device.productVID >> 8 & 255,
-      (7 & sysExMsgId) << 4,
-      deviceMessageId
-    ]);
-
-    //add payload
-    if (data is int)
-      msg.add(data);
-    else
-      msg.addAll(data);
-
-    //add termination symbol
-    msg.add(0x80);
-    msg.add(MidiMessageValues.sysExEnd);
-
-    return msg;
-  }
-
-  List<int> createFirmwareMessage() {
-    List<int> msg = [];
-
-    //create header
-    msg.addAll([
-      0x80,
-      0x80,
-      MidiMessageValues.sysExStart,
-      0,
-      device.vendorID & 255,
-      device.vendorID >> 8 & 255,
-      device.productVID & 255,
-      device.productVID >> 8 & 255,
-      0
-    ]);
-
-    //add termination symbol
-    msg.add(0x80);
-    msg.add(MidiMessageValues.sysExEnd);
-
     return msg;
   }
 

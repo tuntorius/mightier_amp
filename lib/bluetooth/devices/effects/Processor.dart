@@ -10,7 +10,8 @@ enum ValueType {
   vibeMode,
   boostMode,
   brightMode,
-  contourMode
+  contourMode,
+  scfMode
 }
 
 class Parameter {

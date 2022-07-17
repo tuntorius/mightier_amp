@@ -70,6 +70,11 @@ class M8BTPreset extends Preset {
     }
   }
 
+  @override
+  int getProcessorAtSlot(int slot) {
+    return slot;
+  }
+
   //turns slot on or off
   @override
   void setSlotEnabled(int index, bool value, bool notifyBT) {

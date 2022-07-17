@@ -2,6 +2,8 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/communication/plugAirCommunication.dart';
 import '../../UI/mightierIcons.dart';
 
 import '../NuxDeviceControl.dart';
@@ -12,6 +14,7 @@ import 'presets/PlugAirPreset.dart';
 import 'presets/Preset.dart';
 
 enum PlugAirChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
+
 enum PlugAirVersion { PlugAir15, PlugAir21 }
 
 class NuxMightyPlug extends NuxDevice {
@@ -19,6 +22,9 @@ class NuxMightyPlug extends NuxDevice {
   // didn't contain device id. They were always for mighty plug/air
   static const defaultNuxId = "mighty_plug_air";
   int get productVID => 48;
+
+  late PlugAirCommunication _communication = new PlugAirCommunication(this);
+  DeviceCommunication get communication => _communication;
 
   PlugAirVersion version = PlugAirVersion.PlugAir21;
 
@@ -37,6 +43,7 @@ class NuxMightyPlug extends NuxDevice {
   bool get cabinetSupport => true;
   int get cabinetSlotIndex => 3;
   bool get presetSaveSupport => true;
+  bool get reorderableFXChain => false;
   bool get advancedSettingsSupport => true;
   bool get batterySupport => true;
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;

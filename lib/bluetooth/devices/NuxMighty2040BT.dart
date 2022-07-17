@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
 import 'NuxConstants.dart';
+import 'communication/communication.dart';
+import 'communication/liteCommunication.dart';
 import 'presets/MightyXXBTPreset.dart';
 
 import '../NuxDeviceControl.dart';
@@ -25,6 +27,9 @@ enum M2040BTChannel {
 class NuxMighty2040BT extends NuxDevice {
   int get productVID => 48;
 
+  late LiteCommunication _communication = new LiteCommunication(this);
+  DeviceCommunication get communication => _communication;
+
   static const _group1 = 0;
   static const _group2 = 1;
 
@@ -43,6 +48,7 @@ class NuxMighty2040BT extends NuxDevice {
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => 0;
   bool get presetSaveSupport => false;
+  bool get reorderableFXChain => false;
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpMode;

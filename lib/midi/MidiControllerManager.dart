@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import 'package:mighty_plug_manager/midi/UsbMidiManager.dart';
 import 'package:mighty_plug_manager/midi/controllers/BleMidiController.dart';
@@ -50,7 +50,7 @@ class MidiControllerManager extends ChangeNotifier {
 
   void _statusListener(statusValue) {
     switch (statusValue) {
-      case midiSetupStatus.deviceFound:
+      case MidiSetupStatus.deviceFound:
         // check if this is valid nux device
         BLEMidiHandler().nuxDevices.forEach((dev) {
           if (dev.device.type != BluetoothDeviceType.classic) {

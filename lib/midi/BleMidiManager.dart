@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 
 import 'MidiControllerManager.dart';
@@ -18,7 +18,7 @@ class BleMidiManager extends ChangeNotifier {
 
   bool usbMidiSupported = false;
 
-  StreamSubscription<midiSetupStatus>? _bleStatusSub;
+  StreamSubscription<MidiSetupStatus>? _bleStatusSub;
   StreamSubscription<bool>? _bleScanSub;
 
   factory BleMidiManager() {
@@ -62,34 +62,34 @@ class BleMidiManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  _bleStatusListener(midiSetupStatus status) {
+  _bleStatusListener(MidiSetupStatus status) {
     switch (status) {
-      case midiSetupStatus.bluetoothOff:
+      case MidiSetupStatus.bluetoothOff:
         // TODO: Handle this case.
         break;
-      case midiSetupStatus.deviceIdle:
+      case MidiSetupStatus.deviceIdle:
         if (!_firstTimeScanned) {
           _firstTimeScanned = true;
           MidiControllerManager().connectAvailableBLEDevices();
         }
         break;
-      case midiSetupStatus.deviceSearching:
+      case MidiSetupStatus.deviceSearching:
         // TODO: Handle this case.
         break;
-      case midiSetupStatus.deviceFound:
+      case MidiSetupStatus.deviceFound:
         createControllers();
         break;
-      case midiSetupStatus.deviceConnecting:
+      case MidiSetupStatus.deviceConnecting:
         // TODO: Handle this case.
         break;
-      case midiSetupStatus.deviceConnected:
+      case MidiSetupStatus.deviceConnected:
         // TODO: Handle this case.
         break;
-      case midiSetupStatus.deviceDisconnected:
+      case MidiSetupStatus.deviceDisconnected:
         print("Dev just disconnected!");
         // TODO: Handle this case.
         break;
-      case midiSetupStatus.unknown:
+      case MidiSetupStatus.unknown:
         // TODO: Handle this case.
         break;
     }

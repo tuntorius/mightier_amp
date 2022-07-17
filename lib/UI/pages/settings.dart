@@ -292,7 +292,7 @@ class _SettingsState extends State<Settings> {
           ),
         ),
         if (midiHandler.permissionGranted)
-          StreamBuilder<midiSetupStatus>(
+          StreamBuilder<MidiSetupStatus>(
               stream: midiHandler.status,
               builder: (BuildContext context, snapshot) {
                 return StreamBuilder<bool>(

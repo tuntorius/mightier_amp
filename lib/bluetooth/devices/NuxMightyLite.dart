@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
 import 'NuxConstants.dart';
+import 'communication/communication.dart';
+import 'communication/liteCommunication.dart';
 import 'presets/MightyLitePreset.dart';
 
 import '../NuxDeviceControl.dart';
@@ -15,6 +17,9 @@ enum MLiteChannel { Clean, Overdrive, Distortion }
 
 class NuxMightyLite extends NuxDevice {
   int get productVID => 48;
+
+  late LiteCommunication _communication = new LiteCommunication(this);
+  DeviceCommunication get communication => _communication;
 
   String get productName => "NUX Mighty Lite BT";
   String get productNameShort => "Mighty Lite";
@@ -31,7 +36,8 @@ class NuxMightyLite extends NuxDevice {
   int get amplifierSlotIndex => 1;
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => 0;
-  bool get presetSaveSupport => true;
+  bool get presetSaveSupport => false;
+  bool get reorderableFXChain => false;
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;

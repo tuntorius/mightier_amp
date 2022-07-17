@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/fileSaver.dart';

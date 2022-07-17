@@ -5,12 +5,12 @@
 //https://support.chefsteps.com/hc/en-us/articles/360009480814-I-have-an-Android-Why-am-I-being-asked-to-allow-location-access-
 import 'dart:async';
 import 'dart:collection';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../UI/pages/settings.dart';
 
-enum midiSetupStatus {
+enum MidiSetupStatus {
   bluetoothOff,
   deviceIdle,
   deviceSearching,
@@ -20,6 +20,10 @@ enum midiSetupStatus {
   deviceDisconnected,
   unknown
 }
+
+enum BluetoothError { unavailable, permissionDenied, locationServiceOff }
+
+typedef BluetoothErrorCallback = void Function(BluetoothError, dynamic data);
 
 class BLEMidiHandler {
   static const String midiService = "03b80e5a-ede8-4b33-a751-6ce34ec4c700";
@@ -33,10 +37,10 @@ class BLEMidiHandler {
 
   static final BLEMidiHandler _bleHandler = BLEMidiHandler._();
 
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
 
-  StreamController<midiSetupStatus> _status = StreamController.broadcast();
-  Stream<midiSetupStatus> get status => _status.stream;
+  StreamController<MidiSetupStatus> _status = StreamController.broadcast();
+  Stream<MidiSetupStatus> get status => _status.stream;
 
   StreamController<bool> _scanStatus = StreamController.broadcast();
   Stream<bool> get scanStatus => _scanStatus.stream;
@@ -90,7 +94,7 @@ class BLEMidiHandler {
   StreamSubscription<bool>? _scanningStatusSubscription;
   BLEMidiHandler._();
 
-  initBle(Function(PermissionStatus) onPermissionDenied) async {
+  initBle(BluetoothErrorCallback onError) async {
     _controllerDevices = [];
 
     PermissionStatus pStatus;
@@ -102,7 +106,8 @@ class BLEMidiHandler {
         pStatus = await Permission.location.request();
         if (pStatus.isPermanentlyDenied) _permanentlyDenied = true;
         askOneTime = true;
-        if (!pStatus.isGranted) onPermissionDenied(pStatus);
+        if (!pStatus.isGranted)
+          onError(BluetoothError.permissionDenied, pStatus);
       }
       Future.delayed(Duration(milliseconds: 500));
     } while (!pStatus.isGranted);
@@ -110,14 +115,29 @@ class BLEMidiHandler {
     _granted = true;
     _permanentlyDenied = false;
 
+    var available = await flutterBlue.isAvailable;
+    if (!available) {}
     flutterBlue.isAvailable.then((value) {
       if (value == false) {
-        showMessageDialog(
-            "Warning!", "Your device does not support bluetooth!");
+        onError(BluetoothError.unavailable, null);
+        return;
       }
     });
 
+    ServiceStatus ss = await Permission.location.serviceStatus;
+
+    if (!ss.isEnabled) {
+      onError(BluetoothError.locationServiceOff, null);
+    }
+
     print("BLEMidiHandler:Init()");
+
+    _subscribeForBLEState();
+    _subscribeForScanStatus();
+    _subscribeForScanResults();
+  }
+
+  void _subscribeForBLEState() {
     flutterBlue.state.listen((event) {
       print(event.toString());
       bluetoothState = event;
@@ -126,12 +146,12 @@ class BLEMidiHandler {
         case BluetoothState.unavailable:
         case BluetoothState.unauthorized:
           _isOn = false;
-          _status.add(midiSetupStatus.bluetoothOff);
+          _status.add(MidiSetupStatus.bluetoothOff);
           break;
         case BluetoothState.turningOn:
         case BluetoothState.on:
           _isOn = true;
-          _status.add(midiSetupStatus.deviceSearching);
+          _status.add(MidiSetupStatus.deviceSearching);
           startScanning(false);
           break;
         case BluetoothState.turningOff:
@@ -139,18 +159,22 @@ class BLEMidiHandler {
           break;
         case BluetoothState.off:
           _isOn = false;
-          _status.add(midiSetupStatus.bluetoothOff);
+          _status.add(MidiSetupStatus.bluetoothOff);
           _device = null;
           _connectInProgress = false;
           break;
       }
     });
+  }
 
+  void _subscribeForScanStatus() {
     _scanningStatusSubscription = flutterBlue.isScanning.listen((event) {
       _isScanning = event;
       _scanStatus.add(event);
     });
+  }
 
+  void _subscribeForScanResults() {
     _scanSubscription = flutterBlue.scanResults.listen((results) {
       // do something with scan results
 
@@ -177,7 +201,7 @@ class BLEMidiHandler {
         }
       }
 
-      _status.add(midiSetupStatus.deviceFound);
+      _status.add(MidiSetupStatus.deviceFound);
       for (ScanResult r in results) {
         print('${r.device.name} found! rssi: ${r.rssi}');
       }
@@ -191,7 +215,7 @@ class BLEMidiHandler {
   void startScanning(bool manual) {
     if (!_granted) return;
     manualScan = manual;
-    _status.add(midiSetupStatus.deviceSearching);
+    _status.add(MidiSetupStatus.deviceSearching);
     if (bluetoothState != BluetoothState.on) return;
     flutterBlue
         .startScan(
@@ -200,7 +224,7 @@ class BLEMidiHandler {
     )
         .then((result) {
       //if device is not connected after the search - set to idle
-      if (_device == null) _status.add(midiSetupStatus.deviceIdle);
+      if (_device == null) _status.add(MidiSetupStatus.deviceIdle);
     });
   }
 
@@ -225,7 +249,7 @@ class BLEMidiHandler {
 
     _connectInProgress = true;
     stopScanning();
-    _status.add(midiSetupStatus.deviceConnecting);
+    _status.add(MidiSetupStatus.deviceConnecting);
     try {
       await device.connect(autoConnect: false, timeout: Duration(seconds: 5));
     } on Exception {
@@ -266,13 +290,13 @@ class BLEMidiHandler {
     queueFree = true;
     _connectInProgress = false;
 
-    _status.add(midiSetupStatus.deviceConnected);
+    _status.add(MidiSetupStatus.deviceConnected);
     device.state.listen((event) {
       if (event == BluetoothDeviceState.disconnected) {
         _device = null;
         _connectInProgress = false;
         queueFree = true;
-        _status.add(midiSetupStatus.deviceDisconnected);
+        _status.add(MidiSetupStatus.deviceDisconnected);
       }
     });
   }
@@ -288,7 +312,7 @@ class BLEMidiHandler {
 
     _connectInProgress = true;
     stopScanning();
-    _status.add(midiSetupStatus.deviceConnecting);
+    _status.add(MidiSetupStatus.deviceConnecting);
     try {
       await device.connect(autoConnect: false, timeout: Duration(seconds: 5));
     } on Exception {

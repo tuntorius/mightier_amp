@@ -4,7 +4,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:qr_utils/qr_utils.dart';
 
@@ -24,6 +25,8 @@ abstract class NuxDevice extends ChangeNotifier {
     return 8721;
   }
 
+  DeviceCommunication get communication;
+
 //General device parameters
   String get productName;
   String get productNameShort;
@@ -39,6 +42,7 @@ abstract class NuxDevice extends ChangeNotifier {
   bool get cabinetSupport;
   int get cabinetSlotIndex;
   bool get presetSaveSupport;
+  bool get reorderableFXChain;
   bool get advancedSettingsSupport;
   bool get batterySupport;
 
@@ -57,14 +61,16 @@ abstract class NuxDevice extends ChangeNotifier {
   //Notifies when an effect in a certain slot is changed
   final StreamController<int> effectChanged = StreamController<int>();
 
+  //Notifies when an effect in a certain slot is changed
+  final StreamController<int> slotSwapped = StreamController<int>();
+
   //Notifies when an effect parameter has changed
   final StreamController<Parameter> parameterChanged =
       StreamController<Parameter>();
 
   List<Preset> presets = <Preset>[];
 
-  bool _nuxPresetsReceived = false;
-  bool get nuxPresetsReceived => _nuxPresetsReceived;
+  bool nuxPresetsReceived = false;
 
   @protected
   int selectedChannelP = 0; //nux-based (0-6) channel index
@@ -94,7 +100,7 @@ abstract class NuxDevice extends ChangeNotifier {
     if (deviceControl.isConnected) sendAmpLevel();
   }
 
-  void _setSelectedChannelNuxIndex(int chan, bool notify) {
+  void setSelectedChannelNuxIndex(int chan, bool notify) {
     selectedChannelP = chan;
 
     //notify ui for change
@@ -153,7 +159,7 @@ abstract class NuxDevice extends ChangeNotifier {
   double get drumsTempo => _drumsTempo;
 
   void onConnect() {
-    _nuxPresetsReceived = false;
+    nuxPresetsReceived = false;
 
     //reset nux data
     for (int i = 0; i < presets.length; i++) presets[i].resetNuxData();
@@ -161,6 +167,7 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void onDisconnect() {
+    communication.onDisconnect();
     deviceControl.onBatteryPercentage(0);
   }
 
@@ -175,47 +182,47 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void setDrumsEnabled(bool _enabled) {
     _drumsEnabled = _enabled;
-    deviceControl.sendDrumsEnabled(_drumsEnabled);
+    communication.sendDrumsEnabled(_drumsEnabled);
   }
 
   void setDrumsStyle(int style) {
     _selectedDrumStyle = style;
-    deviceControl.sendDrumsStyle(style);
+    communication.sendDrumsStyle(style);
   }
 
   void setDrumsLevel(double level) {
     _drumsVolume = level;
-    deviceControl.sendDrumsLevel(level);
+    communication.sendDrumsLevel(level);
   }
 
   void setDrumsTempo(double tempo) {
     _drumsTempo = tempo;
-    deviceControl.sendDrumsTempo(tempo);
+    communication.sendDrumsTempo(tempo);
   }
 
   void setEcoMode(bool enabled) {
     _ecoMode = enabled;
-    deviceControl.setEcoMode(enabled);
+    communication.setEcoMode(enabled);
   }
 
   void setUsbMode(int mode) {
     _usbMode = mode;
-    deviceControl.setUsbAudioMode(mode);
+    communication.setUsbAudioMode(mode);
   }
 
   void setUsbInputVol(int vol) {
     _inputVol = vol;
-    deviceControl.setUsbInputVolume(vol);
+    communication.setUsbInputVolume(vol);
   }
 
   void setUsbOutputVol(int vol) {
     _outputVol = vol;
-    deviceControl.setUsbOutputVolume(vol);
+    communication.setUsbOutputVolume(vol);
   }
 
   void setBtEq(int eq) {
     _btEq = eq;
-    deviceControl.setBtEq(eq);
+    communication.setBTEq(eq);
   }
 
   //used for master volume control
@@ -255,49 +262,72 @@ abstract class NuxDevice extends ChangeNotifier {
     getPreset(selectedChannel).setupPresetFromNuxData();
   }
 
+  void onPresetsReady() {
+    deviceControl.changeDevicePreset(0);
+    setSelectedChannelNuxIndex(0, true);
+    nuxPresetsReceived = true;
+  }
+
+  void _handleChannelChange(int index) {
+    NuxDeviceControl().clearUndoStack();
+    var _index = index;
+
+    //channel skipping
+    while (_activeChannels[_index] == false) {
+      _index++;
+      if (_index == channelsCount) _index = 0;
+    }
+    if (_index == index) //not skipped
+      setSelectedChannelNuxIndex(index, true);
+    else {
+      //skipped - update ui
+      selectedChannelNormalized = _index;
+      deviceControl.presetChangedListener();
+    }
+    //immediately set the amp level
+    sendAmpLevel();
+  }
+
+  void _handleKnobReceiveData(List<int> data) {
+    //scan through the effects to find which one is controlled
+    var _preset = getPreset(selectedChannel);
+    for (int i = 0; i < effectsChainLength; i++) {
+      var selected = _preset.getSelectedEffectForSlot(i);
+      var effect = _preset.getEffectsForSlot(i)[selected];
+      for (var param in effect.parameters) {
+        if (param.midiCC == data[1]) {
+          //this is the one to change
+          if (param.valueType == ValueType.db)
+            param.value = deviceControl.sevenBitToDb(data[2]);
+          else
+            param.value = deviceControl.sevenBitToPercentage(data[2]);
+          notifyListeners();
+          return;
+        }
+      }
+    }
+  }
+
+  void _handleBTEcoMode(List<int> data) {
+    //this has lots of unknown values - maybe bpm settings
+    //eco mode is 12
+    if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
+      _btEq = data[10];
+      _ecoMode = data[12] != 0;
+      notifyListeners();
+    }
+  }
+
   void onDataReceived(List<int> data) {
     assert(data.length > 0);
 
     switch (data[0] & 0xf0) {
       case MidiMessageValues.sysExStart:
         switch (data[1]) {
-          case DeviceMessageID.devGetPresetMsgID: //preset data piece
-
-            var total = (data[3] & 0xf0) >> 4;
-            var current = data[3] & 0x0f;
-
-            var preset = getPreset(data[2]);
-            if (current == 0) preset.resetNuxData();
-
-            preset.addNuxPayloadPiece(data.sublist(4, 16));
-
-            if (current == total - 1) {
-              preset.setupPresetFromNuxData();
-
-              if (!_nuxPresetsReceived) {
-                if (data[2] < channelsCount - 1)
-                  deviceControl.requestPreset(data[2] + 1);
-                else {
-                  deviceControl.changeDevicePreset(0);
-                  _setSelectedChannelNuxIndex(0, true);
-                  notifyListeners();
-                  _nuxPresetsReceived = true;
-
-                  deviceControl.onPresetsReady();
-                }
-              }
-            }
-            break;
           case DeviceMessageID.devGetManuMsgID:
-            //this has lots of unknown values - maybe bpm settings
-            //eco mode is 12
-            if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
-              _btEq = data[10];
-              _ecoMode = data[12] != 0;
-              notifyListeners();
-            }
+            _handleBTEcoMode(data);
             break;
-          case 0:
+          case DeviceMessageID.devReqMIDIParaMsgID:
             switch (data[7]) {
               case DeviceMessageID.devSysCtrlMsgID:
                 switch (data[8]) {
@@ -317,51 +347,21 @@ abstract class NuxDevice extends ChangeNotifier {
             break;
         }
         break;
+      case MidiMessageValues.programChange:
+        _handleChannelChange(data[1]);
+        break;
       case MidiMessageValues.controlChange:
-        if (data[1] == channelChangeCC) {
-          NuxDeviceControl().clearUndoStack();
-          var index = data[2];
-
-          //channel skipping
-          while (_activeChannels[index] == false) {
-            index++;
-            if (index == channelsCount) index = 0;
-          }
-          if (index == data[2]) //not skipped
-            _setSelectedChannelNuxIndex(data[2], true);
-          else {
-            //skipped - update ui
-            selectedChannelNormalized = index;
-            deviceControl.presetChangedListener();
-          }
-          //immediately set the amp level
-          sendAmpLevel();
-        } else if (data[1] == MidiCCValues.bCC_drumOnOff_No) {
+        if (data[1] == channelChangeCC)
+          _handleChannelChange(data[2]);
+        else if (data[1] == MidiCCValues.bCC_drumOnOff_No) {
           _drumsEnabled = data[2] > 0 ? true : false;
           deviceControl.forceNotifyListeners();
           return;
         } else if (data[1] == MidiCCValues.bCC_drumType_No) {
           _selectedDrumStyle = data[2];
           deviceControl.forceNotifyListeners();
-        } else {
-          //scan through the effects to find which one is controlled
-          var _preset = getPreset(selectedChannel);
-          for (int i = 0; i < effectsChainLength; i++) {
-            var selected = _preset.getSelectedEffectForSlot(i);
-            var effect = _preset.getEffectsForSlot(i)[selected];
-            for (var param in effect.parameters) {
-              if (param.midiCC == data[1]) {
-                //this is the one to change
-                if (param.valueType == ValueType.db)
-                  param.value = deviceControl.sevenBitToDb(data[2]);
-                else
-                  param.value = deviceControl.sevenBitToPercentage(data[2]);
-                notifyListeners();
-                return;
-              }
-            }
-          }
-        }
+        } else
+          _handleKnobReceiveData(data);
         break;
     }
   }
@@ -371,7 +371,7 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void resetNuxPresets() {
-    _nuxPresetsReceived = false;
+    nuxPresetsReceived = false;
     deviceControl.resetNuxPresets();
   }
 
@@ -403,7 +403,7 @@ abstract class NuxDevice extends ChangeNotifier {
     var nuxChannel = _preset["channel"];
 
     if (!qrOnly) {
-      _setSelectedChannelNuxIndex(nuxChannel, false);
+      setSelectedChannelNuxIndex(nuxChannel, false);
       deviceControl.changeDevicePreset(nuxChannel);
     }
 
@@ -477,6 +477,8 @@ abstract class NuxDevice extends ChangeNotifier {
       notifyListeners();
     else
       return p;
+
+    return null;
   }
 
   Map<String, dynamic> presetToJson() {

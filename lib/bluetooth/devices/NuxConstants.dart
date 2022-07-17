@@ -33,6 +33,7 @@ class SysCtrlState {
 }
 
 class DeviceMessageID {
+  static const devReqFwID = 0;
   static const devReqMIDIParaMsgID = 0;
   static const devGetMIDIParaMsgID = 1;
   static const devSetMIDIParaMsgID = 2;
@@ -189,10 +190,211 @@ class PresetDataIndexLite {
   static const micambsend = 35;
 }
 
+class PresetDataIndexPlugPro {
+  static const Head_iWAH = 0;
+  static const Head_iCMP = 1;
+  static const Head_iEFX = 2;
+  static const Head_iAMP = 3;
+  static const Head_iEQ = 4;
+  static const Head_iNG = 5;
+  static const Head_iMOD = 6;
+  static const Head_iDLY = 7;
+  static const Head_iRVB = 8;
+  static const Head_iCAB = 9;
+  static const Head_iSR = 10;
+  static const WAH_Count = 11;
+  static const WAH_Para1 = 12;
+  static const WAH_Para2 = 13;
+  static const CMP_Count = 14;
+  static const CMP_Para1 = 15;
+  static const CMP_Para2 = 16;
+  static const CMP_Para3 = 17;
+  static const CMP_Para4 = 18;
+  static const EFX_Count = 19;
+  static const EFX_Para1 = 20;
+  static const EFX_Para2 = 21;
+  static const EFX_Para3 = 22;
+  static const EFX_Para4 = 23;
+  static const EFX_Para5 = 24;
+  static const EFX_Para6 = 25;
+  static const AMP_Count = 26;
+  static const AMP_Para1 = 27;
+  static const AMP_Para2 = 28;
+  static const AMP_Para3 = 29;
+  static const AMP_Para4 = 30;
+  static const AMP_Para5 = 31;
+  static const AMP_Para6 = 32;
+  static const AMP_Para7 = 33;
+  static const AMP_Para8 = 34;
+  static const EQ_Count = 35;
+  static const EQ_Para1 = 36;
+  static const EQ_Para2 = 37;
+  static const EQ_Para3 = 38;
+  static const EQ_Para4 = 39;
+  static const EQ_Para5 = 40;
+  static const EQ_Para6 = 41;
+  static const EQ_Para7 = 42;
+  static const EQ_Para8 = 43;
+  static const EQ_Para9 = 44;
+  static const EQ_Para10 = 45;
+  static const EQ_Para11 = 46;
+  static const EQ_Para12 = 47;
+  static const NG_Count = 48;
+  static const NG_Para1 = 49;
+  static const NG_Para2 = 50;
+  static const NG_Para3 = 51;
+  static const NG_Para4 = 52;
+  static const MOD_Count = 53;
+  static const MOD_Para1 = 54;
+  static const MOD_Para2 = 55;
+  static const MOD_Para3 = 56;
+  static const MOD_Para4 = 57;
+  static const MOD_Para5 = 58;
+  static const MOD_Para6 = 59;
+  static const DLY_Count = 60;
+  static const DLY_Para1 = 61;
+  static const DLY_Para2 = 62;
+  static const DLY_Para3 = 63;
+  static const DLY_Para4 = 64;
+  static const DLY_Para5 = 65;
+  static const DLY_Para6 = 66;
+  static const DLY_Para7 = 67;
+  static const DLY_Para8 = 68;
+  static const RVB_Count = 69;
+  static const RVB_Para1 = 70;
+  static const RVB_Para2 = 71;
+  static const RVB_Para3 = 72;
+  static const RVB_Para4 = 73;
+  static const CAB_Count = 74;
+  static const CAB_Para1 = 75;
+  static const CAB_Para2 = 76;
+  static const CAB_Para3 = 77;
+  static const CAB_Para4 = 78;
+  static const CAB_Para5 = 79;
+  static const CAB_Para6 = 80;
+  static const SR_Count = 81;
+  static const SR_Para1 = 82;
+  static const SR_Para2 = 83;
+  static const MASTER = 84;
+  static const delay_time_flag = 85;
+  static const bpmH = 86;
+  static const bpmL = 87;
+  static const BITCTRL = 88;
+  static const LINK1 = 89;
+  static const LINK2 = 90;
+  static const LINK3 = 91;
+  static const LINK4 = 92;
+  static const LINK5 = 93;
+  static const LINK6 = 94;
+  static const LINK7 = 95;
+  static const LINK8 = 96;
+  static const LINK9 = 97;
+  static const LINK10 = 98;
+  static const LINK11 = 99;
+  static const UserName1 = 100;
+  static const UserName2 = 101;
+  static const UserName3 = 102;
+  static const UserName4 = 103;
+  static const UserName5 = 104;
+  static const UserName6 = 105;
+  static const UserName7 = 106;
+  static const UserName8 = 107;
+  static const UserName9 = 108;
+  static const UserName10 = 109;
+  static const UserName11 = 110;
+  static const UserName12 = 111;
+  static const UserName13 = 112;
+  static const UserName14 = 113;
+  static const UserName15 = 114;
+  static const UserName16 = 115;
+  static const swsel1 = 116;
+  static const swsel2 = 117;
+  static const swsel3 = 118;
+  static const pdsel1 = 119;
+  static const pdsel2 = 120;
+  static const version = 121;
+  static const scene1 = 122;
+  static const scene2 = 123;
+  static const scene3 = 124;
+}
+
 class MidiMessageValues {
   static const controlChange = 0xb0;
+  static const programChange = 0xc0;
   static const sysExStart = 0xf0;
   static const sysExEnd = 0xf7;
+}
+
+class SysexPrivacy {
+  final int _value;
+  const SysexPrivacy._internal(this._value);
+  toString() => '$_value';
+  toInt() => _value;
+
+  static const kSYSEX_PUBLIC = const SysexPrivacy._internal(0);
+  static const kSYSEX_PUBLICREPLY = const SysexPrivacy._internal(16);
+  static const kSYSEX_RDCTRL = const SysexPrivacy._internal(32);
+  static const kSYSEX_IRCTRL = const SysexPrivacy._internal(48);
+  static const kSYSEX_PRIVATE = const SysexPrivacy._internal(112);
+}
+
+class SyxMsg {
+  final int _value;
+  const SyxMsg._internal(this._value);
+  toString() => '$_value';
+  toInt() => _value;
+
+  static const kSYX_BPM = const SyxMsg._internal(3);
+  static const kSYX_LANGUAGE = const SyxMsg._internal(4);
+  static const kSYX_CPURUN = const SyxMsg._internal(5);
+  static const kSYX_SWAPPRESET = const SyxMsg._internal(6);
+  static const kSYX_CPYPRESET = const SyxMsg._internal(7);
+  static const kSYX_IRSAVEAS = const SyxMsg._internal(8);
+  static const kSYX_CRCNAME = const SyxMsg._internal(9);
+  static const kSYX_MANUAL = const SyxMsg._internal(10);
+  static const kSYX_PRESET = const SyxMsg._internal(11);
+  static const kSYX_CURPRESET = const SyxMsg._internal(12);
+  static const kSYX_MODULELINK = const SyxMsg._internal(13);
+  static const kSYX_GLOBLE = const SyxMsg._internal(14);
+  static const kSYX_MIDICC = const SyxMsg._internal(15);
+  static const kSYX_CABDATA = const SyxMsg._internal(16);
+  static const kSYX_CABCURVE = const SyxMsg._internal(17);
+  static const kSYX_PRESETNAME = const SyxMsg._internal(18);
+  static const kSYX_PEDALSET = const SyxMsg._internal(19);
+  static const kSYX_SYSTEMSET = const SyxMsg._internal(20);
+  static const kSYX_CURSTATE = const SyxMsg._internal(21);
+  static const kSYX_IRDELETE = const SyxMsg._internal(22);
+  static const kSYX_CUTOVER = const SyxMsg._internal(23);
+  static const kSYX_LOOP = const SyxMsg._internal(24);
+  static const kSYX_DRUM = const SyxMsg._internal(25);
+  static const kSYX_CABNAME = const SyxMsg._internal(26);
+  static const kSYX_BTSET = const SyxMsg._internal(27);
+  static const kSYX_PARAINIT = const SyxMsg._internal(96);
+  static const kSYX_WELCOME = const SyxMsg._internal(97);
+  static const kSYX_QTVERSION = const SyxMsg._internal(98);
+  static const kSYX_UAC_EFFECT = const SyxMsg._internal(99);
+  static const kSYX_UAC_TRANS = const SyxMsg._internal(100);
+  static const kSYX_UAC_SAVE = const SyxMsg._internal(101);
+  static const kSYX_VOLDISPLAY = const SyxMsg._internal(116);
+  static const kSYX_SPEC_CMD = const SyxMsg._internal(117);
+  static const kSYX_HW_VERSION = const SyxMsg._internal(118);
+  static const kSYX_CODEC_SET = const SyxMsg._internal(119);
+  static const kSYX_TFT_SET = const SyxMsg._internal(120);
+  static const kSYX_SNAPSHOTCMD = const SyxMsg._internal(121);
+  static const kSYX_SNAPSHOT = const SyxMsg._internal(122);
+  static const kSYX_RESET = const SyxMsg._internal(123);
+  static const kSYX_IRINFO = const SyxMsg._internal(124);
+  static const kSYX_DEVINFO = const SyxMsg._internal(125);
+  static const kSYX_SENDCMD = const SyxMsg._internal(126);
+  static const kSYX_NOUSE = const SyxMsg._internal(127);
+}
+
+enum SyxDir {
+  kSYXDIR_GET,
+  kSYXDIR_SET,
+  kSYXDIR_REQ,
+  kSYXDIR_ACK,
+  kSYXDIR_CMD,
 }
 
 class MidiCCValues {
@@ -278,4 +480,114 @@ class MidiCCValues {
   static const bcc_mChrType = 63;
   static const bcc_gRevType = 37;
   static const bcc_mRevType = 39;
+}
+
+class MidiCCValuesPro {
+  static const Head_iWAH = 0;
+  static const Head_iCMP = 1;
+  static const Head_iEFX = 2;
+  static const Head_iAMP = 3;
+  static const Head_iEQ = 4;
+  static const Head_iNG = 5;
+  static const Head_iMOD = 6;
+  static const Head_iDLY = 7;
+  static const Head_iRVB = 8;
+  static const Head_iCAB = 9;
+  static const Head_iSR = 10;
+  static const WAH_Para1 = 11;
+  static const WAH_Para2 = 12;
+  static const CMP_Para1 = 13;
+  static const CMP_Para2 = 14;
+  static const CMP_Para3 = 15;
+  static const CMP_Para4 = 16;
+  static const EFX_Para1 = 17;
+  static const EFX_Para2 = 18;
+  static const EFX_Para3 = 19;
+  static const EFX_Para4 = 20;
+  static const EFX_Para5 = 21;
+  static const EFX_Para6 = 22;
+  static const AMP_Para1 = 23;
+  static const AMP_Para2 = 24;
+  static const AMP_Para3 = 25;
+  static const AMP_Para4 = 26;
+  static const AMP_Para5 = 27;
+  static const AMP_Para6 = 28;
+  static const AMP_Para7 = 29;
+  static const AMP_Para8 = 30;
+  static const EQ_Para1 = 31;
+  static const EQ_Para2 = 32;
+  static const EQ_Para3 = 33;
+  static const EQ_Para4 = 34;
+  static const EQ_Para5 = 35;
+  static const EQ_Para6 = 36;
+  static const EQ_Para7 = 37;
+  static const EQ_Para8 = 38;
+  static const EQ_Para9 = 39;
+  static const EQ_Para10 = 40;
+  static const EQ_Para11 = 41;
+  static const EQ_Para12 = 42;
+  static const NG_Para1 = 43;
+  static const NG_Para2 = 44;
+  static const NG_Para3 = 45;
+  static const NG_Para4 = 46;
+  static const MOD_Para1 = 47;
+  static const MOD_Para2 = 48;
+  static const MOD_Para3 = 49;
+  static const MOD_Para4 = 50;
+  static const MOD_Para5 = 51;
+  static const MOD_Para6 = 52;
+  static const DLY_Para1 = 53;
+  static const DLY_Para2 = 54;
+  static const DLY_Para3 = 55;
+  static const DLY_Para4 = 56;
+  static const DLY_Para5 = 57;
+  static const DLY_Para6 = 58;
+  static const DLY_Para7 = 59;
+  static const DLY_Para8 = 60;
+  static const RVB_Para1 = 61;
+  static const RVB_Para2 = 62;
+  static const RVB_Para3 = 63;
+  static const RVB_Para4 = 64;
+  static const CAB_Para1 = 65;
+  static const CAB_Para2 = 66;
+  static const CAB_Para3 = 67;
+  static const CAB_Para4 = 68;
+  static const CAB_Para5 = 69;
+  static const CAB_Para6 = 70;
+  static const SR_Para1 = 71;
+  static const SR_Para2 = 72;
+  static const MASTER = 73;
+  static const MSELECT = 74;
+  static const PEDAL = 75;
+  static const SCENE = 76;
+  static const DRUMENABLE = 77;
+  static const DRUMTYPE = 78;
+  static const DRUMLEVEL = 79;
+  static const LOOPLEVEL = 80;
+  static const LOOPSTATE = 81;
+  static const AUXEQ = 82;
+  static const PRESETRANGE = 83;
+  static const MICVOLUME = 84;
+  static const MICMUTE = 85;
+  static const USBROUNT_1 = 86;
+  static const USBROUNT_2 = 87;
+  static const USBROUNT_3 = 88;
+  static const USBROUNT_4 = 89;
+  static const AUX_MUTE = 90;
+  static const AUX_PHASE = 91;
+  static const AUX_BAND_1 = 92;
+  static const AUX_BAND_2 = 93;
+  static const AUX_BAND_3 = 94;
+  static const AUX_BAND_4 = 95;
+  static const AUX_BAND_5 = 96;
+  static const AUX_BAND_6 = 97;
+  static const AUX_BAND_7 = 98;
+  static const AUX_BAND_8 = 99;
+  static const AUX_BAND_9 = 100;
+  static const AUX_BAND_10 = 101;
+  static const AUX_BAND_11 = 102;
+  static const AUX_BAND_12 = 103;
+  static const DRUM_Low = 104;
+  static const DRUM_Middle = 105;
+  static const DRUM_High = 106;
 }

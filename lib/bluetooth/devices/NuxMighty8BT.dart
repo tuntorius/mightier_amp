@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
 import 'NuxConstants.dart';
+import 'communication/communication.dart';
+import 'communication/liteCommunication.dart';
 import 'presets/Mighty8BTPreset.dart';
 
 import '../NuxDeviceControl.dart';
@@ -15,6 +17,8 @@ enum M8BTChannel { Clean, Overdrive, Distortion }
 
 class NuxMighty8BT extends NuxDevice {
   int get productVID => 48;
+  late LiteCommunication _communication = new LiteCommunication(this);
+  DeviceCommunication get communication => _communication;
 
   String get productName => "NUX Mighty 8 BT";
   String get productNameShort => "Mighty 8 BT";
@@ -29,6 +33,7 @@ class NuxMighty8BT extends NuxDevice {
   bool get cabinetSupport => false;
   int get cabinetSlotIndex => 0;
   bool get presetSaveSupport => false;
+  bool get reorderableFXChain => false;
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;

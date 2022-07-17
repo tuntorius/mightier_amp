@@ -28,8 +28,8 @@ abstract class Preset {
   String channelName;
   Color get channelColor => channelColors[channel];
   List<Amplifier> get amplifierList;
-  //nux data
-  List<int> nuxData = <int>[];
+
+  List<List<int>> nuxDataPieces = [];
 
   Preset(
       {required this.device, required this.channel, required this.channelName});
@@ -39,6 +39,13 @@ abstract class Preset {
 
   //returns whether the specific slot is on or off
   bool slotEnabled(int index);
+
+  //used for reorderable fx chain
+  int getProcessorAtSlot(int slot);
+
+  void swapProcessorSlots(int from, int to, bool notifyBT) {
+    if (notifyBT) device.slotSwapped.add(to);
+  }
 
   //turns slot on or off
   void setSlotEnabled(int index, bool value, bool notifyBT) {
@@ -68,12 +75,22 @@ abstract class Preset {
   Color effectColor(int index);
 
   void resetNuxData() {
-    nuxData.clear();
+    nuxDataPieces = [];
   }
 
   //receives data chunk from a device
-  void addNuxPayloadPiece(List<int> data) {
-    nuxData.addAll(data);
+  void addNuxPayloadPiece(List<int> data, int part, int total) {
+    if (nuxDataPieces.length != total) {
+      nuxDataPieces = List.filled(total, []);
+    }
+
+    nuxDataPieces[part] = data;
+  }
+
+  bool payloadPiecesReady() {
+    for (int i = 0; i < nuxDataPieces.length; i++)
+      if (nuxDataPieces[i].length == 0) return false;
+    return true;
   }
 
   //this is for QR export
@@ -97,6 +114,9 @@ abstract class Preset {
   }
 
   void setupPresetFromNuxData() {
+    List<int> nuxData = [];
+    for (int i = 0; i < nuxDataPieces.length; i++)
+      nuxData.addAll(nuxDataPieces[i]);
     setupPresetFromNuxDataArray(nuxData);
   }
 

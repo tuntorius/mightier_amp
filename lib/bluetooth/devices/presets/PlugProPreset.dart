@@ -3,57 +3,42 @@
 
 import 'dart:ui';
 
-import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Ampsv2.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
-import '../effects/plug_air/EFX.dart';
-import '../effects/plug_air/EFXv2.dart';
-import '../effects/plug_air/Amps.dart';
 import '../effects/plug_air/Cabinet.dart';
-import '../effects/plug_air/Modulation.dart';
-import '../effects/plug_air/Delay.dart';
-import '../effects/plug_air/Reverb.dart';
+import '../effects/plug_pro/Compressor.dart';
+import '../effects/plug_pro/EFX.dart';
+import '../effects/plug_pro/Amps.dart';
+import '../effects/plug_pro/Cabinet.dart';
+import '../effects/plug_pro/Modulation.dart';
+import '../effects/plug_pro/Delay.dart';
+import '../effects/plug_pro/Reverb.dart';
 import 'Preset.dart';
 
-class PlugAirPreset extends Preset {
+class PlugProPreset extends Preset {
   NuxDevice device;
   int channel;
   String channelName;
   Color get channelColor => Preset.channelColors[channel];
-  final NoiseGate2Param noiseGate = NoiseGate2Param();
+  final NoiseGatePro noiseGate = NoiseGatePro();
 
-  List<EFX> get efxList =>
-      version == PlugAirVersion.PlugAir21 ? efxListv2 : efxListv1;
-  List<Amplifier> get amplifierList =>
-      version == PlugAirVersion.PlugAir21 ? amplifierListv2 : amplifierListv1;
+  final List<Compressor> compressorList = <Compressor>[];
+  final List<EFX> efxList = <EFX>[];
   final List<Cabinet> cabinetList = <Cabinet>[];
-  List<Modulation> get modulationList =>
-      version == PlugAirVersion.PlugAir21 ? modulationListv2 : modulationListv1;
-  List<Delay> get delayList =>
-      version == PlugAirVersion.PlugAir21 ? delayList2 : delayList1;
-  List<Reverb> get reverbList =>
-      version == PlugAirVersion.PlugAir21 ? reverbListv2 : reverbListv1;
+  final List<Modulation> modulationList = <Modulation>[];
+  final List<Reverb> reverbList = <Reverb>[];
+  final List<Amplifier> amplifierList = <Amplifier>[];
+  final List<Delay> delayList = <Delay>[];
 
-  final List<EFX> efxListv1 = <EFX>[];
-  final List<EFX> efxListv2 = <EFX>[];
-
-  final List<Amplifier> amplifierListv1 = <Amplifier>[];
-  final List<Amplifier> amplifierListv2 = <Amplifier>[];
-
-  final List<Modulation> modulationListv1 = <Modulation>[];
-  final List<Modulation> modulationListv2 = <Modulation>[];
-
-  final List<Delay> delayList1 = <Delay>[];
-  final List<Delay> delayList2 = <Delay>[];
-
-  final List<Reverb> reverbListv1 = <Reverb>[];
-  final List<Reverb> reverbListv2 = <Reverb>[];
+  List<int> processorAtSlot = [];
 
   bool noiseGateEnabled = true;
+  bool compressorEnabled = true;
   bool efxEnabled = true;
+  bool ampEnabled = true;
   bool modulationEnabled = true;
   bool delayEnabled = true;
   bool reverbEnabled = true;
@@ -65,79 +50,77 @@ class PlugAirPreset extends Preset {
   int selectedDelay = 0;
   int selectedReverb = 0;
 
-  PlugAirVersion version = PlugAirVersion.PlugAir15;
+  PlugProVersion version = PlugProVersion.PlugPro1;
 
-  PlugAirPreset(
+  PlugProPreset(
       {required this.device, required this.channel, required this.channelName})
       : super(channel: channel, channelName: channelName, device: device) {
-    modulationListv1
-        .addAll([Phaser(), Chorus(), STChorus(), Flanger(), Vibe(), Tremolo()]);
-    modulationListv2
-        .addAll([PH100(), Chorus(), STChorus(), SCF(), Vibe(), Tremolo()]);
+    compressorList.addAll([RoseComp(), KComp(), StudioComp()]);
 
-    efxListv1.addAll([
-      TouchWah(),
-      UniVibe(),
-      TremoloEFX(),
-      PhaserEFX(),
-      Boost(),
-      TSDrive(),
-      BassTS(),
-      ThreeBandEQ(),
-      Muff(),
-      Crunch(),
-      RedDist(),
-      MorningDrive(),
-      DistOne(),
+    modulationList.addAll([
+      ModCE1(),
+      ModCE2(),
+      STChorus(),
+      Vibrato(),
+      Detune(),
+      Flanger(),
+      Phase90(),
+      Phase100(),
+      SCF(),
+      Vibe(),
+      Tremolo(),
+      Rotary(),
+      SCH1(),
     ]);
 
-    efxListv2.addAll([
-      TouchWah(),
-      UniVibe(),
-      TremoloEFX(),
-      PH100EFX(),
-      STSinger(),
+    efxList.addAll([
+      DistortionPlus(),
+      RCBoost(),
+      ACBoost(),
+      DistOne(),
       TSDrive(),
-      Katana(),
-      ThreeBandEQ(),
-      Muff(),
-      Crunch(),
+      BluesDrive(),
+      MorningDrive(),
+      EatDist(),
       RedDirt(),
-      MorningDrive(),
-      DistOne(),
-      RoseComp()
+      Crunch(),
+      MuffFuzz(),
+      Katana(),
+      STSinger(),
     ]);
 
-    amplifierListv1.addAll([
-      TwinVerb(),
-      JZ120(),
-      TweedDlx(),
-      Plexi(),
-      TopBoost(),
-      Lead100(),
-      Fireman(),
-      DIEVH4(),
-      Recto(),
-      Optima(),
-      Stageman(),
-      MLD(),
-      AGL()
-    ]);
-
-    amplifierListv2.addAll([
+    amplifierList.addAll([
+      Unknown0(),
       JazzClean(),
       DeluxeRvb(),
-      TwinRvbV2(),
+      BassMate(),
+      Tweedy(),
+      Unknown5(),
+      HiWire(),
+      CaliCrunch(),
+      Unknown8(),
       ClassA30(),
+      Plexi100(),
+      Plexi45(),
       Brit800(),
-      Plexi1987x50(),
+      Pl1987x50(),
+      Slo100(),
       FiremanHBE(),
       DualRect(),
-      DIEVH4v2(),
-      AGLv2(),
-      Starlift(),
-      MLDv2(),
-      Stagemanv2(),
+      DIEVH4(),
+      Unknown18(),
+      Unknown19(),
+      MrZ38(),
+      SuperRvb(),
+      Unknown22(),
+      Unknown23(),
+      Unknown24(),
+      Unknown25(),
+      AGL(),
+      MLD(),
+      OptimaAir(),
+      Stageman(),
+      Unknown30()
     ]);
 
     cabinetList.addAll([
@@ -162,12 +145,13 @@ class PlugAirPreset extends Preset {
       MHD28()
     ]);
 
-    delayList1.addAll([AnalogDelay(), TapeEcho(), DigitalDelay(), PingPong()]);
-    delayList2
-        .addAll([AnalogDelay(), DigitalDelayv2(), ModDelay(), PingPong()]);
+    //TODO: add 20 user cabs
+
+    delayList.addAll(
+        [AnalogDelay(), DigitalDelay(), ModDelay(), TapeEcho(), PanDelay()]);
 
     //reverb is available in all presets
-    reverbListv1.addAll([
+    reverbList.addAll([
       RoomReverb(),
       HallReverb(),
       PlateReverb(),
@@ -175,23 +159,27 @@ class PlugAirPreset extends Preset {
       ShimmerReverb()
     ]);
 
-    reverbListv2.addAll(
-        [RoomReverbv2(), HallReverbv2(), PlateReverbv2(), SpringReverb()]);
+    for (int i = 0; i < device.processorList.length; i++)
+      processorAtSlot.add(i);
   }
 
   /// checks if the effect slot can be switched on and off
   bool slotSwitchable(int index) {
-    if (index == 2 || index == 3) return false;
     return true;
   }
 
   //returns whether the specific slot is on or off
   bool slotEnabled(int index) {
-    switch (index) {
+    var proc = getProcessorAtSlot(index);
+    switch (proc) {
       case 0:
         return noiseGateEnabled;
       case 1:
+        return compressorEnabled;
+      case 2:
         return efxEnabled;
+      case 3:
+        return ampEnabled;
       case 4:
         return modulationEnabled;
       case 5:
@@ -206,12 +194,19 @@ class PlugAirPreset extends Preset {
   //turns slot on or off
   @override
   void setSlotEnabled(int index, bool value, bool notifyBT) {
-    switch (index) {
+    var proc = getProcessorAtSlot(index);
+    switch (proc) {
       case 0:
         noiseGateEnabled = value;
         break;
       case 1:
+        compressorEnabled = value;
+        break;
+      case 2:
         efxEnabled = value;
+        break;
+      case 3:
+        ampEnabled = value;
         break;
       case 4:
         modulationEnabled = value;
@@ -231,25 +226,48 @@ class PlugAirPreset extends Preset {
 
   @override
   int getProcessorAtSlot(int slot) {
-    return slot;
+    return processorAtSlot[slot];
+  }
+
+  @override
+  void swapProcessorSlots(int from, int to, notifyBT) {
+    var fxFrom = processorAtSlot[from];
+
+    //shift all after 'from' one position to the left
+    for (int i = from; i < device.processorList.length - 1; i++)
+      processorAtSlot[i] = processorAtSlot[i + 1];
+
+    //shift all at and after 'to' one position to the right to make room
+    for (int i = device.processorList.length - 1; i > to; i--)
+      processorAtSlot[i] = processorAtSlot[i - 1];
+
+    //place the moved one
+    processorAtSlot[to] = fxFrom;
+
+    super.swapProcessorSlots(from, to, notifyBT);
   }
 
   //returns list of effects for given slot
   List<Processor> getEffectsForSlot(int slot) {
-    switch (slot) {
+    var proc = getProcessorAtSlot(slot);
+    switch (proc) {
       case 0:
         return [noiseGate];
       case 1:
-        return efxList;
+        return compressorList;
       case 2:
-        return amplifierList;
+        return efxList;
       case 3:
-        return cabinetList;
+        return amplifierList;
       case 4:
-        return modulationList;
+        return cabinetList;
       case 5:
-        return delayList;
+        return modulationList;
       case 6:
+        return modulationList; //EQlist
+      case 7:
+        return delayList;
+      case 8:
         return reverbList;
     }
     return <Processor>[];
@@ -257,7 +275,8 @@ class PlugAirPreset extends Preset {
 
   //returns which of the effects is selected for a given slot
   int getSelectedEffectForSlot(int slot) {
-    switch (slot) {
+    var proc = getProcessorAtSlot(slot);
+    switch (proc) {
       case 0:
         return 0;
       case 1:
@@ -280,7 +299,8 @@ class PlugAirPreset extends Preset {
   //sets the effect for the given slot
   @override
   void setSelectedEffectForSlot(int slot, int index, bool notifyBT) {
-    switch (slot) {
+    var proc = getProcessorAtSlot(slot);
+    switch (proc) {
       case 1:
         selectedEfx = index;
         break;
@@ -304,14 +324,12 @@ class PlugAirPreset extends Preset {
   }
 
   Color effectColor(int index) {
-    if (index != 2)
-      return device.processorList[index].color;
-    else
-      return channelColor;
+    index = getProcessorAtSlot(index);
+    return device.processorList[index].color;
   }
 
   @override
   setFirmwareVersion(int ver) {
-    version = PlugAirVersion.values[ver];
+    version = PlugProVersion.values[ver];
   }
 }

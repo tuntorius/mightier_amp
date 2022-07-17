@@ -45,7 +45,7 @@ class _MidiControllersState extends State<MidiControllers> {
       appBar: AppBar(
         title: Text("MIDI/HID Remote Control"),
       ),
-      body: StreamBuilder<midiSetupStatus>(
+      body: StreamBuilder<MidiSetupStatus>(
           stream: midiHandler.status,
           builder: (context, snapshot) {
             return Column(

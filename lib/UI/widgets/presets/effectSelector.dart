@@ -4,10 +4,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/widgets/presets/EffectChainBar.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:undo/undo.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
+import 'EffectChainButton.dart';
 import 'effectEditor.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
@@ -24,12 +26,9 @@ class EffectSelector extends StatefulWidget {
 }
 
 class _EffectSelectorState extends State<EffectSelector> {
-  late List<bool> _effectSelection;
-
   int get _selectedSlot => widget.device.selectedSlot;
   set _selectedSlot(val) => widget.device.selectedSlot = val;
 
-  late List<Widget> _buttons;
   late Preset _preset;
   late List<custom.PopupMenuEntry<dynamic>> _effectItems;
   String _selectedEffectName = "";
@@ -39,34 +38,6 @@ class _EffectSelectorState extends State<EffectSelector> {
   @override
   void initState() {
     super.initState();
-  }
-
-  List<Widget> createSlotButtons() {
-    var btns = <Widget>[];
-
-    double width = MediaQuery.of(context).size.width;
-
-    for (int i = 0; i < _effectSelection.length; i++) {
-      Color? c = _preset.slotEnabled(i) ? _preset.effectColor(i) : null;
-      btns.add(
-        Container(
-          width: max(width / _effectSelection.length - 5, 0),
-          child: Column(
-            children: [
-              Icon(
-                widget.device.processorList[i].icon,
-                size: 30,
-                color: c,
-              ),
-              Text(
-                widget.device.processorList[i].shortName,
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-    return btns;
   }
 
   void setSelectedEffect(dynamic index) {
@@ -116,14 +87,7 @@ class _EffectSelectorState extends State<EffectSelector> {
 
     _preset = widget.preset;
 
-    _effectSelection =
-        List<bool>.filled(widget.device.processorList.length, false);
-    _effectSelection[_selectedSlot] = true;
-
     _effectColor = _preset.effectColor(_selectedSlot);
-
-    //create effect buttons
-    _buttons = createSlotButtons();
 
     //create effect models dropdown list
     List<Processor> effects = _preset.getEffectsForSlot(_selectedSlot);
@@ -199,34 +163,31 @@ class _EffectSelectorState extends State<EffectSelector> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        ToggleButtons(
-          selectedColor: Colors.grey[600],
-          selectedBorderColor: _effectColor,
-          children: _buttons,
-          isSelected: _effectSelection,
-          onPressed: (int index) {
-            var old = _selectedSlot;
-            setState(() {
-              var selected = -1;
-              for (int buttonIndex = 0;
-                  buttonIndex < _effectSelection.length;
-                  buttonIndex++) {
-                if (buttonIndex == index) {
-                  _effectSelection[buttonIndex] = true;
-                  _selectedSlot = buttonIndex;
-                  selected = buttonIndex;
-                } else {
-                  _effectSelection[buttonIndex] = false;
-                }
-              }
-              NuxDeviceControl().changes.add(Change<int>(
-                  old,
-                  () => _selectedSlot = selected,
-                  (oldVal) => _selectedSlot = oldVal));
-              NuxDeviceControl().undoStackChanged();
-            });
-          },
-        ),
+        EffectChainBar(
+            maxHeight: 60,
+            effectsList: widget.device.processorList,
+            preset: _preset,
+            reorderable: widget.device.reorderableFXChain,
+            onTap: (i) {
+              setState(() {
+                var old = _selectedSlot;
+                _selectedSlot = i;
+
+                NuxDeviceControl().changes.add(Change<int>(
+                    old,
+                    () => _selectedSlot = i,
+                    (oldVal) => _selectedSlot = oldVal));
+                NuxDeviceControl().undoStackChanged();
+              });
+            },
+            onReorder: (from, to) {
+              setState(() {
+                NuxDeviceControl().changes.add(Change(
+                    1,
+                    () => _preset.swapProcessorSlots(from, to, true),
+                    (oldVal) => _preset.swapProcessorSlots(from, to, true)));
+              });
+            }),
         SizedBox(
           height: 8,
         ),

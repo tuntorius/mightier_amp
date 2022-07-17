@@ -9,6 +9,7 @@ import 'blinkWidget.dart';
 
 AppBar getAppBar(BLEMidiHandler handler) {
   return AppBar(
+    toolbarHeight: 46,
     title: Text("Mightier Amp"),
     actions: [
       //battery percentage
@@ -42,24 +43,24 @@ AppBar getAppBar(BLEMidiHandler handler) {
         stream: NuxDeviceControl().batteryPercentage.stream,
       ),
       const SizedBox(width: 8),
-      StreamBuilder<midiSetupStatus>(
+      StreamBuilder<MidiSetupStatus>(
         builder: (context, snapshot) {
           IconData icon = Icons.bluetooth_disabled;
           Color color = Colors.grey;
           switch (snapshot.data) {
             case null:
               break;
-            case midiSetupStatus.bluetoothOff:
+            case MidiSetupStatus.bluetoothOff:
               icon = Icons.bluetooth_disabled;
               break;
-            case midiSetupStatus.deviceIdle:
-            case midiSetupStatus.deviceConnecting:
+            case MidiSetupStatus.deviceIdle:
+            case MidiSetupStatus.deviceConnecting:
               icon = Icons.bluetooth;
               break;
-            case midiSetupStatus.deviceFound: //note device found is issued
+            case MidiSetupStatus.deviceFound: //note device found is issued
             //during search only, but here it means nothing
             //so keep search status
-            case midiSetupStatus.deviceSearching:
+            case MidiSetupStatus.deviceSearching:
               icon = Icons.bluetooth_searching;
               return BlinkWidget(
                 children: [
@@ -72,14 +73,14 @@ AppBar getAppBar(BLEMidiHandler handler) {
                 interval: 500,
               );
 
-            case midiSetupStatus.deviceConnected:
+            case MidiSetupStatus.deviceConnected:
               icon = Icons.bluetooth_connected;
               color = Colors.white;
               break;
-            case midiSetupStatus.deviceDisconnected:
+            case MidiSetupStatus.deviceDisconnected:
               icon = Icons.bluetooth;
               break;
-            case midiSetupStatus.unknown:
+            case MidiSetupStatus.unknown:
               icon = Icons.bluetooth_disabled;
               break;
           }

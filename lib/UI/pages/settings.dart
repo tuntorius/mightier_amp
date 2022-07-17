@@ -13,7 +13,7 @@ import '../widgets/deviceList.dart';
 import 'DebugConsolePage.dart';
 import 'calibration.dart';
 import 'package:flutter/foundation.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'developerPage.dart';
 import 'midiControllers.dart';

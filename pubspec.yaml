@@ -39,6 +39,8 @@ dependencies:
   qr_utils:
     path: ./qr_utils-0.1.5
 
+  audio_waveform:
+    path: ./audio_waveform
   youtube_explode_dart: ^1.10.4
   
   #modified audio_picker to allow multiple file selection

@@ -1,14 +1,11 @@
-// (c) 2020-2021 Dian Iliev (Tuntorius)
-// This code is licensed under MIT license (see LICENSE.md for details)
-
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class AudioDecoder {
-  static const platform = const MethodChannel("mighty_plug/decoder");
+class AudioWaveformDecoder {
+  static const platform = const MethodChannel("com.tuntori.audio_waveform");
   int size = 0;
   double _durationms = 0;
   List<int> _samples = <int>[];
@@ -49,8 +46,8 @@ class AudioDecoder {
     }
   }
 
-  void decode(VoidCallback onStart, bool Function() onProgress,
-      VoidCallback onFinish) async {
+  void decode(void Function() onStart, bool Function() onProgress,
+      void Function() onFinish) async {
     //this holds actual buffer length
     int len = 0;
 
@@ -60,6 +57,9 @@ class AudioDecoder {
     print("$duration} seconds");
     //calc approx buffer size and create it
     int bytes = ((duration) * sampleRate).ceil();
+
+    //used for max audio sample value
+    //int maxValue = 0;
 
     int cursor = 0;
     int bufferIndex = 0;
@@ -88,7 +88,7 @@ class AudioDecoder {
           //do a rudimentary dynamic range expansion
           if (val < 30) val = (val * 0.2).round();
           if (val > 40) val = (val * 1.5).round();
-
+          //if (maxValue < val) maxValue = val;
           pos < expectedSize ? _samples[pos++] = val : _samples.add(val);
         }
         cursor++;

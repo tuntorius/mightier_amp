@@ -30,7 +30,9 @@ class NuxMighty8BT extends NuxDevice {
   int get channelsCount => 3;
   int get effectsChainLength => 5;
   int get amplifierSlotIndex => 1;
+  bool get fakeMasterVolume => true;
   bool get cabinetSupport => false;
+  bool get hackableIRs => false;
   int get cabinetSlotIndex => 0;
   bool get presetSaveSupport => false;
   bool get reorderableFXChain => false;

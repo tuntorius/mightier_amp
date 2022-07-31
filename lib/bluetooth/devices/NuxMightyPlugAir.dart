@@ -40,7 +40,9 @@ class NuxMightyPlug extends NuxDevice {
   int get effectsChainLength => 7;
   int get groupsCount => 1;
   int get amplifierSlotIndex => 2;
+  bool get fakeMasterVolume => true;
   bool get cabinetSupport => true;
+  bool get hackableIRs => true;
   int get cabinetSlotIndex => 3;
   bool get presetSaveSupport => true;
   bool get reorderableFXChain => false;

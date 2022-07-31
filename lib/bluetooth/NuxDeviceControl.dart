@@ -334,6 +334,10 @@ class NuxDeviceControl extends ChangeNotifier {
     _midiHandler.sendData(device.communication.setChannel(preset));
   }
 
+  void effectChangedListener(int slot) {
+    sendFullEffectSettings(slot, true);
+  }
+
   void effectSwitchedListener(int slot) {
     device.communication.sendSlotEnabledState(slot);
   }
@@ -344,21 +348,12 @@ class NuxDeviceControl extends ChangeNotifier {
     //TODO: send where the slot went (or maybe ALL slots?)
   }
 
-  void effectChangedListener(int slot) {
-    sendFullEffectSettings(slot, true);
-  }
-
-  void sendFullPresetSettings() {
-    if (!isConnected) return;
-    for (var i = 0; i < device.processorList.length; i++)
-      sendFullEffectSettings(i, false);
-  }
-
   void sendFullEffectSettings(int slot, bool force) {
     if (!isConnected) return;
     var preset = device.getPreset(device.selectedChannel);
-    var effect;
+    Processor effect;
     int index;
+
     effect =
         preset.getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)];
     index = effect.nuxIndex;
@@ -373,8 +368,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
     //send effect type
     if (slot != 0 && send && effect.midiCCSelectionValue >= 0) {
-      var data = createCCMessage(effect.midiCCSelectionValue, index);
-      _midiHandler.sendData(data);
+      device.communication.sendSlotEffect(slot, index);
     }
 
     //send parameters
@@ -385,11 +379,13 @@ class NuxDeviceControl extends ChangeNotifier {
     }
 
     //send switched
-    if (switchable) {
-      int enabledVal = enabled ? 0x7f : 0x00;
-      var data = createCCMessage(effect.midiCCEnableValue, enabledVal);
-      _midiHandler.sendData(data);
-    }
+    if (switchable) device.communication.sendSlotEnabledState(slot);
+  }
+
+  void sendFullPresetSettings() {
+    if (!isConnected) return;
+    for (var i = 0; i < device.processorList.length; i++)
+      sendFullEffectSettings(i, false);
   }
 
   void resetToChannelDefaults() {
@@ -400,15 +396,12 @@ class NuxDeviceControl extends ChangeNotifier {
 
   List<int> sendParameter(Parameter param, bool returnOnly) {
     int outVal;
-    double value = param.value;
 
     //implement master volume
-    if (param.masterVolume) value *= (masterVolume * 0.01);
-
-    if (param.valueType == ValueType.db)
-      outVal = dbTo7Bit(value);
+    if (device.fakeMasterVolume && param.masterVolume)
+      outVal = param.masterVolMidiValue;
     else
-      outVal = percentageTo7Bit(value);
+      outVal = param.midiValue;
     var data = createCCMessage(param.midiCC, outVal);
     if (!returnOnly) _midiHandler.sendData(data);
     return data;
@@ -438,22 +431,6 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void sendBLEData(List<int> data) {
     _midiHandler.sendData(data);
-  }
-
-  double sevenBitToPercentage(int val) {
-    return (val / 127) * 100;
-  }
-
-  double sevenBitToDb(int val) {
-    return (val / 127) * 12 - 6;
-  }
-
-  int percentageTo7Bit(double val) {
-    return (val / 100 * 127).floor();
-  }
-
-  int dbTo7Bit(double db) {
-    return ((db + 6) / 12 * 127).floor();
   }
 
   List<int> createCCMessage(int controlNumber, int value) {

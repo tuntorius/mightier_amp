@@ -39,7 +39,9 @@ abstract class NuxDevice extends ChangeNotifier {
   int get effectsChainLength;
   List<ProcessorInfo> get processorList;
   int get amplifierSlotIndex;
+  bool get fakeMasterVolume;
   bool get cabinetSupport;
+  bool get hackableIRs;
   int get cabinetSlotIndex;
   bool get presetSaveSupport;
   bool get reorderableFXChain;
@@ -297,10 +299,7 @@ abstract class NuxDevice extends ChangeNotifier {
       for (var param in effect.parameters) {
         if (param.midiCC == data[1]) {
           //this is the one to change
-          if (param.valueType == ValueType.db)
-            param.value = deviceControl.sevenBitToDb(data[2]);
-          else
-            param.value = deviceControl.sevenBitToPercentage(data[2]);
+          param.midiValue = data[2];
           notifyListeners();
           return;
         }

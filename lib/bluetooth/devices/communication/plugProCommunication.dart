@@ -12,8 +12,16 @@ class PlugProCommunication extends DeviceCommunication {
 
   List<int> createFirmwareMessage() {
     List<int> msg = [];
+
     //create header
-    msg.addAll([0x80, 0x80, MidiMessageValues.sysExStart, 0x43, 0x58]);
+    msg.addAll([
+      0x80,
+      0x80,
+      MidiMessageValues.sysExStart,
+      0x43,
+      0x58,
+      SysexPrivacy.kSYSEX_PUBLIC.toInt()
+    ]);
 
     //add termination symbol
     msg.add(0x80);
@@ -36,13 +44,13 @@ class PlugProCommunication extends DeviceCommunication {
   }
 
   List<int> requestPresetByIndex(int index) {
-    return createSysexMessage(SysexPrivacy.kSYSEX_PRIVATE, SyxMsg.kSYX_PRESET,
-        SyxDir.kSYXDIR_REQ, [index]);
+    return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_PRESET, SyxDir.kSYXDIR_REQ, [index]);
   }
 
   List<int> requestIRName(int index) {
-    return createSysexMessage(SysexPrivacy.kSYSEX_PRIVATE, SyxMsg.kSYX_CABNAME,
-        SyxDir.kSYXDIR_REQ, [index]);
+    return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_CABNAME, SyxDir.kSYXDIR_REQ, [index]);
   }
 
   void requestBatteryStatus() {
@@ -52,22 +60,31 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
-  void sendSlotEnabledState(int slot) {
-    if (!device.deviceControl.isConnected) return;
+  void _sendSlotData(int slot, bool enabled, int effectIndex) {
     var preset = device.getPreset(device.selectedChannel);
     var swIndex = preset
         .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
         .midiCCEnableValue;
     preset.getSelectedEffectForSlot(slot);
 
-    int midiVal = preset.getSelectedEffectForSlot(slot) |
-        (preset.slotEnabled(slot) ? 0x00 : 0x40);
+    int midiVal = effectIndex | (enabled ? 0x00 : 0x40);
 
     var data = createCCMessage(swIndex, midiVal);
     device.deviceControl.sendBLEData(data);
   }
 
-  void setSlotEffect(int slot, int index) {}
+  void sendSlotEnabledState(int slot) {
+    if (!device.deviceControl.isConnected) return;
+    var preset = device.getPreset(device.selectedChannel);
+    _sendSlotData(
+        slot, preset.slotEnabled(slot), preset.getSelectedEffectForSlot(slot));
+  }
+
+  void setSlotEffect(int slot, int index) {
+    if (!device.deviceControl.isConnected) return;
+    var preset = device.getPreset(device.selectedChannel);
+    _sendSlotData(slot, preset.slotEnabled(slot), index);
+  }
 
   List<int> setChannel(int channel) {
     return createPCMessage(channel);

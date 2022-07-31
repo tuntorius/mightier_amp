@@ -53,8 +53,6 @@ fileprivate var qrcodeImage: CIImage!
                 //print("captureImage")
     
             }
-
-
   }
 
 }

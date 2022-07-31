@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import '../../NuxConstants.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
@@ -21,21 +22,21 @@ class AnalogDelay extends Delay {
         name: "Rate",
         handle: "rate",
         value: 34,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Echo",
         handle: "echo",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Intensity",
         handle: "intensity",
         value: 52,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
   ];
@@ -50,21 +51,21 @@ class DigitalDelay extends Delay {
         name: "E.Level",
         handle: "level",
         value: 49,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Feedback",
         handle: "feedback",
         value: 68,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Time",
         handle: "time",
         value: 48,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
   ];
@@ -79,28 +80,28 @@ class ModDelay extends Delay {
         name: "Time",
         handle: "time",
         value: 49,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Level",
         handle: "level",
         value: 68,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Mod",
         handle: "mod",
         value: 68,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
     Parameter(
         name: "Repeat",
         handle: "repeat",
         value: 48,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para4,
         midiCC: MidiCCValuesPro.DLY_Para4),
   ];
@@ -115,21 +116,21 @@ class TapeEcho extends Delay {
         name: "Time",
         handle: "time",
         value: 61,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Level",
         handle: "level",
         value: 43,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Repeat",
         handle: "repeat",
         value: 56,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
   ];
@@ -144,21 +145,21 @@ class PanDelay extends Delay {
         name: "Time",
         handle: "time",
         value: 50,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Repeat",
         handle: "repeat",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Level",
         handle: "level",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
   ];

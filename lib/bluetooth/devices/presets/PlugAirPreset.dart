@@ -29,7 +29,7 @@ class PlugAirPreset extends Preset {
       version == PlugAirVersion.PlugAir21 ? efxListv2 : efxListv1;
   List<Amplifier> get amplifierList =>
       version == PlugAirVersion.PlugAir21 ? amplifierListv2 : amplifierListv1;
-  final List<Cabinet> cabinetList = <Cabinet>[];
+  final List<CabinetMP2> cabinetList = <CabinetMP2>[];
   List<Modulation> get modulationList =>
       version == PlugAirVersion.PlugAir21 ? modulationListv2 : modulationListv1;
   List<Delay> get delayList =>

@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import '../../NuxConstants.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Ambience extends Processor {
@@ -21,21 +22,21 @@ class Delay1 extends Ambience {
         name: "Repeat",
         handle: "repeat",
         value: 34,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 52,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexLite.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -51,21 +52,21 @@ class Delay2 extends Ambience {
         name: "Repeat",
         handle: "repeat",
         value: 34,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 52,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexLite.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -81,21 +82,21 @@ class Delay3 extends Ambience {
         name: "Repeat",
         handle: "repeat",
         value: 34,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 52,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexLite.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -111,21 +112,21 @@ class Delay4 extends Ambience {
         name: "Repeat",
         handle: "repeat",
         value: 34,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 52,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexLite.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -140,14 +141,14 @@ class RoomReverb extends Ambience {
         name: "Decay",
         handle: "decay",
         value: 64,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 60,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];
@@ -162,14 +163,14 @@ class HallReverb extends Ambience {
         name: "Decay",
         handle: "decay",
         value: 70,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 65,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];
@@ -184,14 +185,14 @@ class PlateReverb extends Ambience {
         name: "Decay",
         handle: "decay",
         value: 81,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 66,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];
@@ -206,14 +207,14 @@ class SpringReverb extends Ambience {
         name: "Decay",
         handle: "decay",
         value: 32,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];

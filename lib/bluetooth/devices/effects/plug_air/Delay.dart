@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../NuxMightyPlugAir.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
@@ -22,21 +23,21 @@ class AnalogDelay extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 34,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar2feedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar3mix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 52,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar1time,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -51,21 +52,21 @@ class TapeEcho extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 56,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 43,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 61,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -84,21 +85,21 @@ class DigitalDelay extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 49,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 68,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 48,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -118,21 +119,21 @@ class PingPong extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar2feedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar3mix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 50,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -147,21 +148,21 @@ class DigitalDelayv2 extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 49,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar2feedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 68,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar3mix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 48,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar1time,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -181,21 +182,21 @@ class ModDelay extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 49,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar2feedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 68,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayvar3mix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 48,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];

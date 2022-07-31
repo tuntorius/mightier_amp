@@ -1,4 +1,5 @@
 import '../../NuxConstants.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Reverb extends Processor {
@@ -17,14 +18,14 @@ class HallReverb extends Reverb {
         name: "Decay",
         handle: "decay",
         value: 70,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 65,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];
@@ -39,14 +40,14 @@ class PlateReverb extends Reverb {
         name: "Decay",
         handle: "decay",
         value: 81,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 66,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];
@@ -61,14 +62,14 @@ class SpringReverb extends Reverb {
         name: "Decay",
         handle: "decay",
         value: 32,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbdecay,
         midiCC: MidiCCValues.bCC_ReverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];

@@ -1,5 +1,6 @@
 import '../../NuxConstants.dart';
 import '../../NuxMightyPlugAir.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 import 'EFX.dart';
 
@@ -12,14 +13,14 @@ class PH100EFX extends EFX {
         name: "Intensity",
         handle: "depth", //legacy
         value: 78,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
         midiCC: MidiCCValues.bCC_DistGain),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 54,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
         midiCC: MidiCCValues.bCC_DistTone),
   ];
@@ -34,21 +35,21 @@ class STSinger extends EFX {
         name: "Volume",
         handle: "level",
         value: 35,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
         midiCC: MidiCCValues.bCC_DistGain),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 78,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
         midiCC: MidiCCValues.bCC_DistTone),
     Parameter(
         name: "Filter",
         handle: "filter",
         value: 65,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
         midiCC: MidiCCValues.bCC_DistLevel),
   ];
@@ -69,14 +70,14 @@ class Katana extends EFX {
         name: "Boost",
         handle: "gain",
         value: 100,
-        valueType: ValueType.boostMode,
+        formatter: ValueFormatters.boostMode,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
         midiCC: MidiCCValues.bCC_DistGain),
     Parameter(
         name: "Volume",
         handle: "level",
         value: 78,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
         midiCC: MidiCCValues.bCC_DistTone),
   ];
@@ -96,21 +97,21 @@ class RedDirt extends EFX {
         name: "Drive",
         handle: "drive",
         value: 80,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
         midiCC: MidiCCValues.bCC_DistGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 30,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
         midiCC: MidiCCValues.bCC_DistTone),
     Parameter(
         name: "Level",
         handle: "level",
         value: 40,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
         midiCC: MidiCCValues.bCC_DistGain),
   ];
@@ -125,14 +126,14 @@ class RoseComp extends EFX {
         name: "Sustain",
         handle: "sustain",
         value: 55,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
         midiCC: MidiCCValues.bCC_DistTone),
     Parameter(
         name: "Level",
         handle: "level",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
         midiCC: MidiCCValues.bCC_DistGain),
   ];

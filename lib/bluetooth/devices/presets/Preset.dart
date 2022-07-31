@@ -68,7 +68,6 @@ abstract class Preset {
   //change a parameter and announce it
   void setParameterValue(Parameter param, double value) {
     param.value = value;
-
     device.parameterChanged.add(param);
   }
 

@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import '../../NuxConstants.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
@@ -21,21 +22,21 @@ class AnalogDelay extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 34,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 45,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 52,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -50,21 +51,21 @@ class ModulationDelay extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 56,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 43,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 61,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
@@ -79,21 +80,21 @@ class DigitalDelay extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 49,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
         midiCC: MidiCCValues.bCC_DelayRepeat),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 68,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.delaymix,
         midiCC: MidiCCValues.bCC_DelayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 48,
-        valueType: ValueType.tempo,
+        formatter: ValueFormatters.tempo,
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];

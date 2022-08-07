@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import '../../NuxConstants.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class LiteAmplifier extends Amplifier {
@@ -26,14 +27,14 @@ class AmpClean extends LiteAmplifier {
         name: "Gain",
         handle: "gain",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.drivegain,
         midiCC: MidiCCValues.bCC_OverDriveDrive),
     Parameter(
         name: "Level",
         handle: "level",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.drivelevel,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
@@ -41,7 +42,7 @@ class AmpClean extends LiteAmplifier {
         name: "Tone",
         handle: "tone",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.drivetone, //check this
         midiCC: MidiCCValues.bCC_OverDriveTone),
   ];

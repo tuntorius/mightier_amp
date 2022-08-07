@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import '../../NuxConstants.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Modulation extends Processor {
@@ -22,14 +23,14 @@ class Phaser extends Modulation {
         name: "Rate",
         handle: "rate",
         value: 39,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxrate,
         midiCC: MidiCCValues.bCC_ModfxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 60,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
   ];
@@ -44,14 +45,14 @@ class Chorus extends Modulation {
         name: "Rate",
         handle: "rate",
         value: 60,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxrate,
         midiCC: MidiCCValues.bCC_ModfxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 88,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
   ];
@@ -66,14 +67,14 @@ class Tremolo extends Modulation {
         name: "Rate",
         handle: "rate",
         value: 59,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxrate,
         midiCC: MidiCCValues.bCC_ModfxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 63,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
   ];
@@ -88,14 +89,14 @@ class Vibe extends Modulation {
         name: "Rate",
         handle: "rate",
         value: 54,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxrate,
         midiCC: MidiCCValues.bCC_ModfxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 80,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
         midiCC: MidiCCValues.bCC_ModfxDepth),
   ];

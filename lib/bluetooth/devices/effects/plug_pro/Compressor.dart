@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import '../../NuxConstants.dart';
+import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Compressor extends Processor {
@@ -21,14 +22,14 @@ class RoseComp extends Compressor {
         name: "Sustain",
         handle: "sustain",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
         midiCC: MidiCCValuesPro.CMP_Para1),
     Parameter(
         name: "Level",
         handle: "level",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
   ];
@@ -44,21 +45,21 @@ class KComp extends Compressor {
         name: "Sustain",
         handle: "sustain",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
         midiCC: MidiCCValuesPro.CMP_Para1),
     Parameter(
         name: "Level",
         handle: "level",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
     Parameter(
         name: "Clipping",
         handle: "clipping",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para3,
         midiCC: MidiCCValuesPro.CMP_Para3),
   ];
@@ -74,28 +75,28 @@ class StudioComp extends Compressor {
         name: "Threshold",
         handle: "threshold",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
         midiCC: MidiCCValuesPro.CMP_Para1),
     Parameter(
         name: "Ratio",
         handle: "ratio",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para3,
         midiCC: MidiCCValuesPro.CMP_Para3),
     Parameter(
         name: "Release",
         handle: "release",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para4,
         midiCC: MidiCCValuesPro.CMP_Para4)
   ];

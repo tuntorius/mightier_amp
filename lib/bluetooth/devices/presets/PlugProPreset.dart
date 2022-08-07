@@ -8,7 +8,6 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
-import '../effects/plug_air/Cabinet.dart';
 import '../effects/plug_pro/Compressor.dart';
 import '../effects/plug_pro/EFX.dart';
 import '../effects/plug_pro/Amps.dart';
@@ -16,6 +15,7 @@ import '../effects/plug_pro/Cabinet.dart';
 import '../effects/plug_pro/Modulation.dart';
 import '../effects/plug_pro/Delay.dart';
 import '../effects/plug_pro/Reverb.dart';
+import '../effects/plug_pro/EQ.dart';
 import 'Preset.dart';
 
 class PlugProPreset extends Preset {
@@ -27,11 +27,12 @@ class PlugProPreset extends Preset {
 
   final List<Compressor> compressorList = <Compressor>[];
   final List<EFX> efxList = <EFX>[];
-  final List<Cabinet> cabinetList = <Cabinet>[];
+  final List<CabinetPro> cabinetList = <CabinetPro>[];
   final List<Modulation> modulationList = <Modulation>[];
   final List<Reverb> reverbList = <Reverb>[];
   final List<Amplifier> amplifierList = <Amplifier>[];
   final List<Delay> delayList = <Delay>[];
+  final List<EQ> eqList = <EQ>[];
 
   List<int> processorAtSlot = [];
 
@@ -39,14 +40,18 @@ class PlugProPreset extends Preset {
   bool compressorEnabled = true;
   bool efxEnabled = true;
   bool ampEnabled = true;
+  bool irEnabled = true;
   bool modulationEnabled = true;
+  bool eqEnabled = true;
   bool delayEnabled = true;
   bool reverbEnabled = true;
 
+  int selectedComp = 0;
   int selectedEfx = 0;
   int selectedAmp = 0;
   int selectedCabinet = 0;
   int selectedMod = 0;
+  int selectedEQ = 0;
   int selectedDelay = 0;
   int selectedReverb = 0;
 
@@ -123,26 +128,43 @@ class PlugProPreset extends Preset {
       Unknown30()
     ]);
 
+    eqList.addAll([EQSixBand(), EQTenBand()]);
+
     cabinetList.addAll([
-      V1960(),
-      A212(),
+      JZ120Pro(),
+      DR112Pro(),
+      TR212Pro(),
+      HIWIRE412(),
+      CALI112(),
+      A112(),
+      GB412Pro(),
+      M1960AX(),
+      M1960AV(),
+      M1960TV(),
+      SLO412(),
+      FIREMAN412(),
+      RECT412(),
+      DIE412(),
+      MATCH212(),
+      UBER412(),
       BS410(),
-      DR112(),
-      GB412(),
-      JZ120IR(),
-      TR212(),
-      V412(),
+      A212Pro(),
+      M1960AHW(),
+      M1936(),
+      BUDDA112(),
+      Z212(),
+      SUPERVERB410(),
+      VIBROKING310(),
       AGLDB810(),
+      AMPSV212(),
+      AMPSV410(),
       AMPSV810(),
+      BASSGUY410(),
+      EDEN410(),
       MKB410(),
-      TRC410(),
-      GHBird(),
-      GJ15(),
-      MD45(),
-      GIBJ200(),
-      GIBJ45(),
-      TL314(),
-      MHD28()
+      GHBIRDPro(),
+      GJ15Pro(),
+      MD45Pro(),
     ]);
 
     //TODO: add 20 user cabs
@@ -181,10 +203,14 @@ class PlugProPreset extends Preset {
       case 3:
         return ampEnabled;
       case 4:
-        return modulationEnabled;
+        return irEnabled;
       case 5:
-        return delayEnabled;
+        return modulationEnabled;
       case 6:
+        return eqEnabled;
+      case 7:
+        return delayEnabled;
+      case 8:
         return reverbEnabled;
       default:
         return true;
@@ -209,12 +235,18 @@ class PlugProPreset extends Preset {
         ampEnabled = value;
         break;
       case 4:
-        modulationEnabled = value;
+        irEnabled = value;
         break;
       case 5:
-        delayEnabled = value;
+        modulationEnabled = value;
         break;
       case 6:
+        eqEnabled = value;
+        break;
+      case 7:
+        delayEnabled = value;
+        break;
+      case 8:
         reverbEnabled = value;
         break;
       default:
@@ -264,7 +296,7 @@ class PlugProPreset extends Preset {
       case 5:
         return modulationList;
       case 6:
-        return modulationList; //EQlist
+        return eqList;
       case 7:
         return delayList;
       case 8:
@@ -280,16 +312,20 @@ class PlugProPreset extends Preset {
       case 0:
         return 0;
       case 1:
-        return selectedEfx;
+        return selectedComp;
       case 2:
-        return selectedAmp;
+        return selectedEfx;
       case 3:
-        return selectedCabinet;
+        return selectedAmp;
       case 4:
-        return selectedMod;
+        return selectedCabinet;
       case 5:
-        return selectedDelay;
+        return selectedMod;
       case 6:
+        return selectedEQ;
+      case 7:
+        return selectedDelay;
+      case 8:
         return selectedReverb;
       default:
         return 0;
@@ -302,21 +338,27 @@ class PlugProPreset extends Preset {
     var proc = getProcessorAtSlot(slot);
     switch (proc) {
       case 1:
-        selectedEfx = index;
+        selectedComp = index;
         break;
       case 2:
-        selectedAmp = index;
+        selectedEfx = index;
         break;
       case 3:
-        selectedCabinet = index;
+        selectedAmp = index;
         break;
       case 4:
-        selectedMod = index;
+        selectedCabinet = index;
         break;
       case 5:
-        selectedDelay = index;
+        selectedMod = index;
         break;
       case 6:
+        selectedEQ = index;
+        break;
+      case 7:
+        selectedDelay = index;
+        break;
+      case 8:
         selectedReverb = index;
         break;
     }

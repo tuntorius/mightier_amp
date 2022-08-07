@@ -23,8 +23,28 @@ abstract class DeviceCommunication {
   void requestPrimaryData();
   void requestSecondaryData();
 
-  void sendSlotEnabledState(int slot);
-  void setSlotEffect(int slot, int index);
+  void sendSlotEnabledState(int slot) {
+    if (!device.deviceControl.isConnected) return;
+    var preset = device.getPreset(device.selectedChannel);
+    var swIndex = preset
+        .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
+        .midiCCEnableValue;
+
+    //in midi boolean is 00 and 7f for false and true
+    int enabled = preset.slotEnabled(slot) ? 0x7f : 0x00;
+    var data = createCCMessage(swIndex, enabled);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void sendSlotEffect(int slot, int index) {
+    if (!device.deviceControl.isConnected) return;
+    var preset = device.getPreset(device.selectedChannel);
+    var paramIndex = preset
+        .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
+        .midiCCSelectionValue;
+    var data = createCCMessage(paramIndex, index);
+    device.deviceControl.sendBLEData(data);
+  }
 
   void sendDrumsEnabled(bool enabled);
   void sendDrumsStyle(int style);
@@ -94,7 +114,7 @@ abstract class DeviceCommunication {
   }
 
   //version for Mighty Plug Pro
-  List<int> createSysexMessage(
+  List<int> createSysExMessagePro(
       SysexPrivacy privacy, SyxMsg msgType, SyxDir dir, List<int> data) {
     List<int> msg = [];
     //create header

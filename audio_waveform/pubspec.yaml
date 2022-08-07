@@ -1,0 +1,26 @@
+name: audio_waveform
+description: Extracts waveform data from an audio file suitable for visually rendering the waveform.
+version: 0.1.0
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.tuntori.audio_waveform
+        pluginClass: AudioWaveformPlugin
+      ios:
+        pluginClass: AudioWaveformPlugin
+      macos:
+        pluginClass: AudioWaveformPlugin

@@ -1,4 +1,5 @@
 import '../NuxConstants.dart';
+import '../value_formatters/ValueFormatter.dart';
 import 'Processor.dart';
 
 class NoiseGate2Param extends Processor {
@@ -17,14 +18,14 @@ class NoiseGate2Param extends Processor {
         name: "Threshold",
         handle: "threshold",
         value: 41,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ngthresold,
         midiCC: MidiCCValues.bCC_GateThresold),
     Parameter(
         name: "Sustain",
         handle: "sustain",
         value: 47,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ngsustain,
         midiCC: MidiCCValues.bCC_GateDecay),
   ];
@@ -46,7 +47,7 @@ class NoiseGate1Param extends Processor {
         name: "Threshold",
         handle: "threshold",
         value: 41,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ngthresold,
         midiCC: MidiCCValues.bCC_GateThresold),
   ];
@@ -59,7 +60,7 @@ class NoiseGatePro extends Processor {
 
   int get midiCCEnableValue => MidiCCValuesPro.Head_iNG;
 
-  int get midiCCSelectionValue => 0;
+  int get midiCCSelectionValue => MidiCCValuesPro.Head_iNG;
 
   int get nuxDataLength => 2;
 
@@ -68,14 +69,14 @@ class NoiseGatePro extends Processor {
         name: "Sensitivity",
         handle: "sensitivity",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.NG_Para1,
         midiCC: MidiCCValuesPro.NG_Para1),
     Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
-        valueType: ValueType.percentage,
+        formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugPro.NG_Para2,
         midiCC: MidiCCValuesPro.NG_Para2),
   ];

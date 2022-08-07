@@ -61,19 +61,4 @@ class LiteCommunication extends DeviceCommunication {
     device.deviceControl.sendFullPresetSettings();
     device.deviceControl.deviceConnectionReady();
   }
-
-  void sendSlotEnabledState(int slot) {
-    if (!device.deviceControl.isConnected) return;
-    var preset = device.getPreset(device.selectedChannel);
-    var swIndex = preset
-        .getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)]
-        .midiCCEnableValue;
-
-    //in midi boolean is 00 and 7f for false and true
-    int enabled = preset.slotEnabled(slot) ? 0x7f : 0x00;
-    var data = createCCMessage(swIndex, enabled);
-    device.deviceControl.sendBLEData(data);
-  }
-
-  void setSlotEffect(int slot, int index) {}
 }

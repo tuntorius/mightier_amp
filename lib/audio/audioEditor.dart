@@ -3,8 +3,8 @@
 
 import 'dart:math';
 
+import 'package:audio_waveform/audio_waveform.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
@@ -36,7 +36,7 @@ class AudioEditor extends StatefulWidget {
 
 class _AudioEditorState extends State<AudioEditor> {
   WaveformData? wfData;
-  AudioDecoder decoder = AudioDecoder();
+  AudioWaveformDecoder decoder = AudioWaveformDecoder();
   late AutomationController automation;
 
   final controller = PageController(

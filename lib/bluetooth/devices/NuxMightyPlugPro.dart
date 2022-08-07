@@ -45,7 +45,10 @@ class NuxMightyPlugPro extends NuxDevice {
     return 3;
   }
 
+  bool get fakeMasterVolume => false;
   bool get cabinetSupport => true;
+  bool get hackableIRs => false;
+
   int get cabinetSlotIndex {
     var preset = getPreset(selectedChannel);
     for (int i = 0; i < processorList.length; i++)

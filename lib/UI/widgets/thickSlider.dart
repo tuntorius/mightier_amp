@@ -23,11 +23,10 @@ class ThickSlider extends StatefulWidget {
   final int skipEmitting;
   final bool enabled;
   final bool handleVerticalDrag;
-  final bool tempoValue;
+  final Parameter? parameter;
 
-  const ThickSlider(
-      {Key? key,
-      required this.activeColor,
+  ThickSlider(
+      {required this.activeColor,
       required this.label,
       this.min = 0,
       this.max = 1,
@@ -39,8 +38,7 @@ class ThickSlider extends StatefulWidget {
       required this.labelFormatter,
       this.skipEmitting = 3,
       this.enabled = true,
-      this.tempoValue = false})
-      : super(key: key);
+      this.parameter});
 
   @override
   _ThickSliderState createState() => _ThickSliderState();
@@ -136,17 +134,9 @@ class _ThickSliderState extends State<ThickSlider> {
   }
 
   void manualValueEnter() {
-    var unit = TimeUnit.values[
-        SharedPrefs().getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index)];
-
     String dialogValue = _lerp(factor).toStringAsFixed(2);
-    if (widget.tempoValue) {
-      if (unit == TimeUnit.BPM)
-        dialogValue =
-            Parameter.percentageToBPM(_lerp(factor)).toStringAsFixed(2);
-      else if (unit == TimeUnit.Seconds)
-        dialogValue =
-            Parameter.percentageToTime(_lerp(factor)).toStringAsFixed(2);
+    if (widget.parameter != null) {
+      dialogValue = widget.parameter!.toHumanInput().toStringAsFixed(2);
     }
 
     AlertDialogs.showInputDialog(context,
@@ -164,17 +154,12 @@ class _ThickSliderState extends State<ThickSlider> {
           double min = 0, max = 0;
 
           //Check for range
-          if (!widget.tempoValue) {
+          if (widget.parameter == null) {
             min = widget.min;
             max = widget.max;
           } else {
-            if (unit == TimeUnit.BPM) {
-              min = Parameter.percentageToBPM(100);
-              max = Parameter.percentageToBPM(0);
-            } else if (unit == TimeUnit.Seconds) {
-              min = Parameter.percentageToTime(0);
-              max = Parameter.percentageToTime(100);
-            }
+            min = widget.parameter!.formatter.toHumanInput(widget.min);
+            max = widget.parameter!.formatter.toHumanInput(widget.max);
           }
 
           if (val < min || val > max) return false;
@@ -185,12 +170,9 @@ class _ThickSliderState extends State<ThickSlider> {
         onConfirm: (value) {
           var val = double.parse(value);
 
-          if (widget.tempoValue) {
+          if (widget.parameter != null) {
             //unscale value back
-            if (unit == TimeUnit.BPM)
-              val = Parameter.bpmToPercentage(val);
-            else if (unit == TimeUnit.Seconds)
-              val = Parameter.timeToPercentage(val);
+            val = widget.parameter!.fromHumanInput(val);
           }
 
           widget.onDragStart?.call(widget.value);

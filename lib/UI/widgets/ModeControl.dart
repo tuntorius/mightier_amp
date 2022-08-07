@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 
+import '../../bluetooth/devices/value_formatters/SwitchFormatters.dart';
+
 class ModeControl extends StatelessWidget {
   final bool enabled;
   final double value;
-  final ValueType type;
+  final Parameter parameter;
   final Color effectColor;
   final ValueChanged<double>? onChanged;
   const ModeControl(
       {Key? key,
-      required this.type,
+      required this.parameter,
       required this.value,
       required this.enabled,
       required this.effectColor,
@@ -18,41 +20,15 @@ class ModeControl extends StatelessWidget {
       : super(key: key);
 
   String getText() {
-    switch (type) {
-      case ValueType.vibeMode:
-        return "Mode:";
-      case ValueType.boostMode:
-        return "Boost:";
-      case ValueType.brightMode:
-        return "Bright:";
-      case ValueType.contourMode:
-        return "Contour:";
-      default:
-        return "";
-    }
+    return (parameter.formatter as SwitchFormatter).labelTitle;
   }
 
   List<String> getElementsCount() {
-    switch (type) {
-      case ValueType.vibeMode:
-        return ["Vibe", "Chorus"];
-      case ValueType.boostMode:
-      case ValueType.brightMode:
-        return ["Off", "On"];
-      case ValueType.contourMode:
-        return ["Vintage", "Off", "Modern"];
-      default:
-        return [];
-    }
+    return (parameter.formatter as SwitchFormatter).labelValues;
   }
 
   List<int> getElementValues() {
-    switch (type) {
-      case ValueType.contourMode:
-        return [0, 64, 127];
-      default:
-        return [0, 127];
-    }
+    return (parameter.formatter as SwitchFormatter).midiValues;
   }
 
   Widget getButtonItem(String text) {

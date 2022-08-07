@@ -1,18 +1,18 @@
-/* MediaDecoder
+/* WaveformExtractor
  
    Author: Andrew Stubbs (based on some examples from the docs)
  
    This class opens a file, reads the first audio channel it finds, and returns raw audio data.
    
    Usage:
-      MediaDecoder decoder = new MediaDecoder("myfile.m4a");
+      WaveformExtractor decoder = new WaveformExtractor("myfile.m4a");
       short[] data;
       while ((data = decoder.readShortData()) != null) {
          // process data here
       }
   */
 
-package com.tuntori.mightieramp;
+package com.tuntori.audio_waveform;
 
 import java.io.Console;
 
@@ -28,7 +28,7 @@ import android.net.Uri;
 
 import android.content.Context;
 
-public class MediaDecoder {
+public class WaveformExtractor {
 
     private final boolean DEBUG = false;
 
@@ -43,7 +43,7 @@ public class MediaDecoder {
     private ByteBuffer[] outputBuffers;
     private int outputBufferIndex = -1;
 
-    public MediaDecoder(){}
+    public WaveformExtractor(){}
 
     public void open(String inputFilename, Context context) {
         extractor = new MediaExtractor();
@@ -109,6 +109,10 @@ public class MediaDecoder {
 
     public void release()
     {
+        if (decoder!=null) {
+            decoder.stop();
+            decoder.release();
+        }
         extractor.release();
     }
 
@@ -174,6 +178,7 @@ public class MediaDecoder {
     {
         return outputBuffers[outputBufferIndex];
     }
+
     private void releaseBuffer()
     {
         // Release the buffer so MediaCodec can use it again.

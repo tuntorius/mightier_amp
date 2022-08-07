@@ -61,9 +61,6 @@ class AudioDecoder {
     //calc approx buffer size and create it
     int bytes = ((duration) * sampleRate).ceil();
 
-    //used for max audio sample value
-    int maxValue = 0;
-
     int cursor = 0;
     int bufferIndex = 0;
     int sampleStep = max(duration.round() / 10, 1).floor();
@@ -91,7 +88,7 @@ class AudioDecoder {
           //do a rudimentary dynamic range expansion
           if (val < 30) val = (val * 0.2).round();
           if (val > 40) val = (val * 1.5).round();
-          if (maxValue < val) maxValue = val;
+
           pos < expectedSize ? _samples[pos++] = val : _samples.add(val);
         }
         cursor++;

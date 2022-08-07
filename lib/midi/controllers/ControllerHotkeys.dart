@@ -1,5 +1,6 @@
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 
+import '../../bluetooth/devices/utilities/MathEx.dart';
 import '../ControllerConstants.dart';
 
 class ControllerHotkey {
@@ -26,7 +27,7 @@ class ControllerHotkey {
       required this.hotkeyName});
 
   execute(int? value) {
-    var device = NuxDeviceControl.instance().device;
+    var device = NuxDeviceControl().device;
     int channel = device.selectedChannel;
     switch (control) {
       case HotkeyControl.PreviousChannel:
@@ -68,8 +69,16 @@ class ControllerHotkey {
 
         //warning: this might be more specific value - not to percentage
         //or the value might be pitch bend which is 14 bit
-        p.setParameterValue(effect.parameters[subIndex],
-            NuxDeviceControl.instance().sevenBitToPercentage(value ?? 0));
+        double val = ((value ?? 0) / 127) * 100;
+
+        //Translate the 0-100 value into the range of the parameter
+        val = MathEx.map(
+            val,
+            0,
+            100,
+            effect.parameters[subIndex].formatter.min.toDouble(),
+            effect.parameters[subIndex].formatter.max.toDouble());
+        p.setParameterValue(effect.parameters[subIndex], val);
         NuxDeviceControl.instance().forceNotifyListeners();
         break;
     }

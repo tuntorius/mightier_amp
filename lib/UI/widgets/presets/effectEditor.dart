@@ -3,18 +3,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxConstants.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:mighty_plug_manager/UI/pages/settings.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/TempoFormatter.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/widgets/ModeControl.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Cabinet.dart';
 import 'package:undo/undo.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../../bluetooth/devices/utilities/DelayTapTimer.dart';
-import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
 import '../../../bluetooth/devices/presets/Preset.dart';
+import '../../../bluetooth/devices/value_formatters/ValueFormatter.dart';
 import '../thickSlider.dart';
 
 class EffectEditor extends StatefulWidget {
@@ -28,43 +27,16 @@ class EffectEditor extends StatefulWidget {
 class _EffectEditorState extends State<EffectEditor> {
   DelayTapTimer timer = DelayTapTimer();
   double _oldValue = 0;
-  String percentFormatter(val) {
-    return "${val.round()} %";
-  }
-
-  String dbFormatter(double val) {
-    return "${val.toStringAsFixed(1)} db";
-  }
 
   ThickSlider createSlider(Parameter param, bool isPortrait) {
     bool enabled = widget.preset.slotEnabled(widget.slot);
     return ThickSlider(
       value: param.value,
-      min: param.valueType == ValueType.db ? -6 : 0,
-      max: param.valueType == ValueType.db ? 6 : 100,
+      parameter: param,
+      min: param.formatter.min.toDouble(),
+      max: param.formatter.max.toDouble(),
       label: param.name,
-      tempoValue: param.valueType == ValueType.tempo,
-      labelFormatter: (val) {
-        switch (param.valueType) {
-          case ValueType.percentage:
-            return percentFormatter(val);
-          case ValueType.db:
-            return dbFormatter(val);
-          case ValueType.tempo:
-            var unit = SharedPrefs()
-                .getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index);
-            if (unit == TimeUnit.BPM.index)
-              return "${Parameter.percentageToBPM(val).toStringAsFixed(2)} BPM";
-            return "${Parameter.percentageToTime(val).toStringAsFixed(2)} s";
-          case ValueType.vibeMode:
-            if (val == 0)
-              return "Vibe";
-            else if (val.round() == 100) return "Chorus";
-            return "";
-          default:
-            return "";
-        }
-      },
+      labelFormatter: (val) => param.label,
       activeColor: enabled
           ? widget.preset.effectColor(widget.slot)
           : TinyColor(widget.preset.effectColor(widget.slot))
@@ -94,6 +66,7 @@ class _EffectEditorState extends State<EffectEditor> {
     bool enabled = widget.preset.slotEnabled(widget.slot);
     return ModeControl(
       value: param.value,
+      parameter: param,
       onChanged: (val) {
         NuxDeviceControl.instance().changes.add(Change<double>(
             _oldValue,
@@ -101,7 +74,6 @@ class _EffectEditorState extends State<EffectEditor> {
             (oldVal) => widget.preset.setParameterValue(param, oldVal)));
         NuxDeviceControl.instance().undoStackChanged();
       },
-      type: param.valueType,
       effectColor: widget.preset.effectColor(widget.slot),
       enabled: enabled,
     );
@@ -115,7 +87,8 @@ class _EffectEditorState extends State<EffectEditor> {
         var result = timer.calculate();
         if (result != false) {
           setState(() {
-            var newValue = Parameter.timeToPercentage(result / 1000);
+            var newValue = (param.formatter as TempoFormatter)
+                .timeToPercentage(result / 1000);
             widget.preset.setParameterValue(param, newValue);
 
             NuxDeviceControl.instance().changes.add(Change<double>(
@@ -176,8 +149,8 @@ class _EffectEditorState extends State<EffectEditor> {
         InkWell(
           onTap: () async {
             var _url = AppConstants.patcherUrl;
-            await canLaunch(_url)
-                ? await launch(_url)
+            await canLaunchUrlString(_url)
+                ? await launchUrlString(_url)
                 : throw 'Could not launch $_url';
           },
           child: Container(
@@ -223,19 +196,24 @@ class _EffectEditorState extends State<EffectEditor> {
     if (params.length > 0) {
       for (int i = 0; i < params.length; i++) {
         var widget;
-        if (params[i].valueType.index < ValueType.vibeMode.index)
-          widget = Flexible(
-              fit: FlexFit.loose, child: createSlider(params[i], isPortrait));
-        else {
-          widget = createModeControl(params[i]);
+        switch (params[i].formatter.inputType) {
+          case InputType.SliderInput:
+            widget = Flexible(
+                fit: FlexFit.loose, child: createSlider(params[i], isPortrait));
+            break;
+          case InputType.SwitchInput:
+            widget = createModeControl(params[i]);
+            break;
         }
         sliders.add(widget);
 
-        if (params[i].valueType == ValueType.tempo) {
+        if (params[i].formatter is TempoFormatter) {
           sliders.add(createTapTempo(params[i]));
         }
 
-        if (_dev.cabinetSupport && _dev.cabinetSlotIndex == _slot) {
+        if (_dev.cabinetSupport &&
+            _dev.cabinetSlotIndex == _slot &&
+            _dev.hackableIRs) {
           //add cabinet rename here
           sliders.add(createCabinetRename(prc[_selected] as Cabinet));
         }

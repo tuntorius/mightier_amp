@@ -40,57 +40,12 @@ class MainActivity: FlutterActivity() {
     internal var _dataBa: ByteArray? = null
     internal var saveByteArray:Boolean = false 
 
-    private val CHANNEL = "mighty_plug/decoder"
-    var decoder = MediaDecoder();
-
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine);
 
-        configureDecoderAPI(flutterEngine);
         configureFileSaveAPI(flutterEngine);
     }
 
-    fun configureDecoderAPI(@NonNull flutterEngine: FlutterEngine)
-    {
-        MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
-        .setMethodCallHandler { methodCall, result ->
-            var arguments : Map<String,Any>? = methodCall.arguments()
-            if (methodCall.method == "open")
-            {
-                decoder.open(arguments?.get("path") as String, this);
-                result.success(null);
-            }
-            else if (methodCall.method == "next") {
-                if (decoder != null) {
-                    var buffer = decoder.readShortData();
-                    result.success(buffer);
-                }
-                else
-                    result.error("decoder_unavailable", "you must open a file first", null);
-            }
-            else if (methodCall.method == "close") {
-                if (decoder != null)
-                    decoder.release();
-                result.success(null);
-            }
-            else if (methodCall.method == "duration") {
-                if (decoder != null) {
-                    var dur = decoder.getDuration();
-                    result.success(dur);
-                }
-                else
-                    result.error("decoder_unavailable", "you must open a file first", null);
-            }
-            else if (methodCall.method == "sampleRate") {
-                if (decoder != null) {
-                    var sr = decoder.getSampleRate();
-                    result.success(sr);
-                }
-                else
-                    result.error("decoder_unavailable", "you must open a file first", null);
-            }
-        }
-    }
 
     fun configureFileSaveAPI(@NonNull flutterEngine: FlutterEngine)
     {

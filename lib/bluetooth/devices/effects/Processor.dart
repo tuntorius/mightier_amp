@@ -2,70 +2,13 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueFormatter.dart';
 
-enum ValueType {
-  percentage,
-  db,
-  tempo,
-  vibeMode,
-  boostMode,
-  brightMode,
-  contourMode,
-  scfMode
-}
+import '../utilities/MathEx.dart';
 
 class Parameter {
-  static const delayTimeMstable = [
-    .07972789115646259,
-    .16124716553287982,
-    .5031292517006802,
-    .7398412698412699,
-    1.1972789115646258
-  ];
-
-  static double percentageToTime(double p) {
-    double t = p / 25;
-    int lo = t.floor();
-    int hi = t.ceil();
-    var hiF = t - lo;
-    var loF = 1 - hiF;
-    return (delayTimeMstable[lo] * loF + delayTimeMstable[hi] * hiF);
-  }
-
-  static double percentageToBPM(double p) {
-    return 60 / percentageToTime(p);
-  }
-
-  static double bpmToPercentage(double b) {
-    return timeToPercentage(60 / b);
-  }
-
-  static double timeToPercentage(t) {
-    return (t < delayTimeMstable[0]
-        ? 0
-        : t < delayTimeMstable[1]
-            ? 25 *
-                (t - delayTimeMstable[0]) /
-                (delayTimeMstable[1] - delayTimeMstable[0])
-            : t < delayTimeMstable[2]
-                ? 25 *
-                        (t - delayTimeMstable[1]) /
-                        (delayTimeMstable[2] - delayTimeMstable[1]) +
-                    25
-                : t < delayTimeMstable[3]
-                    ? 25 *
-                            (t - delayTimeMstable[2]) /
-                            (delayTimeMstable[3] - delayTimeMstable[2]) +
-                        50
-                    : t < delayTimeMstable[4]
-                        ? 25 *
-                                (t - delayTimeMstable[3]) /
-                                (delayTimeMstable[4] - delayTimeMstable[3]) +
-                            75
-                        : 100);
-  }
-
-  ValueType valueType;
+  ValueFormatter formatter;
   String name;
   String handle;
   int midiCC;
@@ -76,11 +19,26 @@ class Parameter {
   Parameter(
       {required this.value,
       required this.handle,
-      required this.valueType,
+      required this.formatter,
       required this.name,
       required this.midiCC,
       required this.devicePresetIndex,
       this.masterVolume = false});
+
+  int get midiValue => formatter.valueToMidi7Bit(value);
+  int get masterVolMidiValue =>
+      formatter.valueToMidi7Bit(value * NuxDeviceControl().masterVolume * 0.01);
+  set midiValue(mv) => value = formatter.midi7BitToValue(mv);
+  String get label => formatter.toLabel(value);
+
+  double toHumanInput() {
+    return formatter.toHumanInput(value);
+  }
+
+  double fromHumanInput(double val) {
+    value = formatter.fromHumanInput(val);
+    return value;
+  }
 }
 
 class ProcessorInfo {
@@ -122,14 +80,15 @@ abstract class Processor {
   //used in conjunction with isSeparator
   String category = "";
 
+  //at least for Mighty Plug MP-2, the NuxPayload values are 0-100, not 0,127
   void setupFromNuxPayload(List<int> nuxData) {
     for (int i = 0; i < parameters.length; i++) {
-      if (parameters[i].valueType != ValueType.db)
-        parameters[i].value =
-            nuxData[parameters[i].devicePresetIndex].toDouble();
-      else
-        parameters[i].value =
-            (nuxData[parameters[i].devicePresetIndex].toDouble() - 50) / 8.3334;
+      parameters[i].value = MathEx.map(
+          nuxData[parameters[i].devicePresetIndex].toDouble(),
+          0,
+          100,
+          parameters[i].formatter.min.toDouble(),
+          parameters[i].formatter.max.toDouble());
     }
   }
 
@@ -137,10 +96,8 @@ abstract class Processor {
     List<int> list = [];
     list.add(nuxIndex);
     for (int i = 0; i < parameters.length; i++) {
-      if (parameters[i].valueType != ValueType.db)
-        list.add(parameters[i].value.round());
-      else
-        list.add(((parameters[i].value + 6) * 8.3333).round());
+      MathEx.map(parameters[i].value, parameters[i].formatter.min.toDouble(),
+          parameters[i].formatter.max.toDouble(), 0, 100);
     }
     var padding = nuxDataLength - parameters.length;
     for (int i = 0; i < padding; i++) list.add(0);
@@ -158,4 +115,8 @@ abstract class Amplifier extends Processor {
   int get midiCCEnableValue;
   int get midiCCSelectionValue;
   int get defaultCab;
+}
+
+abstract class Cabinet extends Processor {
+  String get cabName;
 }

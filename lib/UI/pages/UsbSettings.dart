@@ -12,7 +12,7 @@ class UsbSettings extends StatefulWidget {
 
 class _UsbSettingsState extends State<UsbSettings> {
   final usbModes = ["Reamp", "Normal", "Dry Out"];
-  final device = NuxDeviceControl().device;
+  final device = NuxDeviceControl.instance().device;
 
   @override
   Widget build(BuildContext context) {

@@ -269,7 +269,7 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void _handleChannelChange(int index) {
-    NuxDeviceControl().clearUndoStack();
+    NuxDeviceControl.instance().clearUndoStack();
     var _index = index;
 
     //channel skipping

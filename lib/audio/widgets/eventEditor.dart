@@ -52,7 +52,7 @@ class EventEditor {
         // your widget implementation
         return StatefulBuilder(
           builder: (context, setState) {
-            var device = NuxDeviceControl().device;
+            var device = NuxDeviceControl.instance().device;
             bool cab = device.cabinetSupport;
             var preset =
                 PresetsStorage().findPresetByUuid(event.getPresetUuid());

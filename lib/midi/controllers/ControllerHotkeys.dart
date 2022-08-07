@@ -26,7 +26,7 @@ class ControllerHotkey {
       required this.hotkeyName});
 
   execute(int? value) {
-    var device = NuxDeviceControl().device;
+    var device = NuxDeviceControl.instance().device;
     int channel = device.selectedChannel;
     switch (control) {
       case HotkeyControl.PreviousChannel:
@@ -49,17 +49,17 @@ class ControllerHotkey {
       case HotkeyControl.EffectSlotEnable:
         var p = device.getPreset(device.selectedChannel);
         p.setSlotEnabled(index, true, true);
-        NuxDeviceControl().forceNotifyListeners();
+        NuxDeviceControl.instance().forceNotifyListeners();
         break;
       case HotkeyControl.EffectSlotDisable:
         var p = device.getPreset(device.selectedChannel);
         p.setSlotEnabled(index, false, true);
-        NuxDeviceControl().forceNotifyListeners();
+        NuxDeviceControl.instance().forceNotifyListeners();
         break;
       case HotkeyControl.EffectSlotToggle:
         var p = device.getPreset(device.selectedChannel);
         p.setSlotEnabled(index, !p.slotEnabled(index), true);
-        NuxDeviceControl().forceNotifyListeners();
+        NuxDeviceControl.instance().forceNotifyListeners();
         break;
       case HotkeyControl.ParameterSet:
         var p = device.getPreset(device.selectedChannel);
@@ -69,8 +69,8 @@ class ControllerHotkey {
         //warning: this might be more specific value - not to percentage
         //or the value might be pitch bend which is 14 bit
         p.setParameterValue(effect.parameters[subIndex],
-            NuxDeviceControl().sevenBitToPercentage(value ?? 0));
-        NuxDeviceControl().forceNotifyListeners();
+            NuxDeviceControl.instance().sevenBitToPercentage(value ?? 0));
+        NuxDeviceControl.instance().forceNotifyListeners();
         break;
     }
   }

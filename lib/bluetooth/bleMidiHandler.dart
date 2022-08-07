@@ -73,7 +73,7 @@ class BLEMidiHandler {
 
   late List<String> Function() deviceListProvider;
 
-  factory BLEMidiHandler() {
+  factory BLEMidiHandler.instance() {
     return _bleHandler;
   }
 

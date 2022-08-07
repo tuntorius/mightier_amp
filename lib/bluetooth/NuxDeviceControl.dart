@@ -35,7 +35,7 @@ class NuxDiagnosticData {
     data['lastNuxPreset'] = lastNuxPreset;
 
     if (includeJsonPreset)
-      data['jsonPreset'] = NuxDeviceControl().device.presetToJson();
+      data['jsonPreset'] = NuxDeviceControl.instance().device.presetToJson();
 
     return data;
   }
@@ -44,7 +44,11 @@ class NuxDiagnosticData {
 class NuxDeviceControl extends ChangeNotifier {
   static final NuxDeviceControl _nuxDeviceControl = NuxDeviceControl._();
 
-  final BLEMidiHandler _midiHandler = BLEMidiHandler();
+  final BLEMidiHandler _midiHandler = BLEMidiHandler.instance();
+
+  factory NuxDeviceControl.instance() {
+    return _nuxDeviceControl;
+  }
 
   NuxDiagnosticData diagData = NuxDiagnosticData();
 
@@ -71,7 +75,7 @@ class NuxDeviceControl extends ChangeNotifier {
   //connect status control
   final StreamController<DeviceConnectionState> connectStatus =
       StreamController();
-  final StreamController<int> batteryPercentage = StreamController<int>();
+  final StreamController<int> batteryPercentage = StreamController<int>.broadcast();
 
   bool get isConnected => _midiHandler.connectedDevice != null;
 

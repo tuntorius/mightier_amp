@@ -10,7 +10,7 @@ class BleMidiManager extends ChangeNotifier {
   static final BleMidiManager _controller = BleMidiManager._();
   //List<MidiDevice> _devices = [];
 
-  bool get isScanning => BLEMidiHandler().isScanning;
+  bool get isScanning => BLEMidiHandler.instance().isScanning;
   bool _firstTimeScanned = false;
 
   List<BleMidiController> get controllers => _controllers;
@@ -26,26 +26,27 @@ class BleMidiManager extends ChangeNotifier {
   }
 
   BleMidiManager._() {
-    _bleStatusSub = BLEMidiHandler().status.listen(_bleStatusListener);
+    _bleStatusSub = BLEMidiHandler.instance().status.listen(_bleStatusListener);
   }
 
   startScan() {
-    if (BLEMidiHandler().isScanning) return;
+    if (BLEMidiHandler.instance().isScanning) return;
 
     for (int i = controllers.length - 1; i >= 0; i--)
       if (!controllers[i].connected) controllers.removeAt(i);
 
-    _bleScanSub = BLEMidiHandler().scanStatus.listen(_scanStatusListener);
-    BLEMidiHandler().startScanning(true);
+    _bleScanSub =
+        BLEMidiHandler.instance().scanStatus.listen(_scanStatusListener);
+    BLEMidiHandler.instance().startScanning(true);
   }
 
   stopScan() {
-    BLEMidiHandler().stopScanning();
+    BLEMidiHandler.instance().stopScanning();
     _unsubscribeScanListener();
   }
 
   createControllers() {
-    var ctrls = BLEMidiHandler().controllerDevices;
+    var ctrls = BLEMidiHandler.instance().controllerDevices;
     for (var ctl in ctrls) {
       var blectl = BleMidiController(ctl);
       if (!_controllers.contains(blectl))

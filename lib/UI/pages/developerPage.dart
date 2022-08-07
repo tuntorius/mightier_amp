@@ -22,8 +22,8 @@ class _DeveloperPageState extends State<DeveloperPage> {
   @override
   void initState() {
     super.initState();
-    NuxDeviceControl().onDataReceiveDebug = _onDataReceive;
-    NuxDeviceControl().developer = true;
+    NuxDeviceControl.instance().onDataReceiveDebug = _onDataReceive;
+    NuxDeviceControl.instance().developer = true;
   }
 
   void _onDataReceive(List<int> data) {
@@ -34,13 +34,13 @@ class _DeveloperPageState extends State<DeveloperPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if (!NuxDeviceControl().isConnected)
+    // if (!NuxDeviceControl.instance().isConnected)
     //   return Center(
     //     child: Text("No device connected"),
     //   );
     return NestedWillPopScope(
       onWillPop: () {
-        NuxDeviceControl().developer = false;
+        NuxDeviceControl.instance().developer = false;
         return Future.value(true);
       },
       child: Scaffold(
@@ -49,12 +49,12 @@ class _DeveloperPageState extends State<DeveloperPage> {
             Expanded(
               flex: 4,
               child: AbsorbPointer(
-                absorbing: !NuxDeviceControl().developer,
+                absorbing: !NuxDeviceControl.instance().developer,
                 child: Opacity(
-                  opacity: NuxDeviceControl().developer ? 1 : 0.5,
+                  opacity: NuxDeviceControl.instance().developer ? 1 : 0.5,
                   child: SingleChildScrollView(
                     child: TextField(
-                      enabled: NuxDeviceControl().developer,
+                      enabled: NuxDeviceControl.instance().developer,
                       controller: controller,
                       maxLines: null,
                       readOnly: true,
@@ -157,10 +157,10 @@ class _DeveloperPageState extends State<DeveloperPage> {
                       }),
                   ElevatedButton(
                       onPressed: () {
-                        if (!NuxDeviceControl().isConnected) return;
-                        var msg = NuxDeviceControl()
+                        if (!NuxDeviceControl.instance().isConnected) return;
+                        var msg = NuxDeviceControl.instance()
                             .createCCMessage(data[0], data[1]);
-                        BLEMidiHandler().sendData(msg);
+                        BLEMidiHandler.instance().sendData(msg);
                       },
                       child: Text("Send")),
                   ElevatedButton(

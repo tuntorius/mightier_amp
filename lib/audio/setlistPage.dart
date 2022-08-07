@@ -322,7 +322,7 @@ class _SetlistPageState extends State<SetlistPage> {
           return Future.value(false);
         }
 
-        NuxDeviceControl().resetToChannelDefaults();
+        NuxDeviceControl.instance().resetToChannelDefaults();
         return Future.value(true);
       },
       child: Scaffold(

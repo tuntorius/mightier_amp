@@ -24,7 +24,7 @@ class BleMidiController extends MidiController {
 
   Future<bool> connect() async {
     _characteristic =
-        await BLEMidiHandler().connectToController(scanResult.device);
+        await BLEMidiHandler.instance().connectToController(scanResult.device);
 
     if (_characteristic != null) {
       _onConnected();

@@ -76,7 +76,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     widgets.add(buildWidget("Next Channel", Icons.keyboard_arrow_right, null,
         HotkeyControl.NextChannel, 0, 0, false));
 
-    for (int i = 0; i < NuxDeviceControl().device.channelsCount; i++) {
+    for (int i = 0; i < NuxDeviceControl.instance().device.channelsCount; i++) {
       widgets.add(buildWidget("Channel ${i + 1}", Icons.circle,
           Preset.channelColors[i], HotkeyControl.ChannelByIndex, i, 0, false));
     }
@@ -85,7 +85,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
 
   List<Widget> _buildEffectsWidgets() {
     List<Widget> widgets = [];
-    var dev = NuxDeviceControl().device;
+    var dev = NuxDeviceControl.instance().device;
     for (int i = 0; i < dev.processorList.length; i++) {
       var switchable = dev.getPreset(dev.selectedChannel).slotSwitchable(i);
       if (switchable) {
@@ -106,7 +106,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
 
   List<Widget> _buildParametersWidgets() {
     List<Widget> widgets = [];
-    var dev = NuxDeviceControl().device;
+    var dev = NuxDeviceControl.instance().device;
 
     //enumerate all the slots in the signal chain
     for (int i = 0; i < dev.processorList.length; i++) {

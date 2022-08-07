@@ -25,8 +25,9 @@ class ThickSlider extends StatefulWidget {
   final bool handleVerticalDrag;
   final bool tempoValue;
 
-  ThickSlider(
-      {required this.activeColor,
+  const ThickSlider(
+      {Key? key,
+      required this.activeColor,
       required this.label,
       this.min = 0,
       this.max = 1,
@@ -38,7 +39,8 @@ class ThickSlider extends StatefulWidget {
       required this.labelFormatter,
       this.skipEmitting = 3,
       this.enabled = true,
-      this.tempoValue = false});
+      this.tempoValue = false})
+      : super(key: key);
 
   @override
   _ThickSliderState createState() => _ThickSliderState();

@@ -367,116 +367,21 @@ class _TracksPageState extends State<TracksPage>
         }
         return Future.value(true);
       },
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              if (TrackData().tracks.length > 0)
-                SearchTextField(controller: searchCtrl),
-              Expanded(
-                child: ListTileTheme(
-                  selectedTileColor: Color.fromARGB(255, 9, 51, 116),
-                  selectedColor: Colors.white,
-                  child: Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      IndexedStack(
-                        index: TrackData().tracks.length == 0 ? 0 : 1,
-                        children: [
-                          Center(
-                              child: Text("No Tracks",
-                                  style:
-                                      Theme.of(context).textTheme.bodyText1)),
-                          ListView.builder(
-                            controller: scrollController,
-                            itemCount: TrackData().tracks.length,
-                            itemBuilder: (context, index) {
-                              if (filter != "" &&
-                                  !TrackData()
-                                      .tracks[index]
-                                      .name
-                                      .toLowerCase()
-                                      .contains(filter))
-                                return const SizedBox();
-                              return ListTile(
-                                selected: multiselectMode &&
-                                    selected.containsKey(index),
-                                title: Text(TrackData().tracks[index].name),
-                                onTap: () {
-                                  if (multiselectMode) {
-                                    multiselectHandler(index);
-                                    return;
-                                  }
-                                  if (widget.selectorOnly)
-                                    widget.onSelectedTrack
-                                        ?.call(TrackData().tracks[index]);
-                                  else
-                                    editTrack(
-                                        context, TrackData().tracks[index]);
-                                },
-                                onLongPress: () => multiselectHandler(index),
-                                trailing: createTrailingWidget(context, index),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      if (!widget.selectorOnly)
-                        FloatingActionBubble(
+      child: Scaffold(
+        body: Column(
+          children: [
+            if (TrackData().tracks.isNotEmpty)
+              SearchTextField(controller: searchCtrl),
+            Expanded(
+              child: ListTileTheme(
+                selectedTileColor: const Color.fromARGB(255, 9, 51, 116),
+                selectedColor: Colors.white,
+                child: Scaffold(
+                  floatingActionButton: (widget.selectorOnly)
+                      ? null
+                      : FloatingActionBubble(
                           // Menu items
-                          items: [
-                            // Floating action menu item
-                            if (kDebugMode)
-                              Bubble(
-                                  title: "Youtube",
-                                  iconColor: Colors.white,
-                                  bubbleColor: Colors.red,
-                                  icon: Icons.ondemand_video_outlined,
-                                  titleStyle: TextStyle(
-                                      fontSize: 16, color: Colors.white),
-                                  onPress: () {
-                                    _animationController.reverse();
-                                    addFromYoutubeSource(context);
-                                  }),
-                            if (kDebugMode)
-                              Bubble(
-                                title: "Online Source",
-                                iconColor: Colors.white,
-                                bubbleColor: Colors.blue,
-                                icon: Icons.cloud,
-                                titleStyle: TextStyle(
-                                    fontSize: 16, color: Colors.white),
-                                onPress: () {
-                                  _animationController.reverse();
-                                  addFromOnlineSource(context);
-                                },
-                              ),
-                            Bubble(
-                              title: "Media Library",
-                              iconColor: Colors.white,
-                              bubbleColor: Colors.blue,
-                              icon: Icons.library_music,
-                              titleStyle:
-                                  TextStyle(fontSize: 16, color: Colors.white),
-                              onPress: () {
-                                _animationController.reverse();
-                                addFromMediaLibrary(context);
-                              },
-                            ),
-                            //Floating action menu item
-                            Bubble(
-                              title: "File Browser",
-                              iconColor: Colors.white,
-                              bubbleColor: Colors.blue,
-                              icon: Icons.folder,
-                              titleStyle:
-                                  TextStyle(fontSize: 16, color: Colors.white),
-                              onPress: () {
-                                _animationController.reverse();
-                                addFromFile();
-                              },
-                            ),
-                          ],
+                          items: _bubbles(context),
 
                           // animation controller
                           animation: _animation,
@@ -497,15 +402,103 @@ class _TracksPageState extends State<TracksPage>
                           // Flaoting Action button Icon
                           iconData: multiselectMode ? Icons.delete : Icons.add,
                           backGroundColor: Colors.blue,
-                        )
+                        ),
+                  body: IndexedStack(
+                    index: TrackData().tracks.isEmpty ? 0 : 1,
+                    children: [
+                      Center(
+                          child: Text("No Tracks",
+                              style: Theme.of(context).textTheme.bodyText1)),
+                      ListView.builder(
+                        controller: scrollController,
+                        itemCount: TrackData().tracks.length,
+                        itemBuilder: (context, index) {
+                          if (filter != "" &&
+                              !TrackData()
+                                  .tracks[index]
+                                  .name
+                                  .toLowerCase()
+                                  .contains(filter)) return const SizedBox();
+                          return ListTile(
+                            selected:
+                                multiselectMode && selected.containsKey(index),
+                            title: Text(TrackData().tracks[index].name),
+                            onTap: () {
+                              if (multiselectMode) {
+                                multiselectHandler(index);
+                                return;
+                              }
+                              if (widget.selectorOnly)
+                                widget.onSelectedTrack
+                                    ?.call(TrackData().tracks[index]);
+                              else
+                                editTrack(context, TrackData().tracks[index]);
+                            },
+                            onLongPress: () => multiselectHandler(index),
+                            trailing: createTrailingWidget(context, index),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  List<Bubble> _bubbles(BuildContext context) {
+    return [
+      // Floating action menu item
+      if (kDebugMode)
+        Bubble(
+            title: "Youtube",
+            iconColor: Colors.white,
+            bubbleColor: Colors.red,
+            icon: Icons.ondemand_video_outlined,
+            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+            onPress: () {
+              _animationController.reverse();
+              addFromYoutubeSource(context);
+            }),
+      if (kDebugMode)
+        Bubble(
+          title: "Online Source",
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          icon: Icons.cloud,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          onPress: () {
+            _animationController.reverse();
+            addFromOnlineSource(context);
+          },
+        ),
+      Bubble(
+        title: "Media Library",
+        iconColor: Colors.white,
+        bubbleColor: Colors.blue,
+        icon: Icons.library_music,
+        titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+        onPress: () {
+          _animationController.reverse();
+          addFromMediaLibrary(context);
+        },
+      ),
+      //Floating action menu item
+      Bubble(
+        title: "File Browser",
+        iconColor: Colors.white,
+        bubbleColor: Colors.blue,
+        icon: Icons.folder,
+        titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+        onPress: () {
+          _animationController.reverse();
+          addFromFile();
+        },
+      ),
+    ];
   }
 }

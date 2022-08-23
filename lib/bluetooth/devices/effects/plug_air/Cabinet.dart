@@ -19,7 +19,7 @@ abstract class CabinetMP2 extends Cabinet {
   String get cabName;
   String get name {
     var _name = SharedPrefs().getCustomCabinetName(
-        NuxDeviceControl().device.productStringId, nuxIndex);
+        NuxDeviceControl.instance().device.productStringId, nuxIndex);
     return _name ?? cabName;
   }
 

@@ -3,10 +3,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../bluetooth/bleMidiHandler.dart';
 
 class DeviceList extends StatelessWidget {
-  final BLEMidiHandler midiHandler = BLEMidiHandler();
+  final BLEMidiHandler midiHandler = BLEMidiHandler.instance();
+
+  DeviceList({Key? key}) : super(key: key);
 
   bool isConnected(DeviceIdentifier id) {
     //check with nux device first

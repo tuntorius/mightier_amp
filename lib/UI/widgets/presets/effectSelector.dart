@@ -44,7 +44,7 @@ class _EffectSelectorState extends State<EffectSelector> {
     //the index param is always int, it's dynamic because the menu widget requires that
 
     setState(() {
-      var device = NuxDeviceControl().device;
+      var device = NuxDeviceControl.instance().device;
 
       //put new effect in stack
       var oldEffect = _preset.getSelectedEffectForSlot(_selectedSlot);
@@ -74,10 +74,10 @@ class _EffectSelectorState extends State<EffectSelector> {
         }
       }
       if (totalChanges.length == 1)
-        NuxDeviceControl().changes.add(totalChanges[0]);
+        NuxDeviceControl.instance().changes.add(totalChanges[0]);
       else
-        NuxDeviceControl().changes.addGroup(totalChanges);
-      NuxDeviceControl().undoStackChanged();
+        NuxDeviceControl.instance().changes.addGroup(totalChanges);
+      NuxDeviceControl.instance().undoStackChanged();
     });
   }
 
@@ -173,16 +173,16 @@ class _EffectSelectorState extends State<EffectSelector> {
                 var old = _selectedSlot;
                 _selectedSlot = i;
 
-                NuxDeviceControl().changes.add(Change<int>(
+                NuxDeviceControl.instance().changes.add(Change<int>(
                     old,
                     () => _selectedSlot = i,
                     (oldVal) => _selectedSlot = oldVal));
-                NuxDeviceControl().undoStackChanged();
+                NuxDeviceControl.instance().undoStackChanged();
               });
             },
             onReorder: (from, to) {
               setState(() {
-                NuxDeviceControl().changes.add(Change(
+                NuxDeviceControl.instance().changes.add(Change(
                     1,
                     () => _preset.swapProcessorSlots(from, to, true),
                     (oldVal) => _preset.swapProcessorSlots(from, to, true)));
@@ -239,13 +239,13 @@ class _EffectSelectorState extends State<EffectSelector> {
                     value: _preset.slotEnabled(_selectedSlot),
                     onChanged: (val) {
                       setState(() {
-                        NuxDeviceControl().changes.add(Change<bool>(
+                        NuxDeviceControl.instance().changes.add(Change<bool>(
                             !val,
                             () => _preset.setSlotEnabled(
                                 _selectedSlot, val, true),
                             (oldVal) => _preset.setSlotEnabled(
                                 _selectedSlot, oldVal, true)));
-                        NuxDeviceControl().undoStackChanged();
+                        NuxDeviceControl.instance().undoStackChanged();
                       });
                     },
                     activeColor: TinyColor(_effectColor).brighten(20).color,

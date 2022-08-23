@@ -1,37 +1,36 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'dart:convert';
-
+import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/exportQRCode.dart';
 import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:qr_utils/qr_utils.dart';
+import 'package:tinycolor2/tinycolor2.dart';
 
 import '../../../UI/popups/alertDialogs.dart';
 import '../../../UI/popups/changeCategory.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
-import 'package:tinycolor2/tinycolor2.dart';
-import '../../../platform/fileSaver.dart';
-
 import '../../../bluetooth/devices/presets/Preset.dart';
+import '../../../bluetooth/devices/presets/presetsStorage.dart';
+import '../../../platform/fileSaver.dart';
 import '../../mightierIcons.dart';
 import '../../theme.dart';
 import '../dynamic_treeview.dart';
-import 'package:flutter/material.dart';
-import '../../../bluetooth/devices/presets/presetsStorage.dart';
 
 class PresetList extends StatefulWidget {
   final void Function(dynamic)? onTap;
   final bool simplified;
   final bool noneOption;
   final String? customProductId;
-  PresetList(
-      {this.onTap,
+  const PresetList(
+      {Key? key,
+      this.onTap,
       this.simplified = false,
       this.noneOption = false,
-      this.customProductId});
+      this.customProductId})
+      : super(key: key);
   @override
   _PresetListState createState() => _PresetListState();
 }
@@ -49,7 +48,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Export All"),
+          const Text("Export All"),
         ],
       ),
     ),
@@ -62,7 +61,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Import"),
+          const Text("Import"),
         ],
       ),
     ),
@@ -79,7 +78,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Delete"),
+          const Text("Delete"),
         ],
       ),
     ),
@@ -92,7 +91,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Rename"),
+          const Text("Rename"),
         ],
       ),
     ),
@@ -105,7 +104,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Export Category"),
+          const Text("Export Category"),
         ],
       ),
     )
@@ -122,7 +121,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Delete"),
+          const Text("Delete"),
         ],
       ),
     ),
@@ -135,7 +134,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Change Channel"),
+          const Text("Change Channel"),
         ],
       ),
     ),
@@ -148,7 +147,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Change Category"),
+          const Text("Change Category"),
         ],
       ),
     ),
@@ -161,7 +160,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Rename"),
+          const Text("Rename"),
         ],
       ),
     ),
@@ -174,7 +173,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Duplicate"),
+          const Text("Duplicate"),
         ],
       ),
     ),
@@ -187,7 +186,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Export Preset"),
+          const Text("Export Preset"),
         ],
       ),
     ),
@@ -200,7 +199,7 @@ class _PresetListState extends State<PresetList>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Export QR Code"),
+          const Text("Export QR Code"),
         ],
       ),
     ),
@@ -214,8 +213,9 @@ class _PresetListState extends State<PresetList>
       case 1: //export category
         String? data = PresetsStorage().presetsToJson();
 
-        if (data != null)
+        if (data != null) {
           saveFileString("application/octet-stream", "presets.nuxpreset", data);
+        }
         break;
       case 2: //import
         openFileString("application/octet-stream").then((value) {
@@ -275,9 +275,10 @@ class _PresetListState extends State<PresetList>
           case 2: //export category
             String? data = PresetsStorage().presetsToJson(item);
 
-            if (data != null)
+            if (data != null) {
               saveFileString(
                   "application/octet-stream", "$item.nuxpreset", data);
+            }
         }
       } else {
         //preset
@@ -286,8 +287,9 @@ class _PresetListState extends State<PresetList>
             bool inUse = TrackData().isPresetInUse(item["uuid"]);
             String description =
                 "Are you sure you want to delete ${item["name"]}?";
-            if (inUse)
+            if (inUse) {
               description += "\n\nThe preset is used in one or more Jamtracks!";
+            }
 
             AlertDialogs.showConfirmDialog(context,
                 title: "Confirm",
@@ -329,11 +331,13 @@ class _PresetListState extends State<PresetList>
           case 2:
             var channelList = <String>[];
             int nuxChannel = item["channel"];
-            var d = NuxDeviceControl().getDeviceFromId(item["product_id"]);
+            var d =
+                NuxDeviceControl.instance().getDeviceFromId(item["product_id"]);
 
             if (d != null) {
-              for (int i = 0; i < d.channelsCount; i++)
+              for (int i = 0; i < d.channelsCount; i++) {
                 channelList.add(d.channelName(i));
+              }
               var dialog = AlertDialogs.showOptionDialog(context,
                   confirmButton: "Change",
                   cancelButton: "Cancel",
@@ -365,9 +369,10 @@ class _PresetListState extends State<PresetList>
             String? data =
                 PresetsStorage().presetToJson(item["category"], item["name"]);
 
-            if (data != null)
+            if (data != null) {
               saveFileString("application/octet-stream",
                   "${item["name"]}.nuxpreset", data);
+            }
             break;
           case 5: //change category
             var categoryDialog = ChangeCategoryDialog(
@@ -387,7 +392,7 @@ class _PresetListState extends State<PresetList>
             );
             break;
           case 6:
-            var qr = NuxDeviceControl().device.jsonToQR(item);
+            var qr = NuxDeviceControl.instance().device.jsonToQR(item);
             if (qr != null) {
               Image img = await QrUtils.generateQR(qr);
               var qrExport = QRExportDialog(img, item["name"]);
@@ -406,7 +411,7 @@ class _PresetListState extends State<PresetList>
   void showContextMenu(
       Offset _position, dynamic item, List<PopupMenuEntry> _menu) {
     final RenderBox? overlay =
-        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+        Overlay.of(context)?.context.findRenderObject() as RenderBox?;
     //open menu
     if (overlay != null) {
       var rect = RelativeRect.fromRect(
@@ -425,19 +430,19 @@ class _PresetListState extends State<PresetList>
   @override
   void initState() {
     super.initState();
-    NuxDeviceControl().addListener(refreshPresets);
+    NuxDeviceControl.instance().addListener(refreshPresets);
     PresetsStorage().addListener(refreshPresets);
 
     //cache devices
-    NuxDeviceControl().deviceList.forEach((element) {
+    for (var element in NuxDeviceControl.instance().deviceList) {
       devices[element.productStringId] = element;
-    });
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    NuxDeviceControl().removeListener(refreshPresets);
+    NuxDeviceControl.instance().removeListener(refreshPresets);
     PresetsStorage().removeListener(refreshPresets);
   }
 
@@ -466,9 +471,9 @@ class _PresetListState extends State<PresetList>
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ));
-          } else if (pi.keyName == "cabinet")
+          } else if (pi.keyName == "cabinet") {
             continue;
-          else {
+          } else {
             bool enabled = preset[pi.keyName]["enabled"];
             widgets.add(Icon(
               pi.icon,
@@ -485,32 +490,34 @@ class _PresetListState extends State<PresetList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Column(
-      children: [
-        if (!widget.simplified)
-          ListTile(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            contentPadding: EdgeInsets.only(left: 16, right: 12),
-            title: Text("Presets"),
-            trailing: PopupMenuButton(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 12.0, right: 4, bottom: 10, top: 10),
-                child: Icon(Icons.more_vert, color: Colors.grey),
+    return SafeArea(
+      child: ListView(
+        children: [
+          if (!widget.simplified)
+            ListTile(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              contentPadding: const EdgeInsets.only(left: 16, right: 12),
+              title: const Text("Presets"),
+              trailing: PopupMenuButton(
+                child: const Padding(
+                  padding: EdgeInsets.only(
+                      left: 12.0, right: 4, bottom: 10, top: 10),
+                  child: const Icon(Icons.more_vert, color: Colors.grey),
+                ),
+                itemBuilder: (context) {
+                  return presetsMenu;
+                },
+                onSelected: (pos) {
+                  mainMenuActions(pos);
+                },
               ),
-              itemBuilder: (context) {
-                return presetsMenu;
-              },
-              onSelected: (pos) {
-                mainMenuActions(pos);
-              },
             ),
-          ),
-        Expanded(
-          child: _buildList(context),
-        )
-      ],
+          Expanded(
+            child: _buildList(context),
+          )
+        ],
+      ),
     );
   }
 
@@ -542,7 +549,7 @@ class _PresetListState extends State<PresetList>
         categories: PresetsStorage().getCategories(),
         items: PresetsStorage().presetsData,
         childBuilder: (item) {
-          var device = NuxDeviceControl().device;
+          var device = NuxDeviceControl.instance().device;
           var pVersion = item["version"] ?? 0;
           var devVersion = device.productVersion;
           bool newItem = false;
@@ -615,10 +622,13 @@ class _PresetListState extends State<PresetList>
 
                   if (widget.onTap != null)
                     widget.onTap!(item);
-                  else {
-                    var dev = NuxDeviceControl().device;
-                    if (dev.isPresetSupported(item))
-                      NuxDeviceControl().device.presetFromJson(item, null);
+                    else {
+                    var dev = NuxDeviceControl.instance().device;
+                    if (dev.isPresetSupported(item)) {
+                      NuxDeviceControl.instance()
+                          .device
+                          .presetFromJson(item, null);
+                    }
                   }
                   setState(() {});
                 },
@@ -634,7 +644,7 @@ class _PresetListState extends State<PresetList>
                     alignment: Alignment.center,
                     children: [
                       Icon(
-                        NuxDeviceControl()
+                        NuxDeviceControl.instance()
                             .getDeviceFromId(item["product_id"])!
                             .productIcon,
                         size: 30,

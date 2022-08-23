@@ -7,29 +7,31 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
+import 'package:mighty_plug_manager/UI/utils.dart';
+import 'package:mighty_plug_manager/UI/widgets/app_drawer.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'UI/popups/alertDialogs.dart';
-import 'UI/widgets/NuxAppBar.dart' as NuxAppBar;
-import 'UI/widgets/VolumeDrawer.dart';
-import 'UI/widgets/nestedWillPopScope.dart';
-import 'UI/widgets/presets/presetList.dart';
-import 'bluetooth/NuxDeviceControl.dart';
-import 'bluetooth/bleMidiHandler.dart';
 
-import 'UI/widgets/bottomBar.dart';
-import 'UI/theme.dart';
-
-//pages
-import 'UI/pages/presetEditor.dart';
 import 'UI/pages/drumEditor.dart';
 import 'UI/pages/jamTracks.dart';
+//pages
+import 'UI/pages/presetEditor.dart';
 import 'UI/pages/settings.dart';
-
+import 'UI/popups/alertDialogs.dart';
+import 'UI/theme.dart';
+import 'UI/widgets/bottomBar.dart';
+import 'UI/widgets/nestedWillPopScope.dart';
+import 'UI/widgets/NuxAppBar.dart';
+import 'UI/widgets/presets/presetList.dart';
+import 'UI/widgets/VolumeDrawer.dart';
+import 'bluetooth/NuxDeviceControl.dart';
+import 'bluetooth/bleMidiHandler.dart';
 //recreate this file with your own api keys
 import 'configKeys.dart';
+
+enum LayoutMode { navBar, drawer }
 
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -40,12 +42,13 @@ void main() {
   SharedPrefs prefs = SharedPrefs();
 
   //capture flutter errors
-  if (!kDebugMode)
+  if (!kDebugMode) {
     FlutterError.onError = (FlutterErrorDetails details) {
       DebugConsole.print("Flutter error: ${details.toString()}");
 
       //update diagnostics with json preset
-      NuxDeviceControl().updateDiagnosticsData(includeJsonPreset: true);
+      NuxDeviceControl.instance()
+          .updateDiagnosticsData(includeJsonPreset: true);
 
       // Send report
       Sentry.captureException(
@@ -53,6 +56,7 @@ void main() {
         stackTrace: details.stack,
       );
     };
+  }
 
   if (!kDebugMode) {
     runZonedGuarded(() {
@@ -73,7 +77,8 @@ void main() {
       DebugConsole.print(stackTrace);
 
       //update diagnostics with json preset
-      NuxDeviceControl().updateDiagnosticsData(includeJsonPreset: true);
+      NuxDeviceControl.instance()
+          .updateDiagnosticsData(includeJsonPreset: true);
 
       await Sentry.captureException(
         error,
@@ -99,7 +104,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  NuxDeviceControl device = NuxDeviceControl();
+  NuxDeviceControl device = NuxDeviceControl.instance();
   SharedPrefs prefs = SharedPrefs();
   PresetsStorage storage = PresetsStorage();
 
@@ -115,21 +120,21 @@ class _AppState extends State<App> {
 }
 
 class MainTabs extends StatefulWidget {
-  final BLEMidiHandler handler = BLEMidiHandler();
   final MidiControllerManager midiMan = MidiControllerManager();
 
-  MainTabs();
+  MainTabs({Key? key}) : super(key: key);
+
   @override
-  _MainTabsState createState() => _MainTabsState();
+  State<MainTabs> createState() => _MainTabsState();
 }
 
 class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   int _currentIndex = 0;
   late BuildContext dialogContext;
   late TabController controller;
-  final List<Widget> _children = [];
+  late final List<Widget> _tabs;
 
-  bool openDrawer = false;
+  bool isBottomDrawerOpen = false;
 
   bool connectionFailed = false;
   late Timer _timeout;
@@ -137,34 +142,44 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    if (!AppThemeConfig.allowRotation)
+    if (!AppThemeConfig.allowRotation) {
       SystemChrome.setPreferredOrientations(
           [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    else
+    } else {
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight
       ]);
+    }
 
     super.initState();
 
     //add 5 pages widgets
-    _children.addAll(
-        [PresetEditor(), PresetList(), DrumEditor(), JamTracks(), Settings()]);
+    _tabs = [
+      PresetEditor(),
+      PresetList(),
+      DrumEditor(),
+      JamTracks(),
+      Settings(),
+    ];
 
     controller = TabController(initialIndex: 0, length: 5, vsync: this);
 
     controller.addListener(() {
-      _currentIndex = controller.index;
-      setState(() {});
+      setState(() {
+        _currentIndex = controller.index;
+      });
     });
 
-    NuxDeviceControl().connectStatus.stream.listen(connectionStateListener);
-    NuxDeviceControl().addListener(onDeviceChanged);
+    NuxDeviceControl.instance()
+        .connectStatus
+        .stream
+        .listen(connectionStateListener);
+    NuxDeviceControl.instance().addListener(onDeviceChanged);
 
-    BLEMidiHandler().initBle(bleErrorHandler);
+    BLEMidiHandler.instance().initBle(bleErrorHandler);
   }
 
   void bleErrorHandler(BluetoothError error, dynamic data) {
@@ -193,17 +208,17 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   @override
   void dispose() {
     super.dispose();
-    NuxDeviceControl().removeListener(onDeviceChanged);
+    NuxDeviceControl.instance().removeListener(onDeviceChanged);
   }
 
   void onConnectionTimeout() async {
     connectionFailed = true;
     if (dialogSetState != null) {
       dialogSetState?.call(() {});
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 3));
       Navigator.pop(context);
       dialogSetState = null;
-      BLEMidiHandler().disconnectDevice();
+      BLEMidiHandler.instance().disconnectDevice();
     }
   }
 
@@ -211,7 +226,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     switch (event) {
       case DeviceConnectionState.connectedStart:
         if (dialogSetState != null) break;
-        print("just connected");
+        debugPrint("just connected");
         connectionFailed = false;
         showDialog(
           context: context,
@@ -219,36 +234,38 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
           builder: (BuildContext context) {
             dialogContext = context;
             return StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-              dialogSetState = setState;
-              return NestedWillPopScope(
-                onWillPop: () => Future.value(false),
-                child: Dialog(
-                  backgroundColor: Colors.grey[700],
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: new Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (!connectionFailed) CircularProgressIndicator(),
-                        if (connectionFailed)
-                          Icon(
-                            Icons.error,
-                            color: Colors.red,
+              builder: (BuildContext context, StateSetter setState) {
+                dialogSetState = setState;
+                return NestedWillPopScope(
+                  onWillPop: () => Future.value(false),
+                  child: Dialog(
+                    backgroundColor: Colors.grey[700],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (!connectionFailed)
+                            const CircularProgressIndicator(),
+                          if (connectionFailed)
+                            const Icon(
+                              Icons.error,
+                              color: Colors.red,
+                            ),
+                          const SizedBox(
+                            width: 8,
                           ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Text(connectionFailed
-                            ? "Connection Failed!"
-                            : "Connecting"),
-                      ],
+                          Text(connectionFailed
+                              ? "Connection Failed!"
+                              : "Connecting"),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            });
+                );
+              },
+            );
           },
         );
 
@@ -257,10 +274,10 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
         break;
       case DeviceConnectionState.presetsLoaded:
-        print("presets loaded");
+        debugPrint("presets loaded");
         break;
       case DeviceConnectionState.configReceived:
-        print("config loaded");
+        debugPrint("config loaded");
         dialogSetState = null;
         _timeout.cancel();
         Navigator.pop(context);
@@ -278,18 +295,12 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         description: "Are you sure?", onConfirm: (val) {
       if (val) {
         //disconnect device if connected
-        BLEMidiHandler().disconnectDevice();
+        BLEMidiHandler.instance().disconnectDevice();
       }
       confirmation.complete(val);
     });
     return confirmation.future;
   }
-
-  // setTab(int tab) {
-  //   _currentIndex = tab;
-  //   setState(() {});
-  //   Navigator.of(context).pop();
-  // }
 
   void onDeviceChanged() {
     setState(() {});
@@ -297,11 +308,14 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final layoutMode = getLayoutMode(mediaQuery);
+    final currentVolume = NuxDeviceControl.instance().masterVolume;
 
     //WARNING: Workaround for a flutter bug - if the app is started with screen off,
     //one of the widgets throwns an exception and the app scaffold is empty
-    if (MediaQuery.of(context).size.width < 10) return Container();
+    if (screenWidth < 10) return Container();
     return FocusScope(
       autofocus: true,
       onKey: (node, event) {
@@ -314,93 +328,91 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       child: NestedWillPopScope(
         onWillPop: _willPopCallback,
         child: Scaffold(
-          appBar: NuxAppBar.getAppBar(widget.handler),
+          appBar: layoutMode != LayoutMode.navBar ? null : const NuxAppBar(),
           body: Stack(
             alignment: Alignment.bottomCenter,
             children: [
-              TabBarView(
-                children: _children,
-                physics: NeverScrollableScrollPhysics(),
-                controller: controller,
+              Row(
+                children: [
+                  if (layoutMode == LayoutMode.drawer)
+                    AppDrawer(
+                      onSwitchPageIndex: _onSwitchPageIndex,
+                      currentIndex: _currentIndex,
+                      totalTabs: _tabs.length,
+                      currentVolume: currentVolume,
+                      onVolumeChanged: _onVolumeChanged,
+                      onVolumeDragEnd: _onVolumeDragEnd,
+                    ),
+                  Expanded(
+                    child: layoutMode == LayoutMode.navBar
+                        ? TabBarView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: controller,
+                            children: _tabs,
+                          )
+                        : _tabs.elementAt(_currentIndex),
+                  ),
+                ],
               ),
-              VolumeDrawer(
-                  expanded: openDrawer,
-                  onChanged: () => setState(() {}),
-                  onExpandChange: (val) => openDrawer = val)
-            ],
-          ),
-          /*drawer: Drawer(
-            child: ListView(
-              children: [
-                Text("Mightier Amp"),
-                Divider(),
-                ListTile(
-                  title: Text("Style editor"),
-                  onTap: () {
-                    setTab(0);
-                  },
-                ),
-                ListTile(
-                  title: Text("Presets"),
-                  onTap: () {
-                    setTab(1);
-                  },
-                ),
-                ListTile(
-                  title: Text("Drums"),
-                  onTap: () {
-                    setTab(2);
-                  },
-                ),
-                ListTile(
-                  title: Text("Jam Tracks"),
-                  onTap: () {
-                    setTab(3);
-                  },
-                ),
-                ListTile(
-                  title: Text("Settings"),
-                  onTap: () {
-                    setTab(4);
-                  },
-                ),
-              ],
-            ),
-          ),*/
-          drawer: isPortrait
-              ? null
-              : SafeArea(
-                  child: Drawer(
-                      child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: [const DrawerHeader(child: Text("Mightier Amp"))],
-                  )),
-                ),
-          bottomNavigationBar: !isPortrait
-              ? null
-              : GestureDetector(
-                  onVerticalDragUpdate: (details) {
-                    if (details.delta.dy < 0) {
-                      //open
-                      openDrawer = true;
-                    } else {
-                      //close
-                      openDrawer = false;
-                    }
-                    setState(() {});
-                  },
-                  child: BottomBar(
-                    index: _currentIndex,
-                    onTap: (_index) {
-                      setState(() {
-                        _currentIndex = _index;
-                        controller.animateTo(_currentIndex);
-                      });
-                    },
+              if (layoutMode != LayoutMode.drawer)
+                BottomDrawer(
+                  isBottomDrawerOpen: isBottomDrawerOpen,
+                  onExpandChange: (val) => setState(() {
+                    isBottomDrawerOpen = val;
+                  }),
+                  child: VolumeSlider(
+                    currentVolume: currentVolume,
+                    onVolumeChanged: _onVolumeChanged,
+                    onVolumeDragEnd: _onVolumeDragEnd,
                   ),
                 ),
+            ],
+          ),
+          bottomNavigationBar: layoutMode == LayoutMode.navBar
+              ? GestureDetector(
+                  onVerticalDragUpdate: _onBottomBarSwipe,
+                  child: BottomBar(
+                    index: _currentIndex,
+                    onTap: _onSwitchPageIndex,
+                  ),
+                )
+              : null,
         ),
       ),
     );
+  }
+
+  void _onVolumeDragEnd(_) {
+    SharedPrefs().setValue(
+      SettingsKeys.masterVolume,
+      NuxDeviceControl.instance().masterVolume,
+    );
+  }
+
+  void _onVolumeChanged(value) {
+    setState(() {
+      NuxDeviceControl.instance().masterVolume = value;
+    });
+  }
+
+  void _onBottomBarSwipe(DragUpdateDetails details) {
+    if (details.delta.dy < 0) {
+      //open
+      setState(() {
+        isBottomDrawerOpen = true;
+      });
+    } else {
+      //close
+      setState(() {
+        isBottomDrawerOpen = false;
+      });
+    }
+  }
+
+  void _onSwitchPageIndex(int index) {
+    setState(() {
+      _currentIndex = index;
+      controller.animateTo(_currentIndex);
+    });
   }
 }

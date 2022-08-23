@@ -8,41 +8,44 @@ class BottomBar extends StatefulWidget {
   final void Function(int) onTap;
   final int index;
 
-  BottomBar({required this.index, required this.onTap});
+  const BottomBar({
+    Key? key,
+    required this.index,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
-  _BottomBarState createState() => _BottomBarState();
+  State<BottomBar> createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-        currentIndex: widget.index,
-        onTap: (int _index) {
-          widget.onTap(_index);
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(MightierIcons.sliders),
-            label: "Editor",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: "Presets",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(MightierIcons.drum),
-            label: "Drums",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.queue_music),
-            label: "JamTracks",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          )
-        ]);
+      currentIndex: widget.index,
+      onTap: widget.onTap,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(MightierIcons.sliders),
+          label: "Editor",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.list),
+          label: "Presets",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(MightierIcons.drum),
+          label: "Drums",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.queue_music),
+          label: "JamTracks",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: "Settings",
+        ),
+      ],
+    );
   }
 }

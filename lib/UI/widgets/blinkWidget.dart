@@ -22,7 +22,7 @@ class _BlinkWidgetState extends State<BlinkWidget>
   initState() {
     super.initState();
 
-    _controller = new AnimationController(
+    _controller = AnimationController(
         duration: Duration(milliseconds: widget.interval), vsync: this);
 
     _controller.addStatusListener((status) {

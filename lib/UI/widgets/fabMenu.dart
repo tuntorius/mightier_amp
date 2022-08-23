@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
+
 import 'nestedWillPopScope.dart';
 
 class Bubble {
@@ -29,8 +29,8 @@ class BubbleMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      shape: StadiumBorder(),
-      padding: EdgeInsets.only(top: 11, bottom: 13, left: 32, right: 32),
+      shape: const StadiumBorder(),
+      padding: const EdgeInsets.only(top: 11, bottom: 13, left: 32, right: 32),
       color: item.bubbleColor,
       splashColor: Colors.grey.withOpacity(0.1),
       highlightColor: Colors.grey.withOpacity(0.1),
@@ -45,7 +45,7 @@ class BubbleMenu extends StatelessWidget {
             item.icon,
             color: item.iconColor,
           ),
-          SizedBox(
+          const SizedBox(
             width: 10.0,
           ),
           Text(
@@ -66,6 +66,7 @@ class _DefaultHeroTag {
 
 class FloatingActionBubble extends AnimatedWidget {
   const FloatingActionBubble({
+    Key? key,
     required this.items,
     required this.onPress,
     required this.iconColor,
@@ -76,7 +77,7 @@ class FloatingActionBubble extends AnimatedWidget {
     this.animatedIconData,
   })  : assert((iconData == null && animatedIconData != null) ||
             (iconData != null && animatedIconData == null)),
-        super(listenable: animation);
+        super(key: key, listenable: animation);
 
   final List<Bubble> items;
   final Function() onPress;
@@ -89,7 +90,6 @@ class FloatingActionBubble extends AnimatedWidget {
   get _animation => listenable;
 
   Widget buildItem(BuildContext context, int index) {
-    TextDirection textDirection = Directionality.of(context);
     final transform = Matrix4.translationValues(
       0,
       -(_animation.value - 1) * 40 * (items.length - index),
@@ -132,7 +132,7 @@ class FloatingActionBubble extends AnimatedWidget {
         onTap: onPress,
         child: Opacity(
           opacity: val,
-          child: ColoredBox(
+          child: const ColoredBox(
             color: Colors.black54,
           ),
         ),
@@ -154,23 +154,26 @@ class FloatingActionBubble extends AnimatedWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                IgnorePointer(
-                  ignoring: _animation.value == 0,
-                  child: SingleChildScrollView(
-                      physics: NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: buildItems(context),
-                      )),
+                Flexible(
+                  child: IgnorePointer(
+                    ignoring: _animation.value == 0,
+                    child: SingleChildScrollView(
+                        // physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: buildItems(context),
+                        )),
+                  ),
                 ),
                 Transform.rotate(
                   angle: _animation.value * pi * 3 / 4,
                   child: FloatingActionButton(
-                    heroTag:
-                        herotag == null ? const _DefaultHeroTag() : herotag,
+                    heroTag: herotag ?? const _DefaultHeroTag(),
                     backgroundColor: backGroundColor,
+                    onPressed: onPress,
                     // iconData is mutually exclusive with animatedIconData
                     // only 1 can be null at the time
                     child: iconData == null
@@ -183,7 +186,6 @@ class FloatingActionBubble extends AnimatedWidget {
                             iconData,
                             color: iconColor,
                           ),
-                    onPressed: onPress,
                   ),
                 ),
               ],

@@ -163,7 +163,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     var result =
         _presets[widget.device.selectedChannel].setupPresetFromQRData(qrData);
     bool success = result == PresetQRError.Ok;
-    NuxDeviceControl().clearUndoStack();
+    NuxDeviceControl.instance().clearUndoStack();
 
     var message = QrUtils.QRMessages[result.index];
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(

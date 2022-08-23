@@ -139,8 +139,8 @@ abstract class Preset {
 
     var loadedPreset = hex.encode(_nuxData);
 
-    NuxDeviceControl().diagData.lastNuxPreset = loadedPreset;
-    NuxDeviceControl().updateDiagnosticsData(nuxPreset: loadedPreset);
+    NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
+    NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
 
     for (int i = 0; i < device.effectsChainLength; i++) {
       //set proper effect

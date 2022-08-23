@@ -52,11 +52,11 @@ class _EffectEditorState extends State<EffectEditor> {
       },
       onDragEnd: (val) {
         //undo/redo here
-        NuxDeviceControl().changes.add(Change<double>(
+        NuxDeviceControl.instance().changes.add(Change<double>(
             _oldValue,
             () => widget.preset.setParameterValue(param, val),
             (oldVal) => widget.preset.setParameterValue(param, oldVal)));
-        NuxDeviceControl().undoStackChanged();
+        NuxDeviceControl.instance().undoStackChanged();
       },
       handleVerticalDrag: isPortrait,
     );
@@ -68,11 +68,11 @@ class _EffectEditorState extends State<EffectEditor> {
       value: param.value,
       parameter: param,
       onChanged: (val) {
-        NuxDeviceControl().changes.add(Change<double>(
+        NuxDeviceControl.instance().changes.add(Change<double>(
             _oldValue,
             () => widget.preset.setParameterValue(param, val),
             (oldVal) => widget.preset.setParameterValue(param, oldVal)));
-        NuxDeviceControl().undoStackChanged();
+        NuxDeviceControl.instance().undoStackChanged();
       },
       effectColor: widget.preset.effectColor(widget.slot),
       enabled: enabled,
@@ -91,11 +91,11 @@ class _EffectEditorState extends State<EffectEditor> {
                 .timeToPercentage(result / 1000);
             widget.preset.setParameterValue(param, newValue);
 
-            NuxDeviceControl().changes.add(Change<double>(
+            NuxDeviceControl.instance().changes.add(Change<double>(
                 param.value,
                 () => widget.preset.setParameterValue(param, newValue),
                 (oldVal) => widget.preset.setParameterValue(param, oldVal)));
-            NuxDeviceControl().undoStackChanged();
+            NuxDeviceControl.instance().undoStackChanged();
           });
         }
       },
@@ -127,7 +127,7 @@ class _EffectEditorState extends State<EffectEditor> {
           children: [
             ElevatedButton.icon(
                 onPressed: () {
-                  var _dev = NuxDeviceControl().device;
+                  var _dev = NuxDeviceControl.instance().device;
                   AlertDialogs.showInputDialog(context,
                       title: "Set cabinet name",
                       description: "",
@@ -139,7 +139,7 @@ class _EffectEditorState extends State<EffectEditor> {
                 label: Text("Rename Cabinet")),
             ElevatedButton.icon(
                 onPressed: () {
-                  var _dev = NuxDeviceControl().device;
+                  var _dev = NuxDeviceControl.instance().device;
                   _dev.renameCabinet(cab.nuxIndex, cab.cabName);
                 },
                 icon: Icon(Icons.restart_alt),
@@ -181,7 +181,7 @@ class _EffectEditorState extends State<EffectEditor> {
   Widget build(BuildContext context) {
     var _preset = widget.preset;
     var _slot = widget.slot;
-    var _dev = NuxDeviceControl().device;
+    var _dev = NuxDeviceControl.instance().device;
     var sliders = <Widget>[];
 
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;

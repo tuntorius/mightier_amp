@@ -50,17 +50,17 @@ class ControllerHotkey {
       case HotkeyControl.EffectSlotEnable:
         var p = device.getPreset(device.selectedChannel);
         p.setSlotEnabled(index, true, true);
-        NuxDeviceControl().forceNotifyListeners();
+        NuxDeviceControl.instance().forceNotifyListeners();
         break;
       case HotkeyControl.EffectSlotDisable:
         var p = device.getPreset(device.selectedChannel);
         p.setSlotEnabled(index, false, true);
-        NuxDeviceControl().forceNotifyListeners();
+        NuxDeviceControl.instance().forceNotifyListeners();
         break;
       case HotkeyControl.EffectSlotToggle:
         var p = device.getPreset(device.selectedChannel);
         p.setSlotEnabled(index, !p.slotEnabled(index), true);
-        NuxDeviceControl().forceNotifyListeners();
+        NuxDeviceControl.instance().forceNotifyListeners();
         break;
       case HotkeyControl.ParameterSet:
         var p = device.getPreset(device.selectedChannel);
@@ -79,7 +79,7 @@ class ControllerHotkey {
             effect.parameters[subIndex].formatter.min.toDouble(),
             effect.parameters[subIndex].formatter.max.toDouble());
         p.setParameterValue(effect.parameters[subIndex], val);
-        NuxDeviceControl().forceNotifyListeners();
+        NuxDeviceControl.instance().forceNotifyListeners();
         break;
     }
   }

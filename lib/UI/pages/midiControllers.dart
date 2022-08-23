@@ -15,7 +15,7 @@ class MidiControllers extends StatefulWidget {
 
 class _MidiControllersState extends State<MidiControllers> {
   final ctrl = MidiControllerManager();
-  final midiHandler = BLEMidiHandler();
+  final midiHandler = BLEMidiHandler.instance();
   @override
   void initState() {
     super.initState();

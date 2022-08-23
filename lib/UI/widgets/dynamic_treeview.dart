@@ -53,7 +53,8 @@ class DynamicTreeView extends StatefulWidget {
 
   ///Configuration object for [DynamicTreeView]
   final Config config;
-  DynamicTreeView({
+  const DynamicTreeView({
+    Key? key,
     required this.items,
     required this.categories,
     this.config = const Config(),
@@ -64,7 +65,7 @@ class DynamicTreeView extends StatefulWidget {
     this.simplified = false,
     required this.childBuilder,
     //this.width = 220.0,
-  });
+  }) : super(key: key);
 
   @override
   _DynamicTreeViewOriState createState() => _DynamicTreeViewOriState();
@@ -142,10 +143,12 @@ class ChildWidget extends StatefulWidget {
   final List<Widget> children;
   final bool shouldExpand;
   final Config config;
-  ChildWidget(
-      {required this.children,
+  const ChildWidget(
+      {Key? key,
+      required this.children,
       required this.config,
-      this.shouldExpand = false});
+      this.shouldExpand = false})
+      : super(key: key);
 
   @override
   _ChildWidgetState createState() => _ChildWidgetState();
@@ -220,7 +223,7 @@ class ParentWidget extends StatefulWidget {
   final bool simplified;
   final String title;
   final bool hasNewItems;
-  ParentWidget({
+  const ParentWidget({
     this.onTap,
     this.onLongPress,
     required this.children,

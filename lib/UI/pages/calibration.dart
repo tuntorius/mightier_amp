@@ -19,7 +19,7 @@ class _CalibrationState extends State<Calibration> {
   int nuxMode = 0;
   bool toggled = false;
   Color presetColor = Preset.channelColors[0];
-  NuxDeviceControl devControl = NuxDeviceControl();
+  NuxDeviceControl devControl = NuxDeviceControl.instance();
 
   @override
   void initState() {
@@ -64,7 +64,7 @@ class _CalibrationState extends State<Calibration> {
         await player.dispose();
 
         //reset to prevent device losing sync
-        NuxDeviceControl().resetToChannelDefaults();
+        NuxDeviceControl.instance().resetToChannelDefaults();
         return true;
       },
       child: Scaffold(

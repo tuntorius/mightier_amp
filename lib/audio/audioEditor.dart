@@ -45,7 +45,7 @@ class _AudioEditorState extends State<AudioEditor> {
 
   final _currentPageNotifier = ValueNotifier<int>(0);
 
-  NuxDevice device = NuxDeviceControl().device;
+  NuxDevice device = NuxDeviceControl.instance().device;
 
   int currentSample = 0;
   bool pageLeft = false;
@@ -72,7 +72,7 @@ class _AudioEditorState extends State<AudioEditor> {
       SystemChrome.setPreferredOrientations(
           [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-    device = NuxDeviceControl().device;
+    device = NuxDeviceControl.instance().device;
 
     decodeAudio();
     automation.setAudioFile(widget.track.path, 100);
@@ -216,7 +216,7 @@ class _AudioEditorState extends State<AudioEditor> {
             DeviceOrientation.landscapeRight
           ]);
 
-        NuxDeviceControl().resetToChannelDefaults();
+        NuxDeviceControl.instance().resetToChannelDefaults();
         return true;
       },
       child: Scaffold(

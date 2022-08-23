@@ -30,8 +30,11 @@ class QRExportDialog {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        NuxDeviceControl().device.getProductNameVersion(
-                            NuxDeviceControl().device.productVersion),
+                        NuxDeviceControl.instance()
+                            .device
+                            .getProductNameVersion(NuxDeviceControl.instance()
+                                .device
+                                .productVersion),
                         style: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),

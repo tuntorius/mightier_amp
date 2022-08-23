@@ -45,17 +45,17 @@ class MidiControllerManager extends ChangeNotifier {
     BleMidiManager().addListener(_onBleMidiManagerChanged);
     loadConfig();
 
-    BLEMidiHandler().status.listen(_statusListener);
+    BLEMidiHandler.instance().status.listen(_statusListener);
   }
 
   void _statusListener(statusValue) {
     switch (statusValue) {
       case MidiSetupStatus.deviceFound:
         // check if this is valid nux device
-        BLEMidiHandler().nuxDevices.forEach((dev) {
+        BLEMidiHandler.instance().nuxDevices.forEach((dev) {
           if (dev.device.type != BluetoothDeviceType.classic) {
             //don't autoconnect on manual scan
-            if (!BLEMidiHandler().manualScan) {
+            if (!BLEMidiHandler.instance().manualScan) {
               //_midiHandler.connectToDevice(dev.device);
             }
           }

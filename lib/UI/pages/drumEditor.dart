@@ -2,12 +2,14 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/utils.dart';
+import 'package:mighty_plug_manager/main.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/utilities/DelayTapTimer.dart';
 import '../widgets/thickSlider.dart';
 import '../widgets/scrollPicker.dart';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 class DrumEditor extends StatefulWidget {
   DrumEditor();
@@ -25,79 +27,43 @@ class _DrumEditorState extends State<DrumEditor> {
   @override
   void initState() {
     super.initState();
-    NuxDeviceControl().addListener(onDeviceChanged);
+    NuxDeviceControl.instance().addListener(onDeviceChanged);
   }
 
   @override
   void dispose() {
     super.dispose();
-    NuxDeviceControl().removeListener(onDeviceChanged);
-  }
-
-  void onDeviceChanged() {
-    remoteDrumStyleChange = true;
-    setState(() {});
+    NuxDeviceControl.instance().removeListener(onDeviceChanged);
   }
 
   @override
   Widget build(BuildContext context) {
-    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    final mediaQuery = MediaQuery.of(context);
+    final layoutMode = getLayoutMode(mediaQuery);
 
-    NuxDevice? device = NuxDeviceControl().device;
+    NuxDevice? device = NuxDeviceControl.instance().device;
     final ThemeData theme = Theme.of(context);
 
     selectedDrumPattern = device.selectedDrumStyle;
-    Orientation orientation = MediaQuery.of(context).orientation;
-    var height = 3;
-    if (orientation == Orientation.portrait) {
-      if (MediaQuery.of(context).size.height < 640)
-        height = 4;
-      else
-        height = 5;
-    }
 
-    double padding = isPortrait ? 0 : MediaQuery.of(context).size.width * 0.25;
-
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.all(16.0),
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: padding),
-            child: Container(
-              decoration: isPortrait
-                  ? null
-                  : BoxDecoration(
-                      border:
-                          Border.all(color: Theme.of(context).disabledColor),
-                      borderRadius: BorderRadius.circular(6)),
-              height: ScrollPicker.itemHeight * height,
-              child: Container(
-                child: ScrollPicker(
-                  showDivider: false,
-                  remoteChange: remoteDrumStyleChange,
-                  initialValue: selectedDrumPattern,
-                  items: device.getDrumStyles(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedDrumPattern = value;
-                    });
-                  },
-                  onChangedFinal: (value, remote) {
-                    if (remote)
-                      remoteDrumStyleChange = false;
-                    else
-                      setState(() {
-                        device.setDrumsStyle(value);
-                        device.setDrumsTempo(device.drumsTempo);
-                      });
-                  },
-                ),
+          if (layoutMode == LayoutMode.navBar)
+            SizedBox(
+              height: _getScrollPickerHeight(mediaQuery),
+              child: ScrollPicker(
+                showDivider: false,
+                remoteChange: remoteDrumStyleChange,
+                initialValue: selectedDrumPattern,
+                items: device.getDrumStyles(),
+                onChanged: _onScrollPickerChanged,
+                onChangedFinal: (value, remote) {
+                  _onScrollPickerChangedFinal(value, remote, device);
+                },
               ),
             ),
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -116,70 +82,128 @@ class _DrumEditorState extends State<DrumEditor> {
               )
             ],
           ),
-          Flexible(
-            child: ThickSlider(
-              min: 0,
-              max: 100,
-              activeColor: Colors.blue,
-              label: "Volume",
-              handleVerticalDrag: isPortrait,
-              value: device.drumsVolume.toDouble(),
-              labelFormatter: (val) => "${device.drumsVolume.round()} %",
-              onChanged: (val) {
-                setState(() {
-                  device.setDrumsLevel(val);
-                });
-              },
-            ),
+          ThickSlider(
+            min: 0,
+            max: 100,
+            activeColor: Colors.blue,
+            label: "Volume",
+            handleVerticalDrag: layoutMode == LayoutMode.drawer,
+            value: device.drumsVolume.toDouble(),
+            labelFormatter: (val) => "${device.drumsVolume.round()} %",
+            onChanged: (val) {
+              setState(() {
+                device.setDrumsLevel(val);
+              });
+            },
           ),
-          Flexible(
-            fit: FlexFit.loose,
-            child: ThickSlider(
-              min: 40,
-              max: 240,
-              skipEmitting: 5,
-              activeColor: Colors.blue,
-              label: "Tempo",
-              handleVerticalDrag: isPortrait,
-              value: device.drumsTempo,
-              labelFormatter: (val) =>
-                  "${device.drumsTempo.toStringAsFixed(2)} BPM",
-              onChanged: (val) {
-                setState(() {
-                  device.setDrumsTempo(val);
-                });
-              },
-            ),
+          ThickSlider(
+            min: 40,
+            max: 240,
+            skipEmitting: 5,
+            activeColor: Colors.blue,
+            label: "Tempo",
+            handleVerticalDrag: layoutMode == LayoutMode.drawer,
+            value: device.drumsTempo,
+            labelFormatter: (val) =>
+                "${device.drumsTempo.toStringAsFixed(2)} BPM",
+            onChanged: (val) {
+              setState(() {
+                device.setDrumsTempo(val);
+              });
+            },
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: RawMaterialButton(
-              onPressed: () {
-                timer.addClickTime();
-                var result = timer.calculate();
-                if (result != false) {
-                  setState(() {
-                    var bpm = 60 / (result / 1000);
-                    bpm = Math.min(Math.max(bpm, 40), 240);
-                    device.setDrumsTempo(bpm);
-                  });
-                }
-              },
-              elevation: 2.0,
-              fillColor: Colors.blue,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Tap",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              if (layoutMode == LayoutMode.drawer) ...[
+                Flexible(
+                  child: SizedBox(
+                    height: _getScrollPickerHeight(mediaQuery),
+                    child: ScrollPicker(
+                      showDivider: false,
+                      remoteChange: remoteDrumStyleChange,
+                      initialValue: selectedDrumPattern,
+                      items: device.getDrumStyles(),
+                      onChanged: _onScrollPickerChanged,
+                      onChangedFinal: (value, remote) {
+                        _onScrollPickerChangedFinal(value, remote, device);
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+              ],
+              Flexible(
+                flex: 2,
+                child: MaterialButton(
+                  height: _getScrollPickerHeight(mediaQuery),
+                  color: Colors.blue.withOpacity(0.2),
+                  onPressed: () {
+                    timer.addClickTime();
+                    var result = timer.calculate();
+                    if (result != false) {
+                      setState(() {
+                        var bpm = 60 / (result / 1000);
+                        bpm = math.min(math.max(bpm, 40), 240);
+                        device.setDrumsTempo(bpm);
+                      });
+                    }
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      "Tap",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
-              padding: EdgeInsets.all(12.0),
-              shape: CircleBorder(),
-            ),
+            ],
           ),
+          const SizedBox(height: 16),
         ],
       ),
     );
+  }
+
+  double _getScrollPickerHeight(MediaQueryData mediaQuery) {
+    Orientation orientation = mediaQuery.orientation;
+    var numOfSelectItems = 3;
+    if (orientation == Orientation.portrait) {
+      if (mediaQuery.size.height < 640) {
+        numOfSelectItems = 4;
+      } else {
+        numOfSelectItems = 5;
+      }
+    }
+    return ScrollPicker.itemHeight * numOfSelectItems;
+  }
+
+  void _onScrollPickerChanged(value) {
+    setState(() {
+      selectedDrumPattern = value;
+    });
+  }
+
+  void _onScrollPickerChangedFinal(int value, bool remote, NuxDevice? device) {
+    if (remote) {
+      remoteDrumStyleChange = false;
+    } else {
+      setState(() {
+        device?.setDrumsStyle(value);
+        device?.setDrumsTempo(device.drumsTempo);
+      });
+    }
+  }
+
+  void onDeviceChanged() {
+    remoteDrumStyleChange = true;
+    setState(() {});
   }
 }

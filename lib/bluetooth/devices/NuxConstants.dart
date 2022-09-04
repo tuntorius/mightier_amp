@@ -191,6 +191,32 @@ class PresetDataIndexLite {
 }
 
 class PresetDataIndexPlugPro {
+  static const effectTypesIndex = [
+    //Head_iWAH, //not used but there must be a value here
+    Head_iCMP,
+    Head_iEFX,
+    Head_iAMP,
+    Head_iEQ,
+    Head_iNG,
+    Head_iMOD,
+    Head_iDLY,
+    Head_iRVB,
+    Head_iCAB,
+    //Head_iSR
+  ];
+
+  static const defaultEffects = [
+    Head_iNG,
+    Head_iCMP,
+    Head_iMOD,
+    Head_iEFX,
+    Head_iAMP,
+    Head_iCAB,
+    Head_iEQ,
+    Head_iRVB,
+    Head_iDLY
+  ];
+
   static const Head_iWAH = 0;
   static const Head_iCMP = 1;
   static const Head_iEFX = 2;
@@ -331,11 +357,11 @@ class SysexPrivacy {
   toString() => '$_value';
   toInt() => _value;
 
-  static const kSYSEX_PUBLIC = const SysexPrivacy._internal(0);
-  static const kSYSEX_PUBLICREPLY = const SysexPrivacy._internal(16);
-  static const kSYSEX_RDCTRL = const SysexPrivacy._internal(32);
-  static const kSYSEX_IRCTRL = const SysexPrivacy._internal(48);
-  static const kSYSEX_PRIVATE = const SysexPrivacy._internal(112);
+  static const kSYSEX_PUBLIC = 0; //const SysexPrivacy._internal(0);
+  static const kSYSEX_PUBLICREPLY = 16; //const SysexPrivacy._internal(16);
+  static const kSYSEX_RDCTRL = 32; //const SysexPrivacy._internal(32);
+  static const kSYSEX_IRCTRL = 48; //const SysexPrivacy._internal(48);
+  static const kSYSEX_PRIVATE = 112; //const SysexPrivacy._internal(112);
 }
 
 class SyxMsg {
@@ -344,30 +370,30 @@ class SyxMsg {
   toString() => '$_value';
   toInt() => _value;
 
-  static const kSYX_BPM = const SyxMsg._internal(3);
-  static const kSYX_LANGUAGE = const SyxMsg._internal(4);
-  static const kSYX_CPURUN = const SyxMsg._internal(5);
-  static const kSYX_SWAPPRESET = const SyxMsg._internal(6);
-  static const kSYX_CPYPRESET = const SyxMsg._internal(7);
-  static const kSYX_IRSAVEAS = const SyxMsg._internal(8);
-  static const kSYX_CRCNAME = const SyxMsg._internal(9);
-  static const kSYX_MANUAL = const SyxMsg._internal(10);
-  static const kSYX_PRESET = const SyxMsg._internal(11);
-  static const kSYX_CURPRESET = const SyxMsg._internal(12);
-  static const kSYX_MODULELINK = const SyxMsg._internal(13);
-  static const kSYX_GLOBLE = const SyxMsg._internal(14);
-  static const kSYX_MIDICC = const SyxMsg._internal(15);
-  static const kSYX_CABDATA = const SyxMsg._internal(16);
-  static const kSYX_CABCURVE = const SyxMsg._internal(17);
-  static const kSYX_PRESETNAME = const SyxMsg._internal(18);
-  static const kSYX_PEDALSET = const SyxMsg._internal(19);
+  static const kSYX_BPM = 3; //const SyxMsg._internal(3);
+  static const kSYX_LANGUAGE = 4; //const SyxMsg._internal(4);
+  static const kSYX_CPURUN = 5; //const SyxMsg._internal(5);
+  static const kSYX_SWAPPRESET = 6; //const SyxMsg._internal(6);
+  static const kSYX_CPYPRESET = 7; //const SyxMsg._internal(7);
+  static const kSYX_IRSAVEAS = 8; //const SyxMsg._internal(8);
+  static const kSYX_CRCNAME = 9; //const SyxMsg._internal(9);
+  static const kSYX_MANUAL = 10; //const SyxMsg._internal(10);
+  static const kSYX_PRESET = 11; //const SyxMsg._internal(11);
+  static const kSYX_CURPRESET = 12; //const SyxMsg._internal(12);
+  static const kSYX_MODULELINK = 13; //const SyxMsg._internal(13);
+  static const kSYX_GLOBLE = 14; //const SyxMsg._internal(14);
+  static const kSYX_MIDICC = 15; //const SyxMsg._internal(15);
+  static const kSYX_CABDATA = 16; //const SyxMsg._internal(16);
+  static const kSYX_CABCURVE = 17; //const SyxMsg._internal(17);
+  static const kSYX_PRESETNAME = 18; //const SyxMsg._internal(18);
+  static const kSYX_PEDALSET = 19; //const SyxMsg._internal(19);
   static const kSYX_SYSTEMSET = const SyxMsg._internal(20);
   static const kSYX_CURSTATE = const SyxMsg._internal(21);
   static const kSYX_IRDELETE = const SyxMsg._internal(22);
   static const kSYX_CUTOVER = const SyxMsg._internal(23);
   static const kSYX_LOOP = const SyxMsg._internal(24);
   static const kSYX_DRUM = const SyxMsg._internal(25);
-  static const kSYX_CABNAME = const SyxMsg._internal(26);
+  static const kSYX_CABNAME = 26; //const SyxMsg._internal(26);
   static const kSYX_BTSET = const SyxMsg._internal(27);
   static const kSYX_PARAINIT = const SyxMsg._internal(96);
   static const kSYX_WELCOME = const SyxMsg._internal(97);

@@ -170,4 +170,7 @@ class MXXBTPreset extends Preset {
 
   @override
   setFirmwareVersion(int ver) {}
+
+  @override
+  void setupPresetFromNuxDataArray(List<int> _nuxData) {}
 }

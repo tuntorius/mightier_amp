@@ -55,7 +55,7 @@ class ModeControl extends StatelessWidget {
 
           var elements = getElementsCount();
           var active = List<bool>.filled(elements.length, false);
-          var index = ((value / 127) * (elements.length - 1)).round();
+          var index = ((value / 127) * (elements.length - 1)).ceil();
           active[index] = true;
           return Container(
             height: height,

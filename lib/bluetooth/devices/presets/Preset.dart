@@ -4,10 +4,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:convert/convert.dart';
-import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:qr_utils/qr_utils.dart';
-import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 
@@ -42,6 +39,8 @@ abstract class Preset {
 
   //used for reorderable fx chain
   int getProcessorAtSlot(int slot);
+
+  void setupPresetFromNuxDataArray(List<int> _nuxData);
 
   void swapProcessorSlots(int from, int to, bool notifyBT) {
     if (notifyBT) device.slotSwapped.add(to);
@@ -132,27 +131,5 @@ abstract class Preset {
       return PresetQRError.WrongFWVersion;
     }
     return PresetQRError.UnsupportedFormat;
-  }
-
-  void setupPresetFromNuxDataArray(List<int> _nuxData) {
-    if (_nuxData.length < 10) return;
-
-    var loadedPreset = hex.encode(_nuxData);
-
-    NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
-    NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
-
-    for (int i = 0; i < device.effectsChainLength; i++) {
-      //set proper effect
-      int effectIndex = _nuxData[PresetDataIndexPlugAir.effectTypesIndex[i]];
-      setSelectedEffectForSlot(i, effectIndex, false);
-
-      //enable/disable effect
-      setSlotEnabled(i,
-          _nuxData[PresetDataIndexPlugAir.effectEnabledIndex[i]] != 0, false);
-
-      getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
-          .setupFromNuxPayload(_nuxData);
-    }
   }
 }

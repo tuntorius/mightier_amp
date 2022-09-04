@@ -3,8 +3,12 @@
 
 import 'dart:ui';
 
+import 'package:convert/convert.dart';
+import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 
+import '../../NuxDeviceControl.dart';
+import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
@@ -181,8 +185,8 @@ class PlugProPreset extends Preset {
       ShimmerReverb()
     ]);
 
-    for (int i = 0; i < device.processorList.length; i++)
-      processorAtSlot.add(i);
+    for (int i = 0; i < PresetDataIndexPlugPro.defaultEffects.length; i++)
+      processorAtSlot.add(PresetDataIndexPlugPro.defaultEffects[i]);
   }
 
   /// checks if the effect slot can be switched on and off
@@ -191,26 +195,27 @@ class PlugProPreset extends Preset {
   }
 
   //returns whether the specific slot is on or off
+  @override
   bool slotEnabled(int index) {
     var proc = getProcessorAtSlot(index);
     switch (proc) {
-      case 0:
+      case PresetDataIndexPlugPro.Head_iNG:
         return noiseGateEnabled;
-      case 1:
+      case PresetDataIndexPlugPro.Head_iCMP:
         return compressorEnabled;
-      case 2:
+      case PresetDataIndexPlugPro.Head_iEFX:
         return efxEnabled;
-      case 3:
+      case PresetDataIndexPlugPro.Head_iAMP:
         return ampEnabled;
-      case 4:
+      case PresetDataIndexPlugPro.Head_iCAB:
         return irEnabled;
-      case 5:
+      case PresetDataIndexPlugPro.Head_iMOD:
         return modulationEnabled;
-      case 6:
+      case PresetDataIndexPlugPro.Head_iEQ:
         return eqEnabled;
-      case 7:
+      case PresetDataIndexPlugPro.Head_iDLY:
         return delayEnabled;
-      case 8:
+      case PresetDataIndexPlugPro.Head_iRVB:
         return reverbEnabled;
       default:
         return true;
@@ -221,39 +226,42 @@ class PlugProPreset extends Preset {
   @override
   void setSlotEnabled(int index, bool value, bool notifyBT) {
     var proc = getProcessorAtSlot(index);
-    switch (proc) {
-      case 0:
+    _setNuxSlotEnabled(proc, value);
+    super.setSlotEnabled(index, value, notifyBT);
+  }
+
+  void _setNuxSlotEnabled(int index, bool value) {
+    switch (index) {
+      case PresetDataIndexPlugPro.Head_iNG:
         noiseGateEnabled = value;
         break;
-      case 1:
+      case PresetDataIndexPlugPro.Head_iCMP:
         compressorEnabled = value;
         break;
-      case 2:
+      case PresetDataIndexPlugPro.Head_iEFX:
         efxEnabled = value;
         break;
-      case 3:
+      case PresetDataIndexPlugPro.Head_iAMP:
         ampEnabled = value;
         break;
-      case 4:
+      case PresetDataIndexPlugPro.Head_iCAB:
         irEnabled = value;
         break;
-      case 5:
+      case PresetDataIndexPlugPro.Head_iMOD:
         modulationEnabled = value;
         break;
-      case 6:
+      case PresetDataIndexPlugPro.Head_iEQ:
         eqEnabled = value;
         break;
-      case 7:
+      case PresetDataIndexPlugPro.Head_iDLY:
         delayEnabled = value;
         break;
-      case 8:
+      case PresetDataIndexPlugPro.Head_iRVB:
         reverbEnabled = value;
         break;
       default:
         return;
     }
-
-    super.setSlotEnabled(index, value, notifyBT);
   }
 
   @override
@@ -280,52 +288,62 @@ class PlugProPreset extends Preset {
   }
 
   //returns list of effects for given slot
+  @override
   List<Processor> getEffectsForSlot(int slot) {
     var proc = getProcessorAtSlot(slot);
-    switch (proc) {
-      case 0:
+    return _getEffectsForNuxSlot(proc);
+  }
+
+  List<Processor> _getEffectsForNuxSlot(int slot) {
+    switch (slot) {
+      case PresetDataIndexPlugPro.Head_iNG:
         return [noiseGate];
-      case 1:
+      case PresetDataIndexPlugPro.Head_iCMP:
         return compressorList;
-      case 2:
+      case PresetDataIndexPlugPro.Head_iEFX:
         return efxList;
-      case 3:
+      case PresetDataIndexPlugPro.Head_iAMP:
         return amplifierList;
-      case 4:
+      case PresetDataIndexPlugPro.Head_iCAB:
         return cabinetList;
-      case 5:
+      case PresetDataIndexPlugPro.Head_iMOD:
         return modulationList;
-      case 6:
+      case PresetDataIndexPlugPro.Head_iEQ:
         return eqList;
-      case 7:
+      case PresetDataIndexPlugPro.Head_iDLY:
         return delayList;
-      case 8:
+      case PresetDataIndexPlugPro.Head_iRVB:
         return reverbList;
     }
     return <Processor>[];
   }
 
   //returns which of the effects is selected for a given slot
+  @override
   int getSelectedEffectForSlot(int slot) {
     var proc = getProcessorAtSlot(slot);
-    switch (proc) {
-      case 0:
+    return _getSelectedEffectForNuxSlot(proc);
+  }
+
+  int _getSelectedEffectForNuxSlot(int slot) {
+    switch (slot) {
+      case PresetDataIndexPlugPro.Head_iWAH:
         return 0;
-      case 1:
+      case PresetDataIndexPlugPro.Head_iCMP:
         return selectedComp;
-      case 2:
+      case PresetDataIndexPlugPro.Head_iEFX:
         return selectedEfx;
-      case 3:
+      case PresetDataIndexPlugPro.Head_iAMP:
         return selectedAmp;
-      case 4:
+      case PresetDataIndexPlugPro.Head_iCAB:
         return selectedCabinet;
-      case 5:
+      case PresetDataIndexPlugPro.Head_iMOD:
         return selectedMod;
-      case 6:
+      case PresetDataIndexPlugPro.Head_iEQ:
         return selectedEQ;
-      case 7:
+      case PresetDataIndexPlugPro.Head_iDLY:
         return selectedDelay;
-      case 8:
+      case PresetDataIndexPlugPro.Head_iRVB:
         return selectedReverb;
       default:
         return 0;
@@ -336,42 +354,120 @@ class PlugProPreset extends Preset {
   @override
   void setSelectedEffectForSlot(int slot, int index, bool notifyBT) {
     var proc = getProcessorAtSlot(slot);
-    switch (proc) {
-      case 1:
+    _setSelectedEffectForNuxSlot(proc, index);
+
+    super.setSelectedEffectForSlot(slot, index, notifyBT);
+  }
+
+  int _getEffectArrayIndexFromNuxIndex(int nuxSlot, int nuxIndex) {
+    List<Processor> list = [];
+    switch (nuxSlot) {
+      case PresetDataIndexPlugPro.Head_iWAH:
+        return 0;
+      case PresetDataIndexPlugPro.Head_iNG:
+        return 0;
+      case PresetDataIndexPlugPro.Head_iCMP:
+        list = compressorList;
+        break;
+      case PresetDataIndexPlugPro.Head_iEFX:
+        list = efxList;
+        break;
+      case PresetDataIndexPlugPro.Head_iAMP:
+        list = amplifierList;
+        break;
+      case PresetDataIndexPlugPro.Head_iCAB:
+        list = cabinetList;
+        break;
+      case PresetDataIndexPlugPro.Head_iMOD:
+        list = modulationList;
+        break;
+      case PresetDataIndexPlugPro.Head_iEQ:
+        list = eqList;
+        break;
+      case PresetDataIndexPlugPro.Head_iDLY:
+        list = delayList;
+        break;
+      case PresetDataIndexPlugPro.Head_iRVB:
+        list = reverbList;
+        break;
+    }
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].nuxIndex == nuxIndex) return i;
+    }
+
+    return 0;
+  }
+
+  void _setSelectedEffectForNuxSlot(int slot, int index) {
+    switch (slot) {
+      case PresetDataIndexPlugPro.Head_iWAH:
+        break;
+      case PresetDataIndexPlugPro.Head_iCMP:
         selectedComp = index;
         break;
-      case 2:
+      case PresetDataIndexPlugPro.Head_iEFX:
         selectedEfx = index;
         break;
-      case 3:
+      case PresetDataIndexPlugPro.Head_iAMP:
         selectedAmp = index;
         break;
-      case 4:
+      case PresetDataIndexPlugPro.Head_iCAB:
         selectedCabinet = index;
         break;
-      case 5:
+      case PresetDataIndexPlugPro.Head_iMOD:
         selectedMod = index;
         break;
-      case 6:
+      case PresetDataIndexPlugPro.Head_iEQ:
         selectedEQ = index;
         break;
-      case 7:
+      case PresetDataIndexPlugPro.Head_iDLY:
         selectedDelay = index;
         break;
-      case 8:
+      case PresetDataIndexPlugPro.Head_iRVB:
         selectedReverb = index;
         break;
     }
-    super.setSelectedEffectForSlot(slot, index, notifyBT);
   }
 
   Color effectColor(int index) {
     index = getProcessorAtSlot(index);
-    return device.processorList[index].color;
+    return device.ProcessorListNuxIndex(index)?.color ?? Colors.grey;
   }
 
   @override
   setFirmwareVersion(int ver) {
     version = PlugProVersion.values[ver];
+  }
+
+  @override
+  void setupPresetFromNuxDataArray(List<int> _nuxData) {
+    if (_nuxData.length < 10) return;
+
+    var loadedPreset = hex.encode(_nuxData);
+
+    NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
+    NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
+
+    for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
+      int nuxSlot = PresetDataIndexPlugPro.effectTypesIndex[i];
+      //set proper effect
+      int effectParam = _nuxData[nuxSlot];
+      int effectIndex = effectParam & 0x3f;
+      bool effectOn = (effectParam & 0x40) == 0;
+
+      effectIndex = _getEffectArrayIndexFromNuxIndex(nuxSlot, effectIndex);
+
+      _setSelectedEffectForNuxSlot(nuxSlot, effectIndex);
+
+      //enable/disable effect
+      _setNuxSlotEnabled(nuxSlot, effectOn);
+
+      _getEffectsForNuxSlot(nuxSlot)[effectIndex].setupFromNuxPayload(_nuxData);
+    }
+
+    //effects chain arrangement
+    for (int i = 0; i < device.effectsChainLength; i++) {
+      processorAtSlot[i] = _nuxData[PresetDataIndexPlugPro.LINK2 + i];
+    }
   }
 }

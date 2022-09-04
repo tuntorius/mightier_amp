@@ -18,3 +18,22 @@ class PercentageFormatter extends ValueFormatter {
     return "${value.round()} %";
   }
 }
+
+class PercentageFormatterMPPro extends ValueFormatter {
+  InputType get inputType => InputType.SliderInput;
+
+  @override
+  int valueToMidi7Bit(double value) {
+    return value.round();
+  }
+
+  @override
+  double midi7BitToValue(int midi7bit) {
+    return midi7bit.toDouble();
+  }
+
+  @override
+  String toLabel(double value) {
+    return "${value.round()} %";
+  }
+}

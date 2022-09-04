@@ -8,6 +8,7 @@ enum InputType { SliderInput, SwitchInput }
 
 class ValueFormatters {
   static PercentageFormatter percentage = PercentageFormatter();
+  static PercentageFormatterMPPro percentageMPPro = PercentageFormatterMPPro();
   static DecibelFormatterMP2 decibelMP2 = DecibelFormatterMP2();
   static DecibelFormatterMPPro decibelMPPro = DecibelFormatterMPPro();
   static TempoFormatter tempo = TempoFormatter();

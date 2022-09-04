@@ -3,9 +3,12 @@
 
 import 'dart:ui';
 
+import 'package:convert/convert.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Ampsv2.dart';
 
+import '../../NuxDeviceControl.dart';
+import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
@@ -313,5 +316,28 @@ class PlugAirPreset extends Preset {
   @override
   setFirmwareVersion(int ver) {
     version = PlugAirVersion.values[ver];
+  }
+
+  @override
+  void setupPresetFromNuxDataArray(List<int> _nuxData) {
+    if (_nuxData.length < 10) return;
+
+    var loadedPreset = hex.encode(_nuxData);
+
+    NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
+    NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
+
+    for (int i = 0; i < device.effectsChainLength; i++) {
+      //set proper effect
+      int effectIndex = _nuxData[PresetDataIndexPlugAir.effectTypesIndex[i]];
+      setSelectedEffectForSlot(i, effectIndex, false);
+
+      //enable/disable effect
+      setSlotEnabled(i,
+          _nuxData[PresetDataIndexPlugAir.effectEnabledIndex[i]] != 0, false);
+
+      getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
+          .setupFromNuxPayload(_nuxData);
+    }
   }
 }

@@ -46,6 +46,7 @@ abstract class DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  void sendSlotOrder() {}
   void sendDrumsEnabled(bool enabled);
   void sendDrumsStyle(int style);
   void sendDrumsLevel(double volume);
@@ -115,7 +116,7 @@ abstract class DeviceCommunication {
 
   //version for Mighty Plug Pro
   List<int> createSysExMessagePro(
-      SysexPrivacy privacy, SyxMsg msgType, SyxDir dir, List<int> data) {
+      int privacy, int syxMsgType, SyxDir dir, List<int> data) {
     List<int> msg = [];
     //create header
     msg.addAll([
@@ -124,8 +125,8 @@ abstract class DeviceCommunication {
       MidiMessageValues.sysExStart,
       0x43,
       0x58,
-      privacy.toInt(),
-      msgType.toInt(),
+      privacy,
+      syxMsgType,
       dir.index,
     ]);
 

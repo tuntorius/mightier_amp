@@ -40,9 +40,10 @@ class NuxMightyPlugPro extends NuxDevice {
   int get amplifierSlotIndex {
     var preset = getPreset(selectedChannel);
     for (int i = 0; i < processorList.length; i++)
-      if (preset.getProcessorAtSlot(i) == 3) return i;
+      if (preset.getProcessorAtSlot(i) == PresetDataIndexPlugPro.Head_iAMP)
+        return i;
 
-    return 3;
+    return PresetDataIndexPlugPro.Head_iAMP;
   }
 
   bool get fakeMasterVolume => false;
@@ -52,9 +53,10 @@ class NuxMightyPlugPro extends NuxDevice {
   int get cabinetSlotIndex {
     var preset = getPreset(selectedChannel);
     for (int i = 0; i < processorList.length; i++)
-      if (preset.getProcessorAtSlot(i) == 4) return i;
+      if (preset.getProcessorAtSlot(i) == PresetDataIndexPlugPro.Head_iCAB)
+        return i;
 
-    return 4;
+    return PresetDataIndexPlugPro.Head_iCAB;
   }
 
   bool get presetSaveSupport => false;
@@ -68,61 +70,83 @@ class NuxMightyPlugPro extends NuxDevice {
 
   List<ProcessorInfo> get processorList => _processorList;
 
+  ProcessorInfo? ProcessorListNuxIndex(int index) {
+    for (var proc in _processorList)
+      if (proc.nuxOrderIndex == index) return proc;
+    return null;
+  }
+
   final List<ProcessorInfo> _processorList = [
-    ProcessorInfo(
-        shortName: "GATE",
-        longName: "Noise Gate",
-        keyName: "gate",
-        color: Colors.lightGreen,
-        icon: MightierIcons.gate),
+    /*ProcessorInfo(
+        shortName: "WAH",
+        longName: "wah",
+        keyName: "wah",
+        nuxOrderIndex: 0,
+        color: Colors.green,
+        icon: Icons.water),*/
     ProcessorInfo(
         shortName: "COMP",
-        longName: "comp",
+        longName: "Comp",
         keyName: "compressor",
+        nuxOrderIndex: 1,
         color: Colors.yellow,
         icon: Icons.stacked_line_chart),
     ProcessorInfo(
         shortName: "EFX",
         longName: "EFX",
         keyName: "efx",
+        nuxOrderIndex: 2,
         color: Colors.orange,
         icon: MightierIcons.pedal),
     ProcessorInfo(
         shortName: "AMP",
         longName: "Amplifier",
         keyName: "amp",
+        nuxOrderIndex: 3,
         color: Colors.red,
         icon: MightierIcons.amp),
-    ProcessorInfo(
-        shortName: "IR",
-        longName: "Cabinet",
-        keyName: "cabinet",
-        color: Colors.lightBlue,
-        icon: MightierIcons.cabinet),
-    ProcessorInfo(
-        shortName: "MOD",
-        longName: "Modulation",
-        keyName: "mod",
-        color: Colors.indigo[400]!,
-        icon: Icons.waves),
     ProcessorInfo(
         shortName: "EQ",
         longName: "EQ",
         keyName: "eq",
+        nuxOrderIndex: 4,
         color: Colors.grey[300]!,
         icon: MightierIcons.sliders),
+    ProcessorInfo(
+        shortName: "GATE",
+        longName: "Noise Gate",
+        keyName: "gate",
+        nuxOrderIndex: 5,
+        color: Colors.lightGreen,
+        icon: MightierIcons.gate),
+    ProcessorInfo(
+        shortName: "MOD",
+        longName: "Modulation",
+        keyName: "mod",
+        nuxOrderIndex: 6,
+        color: Colors.indigo[400]!,
+        icon: Icons.waves),
     ProcessorInfo(
         shortName: "DLY",
         longName: "Delay",
         keyName: "delay",
+        nuxOrderIndex: 7,
         color: Colors.purple,
         icon: Icons.blur_linear),
     ProcessorInfo(
         shortName: "RVB",
         longName: "Reverb",
         keyName: "reverb",
+        nuxOrderIndex: 8,
         color: Colors.orange,
         icon: Icons.blur_on),
+    ProcessorInfo(
+        shortName: "IR",
+        longName: "Cabinet",
+        keyName: "cabinet",
+        nuxOrderIndex: 9,
+        color: Colors.lightBlue,
+        icon: MightierIcons.cabinet),
   ];
 
   List<String> channelNames = [];

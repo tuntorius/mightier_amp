@@ -5,6 +5,7 @@ import '../../../bluetooth/devices/effects/Processor.dart';
 class EffectChainButton extends StatelessWidget {
   final ProcessorInfo effectInfo;
   final bool enabled;
+  final bool selected;
   final Color color;
   final GestureTapCallback? onTap;
 
@@ -12,6 +13,7 @@ class EffectChainButton extends StatelessWidget {
       {Key? key,
       required this.effectInfo,
       required this.enabled,
+      required this.selected,
       required this.color,
       this.onTap})
       : super(key: key);
@@ -25,30 +27,32 @@ class EffectChainButton extends StatelessWidget {
         fit: BoxFit.fitHeight,
         child: InkWell(
           onTap: onTap,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 1),
-                padding: EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: _color,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(3))),
-                child: Icon(
-                  effectInfo.icon,
-                  //size: 30,
-                  color: _color,
+          child: Transform.translate(
+            offset: Offset(0, selected ? -5 : 0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 1),
+                  padding: EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                      color: selected ? _color : Colors.transparent,
+                      border: Border.all(
+                        color: _color,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(3))),
+                  child: Icon(
+                    effectInfo.icon,
+                    //size: 30,
+                    color: selected ? Colors.black : _color,
+                  ),
                 ),
-              ),
-              Text(
-                effectInfo.shortName,
-                style: TextStyle(
-                    fontSize: 10,
-                    color: enabled ? null : Theme.of(context).disabledColor),
-              ),
-            ],
+                Text(
+                  effectInfo.shortName,
+                  style: TextStyle(fontSize: 10),
+                ),
+              ],
+            ),
           ),
         ),
       ),

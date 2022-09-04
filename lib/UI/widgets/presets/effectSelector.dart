@@ -9,7 +9,6 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:undo/undo.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
-import 'EffectChainButton.dart';
 import 'effectEditor.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
@@ -89,6 +88,9 @@ class _EffectSelectorState extends State<EffectSelector> {
 
     _effectColor = _preset.effectColor(_selectedSlot);
 
+    var proc = _preset.getProcessorAtSlot(_selectedSlot);
+    var effectInfo = widget.device.ProcessorListNuxIndex(proc)!;
+
     //create effect models dropdown list
     List<Processor> effects = _preset.getEffectsForSlot(_selectedSlot);
 
@@ -141,14 +143,14 @@ class _EffectSelectorState extends State<EffectSelector> {
         child: Row(
           children: [
             Icon(
-              widget.device.processorList[_selectedSlot].icon,
+              effectInfo.icon,
               color: _effectColor,
             ),
             const SizedBox(
               width: 5,
             ),
             Text(
-              widget.device.processorList[_selectedSlot].longName,
+              effectInfo.longName,
               style:
                   TextStyle(color: _effectColor, fontWeight: FontWeight.bold),
             ),
@@ -165,7 +167,7 @@ class _EffectSelectorState extends State<EffectSelector> {
       children: [
         EffectChainBar(
             maxHeight: 60,
-            effectsList: widget.device.processorList,
+            device: widget.device,
             preset: _preset,
             reorderable: widget.device.reorderableFXChain,
             onTap: (i) {

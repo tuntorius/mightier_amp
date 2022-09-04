@@ -56,27 +56,27 @@ class NoiseGate1Param extends Processor {
 class NoiseGatePro extends Processor {
   final name = "Noise Gate";
 
-  int get nuxIndex => 0;
+  int get nuxIndex => 1;
 
   int get midiCCEnableValue => MidiCCValuesPro.Head_iNG;
 
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iNG;
 
-  int get nuxDataLength => 2;
+  int get nuxDataLength => 4;
 
   List<Parameter> parameters = [
     Parameter(
         name: "Sensitivity",
         handle: "sensitivity",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.NG_Para1,
         midiCC: MidiCCValuesPro.NG_Para1),
     Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.NG_Para2,
         midiCC: MidiCCValuesPro.NG_Para2),
   ];

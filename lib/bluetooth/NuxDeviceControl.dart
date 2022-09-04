@@ -75,7 +75,8 @@ class NuxDeviceControl extends ChangeNotifier {
   //connect status control
   final StreamController<DeviceConnectionState> connectStatus =
       StreamController();
-  final StreamController<int> batteryPercentage = StreamController<int>.broadcast();
+  final StreamController<int> batteryPercentage =
+      StreamController<int>.broadcast();
 
   bool get isConnected => _midiHandler.connectedDevice != null;
 
@@ -262,6 +263,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void _onDataReceive(List<int> data) {
+    print(data);
     if (developer) onDataReceiveDebug?.call(data);
     _device.communication.onDataReceive(data);
   }
@@ -347,9 +349,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void slotSwappedListener(int slot) {
-    var proc =
-        device.getPreset(device.selectedChannel).getProcessorAtSlot(slot);
-    //TODO: send where the slot went (or maybe ALL slots?)
+    device.communication.sendSlotOrder();
   }
 
   void sendFullEffectSettings(int slot, bool force) {

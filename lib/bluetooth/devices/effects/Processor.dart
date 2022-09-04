@@ -6,6 +6,7 @@ import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueFormatter.dart';
 
 import '../utilities/MathEx.dart';
+import '../value_formatters/SwitchFormatters.dart';
 
 class Parameter {
   ValueFormatter formatter;
@@ -45,12 +46,14 @@ class ProcessorInfo {
   String shortName;
   String longName;
   String keyName;
+  int nuxOrderIndex = -1;
   Color color;
   IconData icon;
   ProcessorInfo(
       {required this.shortName,
       required this.longName,
       required this.keyName,
+      this.nuxOrderIndex = -1,
       required this.color,
       required this.icon});
 }
@@ -83,12 +86,17 @@ abstract class Processor {
   //at least for Mighty Plug MP-2, the NuxPayload values are 0-100, not 0,127
   void setupFromNuxPayload(List<int> nuxData) {
     for (int i = 0; i < parameters.length; i++) {
-      parameters[i].value = MathEx.map(
-          nuxData[parameters[i].devicePresetIndex].toDouble(),
-          0,
-          100,
-          parameters[i].formatter.min.toDouble(),
-          parameters[i].formatter.max.toDouble());
+      if (parameters[i].formatter is SwitchFormatter) {
+        parameters[i].value =
+            nuxData[parameters[i].devicePresetIndex].toDouble();
+      } else {
+        parameters[i].value = MathEx.map(
+            nuxData[parameters[i].devicePresetIndex].toDouble(),
+            0,
+            100,
+            parameters[i].formatter.min.toDouble(),
+            parameters[i].formatter.max.toDouble());
+      }
     }
   }
 

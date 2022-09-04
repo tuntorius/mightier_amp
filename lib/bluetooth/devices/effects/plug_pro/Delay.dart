@@ -6,7 +6,7 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
-  int get nuxDataLength => 3;
+  int get nuxDataLength => 8;
 
   int get midiCCEnableValue => MidiCCValuesPro.Head_iDLY;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iDLY;
@@ -15,21 +15,21 @@ abstract class Delay extends Processor {
 class AnalogDelay extends Delay {
   final name = "Analog";
 
-  int get nuxIndex => 0;
+  int get nuxIndex => 1;
 
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 34,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Echo",
         handle: "echo",
         value: 45,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
@@ -45,20 +45,20 @@ class AnalogDelay extends Delay {
 class DigitalDelay extends Delay {
   final name = "Digital Delay";
 
-  int get nuxIndex => 1;
+  int get nuxIndex => 2;
   List<Parameter> parameters = [
     Parameter(
         name: "E.Level",
         handle: "level",
         value: 49,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Feedback",
         handle: "feedback",
         value: 68,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
@@ -74,27 +74,27 @@ class DigitalDelay extends Delay {
 class ModDelay extends Delay {
   final name = "Modulation";
 
-  int get nuxIndex => 2;
+  int get nuxIndex => 3;
   List<Parameter> parameters = [
     Parameter(
         name: "Time",
         handle: "time",
         value: 49,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Level",
         handle: "level",
         value: 68,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Mod",
         handle: "mod",
         value: 68,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
     Parameter(
@@ -110,7 +110,7 @@ class ModDelay extends Delay {
 class TapeEcho extends Delay {
   final name = "Tape Echo";
 
-  int get nuxIndex => 3;
+  int get nuxIndex => 4;
   List<Parameter> parameters = [
     Parameter(
         name: "Time",
@@ -123,14 +123,14 @@ class TapeEcho extends Delay {
         name: "Level",
         handle: "level",
         value: 43,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Repeat",
         handle: "repeat",
         value: 56,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
   ];
@@ -139,7 +139,7 @@ class TapeEcho extends Delay {
 class PanDelay extends Delay {
   final name = "Pan Delay";
 
-  int get nuxIndex => 3;
+  int get nuxIndex => 5;
   List<Parameter> parameters = [
     Parameter(
         name: "Time",
@@ -152,14 +152,14 @@ class PanDelay extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Level",
         handle: "level",
         value: 45,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
   ];

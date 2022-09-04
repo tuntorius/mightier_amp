@@ -6,7 +6,7 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Compressor extends Processor {
-  int get nuxDataLength => 3;
+  int get nuxDataLength => 4;
 
   int get midiCCEnableValue => MidiCCValuesPro.Head_iCMP;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iCMP;
@@ -22,14 +22,14 @@ class RoseComp extends Compressor {
         name: "Sustain",
         handle: "sustain",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
         midiCC: MidiCCValuesPro.CMP_Para1),
     Parameter(
         name: "Level",
         handle: "level",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
   ];
@@ -45,21 +45,21 @@ class KComp extends Compressor {
         name: "Sustain",
         handle: "sustain",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
         midiCC: MidiCCValuesPro.CMP_Para1),
     Parameter(
         name: "Level",
         handle: "level",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
     Parameter(
         name: "Clipping",
         handle: "clipping",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para3,
         midiCC: MidiCCValuesPro.CMP_Para3),
   ];
@@ -68,35 +68,35 @@ class KComp extends Compressor {
 class StudioComp extends Compressor {
   final name = "Studio Comp";
 
-  int get nuxIndex => 2;
+  int get nuxIndex => 3;
 
   List<Parameter> parameters = [
     Parameter(
         name: "Threshold",
         handle: "threshold",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
         midiCC: MidiCCValuesPro.CMP_Para1),
     Parameter(
         name: "Ratio",
         handle: "ratio",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para3,
         midiCC: MidiCCValuesPro.CMP_Para3),
     Parameter(
         name: "Release",
         handle: "release",
         value: 50,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para4,
         midiCC: MidiCCValuesPro.CMP_Para4)
   ];

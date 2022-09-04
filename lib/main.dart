@@ -269,7 +269,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
           },
         );
 
-        //setup a timer incase something fails
+        //setup a timer in case something fails
         _timeout = Timer(const Duration(seconds: 10), onConnectionTimeout);
 
         break;

@@ -37,7 +37,9 @@ abstract class NuxDevice extends ChangeNotifier {
 
   int get channelsCount;
   int get effectsChainLength;
+
   List<ProcessorInfo> get processorList;
+
   int get amplifierSlotIndex;
   bool get fakeMasterVolume;
   bool get cabinetSupport;
@@ -94,6 +96,10 @@ abstract class NuxDevice extends ChangeNotifier {
 
   String getProductNameVersion(int version) {
     return productNameShort;
+  }
+
+  ProcessorInfo? ProcessorListNuxIndex(int index) {
+    return processorList[index];
   }
 
   set selectedChannelNormalized(int chan) {
@@ -318,7 +324,7 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void onDataReceived(List<int> data) {
-    assert(data.length > 0);
+    assert(data.length > 1);
 
     switch (data[0] & 0xf0) {
       case MidiMessageValues.sysExStart:

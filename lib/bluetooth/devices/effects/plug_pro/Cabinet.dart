@@ -8,7 +8,7 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class CabinetPro extends Cabinet {
-  int get nuxDataLength => 3;
+  int get nuxDataLength => 6;
 
   int get midiCCEnableValue => MidiCCValuesPro.Head_iCAB;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iCAB;
@@ -18,25 +18,25 @@ abstract class CabinetPro extends Cabinet {
   @override
   List<Parameter> parameters = [
     Parameter(
-        devicePresetIndex: PresetDataIndexPlugAir.cabgain,
+        devicePresetIndex: PresetDataIndexPlugPro.CAB_Para4,
         name: "Level",
         handle: "level",
         value: 0,
         formatter: ValueFormatters.decibelMPPro,
         midiCC: MidiCCValuesPro.CAB_Para4),
     Parameter(
-        devicePresetIndex: PresetDataIndexPlugAir.cabgain,
+        devicePresetIndex: PresetDataIndexPlugPro.CAB_Para5,
         name: "Low Cut",
         handle: "lowcut",
         value: 0,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         midiCC: MidiCCValuesPro.CAB_Para5),
     Parameter(
-        devicePresetIndex: PresetDataIndexPlugAir.cabgain,
+        devicePresetIndex: PresetDataIndexPlugPro.CAB_Para6,
         name: "High Cut",
         handle: "hicut",
         value: 100,
-        formatter: ValueFormatters.percentage,
+        formatter: ValueFormatters.percentageMPPro,
         midiCC: MidiCCValuesPro.CAB_Para6)
   ];
 }
@@ -46,7 +46,7 @@ class JZ120Pro extends CabinetPro {
   bool get isSeparator => true;
   @override
   String get category => "Electric IR";
-  final cabName = "JZ120"; //Sunn A212???
+  final cabName = "JZ120";
   static int get cabIndex => 1;
   int get nuxIndex => cabIndex;
 }

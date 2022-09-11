@@ -312,24 +312,12 @@ public class FlutterMidiCommandPlugin : FlutterPlugin, ActivityAware, MethodCall
 
   private fun startScanningLeDevices() : String? {
 
-    if (bluetoothScanner == null) {
-      val errMsg = tryToInitBT()
-      errMsg?.let {
-        return it
-      }
-    } else {
-      Log.d("FlutterMIDICommand", "Start BLE Scan")
-      discoveredDevices.clear()
-      val filter = ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString("03B80E5A-EDE8-4B33-A751-6CE34EC4C700")).build()
-      val settings = ScanSettings.Builder().build()
-      bluetoothScanner?.startScan(listOf(filter), settings, bleScanner)
-    }
+    //Removed to enable support for Kitkat
     return null
   }
 
   private fun stopScanningLeDevices() {
-    bluetoothScanner?.stopScan(bleScanner)
-    discoveredDevices.clear()
+    //Removed to enable support for Kitkat
   }
 
   fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
@@ -361,26 +349,6 @@ public class FlutterMidiCommandPlugin : FlutterPlugin, ActivityAware, MethodCall
         Log.d("FlutterMIDICommand", "open device ${devices[0]}")
         midiManager.openDevice(devices[0], deviceOpenedListener, handler)
       }
-    }
-  }
-
-
-  private val bleScanner = object : ScanCallback() {
-    override fun onScanResult(callbackType: Int, result: ScanResult?) {
-      super.onScanResult(callbackType, result)
-      Log.d("FlutterMIDICommand", "onScanResult: ${result?.device?.address} - ${result?.device?.name}")
-      result?.also {
-        if (!discoveredDevices.contains(it.device)) {
-          discoveredDevices.add(it.device)
-          setupStreamHandler.send("deviceFound")
-        }
-      }
-    }
-
-    override fun onScanFailed(errorCode: Int) {
-      super.onScanFailed(errorCode)
-      Log.d("FlutterMIDICommand", "onScanFailed: $errorCode")
-      setupStreamHandler.send("BLE Scan failed $errorCode")
     }
   }
 

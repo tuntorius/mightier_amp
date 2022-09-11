@@ -19,6 +19,20 @@ import '../../mightierIcons.dart';
 import '../../theme.dart';
 import '../dynamic_treeview.dart';
 
+enum PresetsTopMenuActions { ExportAll, Import }
+
+enum CategoryMenuActions { Delete, Rename, Export }
+
+enum PresetItemActions {
+  Delete,
+  Rename,
+  ChangeChannel,
+  Duplicate,
+  Export,
+  ChangeCategory,
+  ExportQR
+}
+
 class PresetList extends StatefulWidget {
   final void Function(dynamic)? onTap;
   final bool simplified;
@@ -38,9 +52,10 @@ class PresetList extends StatefulWidget {
 class _PresetListState extends State<PresetList>
     with AutomaticKeepAliveClientMixin<PresetList> {
   Map<String, NuxDevice> devices = <String, NuxDevice>{};
+
   var presetsMenu = <PopupMenuEntry>[
     PopupMenuItem(
-      value: 1,
+      value: PresetsTopMenuActions.ExportAll,
       child: Row(
         children: <Widget>[
           Icon(
@@ -53,7 +68,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: 2,
+      value: PresetsTopMenuActions.Import,
       child: Row(
         children: <Widget>[
           Icon(
@@ -70,7 +85,7 @@ class _PresetListState extends State<PresetList>
   //menu for category
   var popupMenu = <PopupMenuEntry>[
     PopupMenuItem(
-      value: 0,
+      value: CategoryMenuActions.Delete,
       child: Row(
         children: <Widget>[
           Icon(
@@ -83,7 +98,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: 1,
+      value: CategoryMenuActions.Rename,
       child: Row(
         children: <Widget>[
           Icon(
@@ -96,7 +111,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: 2,
+      value: CategoryMenuActions.Rename,
       child: Row(
         children: <Widget>[
           Icon(
@@ -113,7 +128,7 @@ class _PresetListState extends State<PresetList>
   //menu for preset
   var popupSubmenu = <PopupMenuEntry>[
     PopupMenuItem(
-      value: 0,
+      value: PresetItemActions.Delete,
       child: Row(
         children: <Widget>[
           Icon(
@@ -126,7 +141,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: 2,
+      value: PresetItemActions.ChangeChannel,
       child: Row(
         children: <Widget>[
           Icon(
@@ -139,7 +154,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: 5,
+      value: PresetItemActions.ChangeCategory,
       child: Row(
         children: <Widget>[
           Icon(
@@ -152,7 +167,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: 1,
+      value: PresetItemActions.Rename,
       child: Row(
         children: <Widget>[
           Icon(
@@ -165,7 +180,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: 3,
+      value: PresetItemActions.Duplicate,
       child: Row(
         children: <Widget>[
           Icon(
@@ -178,20 +193,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: 4,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.save_alt,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Export Preset"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: 6,
+      value: PresetItemActions.ExportQR,
       child: Row(
         children: <Widget>[
           Icon(
@@ -203,31 +205,209 @@ class _PresetListState extends State<PresetList>
         ],
       ),
     ),
+    PopupMenuItem(
+      value: PresetItemActions.Export,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.save_alt,
+            color: AppThemeConfig.contextMenuIconColor,
+          ),
+          const SizedBox(width: 5),
+          const Text("Export Preset"),
+        ],
+      ),
+    )
   ];
 
   @override
   bool get wantKeepAlive => true;
 
-  void mainMenuActions(action) async {
-    switch (action) {
-      case 1: //export category
-        String? data = PresetsStorage().presetsToJson();
+  void _deleteCategory(String category) {
+    AlertDialogs.showConfirmDialog(context,
+        title: "Confirm",
+        description: "Are you sure you want to delete category $category?",
+        cancelButton: "Cancel",
+        confirmButton: "Delete",
+        confirmColor: Colors.red, onConfirm: (delete) {
+      if (delete) {
+        PresetsStorage().deleteCategory(category).then((List<String> uuids) {
+          TrackData().removeMultiplePresetsInstances(uuids);
+          setState(() {});
+        });
+      }
+    });
+  }
 
-        if (data != null) {
-          saveFileString("application/octet-stream", "presets.nuxpreset", data);
+  void _renameCategory(String category) {
+    AlertDialogs.showInputDialog(context,
+        title: "Rename",
+        description: "Enter category name:",
+        cancelButton: "Cancel",
+        confirmButton: "Rename",
+        value: category,
+        validation: (String newName) {
+          return !PresetsStorage().getCategories().contains(newName);
+        },
+        validationErrorMessage: "Name already taken!",
+        confirmColor: Colors.blue,
+        onConfirm: (newName) {
+          PresetsStorage()
+              .renameCategory(category, newName)
+              .then((value) => setState(() {}));
+        });
+  }
+
+  //if category is empty string it exports all categories
+  void _exportCategory(String category) {
+    String? data = PresetsStorage().presetsToJson(category);
+
+    if (data != null) {
+      saveFileString("application/octet-stream", "$category.nuxpreset", data);
+    }
+  }
+
+  void _importPresets() {
+    openFileString("application/octet-stream").then((value) {
+      PresetsStorage().presetsFromJson(value).then((value) {
+        setState(() {});
+      }).catchError((error) {
+        AlertDialogs.showInfoDialog(context,
+            title: "Error",
+            description: "The selected file is not a valid preset file!",
+            confirmButton: "OK");
+      });
+    });
+  }
+
+  void _deletePreset(Map<String, String> preset) {
+    bool inUse = TrackData().isPresetInUse(preset["uuid"]!);
+    String description = "Are you sure you want to delete ${preset["name"]}?";
+    if (inUse) {
+      description += "\n\nThe preset is used in one or more Jamtracks!";
+    }
+
+    AlertDialogs.showConfirmDialog(context,
+        title: "Confirm",
+        description: description,
+        cancelButton: "Cancel",
+        confirmButton: "Delete",
+        confirmColor: Colors.red, onConfirm: (delete) {
+      if (delete) {
+        String uuid = preset["uuid"] ?? "";
+        TrackData().removePresetInstances(uuid);
+        PresetsStorage()
+            .deletePreset(preset["category"]!, preset["name"]!)
+            .then((value) => setState(() {}));
+      }
+    });
+  }
+
+  void _renamePreset(Map preset) {
+    AlertDialogs.showInputDialog(context,
+        title: "Rename",
+        description: "Enter preset name:",
+        cancelButton: "Cancel",
+        confirmButton: "Rename",
+        value: preset["name"],
+        validationErrorMessage: "Name already taken!",
+        validation: (newName) {
+          return PresetsStorage().findPreset(newName, preset["category"]) ==
+              null;
+        },
+        confirmColor: Colors.blue,
+        onConfirm: (newName) {
+          PresetsStorage()
+              .renamePreset(preset["category"], preset["name"], newName)
+              .then((value) => setState(() {}));
+        });
+  }
+
+  void _changePresetChannel(Map preset) {
+    var channelList = <String>[];
+    int nuxChannel = preset["channel"];
+    var d = NuxDeviceControl.instance().getDeviceFromId(preset["product_id"]);
+
+    if (d != null) {
+      for (int i = 0; i < d.channelsCount; i++) {
+        channelList.add(d.channelName(i));
+      }
+      var dialog = AlertDialogs.showOptionDialog(context,
+          confirmButton: "Change",
+          cancelButton: "Cancel",
+          title: "Select Channel",
+          confirmColor: Colors.blue,
+          options: channelList,
+          value: nuxChannel, onConfirm: (changed, newValue) {
+        if (changed) {
+          setState(() {
+            PresetsStorage()
+                .changeChannel(preset["category"], preset["name"], newValue);
+          });
         }
-        break;
-      case 2: //import
-        openFileString("application/octet-stream").then((value) {
-          PresetsStorage().presetsFromJson(value).then((value) {
-            setState(() {});
-          }).catchError((error) {
-            AlertDialogs.showInfoDialog(context,
-                title: "Error",
-                description: "The selected file is not a valid preset file!",
-                confirmButton: "OK");
+      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => dialog,
+      );
+    }
+  }
+
+  void _duplicatePreset(Map preset) {
+    PresetsStorage()
+        .duplicatePreset(preset["category"], preset["name"])
+        .then((value) {
+      setState(() {});
+    });
+  }
+
+  void _exportPreset(Map preset) {
+    String? data =
+        PresetsStorage().presetToJson(preset["category"], preset["name"]);
+
+    if (data != null) {
+      saveFileString(
+          "application/octet-stream", "${preset["name"]}.nuxpreset", data);
+    }
+  }
+
+  void _changePresetCategory(Map preset) {
+    var categoryDialog = ChangeCategoryDialog(
+        category: preset["category"],
+        name: preset["name"],
+        confirmColor: Colors.blue,
+        onCategoryChange: (newCategory) {
+          setState(() {
+            PresetsStorage().changePresetCategory(
+                preset["category"], preset["name"], newCategory);
           });
         });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => categoryDialog.buildDialog(context),
+    );
+  }
+
+  void _exportQR(Map preset) {
+    var qr = NuxDeviceControl.instance().device.jsonToQR(preset);
+    if (qr != null) {
+      QrUtils.generateQR(qr).then((Image img) {
+        var qrExport = QRExportDialog(img, preset["name"]);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => qrExport.buildDialog(context),
+        );
+      });
+    }
+  }
+
+  void mainMenuActions(action) {
+    switch (action) {
+      case PresetsTopMenuActions.ExportAll:
+        _exportCategory("");
+        break;
+      case PresetsTopMenuActions.Import:
+        _importPresets();
         break;
     }
   }
@@ -237,171 +417,39 @@ class _PresetListState extends State<PresetList>
       if (item is String) {
         //category
         switch (action) {
-          case 0:
-            AlertDialogs.showConfirmDialog(context,
-                title: "Confirm",
-                description: "Are you sure you want to delete category $item?",
-                cancelButton: "Cancel",
-                confirmButton: "Delete",
-                confirmColor: Colors.red, onConfirm: (delete) {
-              if (delete) {
-                PresetsStorage()
-                    .deleteCategory(item)
-                    .then((List<String> uuids) {
-                  TrackData().removeMultiplePresetsInstances(uuids);
-                  setState(() {});
-                });
-              }
-            });
+          case CategoryMenuActions.Delete:
+            _deleteCategory(item);
             break;
-          case 1:
-            AlertDialogs.showInputDialog(context,
-                title: "Rename",
-                description: "Enter category name:",
-                cancelButton: "Cancel",
-                confirmButton: "Rename",
-                value: item,
-                validation: (String newName) {
-                  return !PresetsStorage().getCategories().contains(newName);
-                },
-                validationErrorMessage: "Name already taken!",
-                confirmColor: Colors.blue,
-                onConfirm: (newName) {
-                  PresetsStorage()
-                      .renameCategory(item, newName)
-                      .then((value) => setState(() {}));
-                });
+          case CategoryMenuActions.Rename:
+            _renameCategory(item);
             break;
-          case 2: //export category
-            String? data = PresetsStorage().presetsToJson(item);
-
-            if (data != null) {
-              saveFileString(
-                  "application/octet-stream", "$item.nuxpreset", data);
-            }
+          case CategoryMenuActions.Export:
+            _exportCategory(item);
+            break;
         }
       } else {
         //preset
         switch (action) {
-          case 0:
-            bool inUse = TrackData().isPresetInUse(item["uuid"]);
-            String description =
-                "Are you sure you want to delete ${item["name"]}?";
-            if (inUse) {
-              description += "\n\nThe preset is used in one or more Jamtracks!";
-            }
-
-            AlertDialogs.showConfirmDialog(context,
-                title: "Confirm",
-                description: description,
-                cancelButton: "Cancel",
-                confirmButton: "Delete",
-                confirmColor: Colors.red, onConfirm: (delete) {
-              if (delete) {
-                if (item is Map) {
-                  String uuid = item["uuid"];
-                  TrackData().removePresetInstances(uuid);
-                  PresetsStorage()
-                      .deletePreset(item["category"], item["name"])
-                      .then((value) => setState(() {}));
-                }
-              }
-            });
+          case PresetItemActions.Delete:
+            _deletePreset(item);
             break;
-          case 1:
-            AlertDialogs.showInputDialog(context,
-                title: "Rename",
-                description: "Enter preset name:",
-                cancelButton: "Cancel",
-                confirmButton: "Rename",
-                value: item["name"],
-                validationErrorMessage: "Name already taken!",
-                validation: (newName) {
-                  return PresetsStorage()
-                          .findPreset(newName, item["category"]) ==
-                      null;
-                },
-                confirmColor: Colors.blue,
-                onConfirm: (newName) {
-                  PresetsStorage()
-                      .renamePreset(item["category"], item["name"], newName)
-                      .then((value) => setState(() {}));
-                });
+          case PresetItemActions.Rename:
+            _renamePreset(item);
             break;
-          case 2:
-            var channelList = <String>[];
-            int nuxChannel = item["channel"];
-            var d =
-                NuxDeviceControl.instance().getDeviceFromId(item["product_id"]);
-
-            if (d != null) {
-              for (int i = 0; i < d.channelsCount; i++) {
-                channelList.add(d.channelName(i));
-              }
-              var dialog = AlertDialogs.showOptionDialog(context,
-                  confirmButton: "Change",
-                  cancelButton: "Cancel",
-                  title: "Select Channel",
-                  confirmColor: Colors.blue,
-                  options: channelList,
-                  value: nuxChannel, onConfirm: (changed, newValue) {
-                if (changed) {
-                  setState(() {
-                    PresetsStorage().changeChannel(
-                        item["category"], item["name"], newValue);
-                  });
-                }
-              });
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => dialog,
-              );
-            }
+          case PresetItemActions.ChangeChannel:
+            _changePresetChannel(item);
             break;
-          case 3: //duplicate
-            PresetsStorage()
-                .duplicatePreset(item["category"], item["name"])
-                .then((value) {
-              setState(() {});
-            });
+          case PresetItemActions.Duplicate:
+            _duplicatePreset(item);
             break;
-          case 4: //export
-            String? data =
-                PresetsStorage().presetToJson(item["category"], item["name"]);
-
-            if (data != null) {
-              saveFileString("application/octet-stream",
-                  "${item["name"]}.nuxpreset", data);
-            }
+          case PresetItemActions.Export:
+            _exportPreset(item);
             break;
-          case 5: //change category
-            var categoryDialog = ChangeCategoryDialog(
-                category: item["category"],
-                name: item["name"],
-                confirmColor: Colors.blue,
-                onCategoryChange: (newCategory) {
-                  setState(() {
-                    PresetsStorage().changePresetCategory(
-                        item["category"], item["name"], newCategory);
-                  });
-                });
-            showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  categoryDialog.buildDialog(context),
-            );
+          case PresetItemActions.ChangeCategory:
+            _changePresetCategory(item);
             break;
-          case 6:
-            var qr = NuxDeviceControl.instance().device.jsonToQR(item);
-            if (qr != null) {
-              Image img = await QrUtils.generateQR(qr);
-              var qrExport = QRExportDialog(img, item["name"]);
-              showDialog(
-                context: context,
-                builder: (BuildContext context) =>
-                    qrExport.buildDialog(context),
-              );
-            }
+          case PresetItemActions.ExportQR:
+            _exportQR(item);
             break;
         }
       }
@@ -513,9 +561,7 @@ class _PresetListState extends State<PresetList>
                 },
               ),
             ),
-          Expanded(
-            child: _buildList(context),
-          )
+          _buildList(context)
         ],
       ),
     );
@@ -549,6 +595,7 @@ class _PresetListState extends State<PresetList>
         categories: PresetsStorage().getCategories(),
         items: PresetsStorage().presetsData,
         childBuilder: (item) {
+          //this creates the presets
           var device = NuxDeviceControl.instance().device;
           var pVersion = item["version"] ?? 0;
           var devVersion = device.productVersion;
@@ -622,7 +669,7 @@ class _PresetListState extends State<PresetList>
 
                   if (widget.onTap != null)
                     widget.onTap!(item);
-                    else {
+                  else {
                     var dev = NuxDeviceControl.instance().device;
                     if (dev.isPresetSupported(item)) {
                       NuxDeviceControl.instance()

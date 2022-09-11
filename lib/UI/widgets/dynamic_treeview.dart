@@ -45,7 +45,7 @@ class DynamicTreeView extends StatefulWidget {
   final ChildBuilder childBuilder;
 
   final PopupMenuItemBuilder itemBuilder;
-  final Function(int, String) onSelected;
+  final Function(dynamic, String) onSelected;
   final bool simplified;
 
   ///The width of DynamicTreeView
@@ -219,7 +219,7 @@ class ParentWidget extends StatefulWidget {
   final OnCategoryTap? onTap;
   final OnCategoryLongPress? onLongPress;
   final PopupMenuItemBuilder itemBuilder;
-  final Function(int, String) onSelected;
+  final Function(dynamic, String) onSelected;
   final bool simplified;
   final String title;
   final bool hasNewItems;
@@ -280,7 +280,7 @@ class _ParentWidgetState extends State<ParentWidget>
         ),
         itemBuilder: widget.itemBuilder,
         onSelected: (pos) {
-          if (pos is int) widget.onSelected(pos, widget.title);
+          widget.onSelected(pos, widget.title);
         },
       );
       if (widget.hasNewItems)

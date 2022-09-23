@@ -76,10 +76,10 @@ class ContourModeFormatter extends SwitchFormatter {
 class SCFModeFormatter extends SwitchFormatter {
   @override
   // TODO: implement labelTitle
-  String get labelTitle => "SCF(TODO):";
+  String get labelTitle => "SCF";
 
   @override
-  List<String> get labelValues => ["1", "2", "3"];
+  List<String> get labelValues => ["Chorus", "P.M.", "Flanger"];
 
   @override
   List<int> get midiValues => [0, 64, 127];

@@ -31,6 +31,21 @@ class ModeControl extends StatelessWidget {
     return (parameter.formatter as SwitchFormatter).midiValues;
   }
 
+  int getIndexByValue(int midiValue) {
+    //find element that is closest to the value
+    var list = (parameter.formatter as SwitchFormatter).midiValues;
+    int closestValue = 255;
+    int selected = -1;
+    for (int i = 0; i < list.length; i++) {
+      int diff = (list[i] - midiValue).abs();
+      if (diff < closestValue) {
+        closestValue = diff;
+        selected = i;
+      }
+    }
+    return selected;
+  }
+
   Widget getButtonItem(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -55,7 +70,7 @@ class ModeControl extends StatelessWidget {
 
           var elements = getElementsCount();
           var active = List<bool>.filled(elements.length, false);
-          var index = ((value / 127) * (elements.length - 1)).ceil();
+          var index = getIndexByValue(value.round());
           active[index] = true;
           return Container(
             height: height,

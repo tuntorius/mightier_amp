@@ -1,15 +1,24 @@
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
+
 import '../../../platform/simpleSharedPrefs.dart';
 import '../NuxDevice.dart';
 import '../NuxConstants.dart';
 import 'communication.dart';
 
 class PlugAirCommunication extends DeviceCommunication {
-  PlugAirCommunication(NuxDevice _device) : super(_device);
+  PlugAirCommunication(NuxDevice _device, NuxDeviceConfiguration _config)
+      : super(_device, _config);
 
   @override
   int get productVID => 48;
 
+  @override
+  int get connectionSteps => 3;
+
   int _readyPresetsCount = 0;
+
+  NuxMightyPlugConfiguration get config =>
+      super.config as NuxMightyPlugConfiguration;
 
   List<int> createFirmwareMessage() {
     List<int> msg = [];
@@ -34,22 +43,39 @@ class PlugAirCommunication extends DeviceCommunication {
     return msg;
   }
 
-  void requestPrimaryData() {
-    device.deviceControl.sendBLEData(requestPresetByIndex(0));
+  void performNextConnectionStep() {
+    switch (currentConnectionStep) {
+      case 0:
+        device.deviceControl.sendBLEData(requestPresetByIndex(0));
+        break;
+      case 1: //eco mode and other
+        var message = createSysExMessage(DeviceMessageID.devReqManuMsgID, [0]);
+        device.deviceControl.sendBLEData(message);
+        break;
+      case 2: //usb settings
+        var message = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
+            [SysCtrlState.syscmd_usbaudio, 0, 0, 0, 0]);
+        device.deviceControl.sendBLEData(message);
+        break;
+    }
   }
 
-  void requestSecondaryData() async {
-    //eco mode and other
-    await Future.delayed(Duration(milliseconds: 200));
-    var data = createSysExMessage(DeviceMessageID.devReqManuMsgID, [0]);
-    device.deviceControl.sendBLEData(data);
+  // void requestPrimaryData() {
+  //   device.deviceControl.sendBLEData(requestPresetByIndex(0));
+  // }
 
-    await Future.delayed(Duration(milliseconds: 200));
-    //usb settings
-    data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
-        [SysCtrlState.syscmd_usbaudio, 0, 0, 0, 0]);
-    device.deviceControl.sendBLEData(data);
-  }
+  // void requestSecondaryData() async {
+  //   //eco mode and other
+  //   await Future.delayed(Duration(milliseconds: 200));
+  //   var data = createSysExMessage(DeviceMessageID.devReqManuMsgID, [0]);
+  //   device.deviceControl.sendBLEData(data);
+
+  //   await Future.delayed(Duration(milliseconds: 200));
+  //   //usb settings
+  //   data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
+  //       [SysCtrlState.syscmd_usbaudio, 0, 0, 0, 0]);
+  //   device.deviceControl.sendBLEData(data);
+  // }
 
   List<int> requestPresetByIndex(int index) {
     return createSysExMessage(DeviceMessageID.devReqPresetMsgID, index);
@@ -161,7 +187,7 @@ class PlugAirCommunication extends DeviceCommunication {
 
         if (_readyPresetsCount == device.channelsCount) {
           device.onPresetsReady();
-          device.deviceControl.onPrimaryDataReady();
+          connectionStepReady();
         } else {
           device.deviceControl.sendBLEData(requestPresetByIndex(data[2] + 1));
         }
@@ -182,13 +208,36 @@ class PlugAirCommunication extends DeviceCommunication {
     return false;
   }
 
+  void _handleBTEcoMode(List<int> data) {
+    //this has lots of unknown values - maybe bpm settings
+    //eco mode is 12
+    if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
+      config.btEq = data[10];
+      config.ecoMode = data[12] != 0;
+      connectionStepReady();
+    }
+  }
+
+  void _handleUSBConfig(List<int> data) {
+    config.usbMode = data[9];
+    config.inputVol = data[10];
+    config.outputVol = data[11];
+    connectionStepReady();
+  }
+
   void onDataReceive(List<int> data) {
     if (data.length > 2) {
-      switch (data[2]) {
+      switch (data[2] & 0xf0) {
         case MidiMessageValues.sysExStart:
           switch (data[3]) {
             case DeviceMessageID.devReqFwID:
-              if (_handleFirmwareData(data)) return;
+              if (data[9] == DeviceMessageID.devSysCtrlMsgID &&
+                  data[10] == SysCtrlState.syscmd_usbaudio) {
+                _handleUSBConfig(data.sublist(2));
+              } else if (_handleFirmwareData(data)) return;
+              break;
+            case DeviceMessageID.devGetManuMsgID:
+              _handleBTEcoMode(data.sublist(2));
               break;
             case DeviceMessageID.devGetPresetMsgID:
               _handlePresetDataPiece(data.sublist(2));
@@ -201,6 +250,7 @@ class PlugAirCommunication extends DeviceCommunication {
   }
 
   void onDisconnect() {
+    super.onDisconnect();
     _readyPresetsCount = 0;
   }
 }

@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/device_specific_settings/PlugAirSettings.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugAirCommunication.dart';
 import '../../UI/mightierIcons.dart';
@@ -17,14 +18,24 @@ enum PlugAirChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
 
 enum PlugAirVersion { PlugAir15, PlugAir21 }
 
+class NuxMightyPlugConfiguration extends NuxDeviceConfiguration {
+  int usbMode = 0;
+  int inputVol = 0;
+  int outputVol = 0;
+  int btEq = 0;
+}
+
 class NuxMightyPlug extends NuxDevice {
   //this is used in conversion of very old format of presets which
   // didn't contain device id. They were always for mighty plug/air
   static const defaultNuxId = "mighty_plug_air";
   int get productVID => 48;
 
-  late PlugAirCommunication _communication = new PlugAirCommunication(this);
+  late PlugAirCommunication _communication = PlugAirCommunication(this, config);
   DeviceCommunication get communication => _communication;
+
+  NuxMightyPlugConfiguration _config = NuxMightyPlugConfiguration();
+  NuxMightyPlugConfiguration get config => _config;
 
   PlugAirVersion version = PlugAirVersion.PlugAir21;
 
@@ -35,6 +46,13 @@ class NuxMightyPlug extends NuxDevice {
   IconData get productIcon => MightierIcons.amp_plugair;
   List<String> get productBLENames =>
       ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
+
+  //general settings
+
+  int get usbMode => config.usbMode;
+  int get inputVol => config.inputVol;
+  int get outputVol => config.outputVol;
+  int get btEq => config.btEq;
 
   int get channelsCount => 7;
   int get effectsChainLength => 7;
@@ -215,5 +233,30 @@ class NuxMightyPlug extends NuxDevice {
     var preset = PlugAirPreset(device: this, channel: channel, channelName: "");
     preset.setFirmwareVersion(productVersion);
     return preset;
+  }
+
+  //device specific settings
+  void setUsbMode(int mode) {
+    config.usbMode = mode;
+    communication.setUsbAudioMode(mode);
+  }
+
+  void setUsbInputVol(int vol) {
+    config.inputVol = vol;
+    communication.setUsbInputVolume(vol);
+  }
+
+  void setUsbOutputVol(int vol) {
+    config.outputVol = vol;
+    communication.setUsbOutputVolume(vol);
+  }
+
+  void setBtEq(int eq) {
+    config.btEq = eq;
+    communication.setBTEq(eq);
+  }
+
+  Widget getSettingsWidget() {
+    return PlugAirSettings(device: this);
   }
 }

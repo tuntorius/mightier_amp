@@ -1,11 +1,10 @@
 // (c) 2020-2021 Dian Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'dart:ui';
-
 import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
 
 import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
@@ -171,7 +170,16 @@ class PlugProPreset extends Preset {
       MD45Pro(),
     ]);
 
-    //TODO: add 20 user cabs
+    //add the user cabs
+    for (int i = 0; i < PlugProCommunication.CustomIRsCount; i++) {
+      var userCab = UserCab();
+      userCab.setNuxIndex(i + PlugProCommunication.CustomIRStart);
+      if (i == 0) {
+        userCab.isSeparator = true;
+        userCab.category = "User IRs";
+      }
+      cabinetList.add(userCab);
+    }
 
     delayList.addAll(
         [AnalogDelay(), DigitalDelay(), ModDelay(), TapeEcho(), PanDelay()]);

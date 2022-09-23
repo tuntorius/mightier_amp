@@ -21,7 +21,11 @@ import 'devices/NuxMightyPlugAir.dart';
 import 'devices/NuxMightyPlugPro.dart';
 import 'devices/effects/Processor.dart';
 
-enum DeviceConnectionState { connectedStart, presetsLoaded, configReceived }
+enum DeviceConnectionState {
+  connectionBegin,
+  presetsLoaded,
+  connectionComplete
+}
 
 class NuxDiagnosticData {
   String device = "";
@@ -59,7 +63,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   double _masterVolume = 100;
 
-  var changes = new ChangeStack();
+  var changes = ChangeStack();
 
   bool developer = false;
   Function(List<int>)? onDataReceiveDebug;
@@ -249,7 +253,7 @@ class NuxDeviceControl extends ChangeNotifier {
   void _onConnect() {
     print("Device connected");
     device.onConnect();
-    connectStatus.add(DeviceConnectionState.connectedStart);
+    connectStatus.add(DeviceConnectionState.connectionBegin);
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
 
     requestFirmwareVersion();
@@ -263,7 +267,6 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void _onDataReceive(List<int> data) {
-    print(data);
     if (developer) onDataReceiveDebug?.call(data);
     _device.communication.onDataReceive(data);
   }
@@ -282,30 +285,24 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void onFirmwareVersionReady() {
-    //request everything else
-    device.communication.requestPrimaryData();
+    device.communication.performNextConnectionStep();
   }
 
-  void onPrimaryDataReady() {
-    device.communication.requestSecondaryData();
-    if (device.batterySupport) {
-      batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
-      if (device.presetSaveSupport) _onBatteryTimer(null);
-    }
-
-    print("Primary data received");
-    onPresetsReady();
+  void onConnectionStepReady() {
+    if (device.communication.isConnectionReady()) {
+      if (device.batterySupport) {
+        batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
+        _onBatteryTimer(null);
+      }
+      device.sendAmpLevel();
+      connectStatus.add(DeviceConnectionState.connectionComplete);
+      print("Device connection complete");
+    } else
+      device.communication.performNextConnectionStep();
   }
 
   void onPresetsReady() {
     connectStatus.add(DeviceConnectionState.presetsLoaded);
-  }
-
-  void deviceConnectionReady() {
-    _onBatteryTimer(null);
-    device.sendAmpLevel();
-    connectStatus.add(DeviceConnectionState.configReceived);
-    print("Device connection complete");
   }
 
   //for some reason we should not ask for presets immediately
@@ -428,7 +425,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
     //show loading popup
     if (device.presetSaveSupport) {
-      connectStatus.add(DeviceConnectionState.connectedStart);
+      connectStatus.add(DeviceConnectionState.connectionBegin);
       requestPresetDelayed();
     }
   }

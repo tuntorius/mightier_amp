@@ -17,8 +17,10 @@ enum M8BTChannel { Clean, Overdrive, Distortion }
 
 class NuxMighty8BT extends NuxDevice {
   int get productVID => 48;
-  late LiteCommunication _communication = new LiteCommunication(this);
+  late LiteCommunication _communication = LiteCommunication(this, config);
   DeviceCommunication get communication => _communication;
+  NuxDeviceConfiguration _config = NuxDeviceConfiguration();
+  NuxDeviceConfiguration get config => _config;
 
   String get productName => "NUX Mighty 8 BT";
   String get productNameShort => "Mighty 8 BT";

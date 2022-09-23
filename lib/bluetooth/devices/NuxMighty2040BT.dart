@@ -27,11 +27,10 @@ enum M2040BTChannel {
 class NuxMighty2040BT extends NuxDevice {
   int get productVID => 48;
 
-  late LiteCommunication _communication = new LiteCommunication(this);
+  late LiteCommunication _communication = LiteCommunication(this, config);
   DeviceCommunication get communication => _communication;
-
-  static const _group1 = 0;
-  static const _group2 = 1;
+  NuxDeviceConfiguration _config = NuxDeviceConfiguration();
+  NuxDeviceConfiguration get config => _config;
 
   String get productName => "NUX Mighty 20/40 BT";
   String get productNameShort => "Mighty 20/40 BT";

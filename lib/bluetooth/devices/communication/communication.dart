@@ -11,8 +11,11 @@ abstract class DeviceCommunication {
 
   @protected
   NuxDevice device;
+  NuxDeviceConfiguration config;
 
-  DeviceCommunication(NuxDevice _device) : device = _device;
+  DeviceCommunication(NuxDevice _device, NuxDeviceConfiguration _config)
+      : device = _device,
+        config = _config;
   List<int> createFirmwareMessage();
 
   List<int> requestPresetByIndex(int index);
@@ -20,8 +23,23 @@ abstract class DeviceCommunication {
 
   void requestBatteryStatus();
 
-  void requestPrimaryData();
-  void requestSecondaryData();
+  @protected
+  int get connectionSteps;
+
+  @protected
+  int currentConnectionStep = 0;
+
+  bool isConnectionReady() {
+    return connectionSteps == currentConnectionStep;
+  }
+
+  void performNextConnectionStep();
+
+  @protected
+  void connectionStepReady() {
+    currentConnectionStep++;
+    device.deviceControl.onConnectionStepReady();
+  }
 
   void sendSlotEnabledState(int slot) {
     if (!device.deviceControl.isConnected) return;
@@ -60,7 +78,9 @@ abstract class DeviceCommunication {
 
   void onDataReceive(List<int> data);
 
-  void onDisconnect();
+  void onDisconnect() {
+    currentConnectionStep = 0;
+  }
 
   List<int> setChannel(int channel);
 

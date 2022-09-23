@@ -3,16 +3,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
-import '../../bluetooth/NuxDeviceControl.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
+import '../../../bluetooth/NuxDeviceControl.dart';
 
-class UsbSettings extends StatefulWidget {
+class PlugAirUsbSettings extends StatefulWidget {
   @override
-  _UsbSettingsState createState() => _UsbSettingsState();
+  _PlugAirUsbSettingsState createState() => _PlugAirUsbSettingsState();
 }
 
-class _UsbSettingsState extends State<UsbSettings> {
+class _PlugAirUsbSettingsState extends State<PlugAirUsbSettings> {
   final usbModes = ["Reamp", "Normal", "Dry Out"];
-  final device = NuxDeviceControl.instance().device;
+  final device = NuxDeviceControl.instance().device as NuxMightyPlug;
 
   @override
   Widget build(BuildContext context) {

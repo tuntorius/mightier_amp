@@ -14,6 +14,10 @@ import "NuxConstants.dart";
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
 
+class NuxDeviceConfiguration {
+  bool ecoMode = false;
+}
+
 abstract class NuxDevice extends ChangeNotifier {
   final NuxDeviceControl deviceControl;
 
@@ -26,6 +30,9 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   DeviceCommunication get communication;
+
+  @protected
+  NuxDeviceConfiguration get config;
 
 //General device parameters
   String get productName;
@@ -77,7 +84,7 @@ abstract class NuxDevice extends ChangeNotifier {
   bool nuxPresetsReceived = false;
 
   @protected
-  int selectedChannelP = 0; //nux-based (0-6) channel index
+  int selectedChannelP = 0; //nux-based channel index
 
   int get selectedChannel => selectedChannelP;
   late List<bool> _activeChannels;
@@ -143,17 +150,8 @@ abstract class NuxDevice extends ChangeNotifier {
   String presetCategory = "";
 
   //general settings
-  bool _ecoMode = false;
-  int _usbMode = 0;
-  int _inputVol = 0;
-  int _outputVol = 0;
-  int _btEq = 0;
 
-  bool get ecoMode => _ecoMode;
-  int get usbMode => _usbMode;
-  int get inputVol => _inputVol;
-  int get outputVol => _outputVol;
-  int get btEq => _btEq;
+  bool get ecoMode => config.ecoMode;
 
   //drum stuff
   bool _drumsEnabled = false;
@@ -209,28 +207,8 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void setEcoMode(bool enabled) {
-    _ecoMode = enabled;
+    config.ecoMode = enabled;
     communication.setEcoMode(enabled);
-  }
-
-  void setUsbMode(int mode) {
-    _usbMode = mode;
-    communication.setUsbAudioMode(mode);
-  }
-
-  void setUsbInputVol(int vol) {
-    _inputVol = vol;
-    communication.setUsbInputVolume(vol);
-  }
-
-  void setUsbOutputVol(int vol) {
-    _outputVol = vol;
-    communication.setUsbOutputVolume(vol);
-  }
-
-  void setBtEq(int eq) {
-    _btEq = eq;
-    communication.setBTEq(eq);
   }
 
   //used for master volume control
@@ -313,38 +291,19 @@ abstract class NuxDevice extends ChangeNotifier {
     }
   }
 
-  void _handleBTEcoMode(List<int> data) {
-    //this has lots of unknown values - maybe bpm settings
-    //eco mode is 12
-    if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
-      _btEq = data[10];
-      _ecoMode = data[12] != 0;
-      notifyListeners();
-    }
-  }
-
   void onDataReceived(List<int> data) {
     assert(data.length > 1);
 
     switch (data[0] & 0xf0) {
       case MidiMessageValues.sysExStart:
         switch (data[1]) {
-          case DeviceMessageID.devGetManuMsgID:
-            _handleBTEcoMode(data);
-            break;
           case DeviceMessageID.devReqMIDIParaMsgID:
             switch (data[7]) {
               case DeviceMessageID.devSysCtrlMsgID:
                 switch (data[8]) {
                   case SysCtrlState.syscmd_dsprun_battery:
+                    //Is this MP-2 Only?
                     deviceControl.onBatteryPercentage(data[9]);
-                    break;
-                  case SysCtrlState.syscmd_usbaudio:
-                    _usbMode = data[9];
-                    _inputVol = data[10];
-                    _outputVol = data[11];
-                    deviceControl.deviceConnectionReady();
-                    notifyListeners();
                     break;
                 }
                 break;
@@ -383,6 +342,10 @@ abstract class NuxDevice extends ChangeNotifier {
   bool isPresetSupported(dynamic _preset) {
     String productId = _preset["product_id"];
     return productStringId == productId;
+  }
+
+  Widget getSettingsWidget() {
+    return SizedBox.shrink();
   }
 
   String? jsonToQR(dynamic _preset) {

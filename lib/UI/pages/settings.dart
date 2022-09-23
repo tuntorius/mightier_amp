@@ -3,7 +3,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/pages/UsbSettings.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wakelock/wakelock.dart';
@@ -19,18 +18,6 @@ import 'developerPage.dart';
 import 'midiControllers.dart';
 
 enum TimeUnit { BPM, Seconds }
-
-const _eqOptions = [
-  "Normal",
-  "Acoustic",
-  "Blues",
-  "Clean Bass",
-  "Guitar Cut",
-  "Metal",
-  "Pop",
-  "Rock",
-  "Solo Cut"
-];
 
 const _timeUnit = ["BPM", "Seconds"];
 
@@ -205,78 +192,9 @@ class _SettingsState extends State<Settings> {
                       });
                     }),
                 const Divider(),
-                if (device.advancedSettingsSupport)
-                  ListTile(
-                    enabled: device.deviceControl.isConnected,
-                    title: const Text("USB Audio Settings"),
-                    trailing: const Icon(Icons.keyboard_arrow_right),
-                    onTap: () {
-                      //if (midiHandler.connectedDevice != null) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => UsbSettings()));
-                      //}
-                    },
-                  ),
-                //Divider(),
-                if (device.advancedSettingsSupport)
-                  ListTile(
-                    enabled: device.deviceControl.isConnected,
-                    title: const Text("Bluetooth Audio EQ"),
-                    subtitle: Text(_eqOptions[device.btEq]),
-                    trailing: const Icon(Icons.keyboard_arrow_right),
-                    onTap: () {
-                      var dialog = AlertDialogs.showOptionDialog(context,
-                          confirmButton: "OK",
-                          cancelButton: "Cancel",
-                          title: "Bluetooth Audio EQ",
-                          confirmColor: Colors.blue,
-                          value: device.btEq,
-                          options: _eqOptions, onConfirm: (changed, newValue) {
-                        if (changed) {
-                          setState(() {
-                            device.setBtEq(newValue);
-                          });
-                        }
-                      });
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => dialog,
-                      );
-                    },
-                  ),
-                //Divider(),
-                if (device.advancedSettingsSupport)
-                  ListTile(
-                    enabled: device.deviceControl.isConnected,
-                    title: const Text("Reset Device Presets"),
-                    onTap: () {
-                      if (midiHandler.connectedDevice != null) {
-                        AlertDialogs.showConfirmDialog(context,
-                            title: "Reset device presets",
-                            cancelButton: "Cancel",
-                            confirmButton: "Reset",
-                            confirmColor: Colors.red,
-                            description: "Are you sure?", onConfirm: (val) {
-                          if (val) device.resetNuxPresets();
-                        });
-                      }
-                    },
-                  ),
-                //Divider(),
-                if (device.advancedSettingsSupport)
-                  SwitchListTile(
-                      title: const Text("Eco Mode"),
-                      value: device.ecoMode,
-                      onChanged: device.deviceControl.isConnected
-                          ? (val) {
-                              setState(
-                                () {
-                                  device.setEcoMode(val);
-                                },
-                              );
-                            }
-                          : null),
-                //Divider(),
+                device.getSettingsWidget(),
+                const Divider(),
+                //const Divider(),
                 ListTile(
                   enabled: device.deviceControl.isConnected,
                   title: const Text("Calibrate BT Audio Latency"),

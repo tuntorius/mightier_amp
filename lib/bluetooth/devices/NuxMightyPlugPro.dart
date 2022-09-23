@@ -22,8 +22,11 @@ class NuxMightyPlugPro extends NuxDevice {
   // didn't contain device id. They were always for mighty plug/air
   static const defaultNuxId = "mighty_plug_air";
   int get productVID => 48;
-  late PlugProCommunication _communication = new PlugProCommunication(this);
+  late PlugProCommunication _communication = PlugProCommunication(this, config);
   DeviceCommunication get communication => _communication;
+
+  NuxDeviceConfiguration _config = NuxDeviceConfiguration();
+  NuxDeviceConfiguration get config => _config;
 
   PlugProVersion version = PlugProVersion.PlugPro1;
 
@@ -59,7 +62,7 @@ class NuxMightyPlugPro extends NuxDevice {
     return PresetDataIndexPlugPro.Head_iCAB;
   }
 
-  bool get presetSaveSupport => false;
+  bool get presetSaveSupport => true;
   bool get reorderableFXChain => true;
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
@@ -89,7 +92,7 @@ class NuxMightyPlugPro extends NuxDevice {
         longName: "Comp",
         keyName: "compressor",
         nuxOrderIndex: 1,
-        color: Colors.yellow,
+        color: Colors.lime,
         icon: Icons.stacked_line_chart),
     ProcessorInfo(
         shortName: "EFX",
@@ -117,7 +120,7 @@ class NuxMightyPlugPro extends NuxDevice {
         longName: "Noise Gate",
         keyName: "gate",
         nuxOrderIndex: 5,
-        color: Colors.lightGreen,
+        color: Colors.green,
         icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "MOD",
@@ -131,14 +134,14 @@ class NuxMightyPlugPro extends NuxDevice {
         longName: "Delay",
         keyName: "delay",
         nuxOrderIndex: 7,
-        color: Colors.purple,
+        color: Colors.cyan,
         icon: Icons.blur_linear),
     ProcessorInfo(
         shortName: "RVB",
         longName: "Reverb",
         keyName: "reverb",
         nuxOrderIndex: 8,
-        color: Colors.orange,
+        color: Colors.deepPurple,
         icon: Icons.blur_on),
     ProcessorInfo(
         shortName: "IR",

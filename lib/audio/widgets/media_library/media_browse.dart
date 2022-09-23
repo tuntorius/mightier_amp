@@ -15,7 +15,7 @@ class MediaLibraryBrowser extends StatefulWidget {
 
 class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
   final StreamController<String> _refreshController =
-      new StreamController<String>();
+      StreamController<String>();
 
   //Future<List<SongInfo>> songs;
   static List<ArtistInfo> artists = [];

@@ -4,10 +4,14 @@ import '../NuxConstants.dart';
 import 'communication.dart';
 
 class LiteCommunication extends DeviceCommunication {
-  LiteCommunication(NuxDevice _device) : super(_device);
+  LiteCommunication(NuxDevice _device, NuxDeviceConfiguration _config)
+      : super(_device, _config);
 
   @override
   int get productVID => 48;
+
+  @override
+  int get connectionSteps => 1;
 
   @override
   List<int> createFirmwareMessage() {
@@ -47,18 +51,27 @@ class LiteCommunication extends DeviceCommunication {
     device.onDataReceived(data.sublist(2));
   }
 
-  void onDisconnect() {}
-
-  void requestPrimaryData() {
-    device.deviceControl.onPrimaryDataReady();
+  void onDisconnect() {
+    super.onDisconnect();
   }
 
-  requestSecondaryData() {
-    device.deviceControl.deviceConnectionReady();
-
+  void performNextConnectionStep() {
+    connectionStepReady();
     device.selectedChannelNormalized = 0;
     device.deviceControl.changeDevicePreset(0);
     device.deviceControl.sendFullPresetSettings();
-    device.deviceControl.deviceConnectionReady();
   }
+
+  // void requestPrimaryData() {
+  //   device.deviceControl.onPrimaryDataReady();
+  // }
+
+  // requestSecondaryData() {
+  //   device.deviceControl.deviceConnectionReady();
+
+  //   device.selectedChannelNormalized = 0;
+  //   device.deviceControl.changeDevicePreset(0);
+  //   device.deviceControl.sendFullPresetSettings();
+  //   device.deviceControl.deviceConnectionReady();
+  // }
 }

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_pro/Cabinet.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/PlugProPreset.dart';
 
 import '../../../platform/simpleSharedPrefs.dart';
@@ -6,12 +9,21 @@ import '../NuxConstants.dart';
 import 'communication.dart';
 
 class PlugProCommunication extends DeviceCommunication {
-  PlugProCommunication(NuxDevice device) : super(device);
+  PlugProCommunication(NuxDevice device, NuxDeviceConfiguration config)
+      : super(device, config);
 
   @override
   int get productVID => 48;
 
+  @override
+  get connectionSteps => 2;
+
   int _readyPresetsCount = 0;
+  int _readyIRsCount = 0;
+
+  static const int CustomIRStart = 34;
+  static const int CustomIRsCount = 20;
+  static const int IRLength = CustomIRStart + CustomIRsCount;
 
   List<int> createFirmwareMessage() {
     List<int> msg = [];
@@ -31,17 +43,17 @@ class PlugProCommunication extends DeviceCommunication {
     return msg;
   }
 
-  void requestPrimaryData() {
-    print("Requesting primary data");
-    //for (int i = 0; i < device.channelsCount; i++)
-    //  device.deviceControl.sendBLEData(requestPresetByIndex(i));
-
-    device.deviceControl.sendBLEData(requestPresetByIndex(0));
-  }
-
-  void requestSecondaryData() {
-    print("Requesting secondary data");
-    device.deviceControl.deviceConnectionReady();
+  void performNextConnectionStep() {
+    switch (currentConnectionStep) {
+      case 0: //presets
+        device.deviceControl.sendBLEData(requestPresetByIndex(0));
+        break;
+      case 1: //IR names
+        device.deviceControl.sendBLEData(requestIRName(CustomIRStart));
+        break;
+      case 2:
+        break;
+    }
   }
 
   List<int> requestPresetByIndex(int index) {
@@ -163,7 +175,7 @@ class PlugProCommunication extends DeviceCommunication {
 
           if (_readyPresetsCount == device.channelsCount) {
             device.onPresetsReady();
-            device.deviceControl.onPrimaryDataReady();
+            connectionStepReady();
           } else {
             device.deviceControl
                 .sendBLEData(requestPresetByIndex(_data[2] + 1));
@@ -171,6 +183,30 @@ class PlugProCommunication extends DeviceCommunication {
         }
       }
     }
+  }
+
+  void _handleIRName(List<int> data) {
+    int index = data[1];
+    bool hasIR = data[2] != 0;
+    var decoder = AsciiDecoder();
+    String name = decoder.convert(data.sublist(6, 17));
+    print("IR $index, active: $hasIR, name: $name");
+
+    for (var preset in device.presets) {
+      PlugProPreset proPreset = preset as PlugProPreset;
+      var cab = proPreset.cabinetList[index];
+      if (cab is UserCab) {
+        cab.setName(name);
+        cab.setActive(hasIR);
+      }
+    }
+    _readyIRsCount++;
+
+    if (_readyIRsCount == CustomIRsCount)
+      connectionStepReady();
+    else
+      device.deviceControl
+          .sendBLEData(requestIRName(CustomIRStart + _readyIRsCount));
   }
 
   bool _handleFirmwareData(List<int> data) {
@@ -204,6 +240,9 @@ class PlugProCommunication extends DeviceCommunication {
                 case SyxMsg.kSYX_PRESET:
                   _handlePresetDataPiece(data.sublist(6));
                   return;
+                case SyxMsg.kSYX_CABNAME:
+                  _handleIRName(data.sublist(7));
+                  return;
               }
               break;
           }
@@ -214,6 +253,8 @@ class PlugProCommunication extends DeviceCommunication {
   }
 
   void onDisconnect() {
+    super.onDisconnect();
     _readyPresetsCount = 0;
+    _readyIRsCount = 0;
   }
 }

@@ -58,6 +58,8 @@ class ProcessorInfo {
       required this.icon});
 }
 
+enum EffectEditorUI { Sliders, EQ }
+
 abstract class Processor {
   String name = "";
 
@@ -68,6 +70,7 @@ abstract class Processor {
 
   int get nuxDataLength;
 
+  EffectEditorUI get editorUI;
   //The CC command that switches the effect on/off
   int midiCCEnableValue = 0;
 

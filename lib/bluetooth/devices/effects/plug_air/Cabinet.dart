@@ -12,7 +12,7 @@ import '../Processor.dart';
 //cabinets are 3 categories - electric, acoustic and bass
 abstract class CabinetMP2 extends Cabinet {
   int get nuxDataLength => 1;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_CabEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_CabMode;
 

@@ -9,7 +9,7 @@ import '../Processor.dart';
 
 abstract class CabinetPro extends Cabinet {
   int get nuxDataLength => 6;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iCAB;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iCAB;
 
@@ -256,4 +256,27 @@ class MD45Pro extends CabinetPro {
   final cabName = "M-D45";
   static int get cabIndex => 34;
   int get nuxIndex => cabIndex;
+}
+
+class UserCab extends CabinetPro {
+  String _cabinetName = "...";
+  late int _nuxIndex;
+  bool _active = false;
+  @override
+  String get cabName => _cabinetName;
+
+  @override
+  int get nuxIndex => _nuxIndex;
+
+  void setName(String name) {
+    _cabinetName = name;
+  }
+
+  void setNuxIndex(int index) {
+    _nuxIndex = index;
+  }
+
+  void setActive(bool active) {
+    _active = active;
+  }
 }

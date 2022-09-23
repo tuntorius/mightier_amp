@@ -11,7 +11,7 @@ import 'Cabinet.dart';
 
 abstract class PlugAirAmplifier extends Amplifier {
   int get nuxDataLength => 6;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_AmpModeSetup;
   int get defaultCab;

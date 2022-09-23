@@ -9,40 +9,42 @@ import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 
-class ThickSlider extends StatefulWidget {
+class VerticalThickSlider extends StatefulWidget {
   final Color activeColor;
   final String label;
   final double min, max;
   final double value;
+  final double width;
   final ValueChanged<double>? onDragStart;
   final ValueChanged<double>? onChanged;
   final ValueChanged<double>? onDragEnd;
   final String Function(double) labelFormatter;
   final int skipEmitting;
   final bool enabled;
-  final bool handleVerticalDrag;
+  final bool handleHorizontalDrag;
   final Parameter? parameter;
 
-  ThickSlider(
+  VerticalThickSlider(
       {required this.activeColor,
       required this.label,
       this.min = 0,
       this.max = 1,
+      this.width = 50,
       required this.value,
       this.onDragStart,
       this.onChanged,
       this.onDragEnd,
-      this.handleVerticalDrag = true,
+      this.handleHorizontalDrag = true,
       required this.labelFormatter,
       this.skipEmitting = 3,
       this.enabled = true,
       this.parameter});
 
   @override
-  _ThickSliderState createState() => _ThickSliderState();
+  _VerticalThickSliderState createState() => _VerticalThickSliderState();
 }
 
-class _ThickSliderState extends State<ThickSlider> {
+class _VerticalThickSliderState extends State<VerticalThickSlider> {
   double factor = 0.5; //normalized position in 0-1
   double pos = 0;
   int lastTapDown = 0;
@@ -89,15 +91,15 @@ class _ThickSliderState extends State<ThickSlider> {
     factor = _unlerp(widget.value);
   }
 
-  void setPercentage(value, width) {
-    pos = max(min(value, width), 0);
-    factor = pos / width;
+  void setPercentage(value, height) {
+    pos = max(min(value, height), 0);
+    factor = pos / height;
   }
 
-  void addPercentage(value, width) {
+  void addPercentage(value, height) {
     pos += value;
-    pos = max(min(pos, width), 0);
-    factor = pos / width;
+    pos = max(min(pos, height), 0);
+    factor = pos / height;
   }
 
   void dragStart(DragStartDetails details) {
@@ -110,13 +112,13 @@ class _ThickSliderState extends State<ThickSlider> {
     startDragPos = details.localPosition;
 
     scale = 1;
-    var posAbs = (details.localPosition.dy - height / 2.0).abs();
-    if (posAbs > height) scale = 0.5;
-    if (posAbs > height * 2.5) scale = 0.25;
-    if (posAbs > height * 4) scale = 0.125;
-    if (posAbs > height * 5.5) scale = 0.0625;
+    var posAbs = (details.localPosition.dx - width / 2.0).abs();
+    if (posAbs > width) scale = 0.5;
+    if (posAbs > width * 2.5) scale = 0.25;
+    if (posAbs > width * 4) scale = 0.125;
+    if (posAbs > width * 5.5) scale = 0.0625;
     if (!widget.enabled) return;
-    addPercentage(delta.dx * scale, width);
+    addPercentage(-delta.dy * scale, height);
     emitCounter++;
     if (emitCounter % widget.skipEmitting == 0) {
       widget.onChanged?.call(_lerp(factor));
@@ -182,64 +184,55 @@ class _ThickSliderState extends State<ThickSlider> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: 50),
+      constraints: BoxConstraints(maxWidth: widget.width),
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         width = constraints.maxWidth - 1;
         height = constraints.maxHeight;
         factor = _unlerp(widget.value);
-        pos = factor * width;
+        pos = factor * height;
 
         return GestureDetector(
           dragStartBehavior: DragStartBehavior.start,
-
           onDoubleTap: manualValueEnter,
-          //onLongPress: manualValueEnter,
           onTapDown: (details) {
             if (!widget.enabled) return;
-
-            //double tap
-            // var now = DateTime.now().millisecondsSinceEpoch;
-            // if (now - lastTapDown < 300) {
-            //   setPercentage(details.localPosition.dx, width);
-            //   widget.onChanged?.call(_lerp(factor));
-            // }
-            // lastTapDown = now;
           },
-          onVerticalDragStart: widget.handleVerticalDrag ? dragStart : null,
-          onVerticalDragUpdate: widget.handleVerticalDrag ? dragUpdate : null,
-          onVerticalDragEnd: widget.handleVerticalDrag ? dragEnd : null,
-          onHorizontalDragStart: dragStart,
-          onHorizontalDragUpdate: dragUpdate,
-          onHorizontalDragEnd: dragEnd,
+          onHorizontalDragStart: widget.handleHorizontalDrag ? dragStart : null,
+          onHorizontalDragUpdate:
+              widget.handleHorizontalDrag ? dragUpdate : null,
+          onHorizontalDragEnd: widget.handleHorizontalDrag ? dragEnd : null,
+          onVerticalDragStart: dragStart,
+          onVerticalDragUpdate: dragUpdate,
+          onVerticalDragEnd: dragEnd,
           child: Container(
             color: Colors.transparent,
             height: height,
             child: Stack(
               children: [
                 Container(
-                  height: height * 0.75,
+                  height: max(factor * height, 0),
                   color: widget.enabled
                       ? TinyColor(widget.activeColor).darken(15).color
                       : Colors.grey[800],
-                  width: max(factor * width, 0),
+                  width: width * 0.5,
                 ),
                 Positioned(
-                    left: _lerp2(factor, 10, width - 10) - 10,
-                    width: 20,
-                    height: height * 0.9,
+                    bottom: _lerp2(factor, 10, height - 10) - 10,
+                    height: 20,
+                    width: width * 0.9,
                     child: Container(
                         color: widget.enabled
                             ? widget.activeColor
                             : Colors.grey[700],
-                        width: 20)),
+                        height: 20)),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Row(
+                  padding: const EdgeInsets.symmetric(vertical: 6.0),
+                  child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          widget.label,
+                          widget.labelFormatter(_lerp(factor)),
                           style: TextStyle(
                               color: widget.enabled
                                   ? Colors.white
@@ -247,7 +240,7 @@ class _ThickSliderState extends State<ThickSlider> {
                               fontSize: 20),
                         ),
                         Text(
-                          widget.labelFormatter(_lerp(factor)),
+                          widget.label,
                           style: TextStyle(
                               color: widget.enabled
                                   ? Colors.white
@@ -258,7 +251,7 @@ class _ThickSliderState extends State<ThickSlider> {
                 ),
                 Center(child: Text(scale < 1 ? "x$scale" : ""))
               ],
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.bottomCenter,
             ),
           ),
         );

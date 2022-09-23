@@ -6,7 +6,7 @@ class NoiseGate2Param extends Processor {
   final name = "Noise Gate";
 
   int get nuxIndex => 0;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_GateEnable;
 
   int get midiCCSelectionValue => 0;
@@ -35,7 +35,7 @@ class NoiseGate1Param extends Processor {
   final name = "Noise Gate";
 
   int get nuxIndex => 0;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_GateEnable;
 
   int get midiCCSelectionValue => 0;
@@ -57,7 +57,7 @@ class NoiseGatePro extends Processor {
   final name = "Noise Gate";
 
   int get nuxIndex => 1;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iNG;
 
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iNG;

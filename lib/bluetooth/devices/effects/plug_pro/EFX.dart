@@ -7,7 +7,7 @@ import '../Processor.dart';
 
 abstract class EFX extends Processor {
   int get nuxDataLength => 6;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iEFX;
 
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iEFX;

@@ -8,6 +8,8 @@ import '../Processor.dart';
 abstract class LiteAmplifier extends Amplifier {
   int get nuxDataLength => 3;
 
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+
   int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_NotUsed;
   int get defaultCab => 0;

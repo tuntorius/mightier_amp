@@ -8,7 +8,7 @@ import 'Cabinet.dart';
 
 abstract class PlugProAmplifier extends Amplifier {
   int get nuxDataLength => 8;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iAMP;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iAMP;
   int get defaultCab;

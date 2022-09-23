@@ -74,7 +74,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
   List<Widget> getButtons(double _width) {
     var vpHeight = MediaQuery.of(context).size.height;
-    var disColor = Theme.of(context).disabledColor;
+    var disabledColor = Theme.of(context).disabledColor;
     List<Widget> _buttons = <Widget>[];
 
     _presets = widget.device.getPresetsList();
@@ -86,7 +86,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     for (int i = 0; i < _presets.length; i++) {
       var col = i == widget.device.selectedChannel
           ? _presets[widget.device.selectedChannel].channelColor
-          : disColor;
+          : disabledColor;
       var button = Container(
         width: width,
         height: AppThemeConfig.toggleButtonHeight(isPortrait, vpHeight),

@@ -8,7 +8,7 @@ import '../Processor.dart';
 abstract class Modulation extends Processor {
   int get nuxDataLength => 6;
   //row 1247: 0-phaser, 1-chorus, 2-Stereo chorus, 3-Flanger, 4-Vibe, 5-Tremolo
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iMOD;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iMOD;
 }

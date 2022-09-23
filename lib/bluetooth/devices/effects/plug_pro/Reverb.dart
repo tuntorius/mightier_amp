@@ -7,7 +7,7 @@ import '../Processor.dart';
 
 abstract class Reverb extends Processor {
   int get nuxDataLength => 4;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iRVB;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iRVB;
 }

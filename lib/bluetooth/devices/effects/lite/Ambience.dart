@@ -8,6 +8,8 @@ import '../Processor.dart';
 abstract class Ambience extends Processor {
   int get nuxDataLength => 3;
 
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+
   int get midiCCEnableValue => MidiCCValues.bCC_ChorusEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_ChorusMode;
 }

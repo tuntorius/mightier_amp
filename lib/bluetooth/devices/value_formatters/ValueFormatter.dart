@@ -11,6 +11,7 @@ class ValueFormatters {
   static PercentageFormatterMPPro percentageMPPro = PercentageFormatterMPPro();
   static DecibelFormatterMP2 decibelMP2 = DecibelFormatterMP2();
   static DecibelFormatterMPPro decibelMPPro = DecibelFormatterMPPro();
+  static DecibelFormatterEQ decibelEQ = DecibelFormatterEQ();
   static TempoFormatter tempo = TempoFormatter();
   static BrightModeFormatter brightMode = BrightModeFormatter();
   static BoostModeFormatter boostMode = BoostModeFormatter();

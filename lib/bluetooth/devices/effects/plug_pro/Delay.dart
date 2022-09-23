@@ -7,7 +7,7 @@ import '../Processor.dart';
 
 abstract class Delay extends Processor {
   int get nuxDataLength => 8;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iDLY;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iDLY;
 }
@@ -113,13 +113,6 @@ class TapeEcho extends Delay {
   int get nuxIndex => 4;
   List<Parameter> parameters = [
     Parameter(
-        name: "Time",
-        handle: "time",
-        value: 61,
-        formatter: ValueFormatters.tempo,
-        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
-        midiCC: MidiCCValuesPro.DLY_Para1),
-    Parameter(
         name: "Level",
         handle: "level",
         value: 43,
@@ -133,6 +126,13 @@ class TapeEcho extends Delay {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
+    Parameter(
+        name: "Time",
+        handle: "time",
+        value: 61,
+        formatter: ValueFormatters.tempo,
+        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
+        midiCC: MidiCCValuesPro.DLY_Para1),
   ];
 }
 
@@ -141,13 +141,6 @@ class PanDelay extends Delay {
 
   int get nuxIndex => 5;
   List<Parameter> parameters = [
-    Parameter(
-        name: "Time",
-        handle: "time",
-        value: 50,
-        formatter: ValueFormatters.tempo,
-        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
-        midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
         name: "Repeat",
         handle: "repeat",
@@ -162,5 +155,12 @@ class PanDelay extends Delay {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
+    Parameter(
+        name: "Time",
+        handle: "time",
+        value: 50,
+        formatter: ValueFormatters.tempo,
+        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
+        midiCC: MidiCCValuesPro.DLY_Para1),
   ];
 }

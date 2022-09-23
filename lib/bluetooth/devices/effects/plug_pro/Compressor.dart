@@ -7,7 +7,7 @@ import '../Processor.dart';
 
 abstract class Compressor extends Processor {
   int get nuxDataLength => 4;
-
+  EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iCMP;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iCMP;
 }

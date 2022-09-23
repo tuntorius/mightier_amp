@@ -49,3 +49,28 @@ class DecibelFormatterMPPro extends ValueFormatter {
     return "${value.toStringAsFixed(1)} db";
   }
 }
+
+class DecibelFormatterEQ extends ValueFormatter {
+  InputType get inputType => InputType.SliderInput;
+
+  @override
+  int get min => -15;
+
+  @override
+  int get max => 15;
+
+  @override
+  int valueToMidi7Bit(double value) {
+    return ((value + 15) / 30 * 127).floor();
+  }
+
+  @override
+  double midi7BitToValue(int midi7bit) {
+    return (midi7bit / 127) * 30 - 15;
+  }
+
+  @override
+  String toLabel(double value) {
+    return "${value.toStringAsFixed(1)} db";
+  }
+}

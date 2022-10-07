@@ -41,6 +41,7 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: 230,
       child: SafeArea(
         child: Column(
           children: [

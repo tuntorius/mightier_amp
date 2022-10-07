@@ -45,7 +45,8 @@ class NuxMightyLite extends NuxDevice {
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;
-  int get deviceQRId => 5;
+  int get deviceQRId => 9;
+  int get deviceQRVersion => 1;
 
   List<String> get groupsName => ["Default"];
   List<ProcessorInfo> get processorList => _processorList;
@@ -137,5 +138,9 @@ class NuxMightyLite extends NuxDevice {
     var preset = MLitePreset(device: this, channel: channel, channelName: "");
     preset.setFirmwareVersion(productVersion);
     return preset;
+  }
+
+  bool checkQRVersionValid(int ver) {
+    return true;
   }
 }

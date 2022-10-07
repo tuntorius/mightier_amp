@@ -41,7 +41,8 @@ class NuxMighty8BT extends NuxDevice {
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;
-  int get deviceQRId => 3;
+  int get deviceQRId => 12;
+  int get deviceQRVersion => 1;
 
   List<ProcessorInfo> get processorList => _processorList;
 
@@ -138,5 +139,9 @@ class NuxMighty8BT extends NuxDevice {
     var preset = M8BTPreset(device: this, channel: channel, channelName: "");
     preset.setFirmwareVersion(productVersion);
     return preset;
+  }
+
+  bool checkQRVersionValid(int ver) {
+    return true;
   }
 }

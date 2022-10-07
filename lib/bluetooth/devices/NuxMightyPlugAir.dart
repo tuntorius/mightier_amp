@@ -68,6 +68,7 @@ class NuxMightyPlug extends NuxDevice {
   bool get batterySupport => true;
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
   int get deviceQRId => 6;
+  int get deviceQRVersion => version == PlugAirVersion.PlugAir21 ? 2 : 0;
 
   List<ProcessorInfo> get processorList => _processorList;
 
@@ -258,5 +259,13 @@ class NuxMightyPlug extends NuxDevice {
 
   Widget getSettingsWidget() {
     return PlugAirSettings(device: this);
+  }
+
+  bool checkQRVersionValid(int ver) {
+    if (version == PlugAirVersion.PlugAir15 && ver == 0)
+      return true;
+    else if (version == PlugAirVersion.PlugAir21 && ver > 0) return true;
+
+    return false;
   }
 }

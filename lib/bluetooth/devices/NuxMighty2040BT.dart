@@ -53,7 +53,8 @@ class NuxMighty2040BT extends NuxDevice {
   bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpMode;
-  int get deviceQRId => 4;
+  int get deviceQRId => 7;
+  int get deviceQRVersion => 1;
 
   List<String> get groupsName => ["All"]; //, "Group 2"];
   List<ProcessorInfo> get processorList => _processorList;
@@ -195,5 +196,9 @@ class NuxMighty2040BT extends NuxDevice {
     var preset = MXXBTPreset(device: this, channel: channel, channelName: "");
     preset.setFirmwareVersion(productVersion);
     return preset;
+  }
+
+  bool checkQRVersionValid(int ver) {
+    return true;
   }
 }

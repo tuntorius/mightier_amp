@@ -68,8 +68,8 @@ class NuxMightyPlugPro extends NuxDevice {
   bool get batterySupport => false;
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
 
-  //TODO: might be different
-  int get deviceQRId => 6;
+  int get deviceQRId => 15;
+  int get deviceQRVersion => 1;
 
   List<ProcessorInfo> get processorList => _processorList;
 
@@ -245,5 +245,9 @@ class NuxMightyPlugPro extends NuxDevice {
     var preset = PlugProPreset(device: this, channel: channel, channelName: "");
     preset.setFirmwareVersion(productVersion);
     return preset;
+  }
+
+  bool checkQRVersionValid(int ver) {
+    return ver == 1;
   }
 }

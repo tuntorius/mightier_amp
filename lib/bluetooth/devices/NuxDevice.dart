@@ -58,6 +58,7 @@ abstract class NuxDevice extends ChangeNotifier {
   bool get batterySupport;
 
   int get deviceQRId;
+  int get deviceQRVersion;
   int get channelChangeCC;
 
   List<String> groupsName = <String>[];
@@ -361,6 +362,8 @@ abstract class NuxDevice extends ChangeNotifier {
     var data = presets[channel].createNuxDataFromPreset();
     return "${QrUtils.nuxQRPrefix}${base64Encode(data)}";
   }
+
+  bool checkQRVersionValid(int ver);
 
   Preset? presetFromJson(dynamic _preset, double? overrideLevel,
       {bool qrOnly = false}) {

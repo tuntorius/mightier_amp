@@ -224,9 +224,8 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
   void connectionStateListener(DeviceConnectionState event) {
     switch (event) {
-      case DeviceConnectionState.connectedStart:
+      case DeviceConnectionState.connectionBegin:
         if (dialogSetState != null) break;
-        debugPrint("just connected");
         connectionFailed = false;
         showDialog(
           context: context,
@@ -276,7 +275,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       case DeviceConnectionState.presetsLoaded:
         debugPrint("presets loaded");
         break;
-      case DeviceConnectionState.configReceived:
+      case DeviceConnectionState.connectionComplete:
         debugPrint("config loaded");
         dialogSetState = null;
         _timeout.cancel();

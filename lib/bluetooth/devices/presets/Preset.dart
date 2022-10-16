@@ -42,6 +42,7 @@ abstract class Preset {
 
   void setupPresetFromNuxDataArray(List<int> _nuxData);
 
+  void setProcessorAtSlot(int slot, int processorId) {}
   void swapProcessorSlots(int from, int to, bool notifyBT) {
     if (notifyBT) device.slotSwapped.add(to);
   }

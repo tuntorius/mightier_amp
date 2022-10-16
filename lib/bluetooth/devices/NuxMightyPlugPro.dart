@@ -49,7 +49,9 @@ class NuxMightyPlugPro extends NuxDevice {
     return PresetDataIndexPlugPro.Head_iAMP;
   }
 
+  bool get longChannelNames => false;
   bool get fakeMasterVolume => false;
+  bool get activeChannelRetrieval => true;
   bool get cabinetSupport => true;
   bool get hackableIRs => false;
 
@@ -90,64 +92,64 @@ class NuxMightyPlugPro extends NuxDevice {
     ProcessorInfo(
         shortName: "COMP",
         longName: "Comp",
-        keyName: "compressor",
-        nuxOrderIndex: 1,
+        keyName: "comp",
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iCMP,
         color: Colors.lime,
         icon: Icons.stacked_line_chart),
     ProcessorInfo(
         shortName: "EFX",
         longName: "EFX",
         keyName: "efx",
-        nuxOrderIndex: 2,
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iEFX,
         color: Colors.orange,
         icon: MightierIcons.pedal),
     ProcessorInfo(
         shortName: "AMP",
         longName: "Amplifier",
         keyName: "amp",
-        nuxOrderIndex: 3,
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iAMP,
         color: Colors.red,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "EQ",
         longName: "EQ",
         keyName: "eq",
-        nuxOrderIndex: 4,
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iEQ,
         color: Colors.grey[300]!,
         icon: MightierIcons.sliders),
     ProcessorInfo(
         shortName: "GATE",
         longName: "Noise Gate",
         keyName: "gate",
-        nuxOrderIndex: 5,
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iNG,
         color: Colors.green,
         icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "MOD",
         longName: "Modulation",
         keyName: "mod",
-        nuxOrderIndex: 6,
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iMOD,
         color: Colors.indigo[400]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "DLY",
         longName: "Delay",
         keyName: "delay",
-        nuxOrderIndex: 7,
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iDLY,
         color: Colors.cyan,
         icon: Icons.blur_linear),
     ProcessorInfo(
         shortName: "RVB",
         longName: "Reverb",
         keyName: "reverb",
-        nuxOrderIndex: 8,
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iRVB,
         color: Colors.deepPurple,
         icon: Icons.blur_on),
     ProcessorInfo(
         shortName: "IR",
         longName: "Cabinet",
         keyName: "cabinet",
-        nuxOrderIndex: 9,
+        nuxOrderIndex: PresetDataIndexPlugPro.Head_iCAB,
         color: Colors.lightBlue,
         icon: MightierIcons.cabinet),
   ];

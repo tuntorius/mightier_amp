@@ -278,6 +278,11 @@ class PlugProPreset extends Preset {
   }
 
   @override
+  void setProcessorAtSlot(int slot, int processorId) {
+    processorAtSlot[slot] = processorId;
+  }
+
+  @override
   void swapProcessorSlots(int from, int to, notifyBT) {
     var fxFrom = processorAtSlot[from];
 

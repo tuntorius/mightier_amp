@@ -402,7 +402,7 @@ class SyxMsg {
   static const kSYX_UAC_TRANS = const SyxMsg._internal(100);
   static const kSYX_UAC_SAVE = const SyxMsg._internal(101);
   static const kSYX_VOLDISPLAY = const SyxMsg._internal(116);
-  static const kSYX_SPEC_CMD = const SyxMsg._internal(117);
+  static const kSYX_SPEC_CMD = 117;
   static const kSYX_HW_VERSION = const SyxMsg._internal(118);
   static const kSYX_CODEC_SET = const SyxMsg._internal(119);
   static const kSYX_TFT_SET = const SyxMsg._internal(120);

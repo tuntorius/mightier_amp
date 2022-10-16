@@ -45,6 +45,8 @@ class NuxMighty2040BT extends NuxDevice {
   int get groupsCount => 1;
   int get amplifierSlotIndex => 1;
   bool get fakeMasterVolume => true;
+  bool get activeChannelRetrieval => false;
+  bool get longChannelNames => true;
   bool get cabinetSupport => false;
   bool get hackableIRs => false;
   int get cabinetSlotIndex => 0;

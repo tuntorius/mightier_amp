@@ -280,7 +280,7 @@ class _PresetListState extends State<PresetList>
     });
   }
 
-  void _deletePreset(Map<String, String> preset) {
+  void _deletePreset(Map preset) {
     bool inUse = TrackData().isPresetInUse(preset["uuid"]!);
     String description = "Are you sure you want to delete ${preset["name"]}?";
     if (inUse) {

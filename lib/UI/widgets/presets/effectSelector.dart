@@ -183,11 +183,19 @@ class _EffectSelectorState extends State<EffectSelector> {
               });
             },
             onReorder: (from, to) {
+              var old = from + to * 100;
               setState(() {
-                NuxDeviceControl.instance().changes.add(Change(
-                    1,
-                    () => _preset.swapProcessorSlots(from, to, true),
-                    (oldVal) => _preset.swapProcessorSlots(from, to, true)));
+                NuxDeviceControl.instance().changes.add(Change<int>(old, () {
+                      _preset.swapProcessorSlots(from, to, true);
+                      _selectedSlot = to;
+                    }, (oldVal) {
+                      int from = oldVal % 100;
+                      int to = (oldVal / 100).floor();
+                      //positions are swapped on undo
+                      _preset.swapProcessorSlots(to, from, true);
+                      _selectedSlot = from;
+                    }));
+                NuxDeviceControl.instance().undoStackChanged();
               });
             }),
         SizedBox(

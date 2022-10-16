@@ -73,7 +73,6 @@ class _ChannelSelectorState extends State<ChannelSelector> {
   }
 
   List<Widget> getButtons(double _width) {
-    var vpHeight = MediaQuery.of(context).size.height;
     var disabledColor = Theme.of(context).disabledColor;
     List<Widget> _buttons = <Widget>[];
 
@@ -87,30 +86,55 @@ class _ChannelSelectorState extends State<ChannelSelector> {
       var col = i == widget.device.selectedChannel
           ? _presets[widget.device.selectedChannel].channelColor
           : disabledColor;
+
+      Widget buttonBody;
+      if (widget.device.longChannelNames) {
+        buttonBody = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              widget.device.getChannelActive(i)
+                  ? Icons.circle
+                  : Icons.circle_outlined,
+              color: col,
+              size: 32,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+              child: FittedBox(
+                  fit: BoxFit.fill, child: Text(_presets[i].channelName)),
+            ),
+          ],
+        );
+      } else {
+        buttonBody = Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(
+              widget.device.getChannelActive(i)
+                  ? Icons.circle
+                  : Icons.circle_outlined,
+              color: col,
+              size: 32,
+            ),
+            Text(
+              _presets[i].channelName,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        );
+      }
+
       var button = Container(
         width: width,
-        height: AppThemeConfig.toggleButtonHeight(isPortrait, vpHeight),
+        height:
+            AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),
         child: InkWell(
-          onTap: () {
-            widget.device.selectedChannelNormalized = i;
-            widget.device.resetToNuxPreset();
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                widget.device.getChannelActive(i)
-                    ? Icons.circle
-                    : Icons.circle_outlined,
-                color: col,
-                size: 32,
-              ),
-              Text(
-                _presets[i].channelName,
-              ),
-            ],
-          ),
-        ),
+            onTap: () {
+              widget.device.selectedChannelNormalized = i;
+              widget.device.resetToNuxPreset();
+            },
+            child: buttonBody),
       );
       _buttons.add(button);
     }
@@ -214,7 +238,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                     onSelected: qrPopupSelection),
                 Expanded(
                   child: Container(
-                    constraints: BoxConstraints(minHeight: 70),
+                    constraints: BoxConstraints(minHeight: 60),
                     color: Colors.grey[900],
                     child: LayoutBuilder(
                       builder: (context, constraints) {

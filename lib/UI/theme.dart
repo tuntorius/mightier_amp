@@ -1,8 +1,5 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
-
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class AppThemeConfig {
@@ -12,11 +9,9 @@ class AppThemeConfig {
 
   static TextStyle ListTileHeaderStyle =
       const TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold);
-  static double toggleButtonHeight(bool isPortrait, double viewportHeight) {
-    if (!isPortrait) return 48;
-
-    var ratio = (viewportHeight - 592) / 140;
-    return 35 + max(0, min(ratio, 1)) * 15;
+  static double toggleButtonHeight(bool hasLongNames) {
+    if (hasLongNames) return 48;
+    return 40;
   }
 }
 

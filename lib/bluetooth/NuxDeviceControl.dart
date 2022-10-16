@@ -410,11 +410,18 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void saveNuxPreset() {
     if (!isConnected) return;
-    double vol = masterVolume;
-    if (vol < 100) masterVolume = 100;
-    var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
-    _midiHandler.sendData(data);
-    masterVolume = vol;
+    //TODO: This fixes nothing! you must send the original volume
+    double vol = 0;
+    if (device.fakeMasterVolume) {
+      vol = masterVolume;
+      if (vol < 100) masterVolume = 100;
+    }
+
+    device.communication.saveCurrentPreset();
+
+    if (device.fakeMasterVolume) {
+      masterVolume = vol;
+    }
     requestPreset(device.selectedChannel);
   }
 

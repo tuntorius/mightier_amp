@@ -16,7 +16,7 @@ class PlugProCommunication extends DeviceCommunication {
   int get productVID => 48;
 
   @override
-  get connectionSteps => 2;
+  get connectionSteps => 3;
 
   int _readyPresetsCount = 0;
   int _readyIRsCount = 0;
@@ -52,8 +52,16 @@ class PlugProCommunication extends DeviceCommunication {
         device.deviceControl.sendBLEData(requestIRName(CustomIRStart));
         break;
       case 2:
+        device.deviceControl.sendBLEData(requestCurrentChannel());
         break;
     }
+  }
+
+  void saveCurrentPreset() {
+    var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_SPEC_CMD, SyxDir.kSYXDIR_SET, [SysCtrlState.syscmd_save]);
+
+    device.deviceControl.sendBLEData(data);
   }
 
   List<int> requestPresetByIndex(int index) {
@@ -66,8 +74,14 @@ class PlugProCommunication extends DeviceCommunication {
         SyxMsg.kSYX_CABNAME, SyxDir.kSYXDIR_REQ, [index]);
   }
 
+  List<int> requestCurrentChannel() {
+    return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_CURPRESET, SyxDir.kSYXDIR_REQ, []);
+  }
+
   void requestBatteryStatus() {
     if (!device.batterySupport) return;
+    //TODO: Wrong!!!
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
         [SysCtrlState.syscmd_dsprun_battery, 0, 0, 0, 0]);
     device.deviceControl.sendBLEData(data);
@@ -227,6 +241,9 @@ class PlugProCommunication extends DeviceCommunication {
     return false;
   }
 
+//Some discovered stuff
+//kSYX_SYSTEMSET - for ACTIVE channels, mic stuff and USB stuff
+
   void onDataReceive(List<int> data) {
     if (data.length > 2) {
       switch (data[2]) {
@@ -242,6 +259,10 @@ class PlugProCommunication extends DeviceCommunication {
                   return;
                 case SyxMsg.kSYX_CABNAME:
                   _handleIRName(data.sublist(7));
+                  return;
+                case SyxMsg.kSYX_CURPRESET:
+                  device.setSelectedChannelNuxIndex(data[8], false);
+                  connectionStepReady();
                   return;
               }
               break;

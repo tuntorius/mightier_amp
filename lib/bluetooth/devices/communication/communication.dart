@@ -64,7 +64,9 @@ abstract class DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  void saveCurrentPreset();
   void sendSlotOrder() {}
+
   void sendDrumsEnabled(bool enabled);
   void sendDrumsStyle(int style);
   void sendDrumsLevel(double volume);

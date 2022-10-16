@@ -46,6 +46,7 @@ class LiteCommunication extends DeviceCommunication {
   void setUsbAudioMode(int mode) {}
   void setUsbInputVolume(int vol) {}
   void setUsbOutputVolume(int vol) {}
+  void saveCurrentPreset() {}
 
   void onDataReceive(List<int> data) {
     device.onDataReceived(data.sublist(2));

@@ -60,22 +60,10 @@ class PlugAirCommunication extends DeviceCommunication {
     }
   }
 
-  // void requestPrimaryData() {
-  //   device.deviceControl.sendBLEData(requestPresetByIndex(0));
-  // }
-
-  // void requestSecondaryData() async {
-  //   //eco mode and other
-  //   await Future.delayed(Duration(milliseconds: 200));
-  //   var data = createSysExMessage(DeviceMessageID.devReqManuMsgID, [0]);
-  //   device.deviceControl.sendBLEData(data);
-
-  //   await Future.delayed(Duration(milliseconds: 200));
-  //   //usb settings
-  //   data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
-  //       [SysCtrlState.syscmd_usbaudio, 0, 0, 0, 0]);
-  //   device.deviceControl.sendBLEData(data);
-  // }
+  void saveCurrentPreset() {
+    var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
+    device.deviceControl.sendBLEData(data);
+  }
 
   List<int> requestPresetByIndex(int index) {
     return createSysExMessage(DeviceMessageID.devReqPresetMsgID, index);
@@ -212,6 +200,7 @@ class PlugAirCommunication extends DeviceCommunication {
     //this has lots of unknown values - maybe bpm settings
     //eco mode is 12
     if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
+      device.setSelectedChannelNuxIndex(data[4], false);
       config.btEq = data[10];
       config.ecoMode = data[12] != 0;
       connectionStepReady();

@@ -6,12 +6,13 @@ class NoiseGate2Param extends Processor {
   final name = "Noise Gate";
 
   int get nuxIndex => 0;
+  int? get nuxEffectTypeIndex => null;
+  int? get nuxEnableIndex => PresetDataIndexPlugAir.ngenable;
+
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_GateEnable;
 
   int get midiCCSelectionValue => 0;
-
-  int get nuxDataLength => 2;
 
   List<Parameter> parameters = [
     Parameter(
@@ -35,12 +36,15 @@ class NoiseGate1Param extends Processor {
   final name = "Noise Gate";
 
   int get nuxIndex => 0;
+
+  //noise gate has no type specified
+  int? get nuxEffectTypeIndex => null;
+  int? get nuxEnableIndex => PresetDataIndexLite.ngenable;
+
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_GateEnable;
 
   int get midiCCSelectionValue => 0;
-
-  int get nuxDataLength => 1;
 
   List<Parameter> parameters = [
     Parameter(
@@ -57,12 +61,16 @@ class NoiseGatePro extends Processor {
   final name = "Noise Gate";
 
   int get nuxIndex => 1;
+
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iNG;
+  int? get nuxEnableIndex => nuxEffectTypeIndex;
+  int get nuxEnableMask => 0x40;
+  bool get nuxEnableInverted => true;
+
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iNG;
 
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iNG;
-
-  int get nuxDataLength => 4;
 
   List<Parameter> parameters = [
     Parameter(

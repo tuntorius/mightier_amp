@@ -69,10 +69,6 @@ class PlugAirCommunication extends DeviceCommunication {
     return createSysExMessage(DeviceMessageID.devReqPresetMsgID, index);
   }
 
-  List<int> requestIRName(int index) {
-    return [];
-  }
-
   void requestBatteryStatus() {
     if (!device.batterySupport) return;
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,

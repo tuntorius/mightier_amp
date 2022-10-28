@@ -6,7 +6,10 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class M8BTAmplifier extends Amplifier {
-  int get nuxDataLength => 5;
+  //TODO: check if correct
+  int? get nuxEffectTypeIndex => PresetDataIndexLite.drivetype;
+  int? get nuxEnableIndex => null;
+
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_NotUsed;

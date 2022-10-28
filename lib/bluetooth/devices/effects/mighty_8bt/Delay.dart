@@ -3,7 +3,10 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
-  int get nuxDataLength => 3;
+  //TODO: check if correct
+  int? get nuxEffectTypeIndex => PresetDataIndexLite.delaytype;
+  int? get nuxEnableIndex => PresetDataIndexLite.delayenable;
+
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_DelayEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_DelayMode;

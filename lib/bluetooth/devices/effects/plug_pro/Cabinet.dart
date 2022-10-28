@@ -8,7 +8,10 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class CabinetPro extends Cabinet {
-  int get nuxDataLength => 6;
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iCAB;
+  int? get nuxEnableIndex => nuxEffectTypeIndex;
+  int get nuxEnableMask => 0x40;
+  bool get nuxEnableInverted => true;
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iCAB;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iCAB;
@@ -28,15 +31,15 @@ abstract class CabinetPro extends Cabinet {
         devicePresetIndex: PresetDataIndexPlugPro.CAB_Para5,
         name: "Low Cut",
         handle: "lowcut",
-        value: 0,
-        formatter: ValueFormatters.percentageMPPro,
+        value: 20,
+        formatter: ValueFormatters.lowFreqFormatter,
         midiCC: MidiCCValuesPro.CAB_Para5),
     Parameter(
         devicePresetIndex: PresetDataIndexPlugPro.CAB_Para6,
         name: "High Cut",
         handle: "hicut",
         value: 100,
-        formatter: ValueFormatters.percentageMPPro,
+        formatter: ValueFormatters.highFreqFormatter,
         midiCC: MidiCCValuesPro.CAB_Para6)
   ];
 }

@@ -3,7 +3,9 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Reverb extends Processor {
-  int get nuxDataLength => 2;
+  //TODO: check if correct
+  int? get nuxEffectTypeIndex => PresetDataIndexLite.reverbtype;
+  int? get nuxEnableIndex => PresetDataIndexLite.reverbenable;
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_ReverbEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_ReverbMode;

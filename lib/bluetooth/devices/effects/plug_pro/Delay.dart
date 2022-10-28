@@ -6,7 +6,10 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
-  int get nuxDataLength => 8;
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iDLY;
+  int? get nuxEnableIndex => nuxEffectTypeIndex;
+  int get nuxEnableMask => 0x40;
+  bool get nuxEnableInverted => true;
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iDLY;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iDLY;

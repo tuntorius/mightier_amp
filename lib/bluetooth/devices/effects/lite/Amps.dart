@@ -6,7 +6,9 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class LiteAmplifier extends Amplifier {
-  int get nuxDataLength => 3;
+  //TODO: check if correct
+  int? get nuxEffectTypeIndex => PresetDataIndexLite.drivetype;
+  int? get nuxEnableIndex => null;
 
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
 

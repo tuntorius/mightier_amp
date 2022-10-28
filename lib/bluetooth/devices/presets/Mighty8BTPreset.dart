@@ -16,6 +16,7 @@ class M8BTPreset extends Preset {
   NuxDevice device;
   int channel;
   String channelName;
+  int get qrDataLength => 40;
   Color get channelColor => Preset.channelColors[channel];
   final NoiseGate2Param noiseGate = NoiseGate2Param();
   final List<M8BTAmplifier> amplifierList = <M8BTAmplifier>[];

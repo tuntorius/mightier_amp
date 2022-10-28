@@ -22,10 +22,6 @@ class LiteCommunication extends DeviceCommunication {
     return [];
   }
 
-  List<int> requestIRName(int index) {
-    return [];
-  }
-
   List<int> setChannel(int channel) {
     return createCCMessage(device.channelChangeCC, channel);
   }
@@ -62,17 +58,4 @@ class LiteCommunication extends DeviceCommunication {
     device.deviceControl.changeDevicePreset(0);
     device.deviceControl.sendFullPresetSettings();
   }
-
-  // void requestPrimaryData() {
-  //   device.deviceControl.onPrimaryDataReady();
-  // }
-
-  // requestSecondaryData() {
-  //   device.deviceControl.deviceConnectionReady();
-
-  //   device.selectedChannelNormalized = 0;
-  //   device.deviceControl.changeDevicePreset(0);
-  //   device.deviceControl.sendFullPresetSettings();
-  //   device.deviceControl.deviceConnectionReady();
-  // }
 }

@@ -26,6 +26,9 @@ class PlugAirPreset extends Preset {
   int channel;
   String channelName;
   Color get channelColor => Preset.channelColors[channel];
+
+  int get qrDataLength => 40;
+
   final NoiseGate2Param noiseGate = NoiseGate2Param();
 
   List<EFX> get efxList =>

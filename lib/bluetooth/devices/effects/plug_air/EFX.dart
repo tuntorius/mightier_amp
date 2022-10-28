@@ -9,7 +9,8 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class EFX extends Processor {
-  int get nuxDataLength => 3;
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugAir.efxtype;
+  int? get nuxEnableIndex => PresetDataIndexPlugAir.efxenable;
   //row 1871
   // 0 -Touch Wah, 1 - Uni Vibe, 2 - Tremolo, 3 - Phaser, 4 - Boost, 5 - TS Drive, 6 - Bass TS
   // 7 - 3 Band EQ, 8 - Muff, 9 - Crunch, 10 - Red Dist, 11 - Morning Drive, 12 - Dist One

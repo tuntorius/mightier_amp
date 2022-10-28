@@ -6,7 +6,10 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Reverb extends Processor {
-  int get nuxDataLength => 4;
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iRVB;
+  int? get nuxEnableIndex => nuxEffectTypeIndex;
+  int get nuxEnableMask => 0x40;
+  bool get nuxEnableInverted => true;
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iRVB;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iRVB;

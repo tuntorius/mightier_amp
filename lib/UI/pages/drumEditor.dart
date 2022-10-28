@@ -105,7 +105,7 @@ class _DrumEditorState extends State<DrumEditor> {
             handleVerticalDrag: layoutMode == LayoutMode.drawer,
             value: device.drumsTempo,
             labelFormatter: (val) =>
-                "${device.drumsTempo.toStringAsFixed(2)} BPM",
+                "${device.drumsTempo.toStringAsFixed(1)} BPM",
             onChanged: (val) {
               setState(() {
                 device.setDrumsTempo(val);

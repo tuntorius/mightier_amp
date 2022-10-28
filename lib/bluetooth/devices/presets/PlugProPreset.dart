@@ -5,6 +5,7 @@ import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_pro/EmptyEffects.dart';
 
 import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
@@ -26,6 +27,10 @@ class PlugProPreset extends Preset {
   int channel;
   String channelName;
   Color get channelColor => Preset.channelColors[channel];
+
+  int get qrDataLength => 113;
+
+  final WahDummyPro wahDummy = WahDummyPro();
   final NoiseGatePro noiseGate = NoiseGatePro();
 
   final List<Compressor> compressorList = <Compressor>[];
@@ -37,6 +42,7 @@ class PlugProPreset extends Preset {
   final List<Delay> delayList = <Delay>[];
   final List<EQ> eqList = <EQ>[];
 
+  //presets stored in nux indexing (unused Wah is 0)
   List<int> processorAtSlot = [];
 
   bool noiseGateEnabled = true;
@@ -206,6 +212,10 @@ class PlugProPreset extends Preset {
   @override
   bool slotEnabled(int index) {
     var proc = getProcessorAtSlot(index);
+    return _slotEnabledNuxIndex(proc);
+  }
+
+  bool _slotEnabledNuxIndex(int proc) {
     switch (proc) {
       case PresetDataIndexPlugPro.Head_iNG:
         return noiseGateEnabled;
@@ -226,7 +236,7 @@ class PlugProPreset extends Preset {
       case PresetDataIndexPlugPro.Head_iRVB:
         return reverbEnabled;
       default:
-        return true;
+        return false;
     }
   }
 
@@ -309,6 +319,8 @@ class PlugProPreset extends Preset {
 
   List<Processor> _getEffectsForNuxSlot(int slot) {
     switch (slot) {
+      case PresetDataIndexPlugPro.Head_iWAH:
+        return [wahDummy];
       case PresetDataIndexPlugPro.Head_iNG:
         return [noiseGate];
       case PresetDataIndexPlugPro.Head_iCMP:
@@ -372,7 +384,8 @@ class PlugProPreset extends Preset {
     super.setSelectedEffectForSlot(slot, index, notifyBT);
   }
 
-  int _getEffectArrayIndexFromNuxIndex(int nuxSlot, int nuxIndex) {
+  @override
+  int getEffectArrayIndexFromNuxIndex(int nuxSlot, int nuxIndex) {
     List<Processor> list = [];
     switch (nuxSlot) {
       case PresetDataIndexPlugPro.Head_iWAH:
@@ -468,7 +481,7 @@ class PlugProPreset extends Preset {
       int effectIndex = effectParam & 0x3f;
       bool effectOn = (effectParam & 0x40) == 0;
 
-      effectIndex = _getEffectArrayIndexFromNuxIndex(nuxSlot, effectIndex);
+      effectIndex = getEffectArrayIndexFromNuxIndex(nuxSlot, effectIndex);
 
       _setSelectedEffectForNuxSlot(nuxSlot, effectIndex);
 
@@ -479,8 +492,40 @@ class PlugProPreset extends Preset {
     }
 
     //effects chain arrangement
-    for (int i = 0; i < device.effectsChainLength; i++) {
-      processorAtSlot[i] = _nuxData[PresetDataIndexPlugPro.LINK2 + i];
+    //fix for QR
+    int start = PresetDataIndexPlugPro.LINK1;
+    for (int i = 0; i < 3; i++) {
+      if (_nuxData[start] == 0) start++;
     }
+
+    for (int i = 0; i < device.effectsChainLength; i++) {
+      processorAtSlot[i] = _nuxData[start + i];
+    }
+  }
+
+  @override
+  List<int> createNuxDataFromPreset() {
+    List<int> data = List.filled(qrDataLength, 0);
+
+    List<int> qrData = [];
+    qrData.add(device.deviceQRId);
+    qrData.add(device.deviceQRVersion);
+
+    for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
+      var slot = PresetDataIndexPlugPro.effectTypesIndex[i];
+      _getEffectsForNuxSlot(slot)[_getSelectedEffectForNuxSlot(slot)]
+          .getNuxPayload(data, _slotEnabledNuxIndex(slot));
+    }
+
+    //fx chain order
+    int start = PresetDataIndexPlugPro.LINK1;
+
+    //store fx chain
+    for (int i = 0; i < device.effectsChainLength; i++) {
+      data[start + i] = processorAtSlot[i];
+    }
+
+    qrData.addAll(data);
+    return qrData;
   }
 }

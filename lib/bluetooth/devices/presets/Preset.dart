@@ -20,6 +20,8 @@ abstract class Preset {
     Color.fromARGB(230, 230, 230, 255),
   ];
 
+  int get qrDataLength;
+
   NuxDevice device;
   int channel;
   String channelName;
@@ -71,6 +73,10 @@ abstract class Preset {
     device.parameterChanged.add(param);
   }
 
+  int getEffectArrayIndexFromNuxIndex(int nuxSlot, int nuxIndex) {
+    return nuxIndex;
+  }
+
   Color effectColor(int index);
 
   void resetNuxData() {
@@ -94,21 +100,17 @@ abstract class Preset {
 
   //this is for QR export
   List<int> createNuxDataFromPreset() {
-    List<int> data = [];
-    data.add(device.deviceQRId);
-    data.add(device.productVersion);
+    List<int> data = List.filled(qrDataLength, 0);
+    List<int> qrData = [];
+    qrData.add(device.deviceQRId);
+    qrData.add(device.deviceQRVersion);
 
     for (int i = 0; i < device.effectsChainLength; i++) {
-      var payload =
-          getEffectsForSlot(i)[getSelectedEffectForSlot(i)].getNuxPayload();
-      //noise gate is specific
-      if (i == 0) payload.removeAt(0);
-
-      data.add(slotEnabled(i) ? 0 : 127);
-      data.addAll(payload);
+      getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
+          .getNuxPayload(data, slotEnabled(i));
     }
-    //these zeros are required
-    data.addAll([0, 0, 0, 0, 0, 0]);
+
+    qrData.addAll(data);
     return data;
   }
 

@@ -10,7 +10,8 @@ import 'Ampsv2.dart';
 import 'Cabinet.dart';
 
 abstract class PlugAirAmplifier extends Amplifier {
-  int get nuxDataLength => 6;
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugAir.amptype;
+  int? get nuxEnableIndex => PresetDataIndexPlugAir.ampenable;
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_AmpModeSetup;

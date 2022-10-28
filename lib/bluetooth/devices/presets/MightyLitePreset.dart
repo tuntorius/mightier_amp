@@ -15,6 +15,7 @@ class MLitePreset extends Preset {
   NuxDevice device;
   int channel;
   String channelName;
+  int get qrDataLength => 40;
   Color get channelColor => Preset.channelColors[channel];
   final NoiseGate2Param noiseGate = NoiseGate2Param();
   final List<LiteAmplifier> amplifierList = <LiteAmplifier>[];

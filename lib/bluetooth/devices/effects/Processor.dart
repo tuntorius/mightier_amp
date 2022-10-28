@@ -68,7 +68,12 @@ abstract class Processor {
   //the number which the nux device uses to refer to the effect
   int get nuxIndex;
 
-  int get nuxDataLength;
+  //index in nux data array where the effect type is set
+  int? get nuxEffectTypeIndex;
+
+  int? get nuxEnableIndex;
+  int get nuxEnableMask => 0x7f;
+  bool get nuxEnableInverted => false;
 
   EffectEditorUI get editorUI;
   //The CC command that switches the effect on/off
@@ -103,17 +108,23 @@ abstract class Processor {
     }
   }
 
-  List<int> getNuxPayload() {
-    List<int> list = [];
-    list.add(nuxIndex);
+  void getNuxPayload(List<int> nuxData, bool enabled) {
+    if (nuxEffectTypeIndex != null) nuxData[nuxEffectTypeIndex!] = nuxIndex;
     for (int i = 0; i < parameters.length; i++) {
-      MathEx.map(parameters[i].value, parameters[i].formatter.min.toDouble(),
-          parameters[i].formatter.max.toDouble(), 0, 100);
+      //TODO: isn't this supposed to use valueformatter valueToMidi7Bit()
+      int value = MathEx.map(
+              parameters[i].value,
+              parameters[i].formatter.min.toDouble(),
+              parameters[i].formatter.max.toDouble(),
+              0,
+              100)
+          .round();
+      nuxData[parameters[i].devicePresetIndex] = value;
     }
-    var padding = nuxDataLength - parameters.length;
-    for (int i = 0; i < padding; i++) list.add(0);
-
-    return list;
+    if (nuxEnableIndex != null) {
+      int value = (enabled != nuxEnableInverted ? 0xff : 0) & nuxEnableMask;
+      nuxData[nuxEnableIndex!] |= value;
+    }
   }
 
   //this is used for version transition

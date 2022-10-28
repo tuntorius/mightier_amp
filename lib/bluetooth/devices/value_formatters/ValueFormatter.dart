@@ -1,3 +1,4 @@
+import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/FrequencyFormatter.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/SwitchFormatters.dart';
 
 import 'TempoFormatter.dart';
@@ -14,10 +15,15 @@ class ValueFormatters {
   static DecibelFormatterEQ decibelEQ = DecibelFormatterEQ();
   static TempoFormatter tempo = TempoFormatter();
   static BrightModeFormatter brightMode = BrightModeFormatter();
+  static BrightModeFormatterMPPro brightModePro = BrightModeFormatterMPPro();
   static BoostModeFormatter boostMode = BoostModeFormatter();
+  static BoostModeFormatterMPPro boostModePro = BoostModeFormatterMPPro();
   static VibeModeFormatter vibeMode = VibeModeFormatter();
+  static VibeModeFormatterPro vibeModePro = VibeModeFormatterPro();
   static ContourModeFormatter contourMode = ContourModeFormatter();
   static SCFModeFormatter scfMode = SCFModeFormatter();
+  static LowFrequencyFormatter lowFreqFormatter = LowFrequencyFormatter();
+  static HighFrequencyFormatter highFreqFormatter = HighFrequencyFormatter();
 }
 
 abstract class ValueFormatter {

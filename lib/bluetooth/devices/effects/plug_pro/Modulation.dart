@@ -6,7 +6,10 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Modulation extends Processor {
-  int get nuxDataLength => 6;
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iMOD;
+  int? get nuxEnableIndex => nuxEffectTypeIndex;
+  int get nuxEnableMask => 0x40;
+  bool get nuxEnableInverted => true;
   //row 1247: 0-phaser, 1-chorus, 2-Stereo chorus, 3-Flanger, 4-Vibe, 5-Tremolo
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iMOD;
@@ -262,7 +265,7 @@ class Vibe extends Modulation {
         name: "Mode",
         handle: "mode",
         value: 0,
-        formatter: ValueFormatters.vibeMode,
+        formatter: ValueFormatters.vibeModePro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para4,
         midiCC: MidiCCValuesPro.MOD_Para4),
     Parameter(
@@ -336,7 +339,7 @@ class Rotary extends Modulation {
 class SCH1 extends Modulation {
   final name = "SCH-1";
 
-  int get nuxIndex => 11;
+  int get nuxIndex => 13;
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",

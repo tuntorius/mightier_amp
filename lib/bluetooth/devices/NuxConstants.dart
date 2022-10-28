@@ -392,7 +392,7 @@ class SyxMsg {
   static const kSYX_IRDELETE = const SyxMsg._internal(22);
   static const kSYX_CUTOVER = const SyxMsg._internal(23);
   static const kSYX_LOOP = const SyxMsg._internal(24);
-  static const kSYX_DRUM = const SyxMsg._internal(25);
+  static const kSYX_DRUM = 25;
   static const kSYX_CABNAME = 26; //const SyxMsg._internal(26);
   static const kSYX_BTSET = const SyxMsg._internal(27);
   static const kSYX_PARAINIT = const SyxMsg._internal(96);
@@ -411,16 +411,16 @@ class SyxMsg {
   static const kSYX_RESET = const SyxMsg._internal(123);
   static const kSYX_IRINFO = const SyxMsg._internal(124);
   static const kSYX_DEVINFO = const SyxMsg._internal(125);
-  static const kSYX_SENDCMD = const SyxMsg._internal(126);
+  static const kSYX_SENDCMD = 126;
   static const kSYX_NOUSE = const SyxMsg._internal(127);
 }
 
-enum SyxDir {
-  kSYXDIR_GET,
-  kSYXDIR_SET,
-  kSYXDIR_REQ,
-  kSYXDIR_ACK,
-  kSYXDIR_CMD,
+class SyxDir {
+  static const kSYXDIR_GET = 0;
+  static const kSYXDIR_SET = 1;
+  static const kSYXDIR_REQ = 2;
+  static const kSYXDIR_ACK = 3;
+  static const kSYXDIR_CMD = 4;
 }
 
 class MidiCCValues {
@@ -582,25 +582,27 @@ class MidiCCValuesPro {
   static const CAB_Para6 = 70;
   static const SR_Para1 = 71;
   static const SR_Para2 = 72;
-  static const MASTER = 73;
+  static const MASTER = 73; //patch level
   static const MSELECT = 74;
   static const PEDAL = 75;
   static const SCENE = 76;
   static const DRUMENABLE = 77;
-  static const DRUMTYPE = 78;
+  static const DRUMTYPE = 78; //drum styles - 0 to xx(66?)
   static const DRUMLEVEL = 79;
   static const LOOPLEVEL = 80;
   static const LOOPSTATE = 81;
-  static const AUXEQ = 82;
-  static const PRESETRANGE = 83;
+  static const AUXEQENABLE = 82; //aux eq group 0-3
+  static const PRESETRANGE = 83; //this sets/receives Active bitfield
   static const MICVOLUME = 84;
   static const MICMUTE = 85;
-  static const USBROUNT_1 = 86;
-  static const USBROUNT_2 = 87;
-  static const USBROUNT_3 = 88;
-  static const USBROUNT_4 = 89;
+  static const USBROUNT_1 = 86; //Recording LV
+  static const USBROUNT_2 = 87; //Playback LV
+  static const USBROUNT_3 =
+      88; //Audio Mode 0-2 0-dry out, 1 - normal, 2 - reamp, ---x ---- - this bit is for loopback
+  //the loopback is supposed to work with normal only, but I can set it with everything
+  static const USBROUNT_4 = 89; //Dry/Wet
   static const AUX_MUTE = 90;
-  static const AUX_PHASE = 91;
+  static const AUX_PHASE = 91; //phase invert
   static const AUX_BAND_1 = 92;
   static const AUX_BAND_2 = 93;
   static const AUX_BAND_3 = 94;
@@ -613,7 +615,12 @@ class MidiCCValuesPro {
   static const AUX_BAND_10 = 101;
   static const AUX_BAND_11 = 102;
   static const AUX_BAND_12 = 103;
-  static const DRUM_Low = 104;
-  static const DRUM_Middle = 105;
-  static const DRUM_High = 106;
+  static const DRUM_BASS = 104;
+  static const DRUM_MIDDLE = 105;
+  static const DRUM_TREBLE = 106;
+  static const LOOP_ARNR = 107;
+  static const NR_ENABLE = 108;
+  static const NR_SENS = 109;
+  static const NR_DECAY = 110;
+  static const AUX_SAVE = 125;
 }

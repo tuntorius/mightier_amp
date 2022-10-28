@@ -16,6 +16,12 @@ import 'presets/Preset.dart';
 
 class NuxDeviceConfiguration {
   bool ecoMode = false;
+
+  //drum settings
+  bool drumsEnabled = false;
+  int selectedDrumStyle = 0;
+  double drumsVolume = 50;
+  double drumsTempo = 120;
 }
 
 abstract class NuxDevice extends ChangeNotifier {
@@ -162,15 +168,10 @@ abstract class NuxDevice extends ChangeNotifier {
   bool get ecoMode => config.ecoMode;
 
   //drum stuff
-  bool _drumsEnabled = false;
-  int _selectedDrumStyle = 0;
-  double _drumsVolume = 50;
-  double _drumsTempo = 120;
-
-  bool get drumsEnabled => _drumsEnabled;
-  int get selectedDrumStyle => _selectedDrumStyle;
-  double get drumsVolume => _drumsVolume;
-  double get drumsTempo => _drumsTempo;
+  bool get drumsEnabled => config.drumsEnabled;
+  int get selectedDrumStyle => config.selectedDrumStyle;
+  double get drumsVolume => config.drumsVolume;
+  double get drumsTempo => config.drumsTempo;
 
   void onConnect() {
     nuxPresetsReceived = false;
@@ -188,29 +189,32 @@ abstract class NuxDevice extends ChangeNotifier {
   List<String> getDrumStyles();
 
   void resetDrumSettings() {
-    _drumsEnabled = false;
-    _selectedDrumStyle = 0;
-    _drumsVolume = 50;
-    _drumsTempo = 120;
+    config.drumsEnabled = false;
+    config.selectedDrumStyle = 0;
+    config.drumsVolume = 50;
+    config.drumsTempo = 120;
   }
 
   void setDrumsEnabled(bool _enabled) {
-    _drumsEnabled = _enabled;
-    communication.sendDrumsEnabled(_drumsEnabled);
+    config.drumsEnabled = _enabled;
+    communication.sendDrumsEnabled(config.drumsEnabled);
   }
 
   void setDrumsStyle(int style) {
-    _selectedDrumStyle = style;
+    if (config.selectedDrumStyle == style) return;
+    config.selectedDrumStyle = style;
     communication.sendDrumsStyle(style);
   }
 
   void setDrumsLevel(double level) {
-    _drumsVolume = level;
+    if (config.drumsVolume == level) return;
+    config.drumsVolume = level;
     communication.sendDrumsLevel(level);
   }
 
   void setDrumsTempo(double tempo) {
-    _drumsTempo = tempo;
+    if (config.drumsTempo == tempo) return;
+    config.drumsTempo = tempo;
     communication.sendDrumsTempo(tempo);
   }
 
@@ -290,12 +294,38 @@ abstract class NuxDevice extends ChangeNotifier {
     for (int i = 0; i < effectsChainLength; i++) {
       var selected = _preset.getSelectedEffectForSlot(i);
       var effect = _preset.getEffectsForSlot(i)[selected];
-      for (var param in effect.parameters) {
-        if (param.midiCC == data[1]) {
-          //this is the one to change
-          param.midiValue = data[2];
-          notifyListeners();
-          return;
+      var cmdCC = data[1];
+      bool enable = ((data[2] & 0xc0) != 0) ^ effect.nuxEnableInverted;
+      int effectIndex = data[2] & 0x3f;
+
+      if (effect.midiCCEnableValue == effect.midiCCSelectionValue &&
+          cmdCC == effect.midiCCEnableValue) {
+        var procIndex = _preset.getProcessorAtSlot(i);
+        var nuxIndex =
+            _preset.getEffectArrayIndexFromNuxIndex(procIndex, effectIndex);
+        _preset.setSelectedEffectForSlot(i, nuxIndex, false);
+        _preset.setSlotEnabled(i, enable, false);
+        notifyListeners();
+        return;
+      } else if (cmdCC == effect.midiCCEnableValue) {
+        _preset.setSlotEnabled(i, enable, false);
+        notifyListeners();
+        return;
+      } else if (cmdCC == effect.midiCCSelectionValue) {
+        var procIndex = _preset.getProcessorAtSlot(i);
+        var nuxIndex =
+            _preset.getEffectArrayIndexFromNuxIndex(procIndex, effectIndex);
+        _preset.setSelectedEffectForSlot(i, nuxIndex, false);
+        notifyListeners();
+        return;
+      } else {
+        for (var param in effect.parameters) {
+          if (param.midiCC == data[1]) {
+            //this is the one to change
+            param.midiValue = data[2];
+            notifyListeners();
+            return;
+          }
         }
       }
     }
@@ -328,11 +358,11 @@ abstract class NuxDevice extends ChangeNotifier {
         if (data[1] == channelChangeCC)
           _handleChannelChange(data[2]);
         else if (data[1] == MidiCCValues.bCC_drumOnOff_No) {
-          _drumsEnabled = data[2] > 0 ? true : false;
+          config.drumsEnabled = data[2] > 0 ? true : false;
           deviceControl.forceNotifyListeners();
           return;
         } else if (data[1] == MidiCCValues.bCC_drumType_No) {
-          _selectedDrumStyle = data[2];
+          config.selectedDrumStyle = data[2];
           deviceControl.forceNotifyListeners();
         } else
           _handleKnobReceiveData(data);
@@ -471,68 +501,6 @@ abstract class NuxDevice extends ChangeNotifier {
         index++;
       }
     }
-
-    /*
-    //setup all effects
-    for (int i = 0; i < effectsChainLength; i++) {
-      if (!_preset.containsKey(processorList[i].keyName)) continue;
-
-      //get effect
-      Map<String, dynamic> _effect = _preset[processorList[i].keyName];
-
-      int fxType = _effect["fx_type"];
-      bool enabled = _effect["enabled"];
-
-      //check if preset conversion is needed
-      if (pVersion != productVersion) {
-        //temporarily switch the preset to the other version
-        //to get equivalent from this one
-        p.setFirmwareVersion(pVersion);
-        //2 things - either switch the version or convert the preset
-        int? newfxType =
-            p.getEffectsForSlot(i)[fxType].getEquivalentEffect(productVersion);
-
-        if (newfxType != null)
-          fxType = newfxType;
-        else {
-          //if we don't know equivalent then disable it
-          fxType = 0; //set to 0 to avoid null references
-          enabled = false;
-        }
-
-        //revert the preset back
-        p.setFirmwareVersion(productVersion);
-      }
-
-      p.setSelectedEffectForSlot(i, fxType, false);
-
-      p.setSlotEnabled(i, enabled, false);
-
-      Processor fx;
-      fx = p.getEffectsForSlot(i)[p.getSelectedEffectForSlot(i)];
-
-      for (int f = 0; f < fx.parameters.length; f++) {
-        //this is only for cabs override level
-        if (overrideLevel != null &&
-            cabinetSupport &&
-            i == cabinetSlotIndex &&
-            fx.parameters[f].handle == "level")
-          fx.parameters[f].value = overrideLevel;
-        else {
-          if (pVersion == productVersion)
-            fx.parameters[f].value = _effect[fx.parameters[f].handle];
-          else {
-            //ask the effect for the proper handle
-            var handle = fx.parameters[f].handle;
-            if (_effect.containsKey(handle))
-              fx.parameters[f].value = _effect[handle];
-          }
-        }
-      }
-
-      if (!qrOnly) deviceControl.sendFullEffectSettings(i, false);
-    }
-    */
 
     //update widgets
     if (!qrOnly)

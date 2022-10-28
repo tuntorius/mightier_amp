@@ -6,7 +6,10 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class EFX extends Processor {
-  int get nuxDataLength => 6;
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iEFX;
+  int? get nuxEnableIndex => nuxEffectTypeIndex;
+  int get nuxEnableMask => 0x40;
+  bool get nuxEnableInverted => true;
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iEFX;
 
@@ -312,7 +315,7 @@ class Crunch extends EFX {
 class MuffFuzz extends EFX {
   final name = "Muff Fuzz";
 
-  int get nuxIndex => 8;
+  int get nuxIndex => 11;
   List<Parameter> parameters = [
     Parameter(
         name: "Volume",
@@ -347,8 +350,8 @@ class Katana extends EFX {
     Parameter(
         name: "Boost",
         handle: "boost",
-        value: 100,
-        formatter: ValueFormatters.boostMode,
+        value: 0,
+        formatter: ValueFormatters.boostModePro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
         midiCC: MidiCCValuesPro.EFX_Para1),
     Parameter(

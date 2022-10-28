@@ -16,6 +16,7 @@ class MXXBTPreset extends Preset {
   NuxDevice device;
   int channel;
   String channelName;
+  int get qrDataLength => 40;
   Color get channelColor => Preset.channelColors[channel];
   final NoiseGate1Param noiseGate = NoiseGate1Param();
   final List<MXXBTAmplifier> amplifierList = <MXXBTAmplifier>[];

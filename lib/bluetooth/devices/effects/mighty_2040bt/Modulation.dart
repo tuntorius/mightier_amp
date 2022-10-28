@@ -6,7 +6,9 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Modulation extends Processor {
-  int get nuxDataLength => 2;
+  //TODO: check if correct
+  int? get nuxEffectTypeIndex => PresetDataIndexLite.modfxtype;
+  int? get nuxEnableIndex => PresetDataIndexLite.modfxenable;
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValues.bCC_ModfxEnable;
   int get midiCCSelectionValue => MidiCCValues.bCC_ModfxMode;

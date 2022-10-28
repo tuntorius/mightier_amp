@@ -37,6 +37,18 @@ class BrightModeFormatter extends SwitchFormatter {
   List<int> get midiValues => [0, 127];
 }
 
+class BrightModeFormatterMPPro extends SwitchFormatter {
+  @override
+  // TODO: implement labelTitle
+  String get labelTitle => "Bright:";
+
+  @override
+  List<String> get labelValues => ["Off", "On"];
+
+  @override
+  List<int> get midiValues => [0, 1];
+}
+
 class BoostModeFormatter extends SwitchFormatter {
   @override
   // TODO: implement labelTitle
@@ -49,6 +61,18 @@ class BoostModeFormatter extends SwitchFormatter {
   List<int> get midiValues => [0, 127];
 }
 
+class BoostModeFormatterMPPro extends SwitchFormatter {
+  @override
+  // TODO: implement labelTitle
+  String get labelTitle => "Boost:";
+
+  @override
+  List<String> get labelValues => ["Off", "On"];
+
+  @override
+  List<int> get midiValues => [0, 1];
+}
+
 class VibeModeFormatter extends SwitchFormatter {
   @override
   // TODO: implement labelTitle
@@ -59,6 +83,18 @@ class VibeModeFormatter extends SwitchFormatter {
 
   @override
   List<int> get midiValues => [0, 127];
+}
+
+class VibeModeFormatterPro extends SwitchFormatter {
+  @override
+  // TODO: implement labelTitle
+  String get labelTitle => "Mode:";
+
+  @override
+  List<String> get labelValues => ["Chorus", "Vibrato"];
+
+  @override
+  List<int> get midiValues => [0, 1];
 }
 
 class ContourModeFormatter extends SwitchFormatter {
@@ -82,5 +118,5 @@ class SCFModeFormatter extends SwitchFormatter {
   List<String> get labelValues => ["Chorus", "P.M.", "Flanger"];
 
   @override
-  List<int> get midiValues => [0, 64, 127];
+  List<int> get midiValues => [0, 1, 2];
 }

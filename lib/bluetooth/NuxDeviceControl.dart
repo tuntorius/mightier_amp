@@ -297,6 +297,7 @@ class NuxDeviceControl extends ChangeNotifier {
       device.sendAmpLevel();
       connectStatus.add(DeviceConnectionState.connectionComplete);
       print("Device connection complete");
+      notifyListeners();
     } else
       device.communication.performNextConnectionStep();
   }
@@ -387,6 +388,9 @@ class NuxDeviceControl extends ChangeNotifier {
     if (!isConnected) return;
     for (var i = 0; i < device.processorList.length; i++)
       sendFullEffectSettings(i, false);
+
+    device.communication.sendSlotOrder();
+    //TODO: send some other stuff - volume etc
   }
 
   void resetToChannelDefaults() {

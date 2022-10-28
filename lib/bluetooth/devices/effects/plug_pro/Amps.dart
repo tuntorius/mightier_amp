@@ -7,7 +7,11 @@ import '../Processor.dart';
 import 'Cabinet.dart';
 
 abstract class PlugProAmplifier extends Amplifier {
-  int get nuxDataLength => 8;
+  int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iAMP;
+  int? get nuxEnableIndex => nuxEffectTypeIndex;
+  int get nuxEnableMask => 0x40;
+  bool get nuxEnableInverted => true;
+
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   int get midiCCEnableValue => MidiCCValuesPro.Head_iAMP;
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iAMP;
@@ -65,7 +69,7 @@ class JazzClean extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 100,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -166,7 +170,7 @@ class BassMate extends PlugProAmplifier {
         name: "Presence",
         handle: "presence",
         value: 100,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -906,7 +910,7 @@ class SuperRvb extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 100,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1171,7 +1175,7 @@ class Unknown0 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1228,7 +1232,7 @@ class Unknown5 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1285,7 +1289,7 @@ class Unknown8 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1342,7 +1346,7 @@ class Unknown18 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1399,7 +1403,7 @@ class Unknown19 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1456,7 +1460,7 @@ class Unknown22 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1513,7 +1517,7 @@ class Unknown23 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1570,7 +1574,7 @@ class Unknown24 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1627,7 +1631,7 @@ class Unknown25 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1684,7 +1688,7 @@ class Unknown30 extends PlugProAmplifier {
         name: "Bright",
         handle: "bright",
         value: 50,
-        formatter: ValueFormatters.brightMode,
+        formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];

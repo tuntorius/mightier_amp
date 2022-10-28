@@ -19,7 +19,6 @@ abstract class DeviceCommunication {
   List<int> createFirmwareMessage();
 
   List<int> requestPresetByIndex(int index);
-  List<int> requestIRName(int index);
 
   void requestBatteryStatus();
 
@@ -138,7 +137,7 @@ abstract class DeviceCommunication {
 
   //version for Mighty Plug Pro
   List<int> createSysExMessagePro(
-      int privacy, int syxMsgType, SyxDir dir, List<int> data) {
+      int privacy, int syxMsgType, int syxDir, List<int> data) {
     List<int> msg = [];
     //create header
     msg.addAll([
@@ -149,7 +148,7 @@ abstract class DeviceCommunication {
       0x58,
       privacy,
       syxMsgType,
-      dir.index,
+      syxDir,
     ]);
 
     msg.addAll(data);

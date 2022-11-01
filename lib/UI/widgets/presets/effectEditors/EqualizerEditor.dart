@@ -20,69 +20,75 @@ class EqualizerEditor extends StatefulWidget {
 
 class _EqualizerEditorState extends State<EqualizerEditor> {
   double _oldValue = 0;
+  final _sliderWidth = 47;
 
   @override
   Widget build(BuildContext context) {
-    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      var isPortrait =
+          MediaQuery.of(context).orientation == Orientation.portrait;
+      var screenWidth = constraints.maxWidth;
 
-    List<Parameter> params = widget.eqEffect.parameters;
-    List<Widget> sliders = [];
-    for (int i = 0; i < params.length; i++) {
-      var param = params[i];
-      var color = (i == 0 && params.length > 6) ? Colors.blue : Colors.grey;
-      var slider = VerticalThickSlider(
-        min: param.formatter.min.toDouble(),
-        max: param.formatter.max.toDouble(),
-        width: 47,
-        activeColor: color,
-        label: param.name,
-        handleHorizontalDrag: false,
-        labelFormatter: (double val) {
-          return val.toStringAsFixed(1);
-        },
-        value: param.value,
-        onChanged: (val) {
-          widget.onChanged?.call(param, val);
-        },
-        onDragStart: (val) {
-          _oldValue = val;
-        },
-        onDragEnd: (val) {
-          widget.onChangedFinal?.call(param, val, _oldValue);
-        },
-      );
-      sliders.add(slider);
-    }
+      List<Parameter> params = widget.eqEffect.parameters;
+      List<Widget> sliders = [];
+      for (int i = 0; i < params.length; i++) {
+        var param = params[i];
+        var color = (i == 0 && params.length > 6) ? Colors.blue : Colors.grey;
+        var slider = VerticalThickSlider(
+          min: param.formatter.min.toDouble(),
+          max: param.formatter.max.toDouble(),
+          width: _sliderWidth.toDouble(),
+          activeColor: color,
+          label: param.name,
+          handleHorizontalDrag: false,
+          labelFormatter: (double val) {
+            return val.toStringAsFixed(1);
+          },
+          value: param.value,
+          onChanged: (val) {
+            widget.onChanged?.call(param, val);
+          },
+          onDragStart: (val) {
+            _oldValue = val;
+          },
+          onDragEnd: (val) {
+            widget.onChangedFinal?.call(param, val, _oldValue);
+          },
+        );
+        sliders.add(slider);
+      }
 
-    Widget slidersContainer;
-    if (params.length < 7)
-      slidersContainer = Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: sliders,
-      );
-    else
-      slidersContainer = Scrollbar(
-        child: ListView(
-          primary: true,
-          scrollDirection: Axis.horizontal,
+      Widget slidersContainer;
+      if (_sliderWidth * params.length < screenWidth)
+        slidersContainer = Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: sliders,
-          shrinkWrap: true,
-        ),
-      );
+        );
+      else
+        slidersContainer = Scrollbar(
+          child: ListView(
+            primary: true,
+            scrollDirection: Axis.horizontal,
+            children: sliders,
+            shrinkWrap: true,
+          ),
+        );
 
-    if (isPortrait)
-      return Column(
-        children: [
-          Expanded(child: slidersContainer),
-          const SizedBox(
-            height: 30,
-          )
-        ],
-      );
-    else
-      return Container(
-        child: slidersContainer,
-        height: 200,
-      );
+      if (isPortrait)
+        return Column(
+          children: [
+            Expanded(child: slidersContainer),
+            const SizedBox(
+              height: 30,
+            )
+          ],
+        );
+      else
+        return Container(
+          child: slidersContainer,
+          height: 200,
+        );
+    });
   }
 }

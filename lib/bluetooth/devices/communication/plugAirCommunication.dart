@@ -196,6 +196,7 @@ class PlugAirCommunication extends DeviceCommunication {
     //this has lots of unknown values - maybe bpm settings
     //eco mode is 12
     if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
+      //current preset is located here
       device.setSelectedChannelNuxIndex(data[4], false);
       config.btEq = data[10];
       config.ecoMode = data[12] != 0;

@@ -66,8 +66,8 @@ class NuxMightyPlug extends NuxDevice {
   int get cabinetSlotIndex => 3;
   bool get presetSaveSupport => true;
   bool get reorderableFXChain => false;
-  bool get advancedSettingsSupport => true;
   bool get batterySupport => true;
+  bool get nativeActiveChannelsSupport => false;
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
   int get deviceQRId => 6;
   int get deviceQRVersion => version == PlugAirVersion.PlugAir21 ? 2 : 0;
@@ -183,7 +183,7 @@ class NuxMightyPlug extends NuxDevice {
       (preset as PlugAirPreset).setFirmwareVersion(version.index);
   }
 
-  List<String> getDrumStyles() => drumStyles;
+  dynamic getDrumStyles() => drumStyles;
 
   List<Preset> getPresetsList() {
     return presets;

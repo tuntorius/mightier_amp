@@ -2,6 +2,7 @@
 // is governed by the MIT license that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 /// This helper widget manages the scrollable content inside a picker widget.
 class ScrollPicker extends StatefulWidget {
@@ -14,8 +15,7 @@ class ScrollPicker extends StatefulWidget {
     required this.initialValue,
     required this.onChanged,
     required this.onChangedFinal,
-    required this.remoteChange,
-    this.showDivider: true,
+    this.enabled = true,
   }) : super(key: key);
 
   // Events
@@ -25,8 +25,7 @@ class ScrollPicker extends StatefulWidget {
   // Variables
   final List<String> items;
   final int initialValue;
-  final bool showDivider;
-  final bool remoteChange;
+  final bool enabled;
 
   @override
   _ScrollPickerState createState() => _ScrollPickerState(initialValue);
@@ -39,15 +38,14 @@ class _ScrollPickerState extends State<ScrollPicker> {
   double widgetHeight = 0;
 
   int selectedValue;
+  bool _isUserGenerated = false;
 
   late FixedExtentScrollController scrollController;
 
   @override
   void initState() {
     super.initState();
-
-    int initialItem = selectedValue;
-    scrollController = FixedExtentScrollController(initialItem: initialItem);
+    scrollController = FixedExtentScrollController(initialItem: selectedValue);
   }
 
   @override
@@ -57,72 +55,84 @@ class _ScrollPickerState extends State<ScrollPicker> {
     TextStyle selectedStyle =
         themeData.textTheme.headline5!.copyWith(color: themeData.accentColor);
 
-    if (widget.remoteChange) {
+    if (!_isUserGenerated) {
       selectedValue = widget.initialValue;
-      scrollController.animateToItem(widget.initialValue,
-          duration: Duration(milliseconds: 300), curve: Curves.easeInOutQuad);
+      scrollController.jumpToItem(
+        widget.initialValue,
+      );
     }
     //
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         widgetHeight = constraints.maxHeight;
 
-        return Stack(
-          children: <Widget>[
-            GestureDetector(
-              onTapUp: _itemTapped,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (scrollNotification) {
-                  if (scrollNotification is ScrollEndNotification) {
-                    widget.onChangedFinal(selectedValue, widget.remoteChange);
-                  }
-                  return false;
-                },
-                child: ListWheelScrollView.useDelegate(
-                  childDelegate: ListWheelChildBuilderDelegate(
-                      builder: (BuildContext context, int index) {
-                    if (index < 0 || index > widget.items.length - 1) {
-                      return null;
-                    }
+        return IgnorePointer(
+          ignoring: !widget.enabled,
+          child: Opacity(
+            opacity: widget.enabled ? 1 : 0.3,
+            child: Stack(
+              children: <Widget>[
+                GestureDetector(
+                  onTapUp: _itemTapped,
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (scrollNotification) {
+                      if (scrollNotification is UserScrollNotification) {
+                        if (scrollNotification.direction !=
+                            ScrollDirection.idle) {
+                          _isUserGenerated = true;
+                        }
+                      } else if (scrollNotification is ScrollEndNotification) {
+                        widget.onChangedFinal(selectedValue, _isUserGenerated);
+                        _isUserGenerated = false;
+                      }
+                      return false;
+                    },
+                    child: ListWheelScrollView.useDelegate(
+                      childDelegate: ListWheelChildBuilderDelegate(
+                          builder: (BuildContext context, int index) {
+                        if (index < 0 || index > widget.items.length - 1) {
+                          return null;
+                        }
 
-                    var value = widget.items[index];
+                        var value = widget.items[index];
 
-                    final TextStyle itemStyle =
-                        (index == selectedValue) ? selectedStyle : defaultStyle;
+                        final TextStyle itemStyle = (index == selectedValue)
+                            ? selectedStyle
+                            : defaultStyle;
 
-                    return Center(
-                      child: AnimatedDefaultTextStyle(
-                        child: Text(value),
-                        style: itemStyle,
-                        duration: Duration(milliseconds: 100),
-                      ),
-                    );
-                  }),
-                  controller: scrollController,
-                  itemExtent: ScrollPicker.itemHeight,
-                  onSelectedItemChanged: _onSelectedItemChanged,
-                  physics: FixedExtentScrollPhysics(),
-                ),
-              ),
-            ),
-            IgnorePointer(
-                child: Center(
-                    child: widget.showDivider ? Divider() : Container())),
-            IgnorePointer(
-              child: Center(
-                child: Container(
-                  height: ScrollPicker.itemHeight,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: themeData.accentColor, width: 1.0),
-                      bottom:
-                          BorderSide(color: themeData.accentColor, width: 1.0),
+                        return Center(
+                          child: AnimatedDefaultTextStyle(
+                            child: Text(value),
+                            style: itemStyle,
+                            duration: Duration(milliseconds: 100),
+                          ),
+                        );
+                      }),
+                      controller: scrollController,
+                      itemExtent: ScrollPicker.itemHeight,
+                      onSelectedItemChanged: _onSelectedItemChanged,
+                      physics: FixedExtentScrollPhysics(),
                     ),
                   ),
                 ),
-              ),
-            )
-          ],
+                IgnorePointer(
+                  child: Center(
+                    child: Container(
+                      height: ScrollPicker.itemHeight,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                              color: themeData.accentColor, width: 1.0),
+                          bottom: BorderSide(
+                              color: themeData.accentColor, width: 1.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
         );
       },
     );

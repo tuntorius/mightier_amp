@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import '../../UI/pages/device_specific_settings/PlugProSettings.dart';
 import 'communication/communication.dart';
 import 'communication/plugProCommunication.dart';
 import '../../UI/mightierIcons.dart';
@@ -17,6 +18,19 @@ enum PlugProChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
 
 enum PlugProVersion { PlugPro1 }
 
+enum DrumsToneControl { Bass, Middle, Treble }
+
+class NuxPlugProConfiguration extends NuxDeviceConfiguration {
+  double drumsBass = 50;
+  double drumsMiddle = 50;
+  double drumsTreble = 50;
+
+  int routingMode = 1;
+  int recLevel = 50;
+  int playbackLevel = 50;
+  double usbDryWet = 50;
+}
+
 class NuxMightyPlugPro extends NuxDevice {
   //this is used in conversion of very old format of presets which
   // didn't contain device id. They were always for mighty plug/air
@@ -25,8 +39,8 @@ class NuxMightyPlugPro extends NuxDevice {
   late PlugProCommunication _communication = PlugProCommunication(this, config);
   DeviceCommunication get communication => _communication;
 
-  NuxDeviceConfiguration _config = NuxDeviceConfiguration();
-  NuxDeviceConfiguration get config => _config;
+  NuxPlugProConfiguration _config = NuxPlugProConfiguration();
+  NuxPlugProConfiguration get config => _config;
 
   PlugProVersion version = PlugProVersion.PlugPro1;
 
@@ -66,12 +80,16 @@ class NuxMightyPlugPro extends NuxDevice {
 
   bool get presetSaveSupport => true;
   bool get reorderableFXChain => true;
-  bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
+  bool get nativeActiveChannelsSupport => true;
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
 
   int get deviceQRId => 15;
   int get deviceQRVersion => 1;
+
+  double get drumsBass => config.drumsBass;
+  double get drumsMiddle => config.drumsMiddle;
+  double get drumsTreble => config.drumsTreble;
 
   List<ProcessorInfo> get processorList => _processorList;
 
@@ -156,19 +174,115 @@ class NuxMightyPlugPro extends NuxDevice {
 
   List<String> channelNames = [];
 
-  final List<String> drumStyles = [
-    "Metronome",
-    "Pop",
-    "Metal",
-    "Blues",
-    "Swing",
-    "Rock",
-    "Ballad Rock",
-    "Funk",
-    "R&B",
-    "Latin",
-    "Dance"
-  ];
+  static const Map<String, int> rockStyles = {
+    'Standard': 0,
+    'Swing Rock': 1,
+    'Power Beat': 2,
+    'Smooth': 3,
+    'Mega Drive': 4,
+    'Hard Rock': 5,
+    'Boogie': 6
+  };
+
+  static const Map<String, int> countryStyles = {
+    'Walk Line': 7,
+    'Blue Grass': 8,
+    'Country': 9,
+    'Waltz': 10,
+    'Train': 11,
+    'Country Rock': 12,
+    'Slowly': 13
+  };
+
+  static const Map<String, int> bluesStyles = {
+    'Slow Blues': 14,
+    'Chicago': 15,
+    'R&B': 16,
+    'Blues Rock': 17,
+    'Road Train': 18,
+    'Shuffle': 19,
+  };
+
+  static const Map<String, int> metalStyles = {
+    '2X Bass': 20,
+    'Close Beat': 21,
+    'Heavy Bass': 22,
+    'Fast': 23,
+    'Holy Case': 24,
+    'Open Hat': 25,
+    'Epic': 26,
+  };
+
+  static const Map<String, int> funkStyles = {
+    'Bounce': 27,
+    'East Coast': 28,
+    'New Mann': 29,
+    'R&B Funk': 30,
+    '80s Funk': 31,
+    'Soul': 32,
+    'Uncle Jam': 33,
+  };
+
+  static const Map<String, int> jazzStyles = {
+    'Blues Jazz': 34,
+    'Classic 1': 35,
+    'Classic 2': 36,
+    'Easy Jazz': 37,
+    'Fast': 38,
+    'Walking': 39,
+    'Smooth': 40,
+  };
+
+  static const Map<String, int> balladStyles = {
+    'Bluesy': 41,
+    'Grooves': 42,
+    'Ballad Rock': 43,
+    'Slow Rock': 44,
+    'Tutorial': 45,
+    'R&B Ballad': 46,
+    'Gospel': 47,
+  };
+
+  static const Map<String, int> popStyles = {
+    'Beach Side': 48,
+    'Big City': 49,
+    'Funky Pop': 50,
+    'Modern': 51,
+    'School Pop': 52,
+    'Motown': 53,
+    'Resistor': 54,
+  };
+
+  static const Map<String, int> reggaeStyles = {
+    'Sheriff': 55,
+    'Santeria': 56,
+    'Reggae 3': 57,
+    'Reggae 4': 58,
+    'Reggae 5': 59,
+    'Reggae 6': 60,
+    'Reggae 7': 61,
+  };
+
+  static const Map<String, int> electronicStyles = {
+    'Electronic 1': 62,
+    'Electronic 2': 63,
+    'Electronic 3': 64,
+    'Elec-EDM': 65,
+    'Elec-Tech': 66,
+  };
+
+  final Map<String, Map> drumCategories = {
+    "Rock": rockStyles,
+    "Country": countryStyles,
+    "Blues": bluesStyles,
+    "Metal": metalStyles,
+    "Funk": funkStyles,
+    "Jazz": jazzStyles,
+    "Ballad": balladStyles,
+    "Pop": popStyles,
+    "Reggae": reggaeStyles,
+    "Electronic": electronicStyles
+  };
 
   NuxMightyPlugPro(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
@@ -212,7 +326,7 @@ class NuxMightyPlugPro extends NuxDevice {
       (preset as PlugProPreset).setFirmwareVersion(version.index);
   }
 
-  List<String> getDrumStyles() => drumStyles;
+  dynamic getDrumStyles() => drumCategories;
 
   List<Preset> getPresetsList() {
     return presets;
@@ -249,7 +363,26 @@ class NuxMightyPlugPro extends NuxDevice {
     return preset;
   }
 
+  Widget getSettingsWidget() {
+    return PlugProSettings(device: this);
+  }
+
   bool checkQRVersionValid(int ver) {
     return ver == 1;
+  }
+
+  void setDrumsTone(double value, DrumsToneControl control) {
+    switch (control) {
+      case DrumsToneControl.Bass:
+        config.drumsBass = value;
+        break;
+      case DrumsToneControl.Middle:
+        config.drumsMiddle = value;
+        break;
+      case DrumsToneControl.Treble:
+        config.drumsTreble = value;
+        break;
+    }
+    _communication.setDrumsTone(value, control);
   }
 }

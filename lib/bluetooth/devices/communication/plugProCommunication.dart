@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_pro/Cabinet.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/PlugProPreset.dart';
+import '../NuxDevice.dart';
+import '../effects/plug_pro/Cabinet.dart';
+import '../presets/PlugProPreset.dart';
 
 import '../../../platform/simpleSharedPrefs.dart';
 import '../NuxConstants.dart';
+import '../NuxMightyPlugPro.dart';
 import 'communication.dart';
 
 class PlugProCommunication extends DeviceCommunication {
@@ -16,10 +17,12 @@ class PlugProCommunication extends DeviceCommunication {
   int get productVID => 48;
 
   @override
-  get connectionSteps => 4;
+  get connectionSteps => 5;
 
   int _readyPresetsCount = 0;
   int _readyIRsCount = 0;
+
+  NuxPlugProConfiguration get config => super.config as NuxPlugProConfiguration;
 
   static const int CustomIRStart = 34;
   static const int CustomIRsCount = 20;
@@ -52,9 +55,12 @@ class PlugProCommunication extends DeviceCommunication {
         device.deviceControl.sendBLEData(_requestIRName(CustomIRStart));
         break;
       case 2:
-        device.deviceControl.sendBLEData(requestCurrentChannel());
+        device.deviceControl.sendBLEData(_requestCurrentChannel());
         break;
       case 3:
+        device.deviceControl.sendBLEData(_requestSystemSettings());
+        break;
+      case 4:
         device.deviceControl.sendBLEData(_requestDrumData());
         break;
     }
@@ -72,9 +78,14 @@ class PlugProCommunication extends DeviceCommunication {
         SyxMsg.kSYX_PRESET, SyxDir.kSYXDIR_REQ, [index]);
   }
 
-  List<int> requestCurrentChannel() {
+  List<int> _requestCurrentChannel() {
     return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_CURPRESET, SyxDir.kSYXDIR_REQ, []);
+  }
+
+  List<int> _requestSystemSettings() {
+    return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_SYSTEMSET, SyxDir.kSYXDIR_REQ, []);
   }
 
   List<int> _requestIRName(int index) {
@@ -130,6 +141,17 @@ class PlugProCommunication extends DeviceCommunication {
     _sendSlotData(slot, preset.slotEnabled(slot), index);
   }
 
+  void sendActiveChannels(List<bool> channels) {
+    if (!device.deviceControl.isConnected) return;
+    int channelsBitfield = 0;
+    for (int i = 0; i < channels.length; i++) {
+      channelsBitfield |= (channels[i] ? 1 : 0) << i;
+    }
+
+    var data = createCCMessage(MidiCCValuesPro.PRESETRANGE, channelsBitfield);
+    device.deviceControl.sendBLEData(data);
+  }
+
   void sendSlotOrder() {
     if (!device.deviceControl.isConnected) return;
     var preset = device.getPreset(device.selectedChannel);
@@ -167,6 +189,24 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  setDrumsTone(double value, DrumsToneControl control) {
+    if (!device.deviceControl.isConnected) return;
+    int cc = 0;
+    switch (control) {
+      case DrumsToneControl.Bass:
+        cc = MidiCCValuesPro.DRUM_BASS;
+        break;
+      case DrumsToneControl.Middle:
+        cc = MidiCCValuesPro.DRUM_MIDDLE;
+        break;
+      case DrumsToneControl.Treble:
+        cc = MidiCCValuesPro.DRUM_TREBLE;
+        break;
+    }
+    var data = createCCMessage(cc, value.round());
+    device.deviceControl.sendBLEData(data);
+  }
+
   void sendDrumsTempo(double tempo) {
     if (!device.deviceControl.isConnected) return;
 
@@ -178,10 +218,16 @@ class PlugProCommunication extends DeviceCommunication {
     //var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
     //    SyxMsg.kSYX_SENDCMD, SyxDir.kSYXDIR_SET, [SyxMsg.kSYX_DRUM]);
     var data = createSysExMessagePro(
-        SysexPrivacy.kSYSEX_PRIVATE,
-        SyxMsg.kSYX_DRUM,
-        SyxDir.kSYXDIR_SET,
-        [0, 0, 0, 0, 0, 0, tempoH, tempoL]);
+        SysexPrivacy.kSYSEX_PRIVATE, SyxMsg.kSYX_DRUM, SyxDir.kSYXDIR_SET, [
+      config.drumsEnabled ? 1 : 0,
+      config.selectedDrumStyle,
+      config.drumsVolume.round(),
+      config.drumsBass.round(),
+      config.drumsMiddle.round(),
+      config.drumsTreble.round(),
+      tempoH,
+      tempoL
+    ]);
     device.deviceControl.sendBLEData(data);
   }
 
@@ -323,12 +369,15 @@ class PlugProCommunication extends DeviceCommunication {
         consumed = true;
         break;
       case MidiCCValuesPro.DRUM_BASS:
+        config.drumsBass = value.toDouble();
         consumed = true;
         break;
       case MidiCCValuesPro.DRUM_MIDDLE:
+        config.drumsMiddle = value.toDouble();
         consumed = true;
         break;
       case MidiCCValuesPro.DRUM_TREBLE:
+        config.drumsTreble = value.toDouble();
         consumed = true;
         break;
     }
@@ -339,11 +388,72 @@ class PlugProCommunication extends DeviceCommunication {
     return false;
   }
 
+  void _handleActiveChannelsData(int bitfield) {
+    for (int i = 0; i < config.activeChannels.length; i++) {
+      config.activeChannels[i] = ((bitfield >> i) & 1) != 0;
+    }
+    device.deviceControl.forceNotifyListeners();
+  }
+
+  //Info: in plugProDataObject.js in the beginning there are few const enums
+  // O, G, z, etc... they are the indexes of some SysEx data
+  //just reduce with 1
+  /*
+  const G = {
+  micmute: 0,
+  outmodeeq1: 1,
+  outmodeeq2: 2,
+  outmodeeq3: 3,
+  display1: 4,
+  display2: 5,
+  display3: 6,
+  expset1: 7,
+  expset2: 8,
+  expset3: 9,
+  expset4: 10,
+  preeq1: 11,
+  preeq2: 12,
+  preeq3: 13,
+  preeq4: 14,
+  usbrount1: 15,
+  usbrount2: 16,
+  usbrount3: 17,
+  usbrount4: 18,
+  presetrange: 19,
+  micvolume: 20,
+  midi_chan: 21,
+  length: 22,
+};
+*/
+  void _handleSystemSettings(List<int> data) {
+    //TODO: usb audio settings here
+    print(data);
+    for (int i = 0; i < config.activeChannels.length; i++) {
+      config.activeChannels[i] = ((data[20] >> i) & 1) != 0;
+    }
+  }
+
+/*
+const z = {
+  drum_command: 0,
+  drumtype: 1,
+  drum_vol: 2,
+  drumeqL: 3,
+  drumeqM: 4,
+  drumeqH: 5,
+  tmpoH: 6,
+  tmpoL: 7,
+  length: 8,
+};
+*/
   void _handleDrumData(List<int> data) {
     if (data[0] == SyxDir.kSYXDIR_REQ) {
       config.drumsEnabled = data[1] != 0;
-      config.drumsVolume = data[3].toDouble();
       config.selectedDrumStyle = data[2];
+      config.drumsVolume = data[3].toDouble();
+      config.drumsBass = data[4].toDouble();
+      config.drumsMiddle = data[5].toDouble();
+      config.drumsTreble = data[6].toDouble();
 
       config.drumsTempo = (data[8] + (data[7] << 7)).toDouble();
       if (!isConnectionReady()) {
@@ -362,6 +472,11 @@ class PlugProCommunication extends DeviceCommunication {
       print(data);
       switch (data[2]) {
         case MidiMessageValues.controlChange:
+          switch (data[3]) {
+            case MidiCCValuesPro.PRESETRANGE:
+              _handleActiveChannelsData(data[4]);
+              return;
+          }
           bool consumed = false;
           consumed = _handleDrumCCData(data[3], data[4]);
           if (consumed) return;
@@ -378,6 +493,10 @@ class PlugProCommunication extends DeviceCommunication {
                   return;
                 case SyxMsg.kSYX_CABNAME:
                   _handleIRName(data.sublist(7));
+                  return;
+                case SyxMsg.kSYX_SYSTEMSET:
+                  _handleSystemSettings(data.sublist(7));
+                  connectionStepReady();
                   return;
                 case SyxMsg.kSYX_CURPRESET:
 

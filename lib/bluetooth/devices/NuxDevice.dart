@@ -22,6 +22,8 @@ class NuxDeviceConfiguration {
   int selectedDrumStyle = 0;
   double drumsVolume = 50;
   double drumsTempo = 120;
+
+  late List<bool> activeChannels;
 }
 
 abstract class NuxDevice extends ChangeNotifier {
@@ -62,8 +64,8 @@ abstract class NuxDevice extends ChangeNotifier {
   int get cabinetSlotIndex;
   bool get presetSaveSupport;
   bool get reorderableFXChain;
-  bool get advancedSettingsSupport;
   bool get batterySupport;
+  bool get nativeActiveChannelsSupport;
 
   int get deviceQRId;
   int get deviceQRVersion;
@@ -96,14 +98,13 @@ abstract class NuxDevice extends ChangeNotifier {
   int selectedChannelP = 0; //nux-based channel index
 
   int get selectedChannel => selectedChannelP;
-  late List<bool> _activeChannels;
 
   void setFirmwareVersion(int ver);
 
   void setFirmwareVersionByIndex(int ver);
 
   NuxDevice(this.deviceControl) {
-    _activeChannels = List<bool>.filled(channelsCount, true);
+    config.activeChannels = List<bool>.filled(channelsCount, true);
   }
 
   int getAvailableVersions() {
@@ -126,12 +127,13 @@ abstract class NuxDevice extends ChangeNotifier {
   set selectedChannelNormalized(int chan) {
     selectedChannelP = chan;
     presetChangedNotifier.value = selectedChannelP;
+    //presetChangedNotifier.notifyListeners();
     if (deviceControl.isConnected) sendAmpLevel();
   }
 
   void setSelectedChannelNuxIndex(int chan, bool notify) {
     selectedChannelP = chan;
-
+    presetChangedNotifier.value = selectedChannelP;
     //notify ui for change
     if (notify) {
       resetToNuxPreset();
@@ -140,19 +142,22 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   bool getChannelActive(int channel) {
-    return _activeChannels[channel];
+    return config.activeChannels[channel];
   }
 
   void toggleChannelActive(int channel) {
-    _activeChannels[channel] = !_activeChannels[channel];
+    config.activeChannels[channel] = !config.activeChannels[channel];
 
     //check for at least one channel enabled
     bool hasEnabled = false;
-    for (var act in _activeChannels) if (act == true) hasEnabled = true;
+    for (var act in config.activeChannels) if (act == true) hasEnabled = true;
     if (!hasEnabled) {
-      _activeChannels[channel] = true;
+      config.activeChannels[channel] = true;
       return;
     }
+
+    if (nativeActiveChannelsSupport)
+      communication.sendActiveChannels(config.activeChannels);
     notifyListeners();
   }
 
@@ -186,7 +191,7 @@ abstract class NuxDevice extends ChangeNotifier {
     deviceControl.onBatteryPercentage(0);
   }
 
-  List<String> getDrumStyles();
+  dynamic getDrumStyles();
 
   void resetDrumSettings() {
     config.drumsEnabled = false;
@@ -272,10 +277,12 @@ abstract class NuxDevice extends ChangeNotifier {
     NuxDeviceControl.instance().clearUndoStack();
     var _index = index;
 
-    //channel skipping
-    while (_activeChannels[_index] == false) {
-      _index++;
-      if (_index == channelsCount) _index = 0;
+    if (!nativeActiveChannelsSupport) {
+      //channel skipping
+      while (config.activeChannels[_index] == false) {
+        _index++;
+        if (_index == channelsCount) _index = 0;
+      }
     }
     if (_index == index) //not skipped
       setSelectedChannelNuxIndex(index, true);
@@ -284,6 +291,7 @@ abstract class NuxDevice extends ChangeNotifier {
       selectedChannelNormalized = _index;
       deviceControl.presetChangedListener();
     }
+
     //immediately set the amp level
     sendAmpLevel();
   }

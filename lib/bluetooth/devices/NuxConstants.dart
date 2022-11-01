@@ -387,7 +387,7 @@ class SyxMsg {
   static const kSYX_CABCURVE = 17; //const SyxMsg._internal(17);
   static const kSYX_PRESETNAME = 18; //const SyxMsg._internal(18);
   static const kSYX_PEDALSET = 19; //const SyxMsg._internal(19);
-  static const kSYX_SYSTEMSET = const SyxMsg._internal(20);
+  static const kSYX_SYSTEMSET = 20;
   static const kSYX_CURSTATE = const SyxMsg._internal(21);
   static const kSYX_IRDELETE = const SyxMsg._internal(22);
   static const kSYX_CUTOVER = const SyxMsg._internal(23);

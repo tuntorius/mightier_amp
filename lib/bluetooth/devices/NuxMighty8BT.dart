@@ -40,8 +40,8 @@ class NuxMighty8BT extends NuxDevice {
   int get cabinetSlotIndex => 0;
   bool get presetSaveSupport => false;
   bool get reorderableFXChain => false;
-  bool get advancedSettingsSupport => false;
   bool get batterySupport => false;
+  bool get nativeActiveChannelsSupport => false;
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;
   int get deviceQRId => 12;
   int get deviceQRVersion => 1;
@@ -119,7 +119,7 @@ class NuxMighty8BT extends NuxDevice {
         channelName: "Dist"));
   }
 
-  List<String> getDrumStyles() => drumStyles;
+  dynamic getDrumStyles() => drumStyles;
 
   List<Preset> getPresetsList() {
     return presets;

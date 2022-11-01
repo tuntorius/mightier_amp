@@ -64,6 +64,8 @@ abstract class DeviceCommunication {
   }
 
   void saveCurrentPreset();
+
+  void sendActiveChannels(List<bool> channels) {}
   void sendSlotOrder() {}
 
   void sendDrumsEnabled(bool enabled);

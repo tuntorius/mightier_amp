@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/mightierIcons.dart';
 import 'package:mighty_plug_manager/UI/widgets/NuxAppBar.dart';
@@ -36,16 +35,25 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
+  bool isExpanded = false;
   bool isBottomDrawerOpen = false;
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      width: 230,
+      width: isExpanded ? 230 : 56,
       child: SafeArea(
         child: Column(
           children: [
-            const NuxAppBar(elevation: 0),
+            NuxAppBar(
+              elevation: 0,
+              expanded: isExpanded,
+              showExpandButton: true,
+              onExpandStateChanged: (val) {
+                isExpanded = val;
+                setState(() {});
+              },
+            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -54,42 +62,48 @@ class _AppDrawerState extends State<AppDrawer> {
                       tileIndex: 0,
                       onSwitchPageIndex: widget.onSwitchPageIndex,
                       currentIndex: widget.currentIndex,
+                      expanded: isExpanded,
                     ),
                     _DrawerTile(
                       tileIndex: 1,
                       onSwitchPageIndex: widget.onSwitchPageIndex,
                       currentIndex: widget.currentIndex,
+                      expanded: isExpanded,
                     ),
                     _DrawerTile(
                       tileIndex: 2,
                       onSwitchPageIndex: widget.onSwitchPageIndex,
                       currentIndex: widget.currentIndex,
+                      expanded: isExpanded,
                     ),
                     _DrawerTile(
                       tileIndex: 3,
                       onSwitchPageIndex: widget.onSwitchPageIndex,
                       currentIndex: widget.currentIndex,
+                      expanded: isExpanded,
                     ),
                     _DrawerTile(
                       tileIndex: 4,
                       onSwitchPageIndex: widget.onSwitchPageIndex,
                       currentIndex: widget.currentIndex,
+                      expanded: isExpanded,
                     ),
                   ],
                 ),
               ),
             ),
-            BottomDrawer(
-              isBottomDrawerOpen: isBottomDrawerOpen,
-              onExpandChange: (val) => setState(() {
-                isBottomDrawerOpen = val;
-              }),
-              child: VolumeSlider(
-                currentVolume: widget.currentVolume,
-                onVolumeChanged: widget.onVolumeChanged,
-                onVolumeDragEnd: widget.onVolumeDragEnd,
+            if (isExpanded)
+              BottomDrawer(
+                isBottomDrawerOpen: isBottomDrawerOpen,
+                onExpandChange: (val) => setState(() {
+                  isBottomDrawerOpen = val;
+                }),
+                child: VolumeSlider(
+                  currentVolume: widget.currentVolume,
+                  onVolumeChanged: widget.onVolumeChanged,
+                  onVolumeDragEnd: widget.onVolumeDragEnd,
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -100,32 +114,45 @@ class _AppDrawerState extends State<AppDrawer> {
 class _DrawerTile extends StatelessWidget {
   final int tileIndex;
   final int currentIndex;
+  final bool expanded;
   final void Function(int p1) onSwitchPageIndex;
 
-  const _DrawerTile({
-    Key? key,
-    required this.onSwitchPageIndex,
-    required this.currentIndex,
-    required this.tileIndex,
-  }) : super(key: key);
+  const _DrawerTile(
+      {Key? key,
+      required this.onSwitchPageIndex,
+      required this.currentIndex,
+      required this.tileIndex,
+      required this.expanded})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final color =
         tileIndex == currentIndex ? colorScheme.primary : colorScheme.secondary;
-
-    return ListTile(
-      title: Text(
-        _tiles.elementAt(tileIndex).title,
-        style: TextStyle(color: color),
-        // textAlign: TextAlign.right,
-      ),
-      leading: Icon(
-        _tiles.elementAt(tileIndex).icon,
-      ),
-      onTap: () => onSwitchPageIndex(tileIndex),
-    );
+    if (expanded)
+      return ListTile(
+        title: Text(
+          _tiles.elementAt(tileIndex).title,
+          style: TextStyle(color: color),
+          // textAlign: TextAlign.right,
+        ),
+        leading: Icon(
+          _tiles.elementAt(tileIndex).icon,
+        ),
+        minLeadingWidth: 10,
+        onTap: () => onSwitchPageIndex(tileIndex),
+      );
+    else
+      return Padding(
+        padding: const EdgeInsets.all(4),
+        child: IconButton(
+            onPressed: () => onSwitchPageIndex(tileIndex),
+            icon: Icon(
+              _tiles.elementAt(tileIndex).icon,
+              color: color,
+            )),
+      );
   }
 }
 

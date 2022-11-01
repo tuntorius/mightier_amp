@@ -32,7 +32,7 @@ class _SetlistsState extends State<Setlists> {
           return true;
         },
         validationErrorMessage: "A setlist with this name already exists",
-        confirmColor: Colors.blue,
+        confirmColor: Theme.of(context).hintColor,
         onConfirm: (name) {
           TrackData().addSetlist(name);
 
@@ -136,7 +136,7 @@ class _SetlistsState extends State<Setlists> {
           return true;
         },
         validationErrorMessage: "Name already taken!",
-        confirmColor: Colors.blue,
+        confirmColor: Theme.of(context).hintColor,
         onConfirm: (newName) {
           setlist.name = newName;
           TrackData().saveSetlists();

@@ -202,7 +202,7 @@ class AlertDialogs {
               });
             },
             selected: selected == i,
-            activeColor: Colors.blue,
+            activeColor: Theme.of(context).hintColor,
           ),
         );
       }

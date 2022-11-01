@@ -54,7 +54,7 @@ class _PlugAirSettingsState extends State<PlugAirSettings> {
                 confirmButton: "OK",
                 cancelButton: "Cancel",
                 title: "Bluetooth Audio EQ",
-                confirmColor: Colors.blue,
+                confirmColor: Theme.of(context).hintColor,
                 value: widget.plugAirDevice.btEq,
                 options: _eqOptions, onConfirm: (changed, newValue) {
               if (changed) {

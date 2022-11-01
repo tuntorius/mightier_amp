@@ -201,7 +201,7 @@ class _TracksPageState extends State<TracksPage>
           return newName.isNotEmpty;
         },
         validationErrorMessage: "Name already taken!",
-        confirmColor: Colors.blue,
+        confirmColor: Theme.of(context).hintColor,
         onConfirm: (newName) {
           track.name = newName;
           TrackData().saveTracks();

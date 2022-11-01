@@ -164,7 +164,7 @@ class _ThickSliderState extends State<ThickSlider> {
           return true;
         },
         validationErrorMessage: "Value not valid",
-        confirmColor: Colors.blue,
+        confirmColor: Theme.of(context).hintColor,
         onConfirm: (value) {
           var val = double.parse(value);
 

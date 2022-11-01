@@ -72,7 +72,7 @@ class AudioWaveformDecoder {
     int pos = 0;
 
     onStart();
-    Stopwatch stopwatch = new Stopwatch()..start();
+    Stopwatch stopwatch = Stopwatch()..start();
     do {
       Uint8List? list = await nextBuffer();
       if (list == null) {

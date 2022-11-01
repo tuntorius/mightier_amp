@@ -129,7 +129,7 @@ class HotkeyInputDialog {
               onPressed: _applyHotkey,
               child: Text(
                 "OK",
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: Theme.of(context).hintColor),
               ))
         ],
         actionsAlignment: MainAxisAlignment.spaceBetween,

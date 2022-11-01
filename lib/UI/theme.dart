@@ -25,7 +25,10 @@ ThemeData getTheme() {
     //primary color is AppBar bg color
     primaryColor: Colors.grey[800],
     accentColor: Colors.white,
-    hintColor: Colors.blue,
+
+    //unselected labels
+    hintColor: Colors.blue[300],
+
     disabledColor: Colors.grey[700],
     unselectedWidgetColor: Colors.white,
     toggleableActiveColor: Colors.white,
@@ -55,7 +58,7 @@ ThemeData getTheme() {
     textButtonTheme: TextButtonThemeData(style:
         ButtonStyle(foregroundColor: MaterialStateColor.resolveWith((states) {
       if (states.contains(MaterialState.disabled)) return Colors.grey[700]!;
-      return Colors.grey[400]!;
+      return Colors.grey[300]!;
     }))),
     // elevatedButtonTheme: ElevatedButtonThemeData(
     //     style: ButtonStyle(

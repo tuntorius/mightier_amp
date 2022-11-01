@@ -6,7 +6,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:mighty_plug_manager/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../UI/pages/settings.dart';
 
@@ -50,6 +49,7 @@ class BLEMidiHandler {
   //amp device
   BluetoothDevice? _device;
   BluetoothCharacteristic? _midiCharacteristic;
+  StreamSubscription? _deviceStreamSubscription;
 
   bool queueFree = true;
 
@@ -281,7 +281,7 @@ class BLEMidiHandler {
     });
   }
 
-  _connectAmpDevice(
+  void _connectAmpDevice(
       BluetoothDevice device, BluetoothCharacteristic characteristic) {
     _midiCharacteristic = characteristic;
 
@@ -291,8 +291,9 @@ class BLEMidiHandler {
     _connectInProgress = false;
 
     _status.add(MidiSetupStatus.deviceConnected);
-    device.state.listen((event) {
+    _deviceStreamSubscription = device.state.listen((event) {
       if (event == BluetoothDeviceState.disconnected) {
+        _deviceStreamSubscription?.cancel();
         _device = null;
         _connectInProgress = false;
         queueFree = true;

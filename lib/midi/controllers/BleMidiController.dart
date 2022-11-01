@@ -7,6 +7,8 @@ import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
 class BleMidiController extends MidiController {
   ScanResult scanResult;
   BluetoothCharacteristic? _characteristic;
+  StreamSubscription? _characteristicSubscription;
+  StreamSubscription? _deviceStatusSubscription;
 
   ControllerType get type => ControllerType.MidiBle;
 
@@ -33,10 +35,12 @@ class BleMidiController extends MidiController {
   }
 
   _onConnected() {
-    scanResult.device.state.listen(_deviceStateListener);
+    _deviceStatusSubscription =
+        scanResult.device.state.listen(_deviceStateListener);
     _connected = true;
 
-    _characteristic!.value.listen(_onDataReceivedEvent);
+    _characteristicSubscription =
+        _characteristic!.value.listen(_onDataReceivedEvent);
   }
 
   _onDataReceivedEvent(List<int> data) {
@@ -49,6 +53,8 @@ class BleMidiController extends MidiController {
       print("Midi controller disconnected");
       _connected = false;
       onStatus?.call(this, ControllerStatus.Disconnected);
+      _characteristicSubscription?.cancel();
+      _deviceStatusSubscription?.cancel();
     }
   }
 }

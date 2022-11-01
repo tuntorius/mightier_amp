@@ -107,7 +107,7 @@ class _SettingsState extends State<Settings> {
                         confirmButton: "OK",
                         cancelButton: "Cancel",
                         title: "Delay Time Unit",
-                        confirmColor: Colors.blue,
+                        confirmColor: Theme.of(context).hintColor,
                         value: SharedPrefs().getValue(
                             SettingsKeys.timeUnit, TimeUnit.BPM.index),
                         options: _timeUnit, onConfirm: (changed, newValue) {
@@ -134,7 +134,7 @@ class _SettingsState extends State<Settings> {
                         confirmButton: "OK",
                         cancelButton: "Cancel",
                         title: "Select Device",
-                        confirmColor: Colors.blue,
+                        confirmColor: Theme.of(context).hintColor,
                         value: NuxDeviceControl.instance().deviceIndex,
                         options: NuxDeviceControl.instance().deviceNameList,
                         onConfirm: (changed, newValue) {
@@ -161,7 +161,7 @@ class _SettingsState extends State<Settings> {
                           confirmButton: "OK",
                           cancelButton: "Cancel",
                           title: "Select Version",
-                          confirmColor: Colors.blue,
+                          confirmColor: Theme.of(context).hintColor,
                           value:
                               NuxDeviceControl.instance().deviceFirmwareVersion,
                           options:

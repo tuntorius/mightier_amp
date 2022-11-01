@@ -250,7 +250,7 @@ class _PresetListState extends State<PresetList>
           return !PresetsStorage().getCategories().contains(newName);
         },
         validationErrorMessage: "Name already taken!",
-        confirmColor: Colors.blue,
+        confirmColor: Theme.of(context).hintColor,
         onConfirm: (newName) {
           PresetsStorage()
               .renameCategory(category, newName)
@@ -315,7 +315,7 @@ class _PresetListState extends State<PresetList>
           return PresetsStorage().findPreset(newName, preset["category"]) ==
               null;
         },
-        confirmColor: Colors.blue,
+        confirmColor: Theme.of(context).hintColor,
         onConfirm: (newName) {
           PresetsStorage()
               .renamePreset(preset["category"], preset["name"], newName)
@@ -336,7 +336,7 @@ class _PresetListState extends State<PresetList>
           confirmButton: "Change",
           cancelButton: "Cancel",
           title: "Select Channel",
-          confirmColor: Colors.blue,
+          confirmColor: Theme.of(context).hintColor,
           options: channelList,
           value: nuxChannel, onConfirm: (changed, newValue) {
         if (changed) {
@@ -375,7 +375,7 @@ class _PresetListState extends State<PresetList>
     var categoryDialog = ChangeCategoryDialog(
         category: preset["category"],
         name: preset["name"],
-        confirmColor: Colors.blue,
+        confirmColor: Theme.of(context).hintColor,
         onCategoryChange: (newCategory) {
           setState(() {
             PresetsStorage().changePresetCategory(
@@ -389,15 +389,27 @@ class _PresetListState extends State<PresetList>
   }
 
   void _exportQR(Map preset) {
-    var qr = NuxDeviceControl.instance().device.jsonToQR(preset);
-    if (qr != null) {
-      QrUtils.generateQR(qr).then((Image img) {
-        var qrExport = QRExportDialog(img, preset["name"]);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => qrExport.buildDialog(context),
-        );
-      });
+    var dev = NuxDeviceControl.instance().getDeviceFromId(preset["product_id"]);
+    var pVersion = preset["version"] ?? 0;
+    if (dev != null) {
+      int? originalVersion;
+      if (dev.productVersion != pVersion) {
+        originalVersion = dev.productVersion;
+        dev.setFirmwareVersionByIndex(pVersion);
+      }
+      var qr = dev.jsonToQR(preset);
+      if (qr != null) {
+        QrUtils.generateQR(qr).then((Image img) {
+          var qrExport = QRExportDialog(img, preset["name"], dev);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => qrExport.buildDialog(context),
+          ).then((value) {
+            if (originalVersion != null)
+              dev.setFirmwareVersionByIndex(originalVersion);
+          });
+        });
+      }
     }
   }
 

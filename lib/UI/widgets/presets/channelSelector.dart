@@ -176,7 +176,8 @@ class _ChannelSelectorState extends State<ChannelSelector> {
   }
 
   void showQRExport(Image img, String name) {
-    var qrExport = QRExportDialog(img, name);
+    var qrExport =
+        QRExportDialog(img, name, NuxDeviceControl.instance().device);
     showDialog(
       context: context,
       builder: (BuildContext context) => qrExport.buildDialog(context),

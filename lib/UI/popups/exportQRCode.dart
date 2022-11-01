@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/fileSaver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 
+import '../../bluetooth/devices/NuxDevice.dart';
+
 class QRExportDialog {
   final Image qrImage;
   final String presetName;
-  QRExportDialog(this.qrImage, this.presetName);
+  final NuxDevice device;
+  QRExportDialog(this.qrImage, this.presetName, this.device);
 
   Widget buildDialog(BuildContext context) {
     ScreenshotController screenshotController = ScreenshotController();
@@ -30,11 +32,7 @@ class QRExportDialog {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        NuxDeviceControl.instance()
-                            .device
-                            .getProductNameVersion(NuxDeviceControl.instance()
-                                .device
-                                .productVersion),
+                        device.getProductNameVersion(device.productVersion),
                         style: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),

@@ -23,10 +23,19 @@ import '../effects/plug_pro/EQ.dart';
 import 'Preset.dart';
 
 class PlugProPreset extends Preset {
+  static const List<Color> channelColors = [
+    Color.fromARGB(255, 0, 255, 0),
+    Color.fromARGB(255, 240, 160, 10),
+    Color.fromARGB(255, 220, 0, 0),
+    Colors.blue,
+    Color.fromARGB(255, 130, 225, 255),
+    Color.fromARGB(255, 231, 120, 215),
+    Color(0xFFE1BEE7),
+  ];
   NuxDevice device;
   int channel;
   String channelName;
-  Color get channelColor => Preset.channelColors[channel];
+  Color get channelColor => PlugProPreset.channelColors[channel];
 
   int get qrDataLength => 113;
 

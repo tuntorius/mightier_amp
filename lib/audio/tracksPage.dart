@@ -22,11 +22,11 @@ class TracksPage extends StatefulWidget {
   final Function(JamTrack)? onSelectedTrack;
   final Function(bool, Map<int, bool>)? multiSelectState;
 
-  TracksPage(
+  const TracksPage(
       {this.selectorOnly = false, this.onSelectedTrack, this.multiSelectState});
 
   @override
-  _TracksPageState createState() => _TracksPageState();
+  State createState() => _TracksPageState();
 }
 
 class _TracksPageState extends State<TracksPage>
@@ -62,7 +62,7 @@ class _TracksPageState extends State<TracksPage>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Edit"),
+          const Text("Edit"),
         ],
       ),
     ),
@@ -75,7 +75,7 @@ class _TracksPageState extends State<TracksPage>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Rename"),
+          const Text("Rename"),
         ],
       ),
     ),
@@ -88,7 +88,7 @@ class _TracksPageState extends State<TracksPage>
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Delete"),
+          const Text("Delete"),
         ],
       ),
     )
@@ -146,7 +146,7 @@ class _TracksPageState extends State<TracksPage>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 260),
+      duration: const Duration(milliseconds: 260),
     );
 
     final curvedAnimation =
@@ -160,17 +160,17 @@ class _TracksPageState extends State<TracksPage>
     if (songList != null) return;
     final FlutterAudioQuery audioQuery = FlutterAudioQuery();
     songList = await audioQuery.getSongs();
-    print(songList?.length);
+    debugPrint(songList?.length.toString());
   }
 
   void multiselectHandler(int index) {
-    if (selected.length == 0 || !selected.containsKey(index)) {
+    if (selected.isEmpty || !selected.containsKey(index)) {
       //fill it first if not created
       selected[index] = true;
       multiselectMode = true;
     } else {
       selected.remove(index);
-      if (selected.length == 0) multiselectMode = false;
+      if (selected.isEmpty) multiselectMode = false;
     }
     setState(() {});
   }
@@ -210,19 +210,19 @@ class _TracksPageState extends State<TracksPage>
   }
 
   Widget? createTrailingWidget(BuildContext context, int index) {
-    if (multiselectMode)
+    if (multiselectMode) {
       return Icon(
         selected.containsKey(index)
             ? Icons.check_circle
             : Icons.brightness_1_outlined,
         color: selected.containsKey(index) ? null : Colors.grey[800],
       );
+    }
 
     if (widget.selectorOnly) return null;
     return PopupMenuButton(
-      child: Padding(
-        padding:
-            const EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
+      child: const Padding(
+        padding: EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
         child: Icon(Icons.more_vert, color: Colors.grey),
       ),
       itemBuilder: (context) {
@@ -352,9 +352,9 @@ class _TracksPageState extends State<TracksPage>
   }
 
   void _scollToNewSongs() async {
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
     scrollController.animateTo(scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300), curve: Curves.easeInCubic);
+        duration: const Duration(milliseconds: 300), curve: Curves.easeInCubic);
   }
 
   @override
@@ -390,10 +390,11 @@ class _TracksPageState extends State<TracksPage>
                           onPress: () {
                             if (multiselectMode) {
                               deleteSelected(context);
-                            } else
+                            } else {
                               _animationController.isCompleted
                                   ? _animationController.reverse()
                                   : _animationController.forward();
+                            }
                           },
 
                           // Floating Action button Icon color
@@ -428,11 +429,12 @@ class _TracksPageState extends State<TracksPage>
                                 multiselectHandler(index);
                                 return;
                               }
-                              if (widget.selectorOnly)
+                              if (widget.selectorOnly) {
                                 widget.onSelectedTrack
                                     ?.call(TrackData().tracks[index]);
-                              else
+                              } else {
                                 editTrack(context, TrackData().tracks[index]);
+                              }
                             },
                             onLongPress: () => multiselectHandler(index),
                             trailing: createTrailingWidget(context, index),

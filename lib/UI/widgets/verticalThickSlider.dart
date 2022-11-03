@@ -24,8 +24,9 @@ class VerticalThickSlider extends StatefulWidget {
   final bool handleHorizontalDrag;
   final Parameter? parameter;
 
-  VerticalThickSlider(
-      {required this.activeColor,
+  const VerticalThickSlider(
+      {Key? key,
+      required this.activeColor,
       required this.label,
       this.min = 0,
       this.max = 1,
@@ -38,10 +39,11 @@ class VerticalThickSlider extends StatefulWidget {
       required this.labelFormatter,
       this.skipEmitting = 3,
       this.enabled = true,
-      this.parameter});
+      this.parameter})
+      : super(key: key);
 
   @override
-  _VerticalThickSliderState createState() => _VerticalThickSliderState();
+  State createState() => _VerticalThickSliderState();
 }
 
 class _VerticalThickSliderState extends State<VerticalThickSlider> {
@@ -51,7 +53,7 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
   int emitCounter = 0;
   double scale = 1;
 
-  Offset startDragPos = Offset(0, 0);
+  Offset startDragPos = const Offset(0, 0);
   double width = 0;
   double height = 0;
 
@@ -209,6 +211,7 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
             color: Colors.transparent,
             height: height,
             child: Stack(
+              alignment: Alignment.bottomCenter,
               children: [
                 Container(
                   height: max(factor * height, 0),
@@ -251,7 +254,6 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
                 ),
                 Center(child: Text(scale < 1 ? "x$scale" : ""))
               ],
-              alignment: Alignment.bottomCenter,
             ),
           ),
         );

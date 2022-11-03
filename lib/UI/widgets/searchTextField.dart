@@ -11,8 +11,8 @@ class SearchTextField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         hintText: "Search",
-        hintStyle: TextStyle(color: Colors.grey),
-        prefixIcon: Icon(
+        hintStyle: const TextStyle(color: Colors.grey),
+        prefixIcon: const Icon(
           Icons.search,
           color: Colors.grey,
         ),
@@ -21,7 +21,7 @@ class SearchTextField extends StatelessWidget {
             controller.clear();
             FocusScope.of(context).unfocus();
           },
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
           color: Colors.grey,
         ),
       ),

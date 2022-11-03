@@ -9,8 +9,10 @@ import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/presets/Preset.dart';
 
 class Calibration extends StatefulWidget {
+  const Calibration({Key? key}) : super(key: key);
+
   @override
-  _CalibrationState createState() => _CalibrationState();
+  State createState() => _CalibrationState();
 }
 
 class _CalibrationState extends State<Calibration> {
@@ -31,8 +33,8 @@ class _CalibrationState extends State<Calibration> {
     player
         .createPositionStream(
             steps: 99999999,
-            minPeriod: Duration(milliseconds: 1),
-            maxPeriod: Duration(milliseconds: 100))
+            minPeriod: const Duration(milliseconds: 1),
+            maxPeriod: const Duration(milliseconds: 100))
         .listen(onPositionUpdate);
     delay = SharedPrefs().getInt(SettingsKeys.latency, 0);
   }
@@ -69,21 +71,21 @@ class _CalibrationState extends State<Calibration> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Latency Calibration"),
+          title: const Text("Latency Calibration"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 "Make sure the NUX device is connected in both Audio and App mode!",
                 textAlign: TextAlign.center,
               ),
               const SizedBox(
                 height: 20,
               ),
-              Text(
+              const Text(
                 "Adjust the slider so that the NUX light change and the audio clicks happen at the same time.",
                 textAlign: TextAlign.center,
               ),

@@ -10,7 +10,7 @@ import '../widgets/presets/channelSelector.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 
 class PresetEditor extends StatefulWidget {
-  PresetEditor();
+  const PresetEditor();
   @override
   _PresetEditorState createState() => _PresetEditorState();
 }
@@ -60,11 +60,12 @@ class _PresetEditorState extends State<PresetEditor> {
   Widget wrapContainer(bool isExpanded, List<Widget> children) {
     if (isExpanded) {
       return ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 592),
         child: Column(children: children),
-        constraints: BoxConstraints(minHeight: 592),
       );
-    } else
+    } else {
       return ListView(children: children);
+    }
   }
 
   @override
@@ -146,7 +147,7 @@ class _PresetEditorState extends State<PresetEditor> {
                               setState(() {});
                             }
                           : null,
-                      children: [const Icon(Icons.compare)],
+                      children: const [Icon(Icons.compare)],
                     )
                   ],
                 ),

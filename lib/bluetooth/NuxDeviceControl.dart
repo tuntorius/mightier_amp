@@ -33,13 +33,14 @@ class NuxDiagnosticData {
   String lastNuxPreset = "";
 
   Map<String, dynamic> toMap(bool includeJsonPreset) {
-    var data = Map<String, dynamic>();
+    var data = <String, dynamic>{};
     data['device'] = device;
     data['connected'] = connected;
     data['lastNuxPreset'] = lastNuxPreset;
 
-    if (includeJsonPreset)
+    if (includeJsonPreset) {
       data['jsonPreset'] = NuxDeviceControl.instance().device.presetToJson();
+    }
 
     return data;
   }
@@ -85,27 +86,30 @@ class NuxDeviceControl extends ChangeNotifier {
   bool get isConnected => _midiHandler.connectedDevice != null;
 
   //list of all different nux devices
-  List<NuxDevice> _deviceInstances = <NuxDevice>[];
+  final List<NuxDevice> _deviceInstances = <NuxDevice>[];
 
   List<NuxDevice> get deviceList => _deviceInstances;
 
   List<String> deviceBLEName() {
     var names = <String>[];
-    for (int i = 0; i < _deviceInstances.length; i++)
+    for (int i = 0; i < _deviceInstances.length; i++) {
       names.addAll(_deviceInstances[i].productBLENames);
+    }
     return names;
   }
 
   List<String> get deviceNameList {
     var names = <String>[];
-    for (int i = 0; i < _deviceInstances.length; i++)
+    for (int i = 0; i < _deviceInstances.length; i++) {
       names.add(_deviceInstances[i].productNameShort);
+    }
     return names;
   }
 
   int get deviceIndex {
-    for (int i = 0; i < _deviceInstances.length; i++)
+    for (int i = 0; i < _deviceInstances.length; i++) {
       if (_device == _deviceInstances[i]) return i;
+    }
     return 0;
   }
 
@@ -121,8 +125,9 @@ class NuxDeviceControl extends ChangeNotifier {
 
   List<String> get deviceVersionsList {
     var names = <String>[];
-    for (int i = 0; i < device.getAvailableVersions(); i++)
+    for (int i = 0; i < device.getAvailableVersions(); i++) {
       names.add(device.getProductNameVersion(i));
+    }
     return names;
   }
 
@@ -135,9 +140,11 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   NuxDevice deviceFromBLEId(String id) {
-    for (int i = 0; i < _deviceInstances.length; i++)
-      if (_deviceInstances[i].productBLENames.contains(id))
+    for (int i = 0; i < _deviceInstances.length; i++) {
+      if (_deviceInstances[i].productBLENames.contains(id)) {
         return _deviceInstances[i];
+      }
+    }
 
     //return plug/air by default
     return _deviceInstances[0];
@@ -145,8 +152,9 @@ class NuxDeviceControl extends ChangeNotifier {
 
   String getDeviceNameFromId(String id) {
     for (int i = 0; i < _deviceInstances.length; i++) {
-      if (_deviceInstances[i].productStringId == id)
+      if (_deviceInstances[i].productStringId == id) {
         return _deviceInstances[i].productNameShort;
+      }
     }
     return "Unknown";
   }
@@ -189,10 +197,10 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMightyLite(this));
 
     //make it read from config
-    String _dev = SharedPrefs()
+    String dev = SharedPrefs()
         .getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
 
-    _device = getDeviceFromId(_dev) ?? _deviceInstances[0];
+    _device = getDeviceFromId(dev) ?? _deviceInstances[0];
 
     int ver = SharedPrefs().getValue(
         SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
@@ -214,22 +222,22 @@ class NuxDeviceControl extends ChangeNotifier {
     switch (statusValue) {
       case MidiSetupStatus.deviceFound:
         // check if this is valid nux device
-        print("Devices found " + _midiHandler.nuxDevices.toString());
-        _midiHandler.nuxDevices.forEach((dev) {
+        debugPrint("Devices found ${_midiHandler.nuxDevices}");
+        for (var dev in _midiHandler.nuxDevices) {
           if (dev.device.type != BluetoothDeviceType.classic) {
             //don't autoconnect on manual scan
             if (!_midiHandler.manualScan) {
               _midiHandler.connectToDevice(dev.device);
             }
           }
-        });
+        }
         break;
       case MidiSetupStatus.deviceConnected:
         clearUndoStack();
 
         //find which device connected
         if (isConnected) {
-          print("${_midiHandler.connectedDevice!.name} connected");
+          debugPrint("${_midiHandler.connectedDevice!.name} connected");
           _device = deviceFromBLEId(_midiHandler.connectedDevice!.name);
 
           updateDiagnosticsData(connected: true);
@@ -251,7 +259,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void _onConnect() {
-    print("Device connected");
+    debugPrint("Device connected");
     device.onConnect();
     connectStatus.add(DeviceConnectionState.connectionBegin);
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
@@ -263,7 +271,7 @@ class NuxDeviceControl extends ChangeNotifier {
     batteryTimer?.cancel();
     rxSubscription?.cancel();
     device.onDisconnect();
-    print("Device disconnected");
+    debugPrint("Device disconnected");
   }
 
   void _onDataReceive(List<int> data) {
@@ -276,12 +284,13 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void requestFirmwareVersion() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     var data = device.communication.createFirmwareMessage();
-    if (data.length > 0)
+    if (data.isNotEmpty) {
       _midiHandler.sendData(data);
-    else
+    } else {
       onFirmwareVersionReady();
+    }
   }
 
   void onFirmwareVersionReady() {
@@ -291,15 +300,17 @@ class NuxDeviceControl extends ChangeNotifier {
   void onConnectionStepReady() {
     if (device.communication.isConnectionReady()) {
       if (device.batterySupport) {
-        batteryTimer = Timer.periodic(Duration(seconds: 15), _onBatteryTimer);
+        batteryTimer =
+            Timer.periodic(const Duration(seconds: 15), _onBatteryTimer);
         _onBatteryTimer(null);
       }
       device.sendAmpLevel();
       connectStatus.add(DeviceConnectionState.connectionComplete);
-      print("Device connection complete");
+      debugPrint("Device connection complete");
       notifyListeners();
-    } else
+    } else {
       device.communication.performNextConnectionStep();
+    }
   }
 
   void onPresetsReady() {
@@ -308,7 +319,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   //for some reason we should not ask for presets immediately
   void requestPresetDelayed() async {
-    await Future.delayed(Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 400));
     requestPreset(0);
   }
 
@@ -386,8 +397,9 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void sendFullPresetSettings() {
     if (!isConnected) return;
-    for (var i = 0; i < device.processorList.length; i++)
+    for (var i = 0; i < device.processorList.length; i++) {
       sendFullEffectSettings(i, false);
+    }
 
     device.communication.sendSlotOrder();
     //TODO: send some other stuff - volume etc
@@ -403,10 +415,11 @@ class NuxDeviceControl extends ChangeNotifier {
     int outVal;
 
     //implement master volume
-    if (device.fakeMasterVolume && param.masterVolume)
+    if (device.fakeMasterVolume && param.masterVolume) {
       outVal = param.masterVolMidiValue;
-    else
+    } else {
       outVal = param.midiValue;
+    }
     var data = createCCMessage(param.midiCC, outVal);
     if (!returnOnly) _midiHandler.sendData(data);
     return data;

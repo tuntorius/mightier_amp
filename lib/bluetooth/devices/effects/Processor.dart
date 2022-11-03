@@ -61,9 +61,9 @@ class ProcessorInfo {
 enum EffectEditorUI { Sliders, EQ }
 
 abstract class Processor {
-  String name = "";
+  String get name;
 
-  List<Parameter> parameters = <Parameter>[];
+  List<Parameter> get parameters;
 
   //the number which the nux device uses to refer to the effect
   int get nuxIndex;
@@ -77,10 +77,10 @@ abstract class Processor {
 
   EffectEditorUI get editorUI;
   //The CC command that switches the effect on/off
-  int midiCCEnableValue = 0;
+  int get midiCCEnableValue;
 
   //The CC command that selects the active effect for a certain slot
-  int midiCCSelectionValue = 0;
+  int get midiCCSelectionValue;
 
   //used to declare that the device is a separator
   //Used in the selection popup menu
@@ -134,7 +134,9 @@ abstract class Processor {
 }
 
 abstract class Amplifier extends Processor {
+  @override
   int get midiCCEnableValue;
+  @override
   int get midiCCSelectionValue;
   int get defaultCab;
 }

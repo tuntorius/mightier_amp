@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
@@ -11,7 +12,7 @@ class UsbMidiManager {
   static final UsbMidiManager _controller = UsbMidiManager._();
   List<MidiDevice> _devices = [];
 
-  List<UsbMidiController> _controllers = [];
+  final List<UsbMidiController> _controllers = [];
 
   bool usbMidiSupported = false;
 
@@ -65,15 +66,16 @@ class UsbMidiManager {
         if (ctl is UsbMidiController) ctl.checkForDisconnection();
       }
     }
-    print("OnMidiSetupChanged: $data");
+    debugPrint("OnMidiSetupChanged: $data");
   }
 
   _onDataReceive(MidiPacket event) {
     //find which device this belongs to
     var ctls = MidiControllerManager().controllers;
     for (var ctl in ctls) {
-      if (ctl.name == event.device.name && ctl.id == event.device.id)
+      if (ctl.name == event.device.name && ctl.id == event.device.id) {
         (ctl as UsbMidiController).onDataReceivedLoopback(event.data);
+      }
     }
   }
 }

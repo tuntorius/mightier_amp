@@ -16,7 +16,7 @@ class PresetsStorage extends ChangeNotifier {
   static const presetsSingle = "preset-single";
   static const presetsMultiple = "preset-multiple";
 
-  final Uuid uuid = Uuid();
+  final Uuid uuid = const Uuid();
 
   factory PresetsStorage() {
     return _storage;
@@ -61,8 +61,9 @@ class PresetsStorage extends ChangeNotifier {
         presetsData = json.decode(_presetJson);
 
         //fix any old compatibility issues
-        for (int i = 0; i < presetsData.length; i++)
+        for (int i = 0; i < presetsData.length; i++) {
           presetsData[i] = fixPresetCompatibility(presetsData[i]);
+        }
 
         _buildCategoryCache();
         _presetsReady = true;
@@ -76,15 +77,15 @@ class PresetsStorage extends ChangeNotifier {
 
   _savePresets() async {
     _buildCategoryCache();
-    String _json = json.encode(presetsData);
-    await _presetsFile!.writeAsString(_json);
+    String jsonData = json.encode(presetsData);
+    await _presetsFile!.writeAsString(jsonData);
     notifyListeners();
   }
 
   Future waitLoading() async {
     for (int i = 0; i < 20; i++) {
       if (_presetsReady) break;
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
     }
   }
 
@@ -94,10 +95,11 @@ class PresetsStorage extends ChangeNotifier {
 
   _buildCategoryCache() {
     categoriesCache.clear();
-    presetsData.forEach((element) {
-      if (!categoriesCache.contains(element["category"]))
+    for (var element in presetsData) {
+      if (!categoriesCache.contains(element["category"])) {
         categoriesCache.add(element["category"]);
-    });
+      }
+    }
     categoriesCache.sort();
   }
 
@@ -151,9 +153,9 @@ class PresetsStorage extends ChangeNotifier {
           presetsData[i]["name"] == name) {
         var clone = json.decode(json.encode(presetsData[i]));
 
-        String? _name = _findFreeName(name, category);
-        if (_name != null) {
-          clone["name"] = _name;
+        String? lName = _findFreeName(name, category);
+        if (lName != null) {
+          clone["name"] = lName;
           presetsData.insert(i + 1, clone);
           return _savePresets();
         }
@@ -238,7 +240,7 @@ class PresetsStorage extends ChangeNotifier {
   }
 
   String? presetToJson(String category, String name) {
-    var finalData = Map<String, dynamic>();
+    var finalData = <String, dynamic>{};
     for (int i = 0; i < presetsData.length; i++) {
       if (presetsData[i]["category"] == category &&
           presetsData[i]["name"] == name) {
@@ -262,8 +264,8 @@ class PresetsStorage extends ChangeNotifier {
         presets.add(presetsData[i]);
       }
     }
-    if (presets.length > 0) {
-      var finalData = Map<String, dynamic>();
+    if (presets.isNotEmpty) {
+      var finalData = <String, dynamic>{};
       finalData["type"] = presetsMultiple;
       finalData["data"] = presets;
       return json.encode(finalData);
@@ -341,8 +343,9 @@ class PresetsStorage extends ChangeNotifier {
 
   Map<String, dynamic> fixPresetCompatibility(Map<String, dynamic> presetData) {
     //old style preset didn't contain mighty plug
-    if (!presetData.containsKey("product_id"))
+    if (!presetData.containsKey("product_id")) {
       presetData["product_id"] = NuxMightyPlug.defaultNuxId;
+    }
     if (!presetData.containsKey("uuid")) {
       _addUuid(presetData);
     }
@@ -354,9 +357,9 @@ class PresetsStorage extends ChangeNotifier {
     do {
       String id = uuid.v4();
       // check unique
-      presetsData.forEach((element) {
+      for (var element in presetsData) {
         if (element["uuid"] == id) unique = false;
-      });
+      }
       preset["uuid"] = id;
     } while (unique == false);
   }

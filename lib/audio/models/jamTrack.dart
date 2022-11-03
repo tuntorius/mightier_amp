@@ -1,7 +1,7 @@
 import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 
 class JamTrack {
-  TrackAutomation _automation = TrackAutomation();
+  final TrackAutomation _automation = TrackAutomation();
 
   String _path = "";
   String _name = "";
@@ -72,7 +72,7 @@ class JamTrack {
   }
 
   Map<String, dynamic> toJson() {
-    var data = Map<String, dynamic>();
+    var data = <String, dynamic>{};
     data["path"] = _path;
     data["name"] = _name;
     data["uuid"] = _uuid;

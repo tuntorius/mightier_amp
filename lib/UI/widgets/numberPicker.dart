@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 typedef TextMapper = String Function(String numberText);
@@ -84,7 +83,7 @@ class NumberPicker extends StatefulWidget {
         super(key: key);
 
   @override
-  _NumberPickerState createState() => _NumberPickerState();
+  State createState() => _NumberPickerState();
 }
 
 class _NumberPickerState extends State<NumberPicker> {
@@ -111,7 +110,7 @@ class _NumberPickerState extends State<NumberPicker> {
       }
     }
     Future.delayed(
-      Duration(milliseconds: 100),
+      const Duration(milliseconds: 100),
       () => _maybeCenterValue(),
     );
   }
@@ -186,7 +185,7 @@ class _NumberPickerState extends State<NumberPicker> {
     final itemStyle = value == widget.value ? selectedStyle : defaultStyle;
 
     final child = isExtra
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Text(
             _getDisplayedValue(value),
             style: itemStyle,
@@ -231,7 +230,7 @@ class _NumberPickerState extends State<NumberPicker> {
       int index = diff ~/ widget.step;
       _scrollController.animateTo(
         index * itemExtent,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
       );
     }

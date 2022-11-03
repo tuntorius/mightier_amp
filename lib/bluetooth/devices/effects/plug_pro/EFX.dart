@@ -6,20 +6,30 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class EFX extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iEFX;
+  @override
   int? get nuxEnableIndex => nuxEffectTypeIndex;
+  @override
   int get nuxEnableMask => 0x40;
+  @override
   bool get nuxEnableInverted => true;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValuesPro.Head_iEFX;
 
+  @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iEFX;
 }
 
 class DistortionPlus extends EFX {
+  @override
   final name = "Distortion+";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Output",
@@ -39,9 +49,12 @@ class DistortionPlus extends EFX {
 }
 
 class RCBoost extends EFX {
+  @override
   final name = "RC Boost";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -75,9 +88,12 @@ class RCBoost extends EFX {
 }
 
 class ACBoost extends EFX {
+  @override
   final name = "AC Boost";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -111,9 +127,12 @@ class ACBoost extends EFX {
 }
 
 class DistOne extends EFX {
+  @override
   final name = "Dist One";
 
+  @override
   int get nuxIndex => 4;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -140,8 +159,11 @@ class DistOne extends EFX {
 }
 
 class TSDrive extends EFX {
+  @override
   final name = "T Screamer";
+  @override
   int get nuxIndex => 5;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Drive",
@@ -168,9 +190,12 @@ class TSDrive extends EFX {
 }
 
 class BluesDrive extends EFX {
+  @override
   final name = "Blues Drive";
 
+  @override
   int get nuxIndex => 6;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -197,9 +222,12 @@ class BluesDrive extends EFX {
 }
 
 class MorningDrive extends EFX {
+  @override
   final name = "Morning Drive";
 
+  @override
   int get nuxIndex => 7;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Volume",
@@ -226,9 +254,12 @@ class MorningDrive extends EFX {
 }
 
 class EatDist extends EFX {
+  @override
   final name = "Eat Dist";
 
+  @override
   int get nuxIndex => 8;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Distortion",
@@ -255,9 +286,12 @@ class EatDist extends EFX {
 }
 
 class RedDirt extends EFX {
+  @override
   final name = "Red Dirt";
 
+  @override
   int get nuxIndex => 9;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Drive",
@@ -284,9 +318,12 @@ class RedDirt extends EFX {
 }
 
 class Crunch extends EFX {
+  @override
   final name = "Crunch";
 
+  @override
   int get nuxIndex => 10;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Volume",
@@ -313,9 +350,12 @@ class Crunch extends EFX {
 }
 
 class MuffFuzz extends EFX {
+  @override
   final name = "Muff Fuzz";
 
+  @override
   int get nuxIndex => 11;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Volume",
@@ -342,10 +382,13 @@ class MuffFuzz extends EFX {
 }
 
 class Katana extends EFX {
+  @override
   final name = "Katana";
 
+  @override
   int get nuxIndex => 12;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Boost",
@@ -365,9 +408,12 @@ class Katana extends EFX {
 }
 
 class STSinger extends EFX {
+  @override
   final name = "ST Singer";
 
+  @override
   int get nuxIndex => 13;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Volume",

@@ -7,21 +7,31 @@ import '../Processor.dart';
 
 abstract class M8BTAmplifier extends Amplifier {
   //TODO: check if correct
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexLite.drivetype;
+  @override
   int? get nuxEnableIndex => null;
 
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_AmpEnable;
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_NotUsed;
+  @override
   int get defaultCab => 0;
 }
 
 class AmpClean extends M8BTAmplifier {
+  @override
   final name = "Amplifier";
 
+  @override
   int get nuxIndex => 0;
 
+  @override
   bool isSeparator = false;
+  @override
   String category = "";
 
   @override

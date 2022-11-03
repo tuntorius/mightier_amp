@@ -3,6 +3,7 @@ import 'ValueFormatter.dart';
 abstract class SwitchFormatter extends ValueFormatter {
   String get labelTitle;
 
+  @override
   InputType get inputType => InputType.SwitchInput;
 
   List<String> get labelValues;
@@ -27,7 +28,6 @@ abstract class SwitchFormatter extends ValueFormatter {
 
 class BrightModeFormatter extends SwitchFormatter {
   @override
-  // TODO: implement labelTitle
   String get labelTitle => "Bright:";
 
   @override
@@ -39,7 +39,6 @@ class BrightModeFormatter extends SwitchFormatter {
 
 class BrightModeFormatterMPPro extends SwitchFormatter {
   @override
-  // TODO: implement labelTitle
   String get labelTitle => "Bright:";
 
   @override
@@ -51,7 +50,6 @@ class BrightModeFormatterMPPro extends SwitchFormatter {
 
 class BoostModeFormatter extends SwitchFormatter {
   @override
-  // TODO: implement labelTitle
   String get labelTitle => "Boost:";
 
   @override
@@ -63,7 +61,6 @@ class BoostModeFormatter extends SwitchFormatter {
 
 class BoostModeFormatterMPPro extends SwitchFormatter {
   @override
-  // TODO: implement labelTitle
   String get labelTitle => "Boost:";
 
   @override
@@ -75,7 +72,6 @@ class BoostModeFormatterMPPro extends SwitchFormatter {
 
 class VibeModeFormatter extends SwitchFormatter {
   @override
-  // TODO: implement labelTitle
   String get labelTitle => "Mode:";
 
   @override
@@ -87,7 +83,6 @@ class VibeModeFormatter extends SwitchFormatter {
 
 class VibeModeFormatterPro extends SwitchFormatter {
   @override
-  // TODO: implement labelTitle
   String get labelTitle => "Mode:";
 
   @override
@@ -99,7 +94,6 @@ class VibeModeFormatterPro extends SwitchFormatter {
 
 class ContourModeFormatter extends SwitchFormatter {
   @override
-  // TODO: implement labelTitle
   String get labelTitle => "Contour:";
 
   @override
@@ -111,7 +105,6 @@ class ContourModeFormatter extends SwitchFormatter {
 
 class SCFModeFormatter extends SwitchFormatter {
   @override
-  // TODO: implement labelTitle
   String get labelTitle => "SCF";
 
   @override

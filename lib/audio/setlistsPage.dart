@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
@@ -8,12 +7,14 @@ import 'models/setlist.dart';
 import 'setlistPage.dart';
 
 class Setlists extends StatefulWidget {
+  const Setlists({Key? key}) : super(key: key);
+
   @override
-  _SetlistsState createState() => _SetlistsState();
+  State createState() => _SetlistsState();
 }
 
 class _SetlistsState extends State<Setlists> {
-  Offset _position = Offset(0, 0);
+  Offset _position = const Offset(0, 0);
 
   @override
   void initState() {
@@ -63,7 +64,7 @@ class _SetlistsState extends State<Setlists> {
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Rename"),
+          const Text("Rename"),
         ],
       ),
     ),
@@ -76,29 +77,27 @@ class _SetlistsState extends State<Setlists> {
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Delete"),
+          const Text("Delete"),
         ],
       ),
     )
   ];
 
   void showContextMenu(
-      BuildContext context, dynamic item, List<PopupMenuEntry> _menu) {
-    final RenderBox? overlay =
+      BuildContext context, dynamic item, List<PopupMenuEntry> menu) {
+    final RenderBox overlay =
         Overlay.of(context)!.context.findRenderObject() as RenderBox;
     //open menu
-    if (overlay != null) {
-      var rect = RelativeRect.fromRect(
-          _position & const Size(40, 40), // smaller rect, the touch area
-          Offset.zero & overlay.size);
-      showMenu(
-        position: rect,
-        items: _menu,
-        context: context,
-      ).then((value) {
-        if (value != null) menuActions(context, value, item);
-      });
-    }
+    var rect = RelativeRect.fromRect(
+        _position & const Size(40, 40), // smaller rect, the touch area
+        Offset.zero & overlay.size);
+    showMenu(
+      position: rect,
+      items: menu,
+      context: context,
+    ).then((value) {
+      if (value != null) menuActions(context, value, item);
+    });
   }
 
   void menuActions(BuildContext context, int action, Setlist item) async {
@@ -147,8 +146,9 @@ class _SetlistsState extends State<Setlists> {
   @override
   Widget build(BuildContext context) {
     var setlists = TrackData().setlists;
-    if (TrackData().tracks.length == 0)
-      return Center(child: Text("Add some tracks first!"));
+    if (TrackData().tracks.isEmpty) {
+      return const Center(child: Text("Add some tracks first!"));
+    }
     return ListTileTheme(
       iconColor: Colors.white,
       child: Stack(
@@ -161,7 +161,7 @@ class _SetlistsState extends State<Setlists> {
                     left: AppThemeConfig.dragHandlesWidth, right: 16),
                 title: Text(TrackData().allTracks.name),
                 subtitle: Text("${TrackData().allTracks.items.length} tracks"),
-                trailing: Icon(Icons.keyboard_arrow_right),
+                trailing: const Icon(Icons.keyboard_arrow_right),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => SetlistPage(
@@ -199,28 +199,29 @@ class _SetlistsState extends State<Setlists> {
                             child: Row(
                               children: [
                                 ReorderableDragStartListener(
+                                  index: index,
                                   child: InkWell(
-                                    child: Container(
+                                    child: SizedBox(
                                       width: AppThemeConfig.dragHandlesWidth,
                                       height: 64,
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.drag_handle,
                                         color: Colors.grey,
                                         size: 24,
                                       ),
                                     ),
                                   ),
-                                  index: index,
                                 ),
                                 Expanded(
                                   child: ListTile(
-                                    contentPadding: EdgeInsets.only(right: 16),
+                                    contentPadding:
+                                        const EdgeInsets.only(right: 16),
                                     title: Text(setlists[index].name),
                                     subtitle: Text(
                                         "${setlists[index].items.length} tracks"),
                                     trailing: PopupMenuButton(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
+                                      child: const Padding(
+                                        padding: EdgeInsets.only(
                                             left: 12.0,
                                             right: 4,
                                             bottom: 10,
@@ -265,7 +266,7 @@ class _SetlistsState extends State<Setlists> {
               onPressed: () {
                 createSetlist();
               },
-              child: Icon(
+              child: const Icon(
                 Icons.add,
                 size: 28,
               ),

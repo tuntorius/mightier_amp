@@ -14,7 +14,7 @@ class BleMidiManager extends ChangeNotifier {
   bool _firstTimeScanned = false;
 
   List<BleMidiController> get controllers => _controllers;
-  List<BleMidiController> _controllers = [];
+  final List<BleMidiController> _controllers = [];
 
   bool usbMidiSupported = false;
 
@@ -32,8 +32,9 @@ class BleMidiManager extends ChangeNotifier {
   startScan() {
     if (BLEMidiHandler.instance().isScanning) return;
 
-    for (int i = controllers.length - 1; i >= 0; i--)
+    for (int i = controllers.length - 1; i >= 0; i--) {
       if (!controllers[i].connected) controllers.removeAt(i);
+    }
 
     _bleScanSub =
         BLEMidiHandler.instance().scanStatus.listen(_scanStatusListener);
@@ -49,8 +50,9 @@ class BleMidiManager extends ChangeNotifier {
     var ctrls = BLEMidiHandler.instance().controllerDevices;
     for (var ctl in ctrls) {
       var blectl = BleMidiController(ctl);
-      if (!_controllers.contains(blectl))
+      if (!_controllers.contains(blectl)) {
         _controllers.add(BleMidiController(ctl));
+      }
     }
   }
 
@@ -87,7 +89,7 @@ class BleMidiManager extends ChangeNotifier {
         // TODO: Handle this case.
         break;
       case MidiSetupStatus.deviceDisconnected:
-        print("Dev just disconnected!");
+        debugPrint("Dev just disconnected!");
         // TODO: Handle this case.
         break;
       case MidiSetupStatus.unknown:

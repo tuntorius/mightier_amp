@@ -115,12 +115,14 @@ abstract class NuxDevice extends ChangeNotifier {
     return productNameShort;
   }
 
-  ProcessorInfo? GetProcessorInfoByKey(String key) {
-    for (var proc in processorList) if (proc.keyName == key) return proc;
+  ProcessorInfo? getProcessorInfoByKey(String key) {
+    for (var proc in processorList) {
+      if (proc.keyName == key) return proc;
+    }
     return null;
   }
 
-  ProcessorInfo? ProcessorListNuxIndex(int index) {
+  ProcessorInfo? processorListNuxIndex(int index) {
     return processorList[index];
   }
 
@@ -150,14 +152,17 @@ abstract class NuxDevice extends ChangeNotifier {
 
     //check for at least one channel enabled
     bool hasEnabled = false;
-    for (var act in config.activeChannels) if (act == true) hasEnabled = true;
+    for (var act in config.activeChannels) {
+      if (act == true) hasEnabled = true;
+    }
     if (!hasEnabled) {
       config.activeChannels[channel] = true;
       return;
     }
 
-    if (nativeActiveChannelsSupport)
+    if (nativeActiveChannelsSupport) {
       communication.sendActiveChannels(config.activeChannels);
+    }
     notifyListeners();
   }
 
@@ -182,7 +187,9 @@ abstract class NuxDevice extends ChangeNotifier {
     nuxPresetsReceived = false;
 
     //reset nux data
-    for (int i = 0; i < presets.length; i++) presets[i].resetNuxData();
+    for (int i = 0; i < presets.length; i++) {
+      presets[i].resetNuxData();
+    }
     resetDrumSettings();
   }
 
@@ -200,8 +207,8 @@ abstract class NuxDevice extends ChangeNotifier {
     config.drumsTempo = 120;
   }
 
-  void setDrumsEnabled(bool _enabled) {
-    config.drumsEnabled = _enabled;
+  void setDrumsEnabled(bool enabled) {
+    config.drumsEnabled = enabled;
     communication.sendDrumsEnabled(config.drumsEnabled);
   }
 
@@ -275,20 +282,20 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void _handleChannelChange(int index) {
     NuxDeviceControl.instance().clearUndoStack();
-    var _index = index;
+    var newIndex = index;
 
     if (!nativeActiveChannelsSupport) {
       //channel skipping
-      while (config.activeChannels[_index] == false) {
-        _index++;
-        if (_index == channelsCount) _index = 0;
+      while (config.activeChannels[newIndex] == false) {
+        newIndex++;
+        if (newIndex == channelsCount) newIndex = 0;
       }
     }
-    if (_index == index) //not skipped
+    if (newIndex == index) {
       setSelectedChannelNuxIndex(index, true);
-    else {
+    } else {
       //skipped - update ui
-      selectedChannelNormalized = _index;
+      selectedChannelNormalized = newIndex;
       deviceControl.presetChangedListener();
     }
 
@@ -298,32 +305,32 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void _handleKnobReceiveData(List<int> data) {
     //scan through the effects to find which one is controlled
-    var _preset = getPreset(selectedChannel);
+    var preset = getPreset(selectedChannel);
     for (int i = 0; i < effectsChainLength; i++) {
-      var selected = _preset.getSelectedEffectForSlot(i);
-      var effect = _preset.getEffectsForSlot(i)[selected];
+      var selected = preset.getSelectedEffectForSlot(i);
+      var effect = preset.getEffectsForSlot(i)[selected];
       var cmdCC = data[1];
       bool enable = ((data[2] & 0xc0) != 0) ^ effect.nuxEnableInverted;
       int effectIndex = data[2] & 0x3f;
 
       if (effect.midiCCEnableValue == effect.midiCCSelectionValue &&
           cmdCC == effect.midiCCEnableValue) {
-        var procIndex = _preset.getProcessorAtSlot(i);
+        var procIndex = preset.getProcessorAtSlot(i);
         var nuxIndex =
-            _preset.getEffectArrayIndexFromNuxIndex(procIndex, effectIndex);
-        _preset.setSelectedEffectForSlot(i, nuxIndex, false);
-        _preset.setSlotEnabled(i, enable, false);
+            preset.getEffectArrayIndexFromNuxIndex(procIndex, effectIndex);
+        preset.setSelectedEffectForSlot(i, nuxIndex, false);
+        preset.setSlotEnabled(i, enable, false);
         notifyListeners();
         return;
       } else if (cmdCC == effect.midiCCEnableValue) {
-        _preset.setSlotEnabled(i, enable, false);
+        preset.setSlotEnabled(i, enable, false);
         notifyListeners();
         return;
       } else if (cmdCC == effect.midiCCSelectionValue) {
-        var procIndex = _preset.getProcessorAtSlot(i);
+        var procIndex = preset.getProcessorAtSlot(i);
         var nuxIndex =
-            _preset.getEffectArrayIndexFromNuxIndex(procIndex, effectIndex);
-        _preset.setSelectedEffectForSlot(i, nuxIndex, false);
+            preset.getEffectArrayIndexFromNuxIndex(procIndex, effectIndex);
+        preset.setSelectedEffectForSlot(i, nuxIndex, false);
         notifyListeners();
         return;
       } else {
@@ -363,17 +370,18 @@ abstract class NuxDevice extends ChangeNotifier {
         _handleChannelChange(data[1]);
         break;
       case MidiMessageValues.controlChange:
-        if (data[1] == channelChangeCC)
+        if (data[1] == channelChangeCC) {
           _handleChannelChange(data[2]);
-        else if (data[1] == MidiCCValues.bCC_drumOnOff_No) {
+        } else if (data[1] == MidiCCValues.bCC_drumOnOff_No) {
           config.drumsEnabled = data[2] > 0 ? true : false;
           deviceControl.forceNotifyListeners();
           return;
         } else if (data[1] == MidiCCValues.bCC_drumType_No) {
           config.selectedDrumStyle = data[2];
           deviceControl.forceNotifyListeners();
-        } else
+        } else {
           _handleKnobReceiveData(data);
+        }
         break;
     }
   }
@@ -387,17 +395,17 @@ abstract class NuxDevice extends ChangeNotifier {
     deviceControl.resetNuxPresets();
   }
 
-  bool isPresetSupported(dynamic _preset) {
-    String productId = _preset["product_id"];
+  bool isPresetSupported(dynamic preset) {
+    String productId = preset["product_id"];
     return productStringId == productId;
   }
 
   Widget getSettingsWidget() {
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
-  String? jsonToQR(dynamic _preset) {
-    var preset = presetFromJson(_preset, null, qrOnly: true);
+  String? jsonToQR(dynamic jsonPreset) {
+    var preset = presetFromJson(jsonPreset, null, qrOnly: true);
     if (preset != null) {
       var data = preset.createNuxDataFromPreset();
       return "${QrUtils.nuxQRPrefix}${base64Encode(data)}";
@@ -412,13 +420,13 @@ abstract class NuxDevice extends ChangeNotifier {
 
   bool checkQRVersionValid(int ver);
 
-  Preset? presetFromJson(dynamic _preset, double? overrideLevel,
+  Preset? presetFromJson(dynamic preset, double? overrideLevel,
       {bool qrOnly = false}) {
-    var pVersion = _preset["version"] ?? 0;
+    var pVersion = preset["version"] ?? 0;
 
-    presetName = _preset["name"];
-    presetCategory = _preset["category"];
-    var nuxChannel = _preset["channel"];
+    presetName = preset["name"];
+    presetCategory = preset["category"];
+    var nuxChannel = preset["channel"];
 
     if (!qrOnly) {
       setSelectedChannelNuxIndex(nuxChannel, false);
@@ -427,16 +435,17 @@ abstract class NuxDevice extends ChangeNotifier {
 
     Preset p;
 
-    if (!qrOnly)
+    if (!qrOnly) {
       p = getPreset(selectedChannel);
-    else
+    } else {
       p = getCustomPreset(nuxChannel);
+    }
 
     int index = 0;
 
     if (reorderableFXChain) {
-      for (String key in _preset.keys) {
-        var pInfo = GetProcessorInfoByKey(key);
+      for (String key in preset.keys) {
+        var pInfo = getProcessorInfoByKey(key);
         if (pInfo != null) {
           p.setProcessorAtSlot(index, pInfo.nuxOrderIndex);
           index++;
@@ -447,14 +456,14 @@ abstract class NuxDevice extends ChangeNotifier {
 
     index = 0;
 
-    for (String key in _preset.keys) {
-      var pInfo = GetProcessorInfoByKey(key);
+    for (String key in preset.keys) {
+      var pInfo = getProcessorInfoByKey(key);
       if (pInfo != null) {
         //get effect
-        Map<String, dynamic> _effect = _preset[key];
+        Map<String, dynamic> effect = preset[key];
 
-        int fxType = _effect["fx_type"];
-        bool enabled = _effect["enabled"];
+        int fxType = effect["fx_type"];
+        bool enabled = effect["enabled"];
 
         //check if preset conversion is needed
         if (pVersion != productVersion) {
@@ -466,9 +475,9 @@ abstract class NuxDevice extends ChangeNotifier {
               .getEffectsForSlot(index)[fxType]
               .getEquivalentEffect(productVersion);
 
-          if (newfxType != null)
+          if (newfxType != null) {
             fxType = newfxType;
-          else {
+          } else {
             //if we don't know equivalent then disable it
             fxType = 0; //set to 0 to avoid null references
             enabled = false;
@@ -490,16 +499,17 @@ abstract class NuxDevice extends ChangeNotifier {
           if (overrideLevel != null &&
               cabinetSupport &&
               index == cabinetSlotIndex &&
-              fx.parameters[f].handle == "level")
+              fx.parameters[f].handle == "level") {
             fx.parameters[f].value = overrideLevel;
-          else {
-            if (pVersion == productVersion)
-              fx.parameters[f].value = _effect[fx.parameters[f].handle];
-            else {
+          } else {
+            if (pVersion == productVersion) {
+              fx.parameters[f].value = effect[fx.parameters[f].handle];
+            } else {
               //ask the effect for the proper handle
               var handle = fx.parameters[f].handle;
-              if (_effect.containsKey(handle))
-                fx.parameters[f].value = _effect[handle];
+              if (effect.containsKey(handle)) {
+                fx.parameters[f].value = effect[handle];
+              }
             }
           }
         }
@@ -511,10 +521,11 @@ abstract class NuxDevice extends ChangeNotifier {
     }
 
     //update widgets
-    if (!qrOnly)
+    if (!qrOnly) {
       notifyListeners();
-    else
+    } else {
       return p;
+    }
 
     return null;
   }
@@ -530,7 +541,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
     //parse all effects
     for (int i = 0; i < effectsChainLength; i++) {
-      var dev = Map<String, dynamic>();
+      var dev = <String, dynamic>{};
       dev["fx_type"] = p.getSelectedEffectForSlot(i);
       dev["enabled"] = p.slotEnabled(i);
 
@@ -543,7 +554,7 @@ abstract class NuxDevice extends ChangeNotifier {
       }
 
       var proc = p.getProcessorAtSlot(i);
-      var effect = ProcessorListNuxIndex(proc);
+      var effect = processorListNuxIndex(proc);
       mainJson[effect!.keyName] = dev;
     }
     return mainJson;

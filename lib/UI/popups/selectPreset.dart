@@ -8,17 +8,17 @@ class SelectPresetDialog {
   Widget buildDialog(BuildContext context,
       {required bool noneOption, String? customProduct}) {
     return AlertDialog(
-      contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back,
                 color: Colors.white,
               ),
               onPressed: () => Navigator.of(context).pop()),
-          Text('Select preset'),
+          const Text('Select preset'),
         ],
       ),
       content: PresetList(

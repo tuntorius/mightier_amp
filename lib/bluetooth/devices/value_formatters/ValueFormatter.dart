@@ -34,11 +34,11 @@ abstract class ValueFormatter {
   int valueToMidi7Bit(double value);
   double midi7BitToValue(int midi7bit);
   String toLabel(double value);
-  double toHumanInput(double _value) {
-    return _value;
+  double toHumanInput(double value) {
+    return value;
   }
 
-  double fromHumanInput(double _value) {
-    return _value;
+  double fromHumanInput(double value) {
+    return value;
   }
 }

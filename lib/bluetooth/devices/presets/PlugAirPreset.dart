@@ -22,17 +22,23 @@ import '../effects/plug_air/Reverb.dart';
 import 'Preset.dart';
 
 class PlugAirPreset extends Preset {
+  @override
   NuxDevice device;
+  @override
   int channel;
+  @override
   String channelName;
+  @override
   Color get channelColor => Preset.channelColors[channel];
 
+  @override
   int get qrDataLength => 40;
 
   final NoiseGate2Param noiseGate = NoiseGate2Param();
 
   List<EFX> get efxList =>
       version == PlugAirVersion.PlugAir21 ? efxListv2 : efxListv1;
+  @override
   List<Amplifier> get amplifierList =>
       version == PlugAirVersion.PlugAir21 ? amplifierListv2 : amplifierListv1;
   final List<CabinetMP2> cabinetList = <CabinetMP2>[];
@@ -186,12 +192,14 @@ class PlugAirPreset extends Preset {
   }
 
   /// checks if the effect slot can be switched on and off
+  @override
   bool slotSwitchable(int index) {
     if (index == 2 || index == 3) return false;
     return true;
   }
 
   //returns whether the specific slot is on or off
+  @override
   bool slotEnabled(int index) {
     switch (index) {
       case 0:
@@ -241,6 +249,7 @@ class PlugAirPreset extends Preset {
   }
 
   //returns list of effects for given slot
+  @override
   List<Processor> getEffectsForSlot(int slot) {
     switch (slot) {
       case 0:
@@ -262,6 +271,7 @@ class PlugAirPreset extends Preset {
   }
 
   //returns which of the effects is selected for a given slot
+  @override
   int getSelectedEffectForSlot(int slot) {
     switch (slot) {
       case 0:
@@ -309,11 +319,13 @@ class PlugAirPreset extends Preset {
     super.setSelectedEffectForSlot(slot, index, notifyBT);
   }
 
+  @override
   Color effectColor(int index) {
-    if (index != 2)
+    if (index != 2) {
       return device.processorList[index].color;
-    else
+    } else {
       return channelColor;
+    }
   }
 
   @override
@@ -322,25 +334,25 @@ class PlugAirPreset extends Preset {
   }
 
   @override
-  void setupPresetFromNuxDataArray(List<int> _nuxData) {
-    if (_nuxData.length < 10) return;
+  void setupPresetFromNuxDataArray(List<int> nuxData) {
+    if (nuxData.length < 10) return;
 
-    var loadedPreset = hex.encode(_nuxData);
+    var loadedPreset = hex.encode(nuxData);
 
     NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
     NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
 
     for (int i = 0; i < device.effectsChainLength; i++) {
       //set proper effect
-      int effectIndex = _nuxData[PresetDataIndexPlugAir.effectTypesIndex[i]];
+      int effectIndex = nuxData[PresetDataIndexPlugAir.effectTypesIndex[i]];
       setSelectedEffectForSlot(i, effectIndex, false);
 
       //enable/disable effect
-      setSlotEnabled(i,
-          _nuxData[PresetDataIndexPlugAir.effectEnabledIndex[i]] != 0, false);
+      setSlotEnabled(
+          i, nuxData[PresetDataIndexPlugAir.effectEnabledIndex[i]] != 0, false);
 
       getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
-          .setupFromNuxPayload(_nuxData);
+          .setupFromNuxPayload(nuxData);
     }
   }
 }

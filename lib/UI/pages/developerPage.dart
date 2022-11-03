@@ -7,8 +7,10 @@ import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 enum midiMessage { ccMessage, sysExMessage }
 
 class DeveloperPage extends StatefulWidget {
+  const DeveloperPage({Key? key}) : super(key: key);
+
   @override
-  _DeveloperPageState createState() => _DeveloperPageState();
+  State createState() => _DeveloperPageState();
 }
 
 class _DeveloperPageState extends State<DeveloperPage> {
@@ -28,7 +30,7 @@ class _DeveloperPageState extends State<DeveloperPage> {
 
   void _onDataReceive(List<int> data) {
     setState(() {
-      controller.text += data.toString() + "\n";
+      controller.text += "$data\n";
     });
   }
 
@@ -88,14 +90,14 @@ class _DeveloperPageState extends State<DeveloperPage> {
                           msgType = midiMessage.sysExMessage;
                         });
                       }),*/
-                  Text(
+                  const Text(
                     "CC Message",
                     style: TextStyle(fontSize: 18),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("CC Number"),
+                      const Text("CC Number"),
                       NumberPicker(
                         axis: Axis.horizontal,
                         minValue: 0,
@@ -115,7 +117,7 @@ class _DeveloperPageState extends State<DeveloperPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Value (numeric)"),
+                      const Text("Value (numeric)"),
                       NumberPicker(
                         axis: Axis.horizontal,
                         minValue: 0,
@@ -140,7 +142,7 @@ class _DeveloperPageState extends State<DeveloperPage> {
                       value: data[1].toDouble(),
                       onChangeStart: (value) => sliderChanging = true,
                       onChangeEnd: (value) async {
-                        await Future.delayed(Duration(milliseconds: 800));
+                        await Future.delayed(const Duration(milliseconds: 800));
                         sliderChanging = false;
                       },
                       onChanged: (value) {
@@ -149,7 +151,7 @@ class _DeveloperPageState extends State<DeveloperPage> {
                       }),
                   SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text("Value (switch)"),
+                      title: const Text("Value (switch)"),
                       value: data[1] != 0,
                       onChanged: (value) {
                         data[1] = value ? 127 : 0;
@@ -162,14 +164,14 @@ class _DeveloperPageState extends State<DeveloperPage> {
                             .createCCMessage(data[0], data[1]);
                         BLEMidiHandler.instance().sendData(msg);
                       },
-                      child: Text("Send")),
+                      child: const Text("Send")),
                   ElevatedButton(
                       onPressed: () {
                         setState(() {
                           controller.text = "";
                         });
                       },
-                      child: Text("Clear console"))
+                      child: const Text("Clear console"))
                 ],
               ),
             )

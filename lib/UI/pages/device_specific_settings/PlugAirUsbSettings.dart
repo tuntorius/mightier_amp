@@ -7,8 +7,10 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 
 class PlugAirUsbSettings extends StatefulWidget {
+  const PlugAirUsbSettings({Key? key}) : super(key: key);
+
   @override
-  _PlugAirUsbSettingsState createState() => _PlugAirUsbSettingsState();
+  State createState() => _PlugAirUsbSettingsState();
 }
 
 class _PlugAirUsbSettingsState extends State<PlugAirUsbSettings> {
@@ -19,7 +21,7 @@ class _PlugAirUsbSettingsState extends State<PlugAirUsbSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("USB Audio Settings"),
+        title: const Text("USB Audio Settings"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -29,7 +31,7 @@ class _PlugAirUsbSettingsState extends State<PlugAirUsbSettings> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ListTile(
-                title: Text("Routing"),
+                title: const Text("Routing"),
                 subtitle: Text(usbModes[device.usbMode]),
                 onTap: () {
                   var dialog = AlertDialogs.showOptionDialog(context,
@@ -52,7 +54,7 @@ class _PlugAirUsbSettingsState extends State<PlugAirUsbSettings> {
                 },
               ),
               ListTile(
-                title: Text("Input Volume"),
+                title: const Text("Input Volume"),
                 subtitle: Slider(
                   min: 0,
                   max: 100,
@@ -67,7 +69,7 @@ class _PlugAirUsbSettingsState extends State<PlugAirUsbSettings> {
                 ),
               ),
               ListTile(
-                title: Text("Output Volume"),
+                title: const Text("Output Volume"),
                 subtitle: Slider(
                   min: 0,
                   max: 100,

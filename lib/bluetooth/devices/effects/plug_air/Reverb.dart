@@ -7,17 +7,25 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Reverb extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugAir.reverbtype;
+  @override
   int? get nuxEnableIndex => PresetDataIndexPlugAir.reverbenable;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_ReverbEnable;
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_ReverbMode;
 }
 
 class RoomReverb extends Reverb {
+  @override
   final name = "Room";
 
+  @override
   int get nuxIndex => 0;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -37,9 +45,12 @@ class RoomReverb extends Reverb {
 }
 
 class HallReverb extends Reverb {
+  @override
   final name = "Hall";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -59,9 +70,12 @@ class HallReverb extends Reverb {
 }
 
 class PlateReverb extends Reverb {
+  @override
   final name = "Plate";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -88,9 +102,12 @@ class PlateReverb extends Reverb {
 }
 
 class SpringReverb extends Reverb {
+  @override
   final name = "Spring";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -110,9 +127,12 @@ class SpringReverb extends Reverb {
 }
 
 class ShimmerReverb extends Reverb {
+  @override
   final name = "Shimmer Reverb";
 
+  @override
   int get nuxIndex => 4;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -129,6 +149,7 @@ class ShimmerReverb extends Reverb {
         devicePresetIndex: PresetDataIndexPlugAir.reverbmix,
         midiCC: MidiCCValues.bCC_ReverbLevel)
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir21.index)
       return SpringReverb().nuxIndex;
@@ -137,9 +158,12 @@ class ShimmerReverb extends Reverb {
 }
 
 class RoomReverbv2 extends Reverb {
+  @override
   final name = "Room";
 
+  @override
   int get nuxIndex => 0;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -166,9 +190,12 @@ class RoomReverbv2 extends Reverb {
 }
 
 class HallReverbv2 extends Reverb {
+  @override
   final name = "Hall";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -195,9 +222,12 @@ class HallReverbv2 extends Reverb {
 }
 
 class PlateReverbv2 extends Reverb {
+  @override
   final name = "Plate";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",

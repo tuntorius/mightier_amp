@@ -6,22 +6,32 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class EQ extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iEQ;
+  @override
   int? get nuxEnableIndex => nuxEffectTypeIndex;
+  @override
   int get nuxEnableMask => 0x40;
+  @override
   bool get nuxEnableInverted => true;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.EQ;
 
+  @override
   int get midiCCEnableValue => MidiCCValuesPro.Head_iEQ;
 
+  @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iEQ;
 }
 
 class EQSixBand extends EQ {
+  @override
   final name = "6-Band";
 
+  @override
   int get nuxIndex => 1;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "100",
@@ -69,10 +79,13 @@ class EQSixBand extends EQ {
 }
 
 class EQTenBand extends EQ {
+  @override
   final name = "10-Band";
 
+  @override
   int get nuxIndex => 3;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Vol",

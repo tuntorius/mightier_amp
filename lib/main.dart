@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
 import 'package:mighty_plug_manager/UI/utils.dart';
 import 'package:mighty_plug_manager/UI/widgets/app_drawer.dart';
-import 'package:mighty_plug_manager/UI/widgets/presets/presetListTest.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
@@ -92,14 +91,14 @@ void main() {
 }
 
 mainRunApp() {
-  runApp(App());
+  runApp(const App());
 }
 
 class App extends StatefulWidget {
-  App({Key? key}) : super(key: key);
+  const App({Key? key}) : super(key: key);
 
   @override
-  _AppState createState() => _AppState();
+  State createState() => _AppState();
 }
 
 class _AppState extends State<App> {
@@ -156,7 +155,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     super.initState();
 
     //add 5 pages widgets
-    _tabs = [
+    _tabs = const [
       PresetEditor(),
       PresetList(),
       DrumEditor(),

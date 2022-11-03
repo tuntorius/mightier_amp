@@ -73,7 +73,7 @@ class _SettingsState extends State<Settings> {
         children: [
           if (kDebugMode)
             ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 200),
+              constraints: const BoxConstraints(maxHeight: 200),
               child: ListView.builder(
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
@@ -186,9 +186,10 @@ class _SettingsState extends State<Settings> {
                         SharedPrefs().getInt(SettingsKeys.changeCabs, 1) != 0,
                     onChanged: (value) {
                       setState(() {
-                        if (value != null)
+                        if (value != null) {
                           SharedPrefs()
                               .setInt(SettingsKeys.changeCabs, value ? 1 : 0);
+                        }
                       });
                     }),
                 const Divider(),
@@ -200,8 +201,8 @@ class _SettingsState extends State<Settings> {
                   title: const Text("Calibrate BT Audio Latency"),
                   trailing: const Icon(Icons.keyboard_arrow_right),
                   onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => Calibration()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const Calibration()));
                   },
                 ),
                 ListTile(
@@ -311,16 +312,16 @@ class _SettingsState extends State<Settings> {
                 title: const Text("Debug Console"),
                 trailing: const Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => DebugConsole()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const DebugConsole()));
                 }),
           if (Settings.devMode)
             ListTile(
                 title: const Text("MIDI Commands Utility"),
                 trailing: const Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => DeveloperPage()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const DeveloperPage()));
                 }),
           // ListTile(
           //   title: Text("More Info"),

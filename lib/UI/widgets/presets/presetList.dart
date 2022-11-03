@@ -46,7 +46,7 @@ class PresetList extends StatefulWidget {
       this.customProductId})
       : super(key: key);
   @override
-  _PresetListState createState() => _PresetListState();
+  State createState() => _PresetListState();
 }
 
 class _PresetListState extends State<PresetList>
@@ -405,8 +405,9 @@ class _PresetListState extends State<PresetList>
             context: context,
             builder: (BuildContext context) => qrExport.buildDialog(context),
           ).then((value) {
-            if (originalVersion != null)
+            if (originalVersion != null) {
               dev.setFirmwareVersionByIndex(originalVersion);
+            }
           });
         });
       }
@@ -469,17 +470,17 @@ class _PresetListState extends State<PresetList>
   }
 
   void showContextMenu(
-      Offset _position, dynamic item, List<PopupMenuEntry> _menu) {
+      Offset position, dynamic item, List<PopupMenuEntry> menu) {
     final RenderBox? overlay =
         Overlay.of(context)?.context.findRenderObject() as RenderBox?;
     //open menu
     if (overlay != null) {
       var rect = RelativeRect.fromRect(
-          _position & const Size(40, 40), // smaller rect, the touch area
+          position & const Size(40, 40), // smaller rect, the touch area
           Offset.zero & overlay.size);
       showMenu(
         position: rect,
-        items: _menu,
+        items: menu,
         context: context,
       ).then((value) {
         menuActions(value, item);
@@ -563,7 +564,7 @@ class _PresetListState extends State<PresetList>
                 child: const Padding(
                   padding: EdgeInsets.only(
                       left: 12.0, right: 4, bottom: 10, top: 10),
-                  child: const Icon(Icons.more_vert, color: Colors.grey),
+                  child: Icon(Icons.more_vert, color: Colors.grey),
                 ),
                 itemBuilder: (context) {
                   return presetsMenu;
@@ -580,15 +581,16 @@ class _PresetListState extends State<PresetList>
   }
 
   Widget _buildList(BuildContext context) {
-    if (PresetsStorage().getCategories().length == 0)
+    if (PresetsStorage().getCategories().isEmpty) {
       return Center(
           child: Text("Empty", style: Theme.of(context).textTheme.bodyText1));
-    late Offset _position;
+    }
+    late Offset position;
 
     Widget out = GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapDown: (details) {
-        _position = details.globalPosition;
+        position = details.globalPosition;
       },
       child: DynamicTreeView(
         simplified: widget.simplified,
@@ -596,7 +598,7 @@ class _PresetListState extends State<PresetList>
           //print(val);
         },
         onCategoryLongPress: (val) {
-          showContextMenu(_position, val, popupMenu);
+          showContextMenu(position, val, popupMenu);
         },
         itemBuilder: (context) {
           return popupMenu;
@@ -615,10 +617,11 @@ class _PresetListState extends State<PresetList>
           //check if enabled and desaturate color if needed
 
           bool enabled = true;
-          if (widget.customProductId == null)
+          if (widget.customProductId == null) {
             enabled = item["product_id"] == device.productStringId;
-          else
+          } else {
             enabled = item["product_id"] == widget.customProductId;
+          }
 
           Color color = Preset.channelColors[item["channel"]];
           if (!enabled) color = TinyColor(color).desaturate(90).color;
@@ -627,14 +630,14 @@ class _PresetListState extends State<PresetList>
 
           //create trailing widget based on whether the preset is new
           Widget? trailingWidget;
-          if (widget.simplified)
+          if (widget.simplified) {
             trailingWidget = null;
-          else {
+          } else {
             var button = PopupMenuButton(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 16.0, right: 0, bottom: 10, top: 10),
-                child: Icon(Icons.more_vert, color: Colors.grey),
+              child: const Padding(
+                padding:
+                    EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
+                child: const Icon(Icons.more_vert, color: Colors.grey),
               ),
               itemBuilder: (context) {
                 return popupSubmenu;
@@ -648,7 +651,7 @@ class _PresetListState extends State<PresetList>
               trailingWidget = Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.circle,
                     color: Colors.blue,
                     size: 16,
@@ -659,8 +662,9 @@ class _PresetListState extends State<PresetList>
                   button
                 ],
               );
-            } else
+            } else {
               trailingWidget = button;
+            }
           }
           var out = ChildBuilderInfo();
           out.hasNewItems = newItem;
@@ -675,13 +679,14 @@ class _PresetListState extends State<PresetList>
                 //selected: selected && !widget.simplified ? 255 : 0;,
                 onTap: () {
                   //remove the new marker if exists
-                  if (!widget.simplified)
+                  if (!widget.simplified) {
                     PresetsStorage()
                         .clearNewFlag(item["category"], item["name"]);
+                  }
 
-                  if (widget.onTap != null)
+                  if (widget.onTap != null) {
                     widget.onTap!(item);
-                  else {
+                  } else {
                     var dev = NuxDeviceControl.instance().device;
                     if (dev.isPresetSupported(item)) {
                       NuxDeviceControl.instance()
@@ -692,11 +697,12 @@ class _PresetListState extends State<PresetList>
                   setState(() {});
                 },
                 onLongPress: () {
-                  if (!widget.simplified)
-                    showContextMenu(_position, item, popupSubmenu);
+                  if (!widget.simplified) {
+                    showContextMenu(position, item, popupSubmenu);
+                  }
                 },
                 minLeadingWidth: 0,
-                leading: Container(
+                leading: SizedBox(
                   height:
                       double.infinity, //strange hack to center icon vertically
                   child: Stack(
@@ -712,7 +718,7 @@ class _PresetListState extends State<PresetList>
                       if (pVersion != devVersion)
                         Transform(
                           transform: Matrix4.translationValues(10, 10, 0),
-                          child: Icon(
+                          child: const Icon(
                             Icons.warning,
                             color: Colors.amber,
                             size: 20,
@@ -734,7 +740,7 @@ class _PresetListState extends State<PresetList>
           );
           return out;
         },
-        config: Config(
+        config: const Config(
             parentTextStyle: TextStyle(color: Colors.white),
             parentPaddingEdgeInsets: EdgeInsets.only(left: 16, right: 16),
             childrenPaddingEdgeInsets: EdgeInsets.only(left: 0, right: 0),
@@ -746,13 +752,13 @@ class _PresetListState extends State<PresetList>
       out = Column(
         children: [
           ListTile(
-            contentPadding: EdgeInsets.only(left: 16, right: 4),
-            leading: Icon(
+            contentPadding: const EdgeInsets.only(left: 16, right: 4),
+            leading: const Icon(
               Icons.close,
               color: Colors.white,
             ),
             title: Transform.translate(
-                offset: Offset(-16, 0), child: Text("None")),
+                offset: const Offset(-16, 0), child: const Text("None")),
             onTap: () {
               widget.onTap?.call(false);
             },

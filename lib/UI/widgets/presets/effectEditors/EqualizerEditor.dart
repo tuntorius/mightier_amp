@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/verticalThickSlider.dart';
 import '../../../../bluetooth/devices/effects/Processor.dart';
-import 'dart:math';
 
 class EqualizerEditor extends StatefulWidget {
   final Processor eqEffect;
   final Function(Parameter, double)? onChanged;
   final Function(Parameter, double, double)? onChangedFinal;
   const EqualizerEditor(
-      {required Processor this.eqEffect,
+      {required this.eqEffect,
       required this.onChanged,
       required this.onChangedFinal,
       Key? key})
@@ -60,22 +59,23 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
       }
 
       Widget slidersContainer;
-      if (_sliderWidth * params.length < screenWidth)
+      if (_sliderWidth * params.length < screenWidth) {
         slidersContainer = Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: sliders,
         );
-      else
+      } else {
         slidersContainer = Scrollbar(
           child: ListView(
             primary: true,
             scrollDirection: Axis.horizontal,
-            children: sliders,
             shrinkWrap: true,
+            children: sliders,
           ),
         );
+      }
 
-      if (isPortrait)
+      if (isPortrait) {
         return Column(
           children: [
             Expanded(child: slidersContainer),
@@ -84,11 +84,12 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
             )
           ],
         );
-      else
-        return Container(
-          child: slidersContainer,
+      } else {
+        return SizedBox(
           height: 200,
+          child: slidersContainer,
         );
+      }
     });
   }
 }

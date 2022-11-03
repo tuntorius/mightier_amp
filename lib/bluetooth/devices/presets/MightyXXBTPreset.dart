@@ -13,12 +13,18 @@ import '../effects/mighty_2040bt/Reverb.dart';
 import 'Preset.dart';
 
 class MXXBTPreset extends Preset {
+  @override
   NuxDevice device;
+  @override
   int channel;
+  @override
   String channelName;
+  @override
   int get qrDataLength => 40;
+  @override
   Color get channelColor => Preset.channelColors[channel];
   final NoiseGate1Param noiseGate = NoiseGate1Param();
+  @override
   final List<MXXBTAmplifier> amplifierList = <MXXBTAmplifier>[];
   final List<Modulation> modulationList = <Modulation>[];
   final List<Delay> delayList = <Delay>[];
@@ -58,12 +64,14 @@ class MXXBTPreset extends Preset {
   }
 
   /// checks if the effect slot can be switched on and off
+  @override
   bool slotSwitchable(int index) {
     if (index == 1) return false;
     return true;
   }
 
   //returns whether the specific slot is on or off
+  @override
   bool slotEnabled(int index) {
     switch (index) {
       case 0:
@@ -108,6 +116,7 @@ class MXXBTPreset extends Preset {
   }
 
   //returns list of effects for given slot
+  @override
   List<Processor> getEffectsForSlot(int slot) {
     switch (slot) {
       case 0:
@@ -125,6 +134,7 @@ class MXXBTPreset extends Preset {
   }
 
   //returns which of the effects is selected for a given slot
+  @override
   int getSelectedEffectForSlot(int slot) {
     switch (slot) {
       case 0:
@@ -162,16 +172,18 @@ class MXXBTPreset extends Preset {
     super.setSelectedEffectForSlot(slot, index, notifyBT);
   }
 
+  @override
   Color effectColor(int index) {
-    if (index != 1)
+    if (index != 1) {
       return device.processorList[index].color;
-    else
+    } else {
       return channelColor;
+    }
   }
 
   @override
   setFirmwareVersion(int ver) {}
 
   @override
-  void setupPresetFromNuxDataArray(List<int> _nuxData) {}
+  void setupPresetFromNuxDataArray(List<int> nuxData) {}
 }

@@ -25,40 +25,67 @@ enum M2040BTChannel {
 }
 
 class NuxMighty2040BT extends NuxDevice {
+  @override
   int get productVID => 48;
 
-  late LiteCommunication _communication = LiteCommunication(this, config);
+  late final LiteCommunication _communication = LiteCommunication(this, config);
+  @override
   DeviceCommunication get communication => _communication;
-  NuxDeviceConfiguration _config = NuxDeviceConfiguration();
+  final NuxDeviceConfiguration _config = NuxDeviceConfiguration();
+  @override
   NuxDeviceConfiguration get config => _config;
 
+  @override
   String get productName => "NUX Mighty 20/40 BT";
+  @override
   String get productNameShort => "Mighty 20/40 BT";
+  @override
   String get productStringId => "mighty_20_40bt";
+  @override
   int get productVersion => 0;
+  @override
   IconData get productIcon => MightierIcons.amp_20bt;
+  @override
   List<String> get productBLENames =>
       ["NUX MIGHTY20BT MIDI", "NUX MIGHTY40BT MIDI"];
 
+  @override
   int get channelsCount => 8;
+  @override
   int get effectsChainLength => 5;
   int get groupsCount => 1;
+  @override
   int get amplifierSlotIndex => 1;
+  @override
   bool get fakeMasterVolume => true;
+  @override
   bool get activeChannelRetrieval => false;
+  @override
   bool get longChannelNames => true;
+  @override
   bool get cabinetSupport => false;
+  @override
   bool get hackableIRs => false;
+  @override
   int get cabinetSlotIndex => 0;
+  @override
   bool get presetSaveSupport => false;
+  @override
   bool get reorderableFXChain => false;
+  @override
   bool get batterySupport => false;
+  @override
   bool get nativeActiveChannelsSupport => false;
+  @override
   int get channelChangeCC => MidiCCValues.bCC_AmpMode;
+  @override
   int get deviceQRId => 7;
+  @override
   int get deviceQRVersion => 1;
 
+  @override
   List<String> get groupsName => ["All"]; //, "Group 2"];
+  @override
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [
@@ -97,7 +124,7 @@ class NuxMighty2040BT extends NuxDevice {
   List<Preset> presets1 = <Preset>[];
   List<Preset> presets2 = <Preset>[];
 
-  List<String> _channelNames = [];
+  final List<String> _channelNames = [];
 
   final List<String> drumStyles = [
     "Metronome",
@@ -121,9 +148,9 @@ class NuxMighty2040BT extends NuxDevice {
 
   NuxMighty2040BT(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
-    M2040BTChannel.values.forEach((element) {
+    for (var element in M2040BTChannel.values) {
       _channelNames.add(element.toString().split('.')[1]);
-    });
+    }
 
     //clean
     presets1.add(MXXBTPreset(
@@ -176,8 +203,10 @@ class NuxMighty2040BT extends NuxDevice {
     presets.addAll(presets2);
   }
 
+  @override
   dynamic getDrumStyles() => drumStyles;
 
+  @override
   List<Preset> getPresetsList() {
     return presets;
   }
@@ -200,6 +229,7 @@ class NuxMighty2040BT extends NuxDevice {
     return preset;
   }
 
+  @override
   bool checkQRVersionValid(int ver) {
     return true;
   }

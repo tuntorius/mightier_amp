@@ -7,20 +7,28 @@ import '../Processor.dart';
 
 abstract class Modulation extends Processor {
   //TODO: check if correct
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexLite.modfxtype;
+  @override
   int? get nuxEnableIndex => PresetDataIndexLite.modfxenable;
 
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   //row 1247: 0-phaser, 1-chorus, 2-Stereo chorus, 3-Flanger, 4-Vibe, 5-Tremolo
 
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_ModfxEnable;
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_ModfxMode;
 }
 
 class Phaser extends Modulation {
+  @override
   final name = "Phaser";
 
+  @override
   int get nuxIndex => 0;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -40,9 +48,12 @@ class Phaser extends Modulation {
 }
 
 class Chorus extends Modulation {
+  @override
   final name = "Chorus";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -62,9 +73,12 @@ class Chorus extends Modulation {
 }
 
 class Tremolo extends Modulation {
+  @override
   final name = "Tremolo";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -84,9 +98,12 @@ class Tremolo extends Modulation {
 }
 
 class Vibe extends Modulation {
+  @override
   final name = "Vibe";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",

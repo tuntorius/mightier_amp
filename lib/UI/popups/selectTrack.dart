@@ -13,12 +13,12 @@ class SelectTrackDialog {
   Widget buildDialog(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
-        contentPadding: EdgeInsets.only(bottom: 20),
+        contentPadding: const EdgeInsets.only(bottom: 20),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back,
                   color: Colors.white,
                 ),
@@ -26,14 +26,15 @@ class SelectTrackDialog {
             Expanded(
                 child: _multiselect
                     ? Text("${_selected.length} selected")
-                    : Text('Select Track')),
+                    : const Text('Select Track')),
             if (_multiselect)
               ElevatedButton(
-                child: Text("Add"),
+                child: const Text("Add"),
                 onPressed: () {
                   List<JamTrack> tracks = [];
-                  for (int i = 0; i < _selected.length; i++)
+                  for (int i = 0; i < _selected.length; i++) {
                     tracks.add(TrackData().tracks[_selected.keys.elementAt(i)]);
+                  }
                   Navigator.of(context).pop(tracks);
                 },
               )
@@ -44,8 +45,8 @@ class SelectTrackDialog {
           onSelectedTrack: (track) {
             Navigator.of(context).pop(track);
           },
-          multiSelectState: (bool _state, Map<int, bool> selected) {
-            _multiselect = _state;
+          multiSelectState: (bool state, Map<int, bool> selected) {
+            _multiselect = state;
             _selected = selected;
             setState(() {});
           },

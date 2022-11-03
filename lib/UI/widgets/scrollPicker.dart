@@ -102,16 +102,16 @@ class _ScrollPickerState extends State<ScrollPicker> {
 
                         return Center(
                           child: AnimatedDefaultTextStyle(
-                            child: Text(value),
                             style: itemStyle,
-                            duration: Duration(milliseconds: 100),
+                            duration: const Duration(milliseconds: 100),
+                            child: Text(value),
                           ),
                         );
                       }),
                       controller: scrollController,
                       itemExtent: ScrollPicker.itemHeight,
                       onSelectedItemChanged: _onSelectedItemChanged,
-                      physics: FixedExtentScrollPhysics(),
+                      physics: const FixedExtentScrollPhysics(),
                     ),
                   ),
                 ),
@@ -146,7 +146,8 @@ class _ScrollPickerState extends State<ScrollPicker> {
 
     // animate to and center on the selected item
     scrollController.animateTo(newPosition,
-        duration: Duration(milliseconds: 500), curve: Curves.easeInOutQuad);
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOutQuad);
   }
 
   void _onSelectedItemChanged(int index) {

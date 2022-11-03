@@ -12,7 +12,7 @@ Future<String> saveFileString(String mime, String name, String data) async {
     }); //name in native code
 
     return result;
-  } on PlatformException catch (e) {
+  } on PlatformException {
     //fails native call
     //handle error
     return Future.error("Error saving file");
@@ -31,7 +31,7 @@ Future<String> saveFile(String mime, String name, List<int> data) async {
     }); //name in native code
 
     return result;
-  } on PlatformException catch (e) {
+  } on PlatformException {
     //fails native call
     //handle error
     return Future.error("Error saving file");
@@ -46,7 +46,7 @@ Future<String> openFileString(String mime) async {
         "openFile", {"mime": mime, "byte_array": false}); //name in native code
 
     return result;
-  } on PlatformException catch (e) {
+  } on PlatformException {
     //fails native call
     //handle error
     return Future.error("Can't open file");
@@ -61,7 +61,7 @@ Future<List<int>> openFile(String mime) async {
         "openFile", {"mime": mime, "byte_array": true}); //name in native code
 
     return result;
-  } on PlatformException catch (e) {
+  } on PlatformException {
     //fails native call
     //handle error
     return Future.error("Can't open file");

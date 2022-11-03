@@ -26,14 +26,14 @@ class ChangeCategoryDialog {
   Widget buildDialog(BuildContext context) {
     List<String> categories = PresetsStorage().getCategories();
 
-    final _height = MediaQuery.of(context).size.height * 0.25;
+    final height = MediaQuery.of(context).size.height * 0.25;
     final node = FocusScope.of(context);
 
     return StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(
           title: const Text('Change Preset Category'),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             child: SingleChildScrollView(
               reverse: true,
@@ -49,7 +49,7 @@ class ChangeCategoryDialog {
                       height: 10,
                     ),
                     Container(
-                      height: _height,
+                      height: height,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey[300]!),
                       ),
@@ -57,7 +57,7 @@ class ChangeCategoryDialog {
                         controller: parentScroll,
                         child: ListTileTheme(
                           child: ListView.builder(
-                            physics: ClampingScrollPhysics(),
+                            physics: const ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title: Text(categories[index]),
@@ -74,14 +74,15 @@ class ChangeCategoryDialog {
                       ),
                     ),
                     TextFormField(
-                      decoration: InputDecoration(labelText: "Category"),
+                      decoration: const InputDecoration(labelText: "Category"),
                       controller: categoryCtrl,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter preset category';
                         }
-                        if (PresetsStorage().findPreset(name, value) != null)
+                        if (PresetsStorage().findPreset(name, value) != null) {
                           return 'The category already contains a preset with this name!';
+                        }
                         return null;
                       },
                       onEditingComplete: () => node.unfocus(),
@@ -93,7 +94,7 @@ class ChangeCategoryDialog {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },

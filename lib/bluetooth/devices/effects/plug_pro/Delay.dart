@@ -6,20 +6,30 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iDLY;
+  @override
   int? get nuxEnableIndex => nuxEffectTypeIndex;
+  @override
   int get nuxEnableMask => 0x40;
+  @override
   bool get nuxEnableInverted => true;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValuesPro.Head_iDLY;
+  @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iDLY;
 }
 
 class AnalogDelay extends Delay {
+  @override
   final name = "Analog";
 
+  @override
   int get nuxIndex => 1;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -46,9 +56,12 @@ class AnalogDelay extends Delay {
 }
 
 class DigitalDelay extends Delay {
+  @override
   final name = "Digital Delay";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "E.Level",
@@ -75,9 +88,12 @@ class DigitalDelay extends Delay {
 }
 
 class ModDelay extends Delay {
+  @override
   final name = "Modulation";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Time",
@@ -111,9 +127,12 @@ class ModDelay extends Delay {
 }
 
 class TapeEcho extends Delay {
+  @override
   final name = "Tape Echo";
 
+  @override
   int get nuxIndex => 4;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -140,9 +159,12 @@ class TapeEcho extends Delay {
 }
 
 class PanDelay extends Delay {
+  @override
   final name = "Pan Delay";
 
+  @override
   int get nuxIndex => 5;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",

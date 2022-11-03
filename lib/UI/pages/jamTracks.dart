@@ -11,8 +11,10 @@ import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class JamTracks extends StatefulWidget {
+  const JamTracks({Key? key}) : super(key: key);
+
   @override
-  _JamTracksState createState() => _JamTracksState();
+  State createState() => _JamTracksState();
 }
 
 class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
@@ -42,7 +44,7 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
 
   void checkPermission() async {
     var status = await Permission.camera.status;
-    print("Camera $status");
+    debugPrint("Camera $status");
   }
 
   //try to get best version of tags (mp3 only)
@@ -66,12 +68,12 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
   }
 
   Widget showSetlists(bool hasTracks) {
-    if (hasTracks) return Setlists();
+    if (hasTracks) return const Setlists();
     return Stack(
       children: [
-        Setlists(),
+        const Setlists(),
         TextButton(
-          child: Center(child: Text("")),
+          child: const Center(child: Text("")),
           onPressed: () {
             cntrl.index = 1;
           },
@@ -82,7 +84,7 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    bool hasTracks = TrackData().tracks.length > 0;
+    bool hasTracks = TrackData().tracks.isNotEmpty;
 
     return SafeArea(
       child: FutureBuilder<PermissionStatus>(
@@ -117,7 +119,7 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
                           controller: cntrl,
                           children: [
                             showSetlists(hasTracks),
-                            TracksPage(),
+                            const TracksPage(),
                           ],
                         ),
                       ),

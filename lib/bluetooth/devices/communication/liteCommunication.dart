@@ -4,8 +4,8 @@ import '../NuxConstants.dart';
 import 'communication.dart';
 
 class LiteCommunication extends DeviceCommunication {
-  LiteCommunication(NuxDevice _device, NuxDeviceConfiguration _config)
-      : super(_device, _config);
+  LiteCommunication(NuxDevice device, NuxDeviceConfiguration config)
+      : super(device, config);
 
   @override
   int get productVID => 48;

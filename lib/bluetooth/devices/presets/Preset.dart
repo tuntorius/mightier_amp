@@ -43,7 +43,7 @@ abstract class Preset {
   //used for reorderable fx chain
   int getProcessorAtSlot(int slot);
 
-  void setupPresetFromNuxDataArray(List<int> _nuxData);
+  void setupPresetFromNuxDataArray(List<int> nuxData);
 
   void setProcessorAtSlot(int slot, int processorId) {}
   void swapProcessorSlots(int from, int to, bool notifyBT) {
@@ -94,8 +94,9 @@ abstract class Preset {
   }
 
   bool payloadPiecesReady() {
-    for (int i = 0; i < nuxDataPieces.length; i++)
-      if (nuxDataPieces[i].length == 0) return false;
+    for (int i = 0; i < nuxDataPieces.length; i++) {
+      if (nuxDataPieces[i].isEmpty) return false;
+    }
     return true;
   }
 
@@ -117,8 +118,9 @@ abstract class Preset {
 
   void setupPresetFromNuxData() {
     List<int> nuxData = [];
-    for (int i = 0; i < nuxDataPieces.length; i++)
+    for (int i = 0; i < nuxDataPieces.length; i++) {
       nuxData.addAll(nuxDataPieces[i]);
+    }
     setupPresetFromNuxDataArray(nuxData);
   }
 

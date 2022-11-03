@@ -9,22 +9,30 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class EFX extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugAir.efxtype;
+  @override
   int? get nuxEnableIndex => PresetDataIndexPlugAir.efxenable;
   //row 1871
   // 0 -Touch Wah, 1 - Uni Vibe, 2 - Tremolo, 3 - Phaser, 4 - Boost, 5 - TS Drive, 6 - Bass TS
   // 7 - 3 Band EQ, 8 - Muff, 9 - Crunch, 10 - Red Dist, 11 - Morning Drive, 12 - Dist One
   // The bass TS (6) is only available in bass preset mode, the rest are everywhere
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_DistEnable;
 
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_DistMode;
 }
 
 class TouchWah extends EFX {
+  @override
   final name = "Touch Wah";
 
+  @override
   int get nuxIndex => 0;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Type",
@@ -51,9 +59,12 @@ class TouchWah extends EFX {
 }
 
 class UniVibe extends EFX {
+  @override
   final name = "Uni Vibe";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -80,9 +91,12 @@ class UniVibe extends EFX {
 }
 
 class TremoloEFX extends EFX {
+  @override
   final name = "Tremolo";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -102,9 +116,12 @@ class TremoloEFX extends EFX {
 }
 
 class PhaserEFX extends EFX {
+  @override
   final name = "Phaser";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -131,9 +148,12 @@ class PhaserEFX extends EFX {
 }
 
 class Boost extends EFX {
+  @override
   final name = "Boost";
 
+  @override
   int get nuxIndex => 4;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -151,6 +171,7 @@ class Boost extends EFX {
         midiCC: MidiCCValues.bCC_DistTone),
   ];
 
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir21.index) return Katana().nuxIndex;
     return nuxIndex;
@@ -158,9 +179,12 @@ class Boost extends EFX {
 }
 
 class TSDrive extends EFX {
+  @override
   final name = "T Screamer";
 
+  @override
   int get nuxIndex => 5;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -187,9 +211,12 @@ class TSDrive extends EFX {
 }
 
 class BassTS extends EFX {
+  @override
   final name = "Bass TS";
 
+  @override
   int get nuxIndex => 6;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -214,6 +241,7 @@ class BassTS extends EFX {
         midiCC: MidiCCValues.bCC_DistLevel),
   ];
 
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir21.index) return null;
     return nuxIndex;
@@ -221,9 +249,12 @@ class BassTS extends EFX {
 }
 
 class ThreeBandEQ extends EFX {
+  @override
   final name = "3 Band EQ";
 
+  @override
   int get nuxIndex => 7;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Bass",
@@ -250,9 +281,12 @@ class ThreeBandEQ extends EFX {
 }
 
 class Muff extends EFX {
+  @override
   final name = "Muff Fuzz";
 
+  @override
   int get nuxIndex => 8;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -279,9 +313,12 @@ class Muff extends EFX {
 }
 
 class Crunch extends EFX {
+  @override
   final name = "Crunch";
 
+  @override
   int get nuxIndex => 9;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -308,9 +345,12 @@ class Crunch extends EFX {
 }
 
 class RedDist extends EFX {
+  @override
   final name = "Red Dist";
 
+  @override
   int get nuxIndex => 10;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -337,9 +377,12 @@ class RedDist extends EFX {
 }
 
 class MorningDrive extends EFX {
+  @override
   final name = "Morning Drive";
 
+  @override
   int get nuxIndex => 11;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",
@@ -366,9 +409,12 @@ class MorningDrive extends EFX {
 }
 
 class DistOne extends EFX {
+  @override
   final name = "Dist One";
 
+  @override
   int get nuxIndex => 12;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Level",

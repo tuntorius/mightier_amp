@@ -4,19 +4,27 @@ import '../Processor.dart';
 
 abstract class Delay extends Processor {
   //TODO: check if correct
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexLite.delaytype;
+  @override
   int? get nuxEnableIndex => PresetDataIndexLite.delayenable;
 
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_DelayEnable;
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_DelayMode;
 }
 
 class Delay1 extends Delay {
+  @override
   final name = "Delay 1";
 
+  @override
   int get nuxIndex => 0;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -43,10 +51,13 @@ class Delay1 extends Delay {
 }
 
 class Delay2 extends Delay {
+  @override
   final name = "Delay 2";
 
+  @override
   int get nuxIndex => 1;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -73,10 +84,13 @@ class Delay2 extends Delay {
 }
 
 class Delay3 extends Delay {
+  @override
   final name = "Delay 3";
 
+  @override
   int get nuxIndex => 2;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -103,10 +117,13 @@ class Delay3 extends Delay {
 }
 
 class Delay4 extends Delay {
+  @override
   final name = "Delay 4";
 
+  @override
   int get nuxIndex => 3;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",

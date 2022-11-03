@@ -18,7 +18,8 @@ class QRExportDialog {
     return AlertDialog(
         title: const Text("Export QR Code"),
         insetPadding: EdgeInsets.zero,
-        contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -27,25 +28,25 @@ class QRExportDialog {
               child: ColoredBox(
                 color: Colors.white,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         device.getProductNameVersion(device.productVersion),
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                       qrImage,
                       Text(presetName,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.black, fontWeight: FontWeight.bold))
                     ],
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -58,9 +59,9 @@ class QRExportDialog {
                         saveFile("image/png", presetName, data);
                       }
                     },
-                    icon: Icon(Icons.save_alt),
-                    label: Text("Save")),
-                SizedBox(
+                    icon: const Icon(Icons.save_alt),
+                    label: const Text("Save")),
+                const SizedBox(
                   width: 10,
                 ),
                 ElevatedButton.icon(
@@ -79,8 +80,8 @@ class QRExportDialog {
                       Share.shareFiles(['$tracksPath/preset.png'],
                           text: 'QR Code');
                     },
-                    icon: Icon(Icons.share),
-                    label: Text("Share"))
+                    icon: const Icon(Icons.share),
+                    label: const Text("Share"))
               ],
             ),
           ],

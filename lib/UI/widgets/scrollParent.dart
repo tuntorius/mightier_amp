@@ -20,8 +20,9 @@ class ScrollParent extends StatelessWidget {
         }
         if (controller.offset - value.overscroll >=
             controller.position.maxScrollExtent) {
-          if (controller.offset != controller.position.maxScrollExtent)
+          if (controller.offset != controller.position.maxScrollExtent) {
             controller.jumpTo(controller.position.maxScrollExtent);
+          }
           return true;
         }
         controller.jumpTo(controller.offset - value.overscroll);

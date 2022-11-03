@@ -41,8 +41,10 @@ class PlugProUsbSettings extends StatefulWidget {
         dryWet: false),
   ];
 
+  const PlugProUsbSettings({Key? key}) : super(key: key);
+
   @override
-  _PlugProUsbSettingsState createState() => _PlugProUsbSettingsState();
+  State createState() => _PlugProUsbSettingsState();
 }
 
 class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
@@ -59,7 +61,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
 
   @override
   Widget build(BuildContext context) {
-    final routes = PlugProUsbSettings.routes;
+    const routes = PlugProUsbSettings.routes;
     var routeModeInt = device.config.routingMode & modeMask;
     var routeMode = routes.firstWhere((r) => r.value == routeModeInt);
     var arrayIndex = routes.indexOf(routeMode);
@@ -70,7 +72,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("USB Audio Settings"),
+        title: const Text("USB Audio Settings"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -80,15 +82,11 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
                   child: Text("Route Mode"),
                 ),
                 ToggleButtons(
-                  children: [
-                    for (var i = 0; i < routes.length; i++)
-                      _modeButton(routes[i].name)
-                  ],
                   fillColor: Colors.blue,
                   selectedBorderColor: Colors.blue,
                   color: Colors.grey,
@@ -100,18 +98,23 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                     device.setUsbMode(value);
                     setState(() {});
                   },
+                  children: [
+                    for (var i = 0; i < routes.length; i++)
+                      _modeButton(routes[i].name)
+                  ],
                 ),
                 CheckboxListTile(
-                    title: Text("Loopback"),
+                    title: const Text("Loopback"),
                     value: loopback,
                     onChanged: !routeMode.loopback
                         ? null
                         : (value) {
                             if (value != null) {
-                              if (value)
+                              if (value) {
                                 routeModeInt |= loopbackMask;
-                              else
+                              } else {
                                 routeModeInt &= modeMask;
+                              }
                               device.setUsbMode(routeModeInt);
                               setState(() {});
                             }
@@ -121,7 +124,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                   child: Image.asset(routeMode.schemeAsset),
                 ),
                 ListTile(
-                  title: Text("Dry/Wet"),
+                  title: const Text("Dry/Wet"),
                   subtitle: Slider(
                     min: 0,
                     max: 100,
@@ -137,7 +140,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                   ),
                 ),
                 ListTile(
-                  title: Text("Recording Level"),
+                  title: const Text("Recording Level"),
                   subtitle: Slider(
                     min: 0,
                     max: 100,
@@ -152,7 +155,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                   ),
                 ),
                 ListTile(
-                  title: Text("Playback Level"),
+                  title: const Text("Playback Level"),
                   subtitle: Slider(
                     min: 0,
                     max: 100,

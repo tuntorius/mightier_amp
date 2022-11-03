@@ -1,6 +1,7 @@
 import 'ValueFormatter.dart';
 
 class DecibelFormatterMP2 extends ValueFormatter {
+  @override
   InputType get inputType => InputType.SliderInput;
 
   @override
@@ -26,6 +27,7 @@ class DecibelFormatterMP2 extends ValueFormatter {
 }
 
 class DecibelFormatterMPPro extends ValueFormatter {
+  @override
   InputType get inputType => InputType.SliderInput;
 
   @override
@@ -51,6 +53,7 @@ class DecibelFormatterMPPro extends ValueFormatter {
 }
 
 class DecibelFormatterEQ extends ValueFormatter {
+  @override
   InputType get inputType => InputType.SliderInput;
 
   @override

@@ -34,10 +34,11 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
 
     for (var key in widget.styleMap.keys) {
       stylesList.addAll(widget.styleMap[key]!.keys as Iterable<String>);
-      for (var style in widget.styleMap[key]!.keys)
+      for (var style in widget.styleMap[key]!.keys) {
         if (widget.styleMap[key]![style] == widget.selected) {
           categoriesIndex = categoriesList.indexOf(key);
         }
+      }
     }
   }
 
@@ -62,7 +63,7 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
 
     if (userGenerated) {
       //find category
-      for (var cat in widget.styleMap.keys)
+      for (var cat in widget.styleMap.keys) {
         for (var style in widget.styleMap[cat]!.keys) {
           if (widget.styleMap[cat]![style] == value) {
             categoriesIndex = categoriesList.indexOf(cat);
@@ -70,6 +71,7 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
             break;
           }
         }
+      }
     }
 
     if (finalChange) widget.onChange(selectedStyle);
@@ -81,8 +83,9 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
       height: 400,
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 40,
+            // ignore: unnecessary_const
             child: Center(
               child: Text(
                 "Select Style",

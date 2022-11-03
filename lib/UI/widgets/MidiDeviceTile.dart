@@ -35,7 +35,7 @@ class MidiControllerTile extends StatelessWidget {
         children: [
           if (controller.connected)
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               onPressed: onSettings,
             ),
           Icon(

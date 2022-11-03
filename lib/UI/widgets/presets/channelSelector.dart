@@ -16,10 +16,10 @@ import 'effectSelector.dart';
 
 class ChannelSelector extends StatefulWidget {
   final NuxDevice device;
-  ChannelSelector({required this.device});
+  const ChannelSelector({Key? key, required this.device}) : super(key: key);
 
   @override
-  _ChannelSelectorState createState() => _ChannelSelectorState();
+  State createState() => _ChannelSelectorState();
 }
 
 class _ChannelSelectorState extends State<ChannelSelector> {
@@ -36,7 +36,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Scan QR"),
+          const Text("Scan QR"),
         ],
       ),
     ),
@@ -49,7 +49,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Import QR Image"),
+          const Text("Import QR Image"),
         ],
       ),
     ),
@@ -62,7 +62,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          Text("Share QR"),
+          const Text("Share QR"),
         ],
       ),
     ),
@@ -75,7 +75,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
   List<Widget> getButtons(double _width) {
     var disabledColor = Theme.of(context).disabledColor;
-    List<Widget> _buttons = <Widget>[];
+    List<Widget> buttons = <Widget>[];
 
     _presets = widget.device.getPresetsList();
     int row1 = _width < 400 && _presets.length > 4
@@ -120,13 +120,13 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             ),
             Text(
               _presets[i].channelName,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         );
       }
 
-      var button = Container(
+      var button = SizedBox(
         width: width,
         height:
             AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),
@@ -137,10 +137,10 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             },
             child: buttonBody),
       );
-      _buttons.add(button);
+      buttons.add(button);
     }
 
-    return _buttons;
+    return buttons;
   }
 
   qrPopupSelection(pos) async {
@@ -197,7 +197,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         content: Text(
           message,
           textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: const TextStyle(color: Colors.white, fontSize: 20),
         )));
   }
 
@@ -225,10 +225,11 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                     itemBuilder: (context) {
                       return qrMenu;
                     },
-                    child: Container(
+                    onSelected: qrPopupSelection,
+                    child: SizedBox(
                       width: 60,
                       child: Column(
-                        children: [
+                        children: const [
                           Icon(
                             Icons.qr_code_2,
                             size: 32,
@@ -236,18 +237,17 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                           Text("QR Code")
                         ],
                       ),
-                    ),
-                    onSelected: qrPopupSelection),
+                    )),
                 Expanded(
                   child: Container(
-                    constraints: BoxConstraints(minHeight: 60),
+                    constraints: const BoxConstraints(minHeight: 60),
                     color: Colors.grey[900],
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         return Wrap(
-                          children: getButtons(constraints.maxWidth),
                           alignment: WrapAlignment.center,
                           runAlignment: WrapAlignment.center,
+                          children: getButtons(constraints.maxWidth),
                         );
                       },
                     ),
@@ -258,7 +258,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                     widget.device
                         .toggleChannelActive(widget.device.selectedChannel);
                   },
-                  child: Container(
+                  child: SizedBox(
                     width: 60,
                     child: Column(
                       children: [
@@ -269,7 +269,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                               : Icons.circle_outlined,
                           size: 30,
                         ),
-                        Text("Active")
+                        const Text("Active")
                       ],
                     ),
                   ),

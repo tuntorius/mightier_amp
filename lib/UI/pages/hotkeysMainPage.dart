@@ -11,13 +11,13 @@ class HotkeysMainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Setup"),
+        title: const Text("Setup"),
       ),
       body: ListView(
         children: [
           ListTile(
-            title: Text("Channel Hotkeys"),
-            trailing: Icon(Icons.arrow_right),
+            title: const Text("Channel Hotkeys"),
+            trailing: const Icon(Icons.arrow_right),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => HotkeysSetup(
                       controller: controller,
@@ -25,8 +25,8 @@ class HotkeysMainPage extends StatelessWidget {
                     ))),
           ),
           ListTile(
-            title: Text("Effect On/Off Hotkeys"),
-            trailing: Icon(Icons.arrow_right),
+            title: const Text("Effect On/Off Hotkeys"),
+            trailing: const Icon(Icons.arrow_right),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => HotkeysSetup(
                       controller: controller,
@@ -34,8 +34,8 @@ class HotkeysMainPage extends StatelessWidget {
                     ))),
           ),
           ListTile(
-              title: Text("Parameter Hotkeys"),
-              trailing: Icon(Icons.arrow_right),
+              title: const Text("Parameter Hotkeys"),
+              trailing: const Icon(Icons.arrow_right),
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => HotkeysSetup(
                         controller: controller,

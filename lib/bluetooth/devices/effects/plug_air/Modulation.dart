@@ -6,18 +6,26 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Modulation extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugAir.modfxtype;
+  @override
   int? get nuxEnableIndex => PresetDataIndexPlugAir.modfxenable;
   //row 1247: 0-phaser, 1-chorus, 2-Stereo chorus, 3-Flanger, 4-Vibe, 5-Tremolo
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_ModfxEnable;
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_ModfxMode;
 }
 
 class Phaser extends Modulation {
+  @override
   final name = "Phaser";
 
+  @override
   int get nuxIndex => 0;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -44,9 +52,12 @@ class Phaser extends Modulation {
 }
 
 class Chorus extends Modulation {
+  @override
   final name = "Chorus";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -73,9 +84,12 @@ class Chorus extends Modulation {
 }
 
 class STChorus extends Modulation {
+  @override
   final name = "ST Chorus";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -102,9 +116,12 @@ class STChorus extends Modulation {
 }
 
 class Flanger extends Modulation {
+  @override
   final name = "Flanger";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -131,9 +148,12 @@ class Flanger extends Modulation {
 }
 
 class Vibe extends Modulation {
+  @override
   final name = "U-Vibe";
 
+  @override
   int get nuxIndex => 4;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -160,9 +180,12 @@ class Vibe extends Modulation {
 }
 
 class Tremolo extends Modulation {
+  @override
   final name = "Tremolo";
 
+  @override
   int get nuxIndex => 5;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Rate",
@@ -182,9 +205,12 @@ class Tremolo extends Modulation {
 }
 
 class PH100 extends Modulation {
+  @override
   final name = "PH 100";
 
+  @override
   int get nuxIndex => 0;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Intensity",
@@ -204,9 +230,12 @@ class PH100 extends Modulation {
 }
 
 class CE1 extends Modulation {
+  @override
   final name = "CE-1";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Intensity",
@@ -233,9 +262,12 @@ class CE1 extends Modulation {
 }
 
 class STChorusv2 extends Modulation {
+  @override
   final name = "ST Chorus";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Intensity",
@@ -262,9 +294,12 @@ class STChorusv2 extends Modulation {
 }
 
 class SCF extends Modulation {
+  @override
   final name = "SCF";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Speed",

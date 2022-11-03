@@ -5,6 +5,7 @@
 //https://support.chefsteps.com/hc/en-us/articles/360009480814-I-have-an-Android-Why-am-I-being-asked-to-allow-location-access-
 import 'dart:async';
 import 'dart:collection';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../UI/pages/settings.dart';
@@ -25,8 +26,8 @@ enum BluetoothError { unavailable, permissionDenied, locationServiceOff }
 typedef BluetoothErrorCallback = void Function(BluetoothError, dynamic data);
 
 class BLEMidiHandler {
-  static const String midiService = "03b80e5a-ede8-4b33-a751-6ce34ec4c700";
-  static const String midiCharacteristic =
+  static const String midiServiceGuid = "03b80e5a-ede8-4b33-a751-6ce34ec4c700";
+  static const String midiCharacteristicGuid =
       "7772e5db-3868-4112-a1a9-f2669d106bf3";
 
   //List of devices that doesn't advertise its midi service
@@ -38,10 +39,11 @@ class BLEMidiHandler {
 
   FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
 
-  StreamController<MidiSetupStatus> _status = StreamController.broadcast();
+  final StreamController<MidiSetupStatus> _status =
+      StreamController.broadcast();
   Stream<MidiSetupStatus> get status => _status.stream;
 
-  StreamController<bool> _scanStatus = StreamController.broadcast();
+  final StreamController<bool> _scanStatus = StreamController.broadcast();
   Stream<bool> get scanStatus => _scanStatus.stream;
 
   BluetoothState bluetoothState = BluetoothState.unknown;
@@ -106,12 +108,13 @@ class BLEMidiHandler {
         pStatus = await Permission.location.request();
         if (pStatus.isPermanentlyDenied) _permanentlyDenied = true;
         askOneTime = true;
-        if (!pStatus.isGranted)
+        if (!pStatus.isGranted) {
           onError(BluetoothError.permissionDenied, pStatus);
+        }
       }
-      Future.delayed(Duration(milliseconds: 500));
+      Future.delayed(const Duration(milliseconds: 500));
     } while (!pStatus.isGranted);
-    print("Location permission granted!");
+    debugPrint("Location permission granted!");
     _granted = true;
     _permanentlyDenied = false;
 
@@ -130,7 +133,7 @@ class BLEMidiHandler {
       onError(BluetoothError.locationServiceOff, null);
     }
 
-    print("BLEMidiHandler:Init()");
+    debugPrint("BLEMidiHandler:Init()");
 
     _subscribeForBLEState();
     _subscribeForScanStatus();
@@ -139,7 +142,7 @@ class BLEMidiHandler {
 
   void _subscribeForBLEState() {
     flutterBlue.state.listen((event) {
-      print(event.toString());
+      debugPrint(event.toString());
       bluetoothState = event;
       switch (event) {
         case BluetoothState.unknown:
@@ -184,26 +187,27 @@ class BLEMidiHandler {
       _controllerDevices.clear();
 
       for (ScanResult result in results) {
-        if (devNames.contains(result.device.name))
+        if (devNames.contains(result.device.name)) {
           nuxDevices.add(result);
-        else {
+        } else {
           bool validDevice = false;
           //check if it advertises the MIDI service
           for (var uuid in result.advertisementData.serviceUuids) {
-            if (uuid.toLowerCase() == midiService) validDevice = true;
+            if (uuid.toLowerCase() == midiServiceGuid) validDevice = true;
           }
 
           //check if it is in the special device list
           if (validDevice ||
               forcedDevices.contains(result.advertisementData.localName) ||
-              forcedDevices.contains(result.device.name))
+              forcedDevices.contains(result.device.name)) {
             _controllerDevices.add(result);
+          }
         }
       }
 
       _status.add(MidiSetupStatus.deviceFound);
       for (ScanResult r in results) {
-        print('${r.device.name} found! rssi: ${r.rssi}');
+        debugPrint('${r.device.name} found! rssi: ${r.rssi}');
       }
     });
   }
@@ -219,7 +223,7 @@ class BLEMidiHandler {
     if (bluetoothState != BluetoothState.on) return;
     flutterBlue
         .startScan(
-      timeout: Duration(seconds: 8),
+      timeout: const Duration(seconds: 8),
       //withServices: [Guid(midiService)]
     )
         .then((result) {
@@ -242,7 +246,7 @@ class BLEMidiHandler {
     if (deviceListProvider.call().contains(device.name)) {
       ampDevice = true;
       if (_connectInProgress || _device != null) {
-        print("Denying secondary connection!");
+        debugPrint("Denying secondary connection!");
         return;
       }
     }
@@ -251,15 +255,16 @@ class BLEMidiHandler {
     stopScanning();
     _status.add(MidiSetupStatus.deviceConnecting);
     try {
-      await device.connect(autoConnect: false, timeout: Duration(seconds: 5));
+      await device.connect(
+          autoConnect: false, timeout: const Duration(seconds: 5));
     } on Exception {
       _connectInProgress = false;
       return;
     } catch (e) {
-      print("Connect error $e");
+      debugPrint("Connect error $e");
       _connectInProgress = false;
       if (e == 'already_connected') return;
-      throw (e);
+      rethrow;
     }
 
     if (ampDevice) {
@@ -269,16 +274,18 @@ class BLEMidiHandler {
 
     List<BluetoothService> services = await device.discoverServices();
     //find midi service
-    BluetoothService? _midiService;
-    services.forEach((element) {
-      if (element.uuid == Guid(midiService)) _midiService = element;
-    });
+    BluetoothService? midiService;
+    for (var element in services) {
+      if (element.uuid == Guid(midiServiceGuid)) midiService = element;
+    }
 
-    _midiService?.characteristics.forEach((element) {
-      if (element.uuid == Guid(midiCharacteristic)) {
-        _connectAmpDevice(device, element);
+    if (midiService != null) {
+      for (var element in midiService!.characteristics) {
+        if (element.uuid == Guid(midiCharacteristicGuid)) {
+          _connectAmpDevice(device, element);
+        }
       }
-    });
+    }
   }
 
   void _connectAmpDevice(
@@ -315,32 +322,34 @@ class BLEMidiHandler {
     stopScanning();
     _status.add(MidiSetupStatus.deviceConnecting);
     try {
-      await device.connect(autoConnect: false, timeout: Duration(seconds: 5));
+      await device.connect(
+          autoConnect: false, timeout: const Duration(seconds: 5));
     } on Exception {
       _connectInProgress = false;
       return null;
     } catch (e) {
-      print("Connect error $e");
+      debugPrint("Connect error $e");
       _connectInProgress = false;
       if (e == 'already_connected') return null;
-      throw (e);
+      rethrow;
     }
 
     List<BluetoothService> services = await device.discoverServices();
     //find midi service
-    BluetoothService? _midiService;
-    services.forEach((element) {
-      if (element.uuid == Guid(midiService)) _midiService = element;
-    });
+    BluetoothService? midiService;
+    for (var element in services) {
+      if (element.uuid == Guid(midiServiceGuid)) midiService = element;
+    }
 
-    if (_midiService != null)
-      for (var characteristic in _midiService!.characteristics) {
-        if (characteristic.uuid == Guid(midiCharacteristic)) {
+    if (midiService != null) {
+      for (var characteristic in midiService.characteristics) {
+        if (characteristic.uuid == Guid(midiCharacteristicGuid)) {
           characteristic.setNotifyValue(true);
           _connectInProgress = false;
           return characteristic;
         }
       }
+    }
     return null;
   }
 
@@ -361,15 +370,15 @@ class BLEMidiHandler {
 
   ListQueue<List<int>> dataQueue = ListQueue<List<int>>();
 
-  void sendData(List<int> _data) {
+  void sendData(List<int> data) {
     if (!_granted) return;
-    dataQueue.addLast(_data);
+    dataQueue.addLast(data);
     if (queueFree) queueSender();
   }
 
   void queueSender() async {
     queueFree = false;
-    Stopwatch stopwatch = new Stopwatch()..start();
+    Stopwatch stopwatch = Stopwatch()..start();
     //List<int> currentData = List<int>();
 
     while (dataQueue.isNotEmpty) {
@@ -383,10 +392,11 @@ class BLEMidiHandler {
           await _midiCharacteristic!.write(data, withoutResponse: true);
 
           dataQueue.removeFirst();
-        } else
+        } else {
           dataQueue.clear();
+        }
       } catch (e) {
-        print(e);
+        debugPrint(e.toString());
       }
     }
     queueFree = true;

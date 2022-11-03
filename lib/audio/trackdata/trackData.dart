@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:mighty_plug_manager/audio/models/jamTrack.dart';
 import 'package:mighty_plug_manager/audio/models/setlist.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,7 +15,7 @@ class TrackData {
   static const tracksFile = "tracks.json";
   static const setlistsFile = "setlists.json";
 
-  final Uuid uuid = Uuid();
+  final Uuid uuid = const Uuid();
 
   factory TrackData() {
     return _storage;
@@ -29,7 +30,7 @@ class TrackData {
   List<JamTrack> get tracks => _tracksData;
 
   List<Setlist> _setlistsData = <Setlist>[];
-  Setlist _allTracks = Setlist("All Tracks", []);
+  final Setlist _allTracks = Setlist("All Tracks", []);
   List<Setlist> get setlistsFull => [_allTracks] + _setlistsData;
   Setlist get allTracks => _allTracks;
   List<Setlist> get setlists => _setlistsData;
@@ -62,16 +63,16 @@ class TrackData {
     try {
       var exists = await _tracksFile.exists();
       if (exists) {
-        var _tracksJson = await _tracksFile.readAsString();
-        var data = json.decode(_tracksJson);
+        var tracksJson = await _tracksFile.readAsString();
+        var data = json.decode(tracksJson);
         _tracksData =
             data.map<JamTrack>((json) => JamTrack.fromJson(json)).toList();
 
         //read setlists
         exists = await _setlistsFile.exists();
         if (exists) {
-          var _setlistsJson = await _setlistsFile.readAsString();
-          data = json.decode(_setlistsJson);
+          var setlistsJson = await _setlistsFile.readAsString();
+          data = json.decode(setlistsJson);
 
           _setlistsData =
               data.map<Setlist>((json) => Setlist.fromJson(json)).toList();
@@ -80,7 +81,7 @@ class TrackData {
       }
       _tracksReady = true;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       //still ready
       _tracksReady = true;
       //   //no file
@@ -90,14 +91,15 @@ class TrackData {
 
   _createAllTracksSetlist() {
     _allTracks.clear();
-    for (int i = 0; i < _tracksData.length; i++)
+    for (int i = 0; i < _tracksData.length; i++) {
       _allTracks.addTrack(_tracksData[i]);
+    }
   }
 
   Future waitLoading() async {
     for (int i = 0; i < 20; i++) {
       if (_tracksReady) break;
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
     }
   }
 
@@ -111,8 +113,9 @@ class TrackData {
   }
 
   JamTrack? findByUuid(String uuid) {
-    for (int i = 0; i < _tracksData.length; i++)
+    for (int i = 0; i < _tracksData.length; i++) {
       if (_tracksData[i].uuid == uuid) return _tracksData[i];
+    }
 
     return null;
   }
@@ -140,7 +143,7 @@ class TrackData {
 
   removeTracks(List<JamTrack> tracks) async {
     bool tracklistChanged = false;
-    tracks.forEach((element) {
+    for (var element in tracks) {
       _tracksData.remove(element);
 
       //remove any setlist instances
@@ -152,7 +155,7 @@ class TrackData {
           }
         }
       }
-    });
+    }
 
     if (tracklistChanged) await saveSetlists();
     await saveTracks();
@@ -160,8 +163,10 @@ class TrackData {
 
   bool isPresetInUse(String presetUuid) {
     for (int i = 0; i < _tracksData.length; i++) {
-      if (_tracksData[i].automation.initialEvent.getPresetUuid() == presetUuid)
+      if (_tracksData[i].automation.initialEvent.getPresetUuid() ==
+          presetUuid) {
         return true;
+      }
       var e = _tracksData[i].automation.events;
       for (int j = 0; j < e.length; j++) {
         if (e[j].getPresetUuid() == presetUuid) return true;
@@ -184,8 +189,10 @@ class TrackData {
 
   void removePresetInstances(String presetUuid) {
     for (int i = 0; i < _tracksData.length; i++) {
-      if (_tracksData[i].automation.initialEvent.getPresetUuid() == presetUuid)
+      if (_tracksData[i].automation.initialEvent.getPresetUuid() ==
+          presetUuid) {
         _tracksData[i].automation.initialEvent.clearPreset();
+      }
 
       var e = _tracksData[i].automation.events;
       for (int j = e.length - 1; j >= 0; j--) {
@@ -198,8 +205,9 @@ class TrackData {
   void removeMultiplePresetsInstances(List<String> presetsUuid) {
     for (int i = 0; i < _tracksData.length; i++) {
       if (presetsUuid
-          .contains(_tracksData[i].automation.initialEvent.getPresetUuid()))
+          .contains(_tracksData[i].automation.initialEvent.getPresetUuid())) {
         _tracksData[i].automation.initialEvent.clearPreset();
+      }
 
       var e = _tracksData[i].automation.events;
       for (int j = e.length - 1; j >= 0; j--) {
@@ -214,8 +222,8 @@ class TrackData {
 
   saveTracks() async {
     _createAllTracksSetlist();
-    String _json = json.encode(_tracksData);
-    await _tracksFile.writeAsString(_json);
+    String jsonData = json.encode(_tracksData);
+    await _tracksFile.writeAsString(jsonData);
   }
 
   addSetlist(String name) {
@@ -225,8 +233,9 @@ class TrackData {
   }
 
   Setlist? findSetlist(String name) {
-    for (int i = 0; i < _setlistsData.length; i++)
+    for (int i = 0; i < _setlistsData.length; i++) {
       if (_setlistsData[i].name == name) return _setlistsData[i];
+    }
     return null;
   }
 
@@ -238,8 +247,8 @@ class TrackData {
   }
 
   saveSetlists() async {
-    String _json = json.encode(_setlistsData);
-    await _setlistsFile.writeAsString(_json);
+    String jsonData = json.encode(_setlistsData);
+    await _setlistsFile.writeAsString(jsonData);
   }
 
   String _generateUuid() {
@@ -248,9 +257,9 @@ class TrackData {
     do {
       id = uuid.v4();
       // check unique
-      _tracksData.forEach((element) {
+      for (var element in _tracksData) {
         if (element.uuid == id) unique = false;
-      });
+      }
     } while (unique == false);
     return id;
   }

@@ -68,7 +68,7 @@ class DynamicTreeView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DynamicTreeViewOriState createState() => _DynamicTreeViewOriState();
+  State createState() => _DynamicTreeViewOriState();
 }
 
 class _DynamicTreeViewOriState extends State<DynamicTreeView> {
@@ -106,10 +106,10 @@ class _DynamicTreeViewOriState extends State<DynamicTreeView> {
       onSelected: widget.onSelected,
       config: widget.config,
       simplified: widget.simplified,
-      children: _buildChildren(d),
       hasNewItems: hasNewItems,
       title: d,
       key: Key(d),
+      children: _buildChildren(d),
     );
     return p;
   }
@@ -151,7 +151,7 @@ class ChildWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ChildWidgetState createState() => _ChildWidgetState();
+  State createState() => _ChildWidgetState();
 }
 
 class _ChildWidgetState extends State<ChildWidget>
@@ -182,8 +182,8 @@ class _ChildWidgetState extends State<ChildWidget>
   }
 
   void prepareAnimation() {
-    expandController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+    expandController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
     Animation<double> curve =
         CurvedAnimation(parent: expandController, curve: Curves.fastOutSlowIn);
     sizeAnimation = Tween(begin: 0.0, end: 1.0).animate(curve);
@@ -237,7 +237,7 @@ class ParentWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ParentWidgetState createState() => _ParentWidgetState();
+  State createState() => _ParentWidgetState();
 }
 
 class _ParentWidgetState extends State<ParentWidget>
@@ -259,8 +259,8 @@ class _ParentWidgetState extends State<ParentWidget>
   }
 
   void prepareAnimation() {
-    expandController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    expandController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
     Animation<double> curve =
         CurvedAnimation(parent: expandController, curve: Curves.fastOutSlowIn);
     arrowAnimation = Tween(begin: 0.0, end: 0.5).animate(curve);
@@ -270,12 +270,12 @@ class _ParentWidgetState extends State<ParentWidget>
   Widget build(BuildContext context) {
     //create trailing widget based on whether the preset is new
     Widget? trailingWidget;
-    if (widget.simplified)
+    if (widget.simplified) {
       trailingWidget = null;
-    else {
+    } else {
       var button = PopupMenuButton(
-        icon: Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16),
+        icon: const Padding(
+          padding: EdgeInsets.only(left: 16.0, right: 16),
           child: Icon(Icons.more_vert, color: Colors.grey),
         ),
         itemBuilder: widget.itemBuilder,
@@ -283,11 +283,11 @@ class _ParentWidgetState extends State<ParentWidget>
           widget.onSelected(pos, widget.title);
         },
       );
-      if (widget.hasNewItems)
+      if (widget.hasNewItems) {
         trailingWidget = Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.circle,
               color: Colors.blue,
               size: 16,
@@ -295,8 +295,9 @@ class _ParentWidgetState extends State<ParentWidget>
             button
           ],
         );
-      else
+      } else {
         trailingWidget = button;
+      }
     }
 
     return Column(
@@ -320,7 +321,8 @@ class _ParentWidgetState extends State<ParentWidget>
               if (!widget.simplified) widget.onLongPress?.call(widget.title);
             },
             title: Transform.translate(
-                offset: Offset(-16, 0), //workaround until horizontalTitleGap
+                offset:
+                    const Offset(-16, 0), //workaround until horizontalTitleGap
                 //is available in release channel
                 child:
                     Text(widget.title, style: widget.config.parentTextStyle)),
@@ -331,9 +333,9 @@ class _ParentWidgetState extends State<ParentWidget>
             ),
             trailing: trailingWidget),
         ChildWidget(
-          children: widget.children,
           config: widget.config,
           shouldExpand: shouldExpand,
+          children: widget.children,
         )
       ],
     );
@@ -354,12 +356,12 @@ class ChildTapListener extends ValueNotifier<Map<String, dynamic>> {
   // ChildTapListener() : super(null);
 
   void addMapValue(Map<String, dynamic> map) {
-    this.mapValue = map;
+    mapValue = map;
     notifyListeners();
   }
 
   Map getMapValue() {
-    return this.mapValue;
+    return mapValue;
   }
 }
 

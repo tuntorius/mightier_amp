@@ -12,12 +12,18 @@ import '../effects/lite/Ambience.dart';
 import 'Preset.dart';
 
 class MLitePreset extends Preset {
+  @override
   NuxDevice device;
+  @override
   int channel;
+  @override
   String channelName;
+  @override
   int get qrDataLength => 40;
+  @override
   Color get channelColor => Preset.channelColors[channel];
   final NoiseGate2Param noiseGate = NoiseGate2Param();
+  @override
   final List<LiteAmplifier> amplifierList = <LiteAmplifier>[];
   final List<Modulation> modulationList = <Modulation>[];
   final List<Ambience> ambiList = <Ambience>[];
@@ -52,12 +58,14 @@ class MLitePreset extends Preset {
   }
 
   /// checks if the effect slot can be switched on and off
+  @override
   bool slotSwitchable(int index) {
     if (index == 1) return false;
     return true;
   }
 
   //returns whether the specific slot is on or off
+  @override
   bool slotEnabled(int index) {
     switch (index) {
       case 0:
@@ -102,6 +110,7 @@ class MLitePreset extends Preset {
   }
 
   //returns list of effects for given slot
+  @override
   List<Processor> getEffectsForSlot(int slot) {
     switch (slot) {
       case 0:
@@ -117,6 +126,7 @@ class MLitePreset extends Preset {
   }
 
   //returns which of the effects is selected for a given slot
+  @override
   int getSelectedEffectForSlot(int slot) {
     switch (slot) {
       case 0:
@@ -149,16 +159,18 @@ class MLitePreset extends Preset {
     super.setSelectedEffectForSlot(slot, index, notifyBT);
   }
 
+  @override
   Color effectColor(int index) {
-    if (index != 1)
+    if (index != 1) {
       return device.processorList[index].color;
-    else
+    } else {
       return channelColor;
+    }
   }
 
   @override
   setFirmwareVersion(int ver) {}
 
   @override
-  void setupPresetFromNuxDataArray(List<int> _nuxData) {}
+  void setupPresetFromNuxDataArray(List<int> nuxData) {}
 }

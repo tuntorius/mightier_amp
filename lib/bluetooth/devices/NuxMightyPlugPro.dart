@@ -35,67 +35,100 @@ class NuxMightyPlugPro extends NuxDevice {
   //this is used in conversion of very old format of presets which
   // didn't contain device id. They were always for mighty plug/air
   static const defaultNuxId = "mighty_plug_air";
+  @override
   int get productVID => 48;
-  late PlugProCommunication _communication = PlugProCommunication(this, config);
+  late final PlugProCommunication _communication =
+      PlugProCommunication(this, config);
+  @override
   DeviceCommunication get communication => _communication;
 
-  NuxPlugProConfiguration _config = NuxPlugProConfiguration();
+  final NuxPlugProConfiguration _config = NuxPlugProConfiguration();
+  @override
   NuxPlugProConfiguration get config => _config;
 
   PlugProVersion version = PlugProVersion.PlugPro1;
 
+  @override
   String get productName => "NUX Mighty Plug Pro";
+  @override
   String get productNameShort => "Mighty Plug Pro";
+  @override
   String get productStringId => "mighty_plug_pro";
+  @override
   int get productVersion => version.index;
+  @override
   IconData get productIcon => MightierIcons.amp_plugair;
+  @override
   List<String> get productBLENames => ["MIGHTY PLUG PRO"];
 
+  @override
   int get channelsCount => 7;
+  @override
   int get effectsChainLength => 9;
   int get groupsCount => 1;
+  @override
   int get amplifierSlotIndex {
     var preset = getPreset(selectedChannel);
-    for (int i = 0; i < processorList.length; i++)
-      if (preset.getProcessorAtSlot(i) == PresetDataIndexPlugPro.Head_iAMP)
+    for (int i = 0; i < processorList.length; i++) {
+      if (preset.getProcessorAtSlot(i) == PresetDataIndexPlugPro.Head_iAMP) {
         return i;
+      }
+    }
 
     return PresetDataIndexPlugPro.Head_iAMP;
   }
 
+  @override
   bool get longChannelNames => false;
+  @override
   bool get fakeMasterVolume => false;
+  @override
   bool get activeChannelRetrieval => true;
+  @override
   bool get cabinetSupport => true;
+  @override
   bool get hackableIRs => false;
 
+  @override
   int get cabinetSlotIndex {
     var preset = getPreset(selectedChannel);
-    for (int i = 0; i < processorList.length; i++)
-      if (preset.getProcessorAtSlot(i) == PresetDataIndexPlugPro.Head_iCAB)
+    for (int i = 0; i < processorList.length; i++) {
+      if (preset.getProcessorAtSlot(i) == PresetDataIndexPlugPro.Head_iCAB) {
         return i;
+      }
+    }
 
     return PresetDataIndexPlugPro.Head_iCAB;
   }
 
+  @override
   bool get presetSaveSupport => true;
+  @override
   bool get reorderableFXChain => true;
+  @override
   bool get batterySupport => false;
+  @override
   bool get nativeActiveChannelsSupport => true;
+  @override
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
 
+  @override
   int get deviceQRId => 15;
+  @override
   int get deviceQRVersion => 1;
 
   double get drumsBass => config.drumsBass;
   double get drumsMiddle => config.drumsMiddle;
   double get drumsTreble => config.drumsTreble;
 
+  @override
   List<ProcessorInfo> get processorList => _processorList;
 
-  ProcessorInfo? ProcessorListNuxIndex(int index) {
-    for (var proc in _processorList)
+  @override
+  ProcessorInfo? processorListNuxIndex(int index) {
+    for (var proc in _processorList) {
       if (proc.nuxOrderIndex == index) return proc;
+    }
     return null;
   }
 
@@ -286,9 +319,9 @@ class NuxMightyPlugPro extends NuxDevice {
 
   NuxMightyPlugPro(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
-    PlugProChannel.values.forEach((element) {
+    for (var element in PlugProChannel.values) {
       channelNames.add(element.toString().split('.')[1]);
-    });
+    }
 
     //clean
     presets.add(PlugProPreset(
@@ -322,12 +355,15 @@ class NuxMightyPlugPro extends NuxDevice {
     presets.add(PlugProPreset(
         device: this, channel: PlugProChannel.Funk.index, channelName: "7"));
 
-    for (var preset in presets)
+    for (var preset in presets) {
       (preset as PlugProPreset).setFirmwareVersion(version.index);
+    }
   }
 
+  @override
   dynamic getDrumStyles() => drumCategories;
 
+  @override
   List<Preset> getPresetsList() {
     return presets;
   }
@@ -342,8 +378,9 @@ class NuxMightyPlugPro extends NuxDevice {
     version = PlugProVersion.PlugPro1;
 
     //set all presets with that firmware
-    for (var preset in presets)
+    for (var preset in presets) {
       (preset as PlugProPreset).setFirmwareVersion(version.index);
+    }
   }
 
   @override
@@ -352,8 +389,9 @@ class NuxMightyPlugPro extends NuxDevice {
     version = PlugProVersion.values[ver];
 
     //set all presets with that firmware
-    for (var preset in presets)
+    for (var preset in presets) {
       (preset as PlugProPreset).setFirmwareVersion(version.index);
+    }
   }
 
   @override
@@ -383,10 +421,12 @@ class NuxMightyPlugPro extends NuxDevice {
     _communication.setUsbDryWet(vol);
   }
 
+  @override
   Widget getSettingsWidget() {
     return PlugProSettings(device: this);
   }
 
+  @override
   bool checkQRVersionValid(int ver) {
     return ver == 1;
   }

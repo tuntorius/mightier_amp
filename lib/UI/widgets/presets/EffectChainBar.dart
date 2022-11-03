@@ -28,7 +28,7 @@ class EffectChainBar extends StatelessWidget {
 
   EffectChainButton buildItem(context, index) {
     var proc = preset.getProcessorAtSlot(index);
-    var effect = device.ProcessorListNuxIndex(proc);
+    var effect = device.processorListNuxIndex(proc);
     bool selected = index == device.selectedSlot;
     return EffectChainButton(
       effectInfo: effect!,
@@ -51,12 +51,12 @@ class EffectChainBar extends StatelessWidget {
         10);
 
     Widget list;
-    if (reorderable)
+    if (reorderable) {
       list = ReorderableListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: effectsChainPadding),
+        padding: const EdgeInsets.symmetric(horizontal: effectsChainPadding),
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: device.effectsChainLength,
         itemBuilder: buildItem,
         onReorder: (a, b) {
@@ -64,15 +64,16 @@ class EffectChainBar extends StatelessWidget {
           onReorder(a, b);
         },
       );
-    else
+    } else {
       list = ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: effectsChainPadding),
+        padding: const EdgeInsets.symmetric(horizontal: effectsChainPadding),
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: device.effectsChainLength,
         itemBuilder: buildItem,
       );
+    }
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: constrainHeight),
       child: list,

@@ -4,6 +4,7 @@ import 'package:mighty_plug_manager/midi/ControllerConstants.dart';
 import 'ControllerHotkeys.dart';
 
 enum ControllerType { Hid, MidiUsb, MidiBle }
+
 enum ControllerStatus { Connected, Disconnected }
 
 abstract class MidiController {
@@ -11,10 +12,10 @@ abstract class MidiController {
   String get id;
   ControllerType get type;
 
-  List<ControllerHotkey> _hotkeys = [];
+  final List<ControllerHotkey> _hotkeys = [];
 
   //faster access by code
-  Map<int, ControllerHotkey> _hotkeysDictionary = {};
+  final Map<int, ControllerHotkey> _hotkeysDictionary = {};
 
   assignHotkey(HotkeyControl ctrl, int index, int subindex, int keyCode,
       String hotkeyName) {
@@ -22,14 +23,14 @@ abstract class MidiController {
     if (ctrl == HotkeyControl.ParameterSet) keyCode &= 0xffffff00;
 
     var hk = getHotkeyByFunction(ctrl, index, subindex);
-    if (hk == null)
+    if (hk == null) {
       hk = ControllerHotkey(
           control: ctrl,
           index: index,
           subIndex: subindex,
           hotkeyCode: keyCode,
           hotkeyName: hotkeyName);
-    else {
+    } else {
       hk.hotkeyCode = keyCode;
       hk.hotkeyName = hotkeyName;
     }
@@ -61,8 +62,9 @@ abstract class MidiController {
       var _key = key & 0xffffff00;
       if (_key == mainCode &&
           (ignoreLowByte ||
-              _hotkeysDictionary[key]!.control == HotkeyControl.ParameterSet))
+              _hotkeysDictionary[key]!.control == HotkeyControl.ParameterSet)) {
         return _hotkeysDictionary[key];
+      }
     }
 
     return null;
@@ -71,8 +73,9 @@ abstract class MidiController {
   ControllerHotkey? getHotkeyByFunction(
       HotkeyControl ctrl, int index, int subindex) {
     for (var hk in _hotkeys) {
-      if (hk.control == ctrl && hk.index == index && hk.subIndex == subindex)
+      if (hk.control == ctrl && hk.index == index && hk.subIndex == subindex) {
         return hk;
+      }
     }
     return null;
   }
@@ -111,13 +114,15 @@ abstract class MidiController {
   Future<bool> connect();
 
   Map<String, dynamic> toJson() {
-    var data = Map<String, dynamic>();
+    var data = <String, dynamic>{};
     data["name"] = name;
     data["id"] = id;
 
     List<Map<String, dynamic>> hk = [];
 
-    for (int i = 0; i < _hotkeys.length; i++) hk.add(_hotkeys[i].toJson());
+    for (int i = 0; i < _hotkeys.length; i++) {
+      hk.add(_hotkeys[i].toJson());
+    }
     data["hotkeys"] = hk;
     return data;
   }
@@ -125,8 +130,9 @@ abstract class MidiController {
   fromJson(dynamic json) {
     if (json["hotkeys"] != null) {
       _hotkeys.clear();
-      for (var hk in json["hotkeys"])
+      for (var hk in json["hotkeys"]) {
         _hotkeys.add(ControllerHotkey.fromJson(hk));
+      }
       _rebuildDictionary();
     }
   }

@@ -74,7 +74,7 @@ class SharedPrefs {
   Future waitLoading() async {
     for (int i = 0; i < 20; i++) {
       if (_prefsReady) break;
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
     }
   }
 
@@ -107,15 +107,16 @@ class SharedPrefs {
 
   String? getCustomCabinetName(String productId, int cabIndex) {
     return _prefsData[SettingsKeys.customCabinets]?[productId]
-            ?[cabIndex.toString()] ??
-        null;
+        ?[cabIndex.toString()];
   }
 
   setCustomCabinetName(String productId, int cabIndex, String name) {
-    if (!_prefsData.containsKey(SettingsKeys.customCabinets))
+    if (!_prefsData.containsKey(SettingsKeys.customCabinets)) {
       _prefsData[SettingsKeys.customCabinets] = <String, Map<String, String>>{};
-    if (!_prefsData[SettingsKeys.customCabinets].containsKey(productId))
+    }
+    if (!_prefsData[SettingsKeys.customCabinets].containsKey(productId)) {
       _prefsData[SettingsKeys.customCabinets][productId] = <String, String>{};
+    }
 
     _prefsData[SettingsKeys.customCabinets][productId][cabIndex.toString()] =
         name;

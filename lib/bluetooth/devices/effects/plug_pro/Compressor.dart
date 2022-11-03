@@ -6,20 +6,30 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Compressor extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iCMP;
+  @override
   int? get nuxEnableIndex => nuxEffectTypeIndex;
+  @override
   int get nuxEnableMask => 0x40;
+  @override
   bool get nuxEnableInverted => true;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValuesPro.Head_iCMP;
+  @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iCMP;
 }
 
 class RoseComp extends Compressor {
+  @override
   final name = "Rose Comp";
 
+  @override
   int get nuxIndex => 1;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Sustain",
@@ -39,10 +49,13 @@ class RoseComp extends Compressor {
 }
 
 class KComp extends Compressor {
+  @override
   final name = "K Comp";
 
+  @override
   int get nuxIndex => 2;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Sustain",
@@ -69,10 +82,13 @@ class KComp extends Compressor {
 }
 
 class StudioComp extends Compressor {
+  @override
   final name = "Studio Comp";
 
+  @override
   int get nuxIndex => 3;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Threshold",

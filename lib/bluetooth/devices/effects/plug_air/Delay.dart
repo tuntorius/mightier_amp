@@ -7,18 +7,26 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugAir.delaytype;
+  @override
   int? get nuxEnableIndex => PresetDataIndexPlugAir.delayenable;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_DelayEnable;
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_DelayMode;
 }
 
 class AnalogDelay extends Delay {
+  @override
   final name = "Analog Delay";
 
+  @override
   int get nuxIndex => 0;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -45,9 +53,12 @@ class AnalogDelay extends Delay {
 }
 
 class TapeEcho extends Delay {
+  @override
   final name = "Tape Echo";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -71,6 +82,7 @@ class TapeEcho extends Delay {
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir21.index) return ModDelay().nuxIndex;
     return nuxIndex;
@@ -78,9 +90,12 @@ class TapeEcho extends Delay {
 }
 
 class DigitalDelay extends Delay {
+  @override
   final name = "Digital Delay";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -104,6 +119,7 @@ class DigitalDelay extends Delay {
         devicePresetIndex: PresetDataIndexPlugAir.delaytime,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir21.index)
       return DigitalDelayv2().nuxIndex;
@@ -112,9 +128,12 @@ class DigitalDelay extends Delay {
 }
 
 class PingPong extends Delay {
+  @override
   final name = "Ping Pong";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -141,9 +160,12 @@ class PingPong extends Delay {
 }
 
 class DigitalDelayv2 extends Delay {
+  @override
   final name = "Digital Delay";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -167,6 +189,7 @@ class DigitalDelayv2 extends Delay {
         devicePresetIndex: PresetDataIndexPlugAir.delayvar1time,
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index)
       return DigitalDelay().nuxIndex;
@@ -175,9 +198,12 @@ class DigitalDelayv2 extends Delay {
 }
 
 class ModDelay extends Delay {
+  @override
   final name = "Mod Delay";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -202,6 +228,7 @@ class ModDelay extends Delay {
         midiCC: MidiCCValues.bCC_DelayTime),
   ];
 
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return TapeEcho().nuxIndex;
     return nuxIndex;

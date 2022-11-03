@@ -16,41 +16,68 @@ import 'presets/Preset.dart';
 enum MLiteChannel { Clean, Overdrive, Distortion }
 
 class NuxMightyLite extends NuxDevice {
+  @override
   int get productVID => 48;
 
-  late LiteCommunication _communication = LiteCommunication(this, config);
+  late final LiteCommunication _communication = LiteCommunication(this, config);
+  @override
   DeviceCommunication get communication => _communication;
-  NuxDeviceConfiguration _config = NuxDeviceConfiguration();
+  final NuxDeviceConfiguration _config = NuxDeviceConfiguration();
+  @override
   NuxDeviceConfiguration get config => _config;
 
+  @override
   String get productName => "NUX Mighty Lite BT";
+  @override
   String get productNameShort => "Mighty Lite";
+  @override
   String get productStringId => "mighty_lite";
+  @override
   int get productVersion => 0;
+  @override
   IconData get productIcon => MightierIcons.amp_lite;
 
+  @override
   List<String> get productBLENames =>
       ["NUX MIGHTY LITE MIDI", "AirBorne GO", "GUO AN MIDI"];
 
+  @override
   int get channelsCount => 3;
+  @override
   int get effectsChainLength => 4;
   int get groupsCount => 1;
+  @override
   int get amplifierSlotIndex => 1;
+  @override
   bool get fakeMasterVolume => true;
+  @override
   bool get activeChannelRetrieval => false;
+  @override
   bool get longChannelNames => true;
+  @override
   bool get cabinetSupport => false;
+  @override
   bool get hackableIRs => false;
+  @override
   int get cabinetSlotIndex => 0;
+  @override
   bool get presetSaveSupport => false;
+  @override
   bool get reorderableFXChain => false;
+  @override
   bool get batterySupport => false;
+  @override
   bool get nativeActiveChannelsSupport => false;
+  @override
   int get channelChangeCC => MidiCCValues.bCC_AmpModeSetup;
+  @override
   int get deviceQRId => 9;
+  @override
   int get deviceQRVersion => 1;
 
+  @override
   List<String> get groupsName => ["Default"];
+  @override
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [
@@ -97,9 +124,9 @@ class NuxMightyLite extends NuxDevice {
 
   NuxMightyLite(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
-    MLiteChannel.values.forEach((element) {
+    for (var element in MLiteChannel.values) {
       channelNames.add(element.toString().split('.')[1]);
-    });
+    }
 
     //clean
     presets.add(MLitePreset(
@@ -118,8 +145,10 @@ class NuxMightyLite extends NuxDevice {
         channelName: "Dist"));
   }
 
+  @override
   dynamic getDrumStyles() => drumStyles;
 
+  @override
   List<Preset> getPresetsList() {
     return presets;
   }
@@ -142,6 +171,7 @@ class NuxMightyLite extends NuxDevice {
     return preset;
   }
 
+  @override
   bool checkQRVersionValid(int ver) {
     return true;
   }

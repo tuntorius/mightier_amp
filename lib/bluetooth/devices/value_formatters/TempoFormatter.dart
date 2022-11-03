@@ -3,6 +3,7 @@ import '../../../platform/simpleSharedPrefs.dart';
 import 'ValueFormatter.dart';
 
 class TempoFormatter extends ValueFormatter {
+  @override
   InputType get inputType => InputType.SliderInput;
 
   static const delayTimeMstable = [
@@ -69,25 +70,26 @@ class TempoFormatter extends ValueFormatter {
   String toLabel(double value) {
     var unit =
         SharedPrefs().getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index);
-    if (unit == TimeUnit.BPM.index)
+    if (unit == TimeUnit.BPM.index) {
       return "${percentageToBPM(value).toStringAsFixed(2)} BPM";
+    }
     return "${percentageToTime(value).toStringAsFixed(2)} s";
   }
 
   @override
-  double toHumanInput(double _value) {
+  double toHumanInput(double value) {
     var unit = TimeUnit.values[
         SharedPrefs().getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index)];
 
-    if (unit == TimeUnit.BPM) return percentageToBPM(_value);
-    return percentageToTime(_value);
+    if (unit == TimeUnit.BPM) return percentageToBPM(value);
+    return percentageToTime(value);
   }
 
   @override
-  double fromHumanInput(double _value) {
+  double fromHumanInput(double value) {
     var unit = TimeUnit.values[
         SharedPrefs().getValue(SettingsKeys.timeUnit, TimeUnit.BPM.index)];
-    if (unit == TimeUnit.BPM) return bpmToPercentage(_value);
-    return timeToPercentage(_value);
+    if (unit == TimeUnit.BPM) return bpmToPercentage(value);
+    return timeToPercentage(value);
   }
 }

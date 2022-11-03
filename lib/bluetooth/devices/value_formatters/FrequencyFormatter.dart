@@ -4,6 +4,7 @@ import 'dart:math';
 double log10(num x) => log(x) / ln10;
 
 class LowFrequencyFormatter extends ValueFormatter {
+  @override
   InputType get inputType => InputType.SliderInput;
 
   @override
@@ -29,6 +30,7 @@ class LowFrequencyFormatter extends ValueFormatter {
 }
 
 class HighFrequencyFormatter extends ValueFormatter {
+  @override
   InputType get inputType => InputType.SliderInput;
 
   @override
@@ -65,12 +67,12 @@ class HighFrequencyFormatter extends ValueFormatter {
   }
 
   @override
-  double toHumanInput(double _value) {
-    return _valueToFreq(_value);
+  double toHumanInput(double value) {
+    return _valueToFreq(value);
   }
 
   @override
-  double fromHumanInput(double _value) {
-    return _freqToValue(_value);
+  double fromHumanInput(double value) {
+    return _freqToValue(value);
   }
 }

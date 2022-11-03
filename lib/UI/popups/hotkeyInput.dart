@@ -27,10 +27,11 @@ class HotkeyInputDialog {
       do {
         bool ignoreLowByte = _control == HotkeyControl.ParameterSet;
         var hk = _midiController.getHotkeyByCode(_hotkeyCode!, ignoreLowByte);
-        if (hk != null)
+        if (hk != null) {
           _midiController.removeHotkey(hk);
-        else
+        } else {
           break;
+        }
       } while (_control == HotkeyControl.ParameterSet);
       _midiController.assignHotkey(
           _control, _index, _subindex, _hotkeyCode!, controller.text);
@@ -88,17 +89,18 @@ class HotkeyInputDialog {
         return KeyEventResult.skipRemainingHandlers;
       },
       child: AlertDialog(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back,
                   color: Colors.white,
                 ),
                 onPressed: () => Navigator.of(context).pop()),
-            Text('Set hotkey'),
+            const Text('Set hotkey'),
           ],
         ),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -121,10 +123,10 @@ class HotkeyInputDialog {
                 controller.text = None;
                 _hotkeyCode = null;
               },
-              child: Text("Clear")),
+              child: const Text("Clear")),
           TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Cancel")),
+              child: const Text("Cancel")),
           TextButton(
               onPressed: _applyHotkey,
               child: Text(

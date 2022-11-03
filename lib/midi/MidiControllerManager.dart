@@ -22,9 +22,9 @@ class MidiControllerManager extends ChangeNotifier {
 
   bool get isScanning => BleMidiManager().isScanning;
   List<MidiController> get controllers => _controllers;
-  List<MidiController> _controllers = [];
+  final List<MidiController> _controllers = [];
 
-  MidiController _hidController = HidController();
+  final MidiController _hidController = HidController();
 
   MidiDataOverride? dataOverride;
 
@@ -52,14 +52,14 @@ class MidiControllerManager extends ChangeNotifier {
     switch (statusValue) {
       case MidiSetupStatus.deviceFound:
         // check if this is valid nux device
-        BLEMidiHandler.instance().nuxDevices.forEach((dev) {
+        for (var dev in BLEMidiHandler.instance().nuxDevices) {
           if (dev.device.type != BluetoothDeviceType.classic) {
             //don't autoconnect on manual scan
             if (!BLEMidiHandler.instance().manualScan) {
               //_midiHandler.connectToDevice(dev.device);
             }
           }
-        });
+        }
         break;
     }
   }
@@ -186,9 +186,9 @@ class MidiControllerManager extends ChangeNotifier {
   _onControlMessage(
       MidiController ctrl, int code, int? sliderValue, String name) {
     //do whatever you do
-    if (dataOverride != null)
+    if (dataOverride != null) {
       dataOverride!.call(code, sliderValue, name);
-    else {
+    } else {
       //execute function
       var hk = ctrl.getHotkeyByCode(code, false);
       hk?.execute(sliderValue);
@@ -209,12 +209,12 @@ class MidiControllerManager extends ChangeNotifier {
     try {
       var exists = await _controllersFile.exists();
       if (exists) {
-        var _ctrlJson = await _controllersFile.readAsString();
-        _controllersData = json.decode(_ctrlJson);
+        var ctrlJson = await _controllersFile.readAsString();
+        _controllersData = json.decode(ctrlJson);
         _loadControllerHotkeys(_hidController);
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -224,10 +224,12 @@ class MidiControllerManager extends ChangeNotifier {
 
     //while json encode does this, it's needed here as well
     //so prepare it manually
-    for (var c in _controllers) _controllersData.add(c.toJson());
+    for (var c in _controllers) {
+      _controllersData.add(c.toJson());
+    }
 
-    String _json = json.encode(_controllersData);
-    await _controllersFile.writeAsString(_json);
+    String jsonData = json.encode(_controllersData);
+    await _controllersFile.writeAsString(jsonData);
   }
 
   _getDirectory() async {
@@ -241,9 +243,10 @@ class MidiControllerManager extends ChangeNotifier {
   }
 
   _loadControllerHotkeys(MidiController ctrl) {
-    for (var config in _controllersData)
+    for (var config in _controllersData) {
       if (config is Map<String, dynamic>) {
         if (config["name"] == ctrl.name) ctrl.fromJson(config);
       }
+    }
   }
 }

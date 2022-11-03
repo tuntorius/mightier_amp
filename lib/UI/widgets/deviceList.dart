@@ -38,7 +38,7 @@ class DeviceList extends StatelessWidget {
                       ? Colors.blue
                       : Colors.white)),
           trailing: result.device.type != BluetoothDeviceType.classic
-              ? Icon(Icons.bluetooth, color: Colors.white)
+              ? const Icon(Icons.bluetooth, color: Colors.white)
               : null,
           onTap: () {
             midiHandler.connectToDevice(result.device);

@@ -23,7 +23,7 @@ class BackingTracksCoSource extends OnlineSource {
       var songs = <OnlineTrack>[];
       var doc = html.parse(result.body);
       var results = doc.querySelectorAll("div.pl-in");
-      if (results.length > 0) {
+      if (results.isNotEmpty) {
         for (var i = 0; i < results.length; i++) {
           var item = results[i];
           var url = item.children[1].children[0].attributes['data-url'] ?? "";

@@ -8,17 +8,17 @@ class MidiControlInfoDialog {
   Widget buildDialog(BuildContext context,
       {required List<Processor> effects, required int paramIndex}) {
     return AlertDialog(
-      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back,
                 color: Colors.white,
               ),
               onPressed: () => Navigator.of(context).pop()),
-          Text('Control Info'),
+          const Text('Control Info'),
         ],
       ),
       content: Container(
@@ -30,8 +30,9 @@ class MidiControlInfoDialog {
         child: ListView.builder(
           itemBuilder: (context, index) {
             String paramName = "N/A";
-            if (effects[index].parameters.length > paramIndex)
+            if (effects[index].parameters.length > paramIndex) {
               paramName = effects[index].parameters[paramIndex].name;
+            }
 
             return ListTile(
               title: Text(effects[index].name),

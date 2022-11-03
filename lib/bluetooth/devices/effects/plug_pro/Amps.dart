@@ -7,24 +7,37 @@ import '../Processor.dart';
 import 'Cabinet.dart';
 
 abstract class PlugProAmplifier extends Amplifier {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iAMP;
+  @override
   int? get nuxEnableIndex => nuxEffectTypeIndex;
+  @override
   int get nuxEnableMask => 0x40;
+  @override
   bool get nuxEnableInverted => true;
 
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValuesPro.Head_iAMP;
+  @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iAMP;
+  @override
   int get defaultCab;
 }
 
 class JazzClean extends PlugProAmplifier {
+  @override
   final name = "Jazz Clean";
 
+  @override
   int get nuxIndex => 1;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -76,9 +89,12 @@ class JazzClean extends PlugProAmplifier {
 }
 
 class DeluxeRvb extends PlugProAmplifier {
+  @override
   final name = "Deluxe Rvb";
 
+  @override
   int get nuxIndex => 2;
+  @override
   int get defaultCab => DR112Pro.cabIndex;
 
   @override
@@ -123,9 +139,12 @@ class DeluxeRvb extends PlugProAmplifier {
 }
 
 class BassMate extends PlugProAmplifier {
+  @override
   final name = "Bass Mate";
 
+  @override
   int get defaultCab => BS410.cabIndex;
+  @override
   int get nuxIndex => 3;
 
   @override
@@ -177,12 +196,17 @@ class BassMate extends PlugProAmplifier {
 }
 
 class Tweedy extends PlugProAmplifier {
+  @override
   final name = "Tweedy";
 
+  @override
   int get defaultCab => DR112Pro.cabIndex;
+  @override
   int get nuxIndex => 4;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -213,9 +237,12 @@ class Tweedy extends PlugProAmplifier {
 }
 
 class HiWire extends PlugProAmplifier {
+  @override
   final name = "Hiwire";
 
+  @override
   int get nuxIndex => 6;
+  @override
   int get defaultCab => HIWIRE412.cabIndex;
 
   @override
@@ -267,9 +294,12 @@ class HiWire extends PlugProAmplifier {
 }
 
 class CaliCrunch extends PlugProAmplifier {
+  @override
   final name = "Cali Crunch";
 
+  @override
   int get nuxIndex => 7;
+  @override
   int get defaultCab => CALI112.cabIndex;
 
   @override
@@ -321,12 +351,17 @@ class CaliCrunch extends PlugProAmplifier {
 }
 
 class ClassA30 extends PlugProAmplifier {
+  @override
   final name = "Class A30";
 
+  @override
   int get nuxIndex => 9;
+  @override
   int get defaultCab => A212Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Drive";
 
   @override
@@ -371,9 +406,12 @@ class ClassA30 extends PlugProAmplifier {
 }
 
 class Plexi100 extends PlugProAmplifier {
+  @override
   final name = "Plexi 100";
 
+  @override
   int get nuxIndex => 10;
+  @override
   int get defaultCab => GB412Pro.cabIndex;
 
   @override
@@ -425,12 +463,17 @@ class Plexi100 extends PlugProAmplifier {
 }
 
 class Plexi45 extends PlugProAmplifier {
+  @override
   final name = "Plexi 45";
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Overdrive";
 
+  @override
   int get nuxIndex => 11;
+  @override
   int get defaultCab => GB412Pro.cabIndex;
 
   @override
@@ -482,9 +525,12 @@ class Plexi45 extends PlugProAmplifier {
 }
 
 class Brit800 extends PlugProAmplifier {
+  @override
   final name = "Brit 800";
 
+  @override
   int get nuxIndex => 12;
+  @override
   int get defaultCab => M1960AV.cabIndex;
 
   @override
@@ -536,9 +582,12 @@ class Brit800 extends PlugProAmplifier {
 }
 
 class Pl1987x50 extends PlugProAmplifier {
+  @override
   final name = "1987x50";
 
+  @override
   int get nuxIndex => 13;
+  @override
   int get defaultCab => M1960TV.cabIndex;
 
   @override
@@ -590,9 +639,12 @@ class Pl1987x50 extends PlugProAmplifier {
 }
 
 class Slo100 extends PlugProAmplifier {
+  @override
   final name = "Slo 100";
 
+  @override
   int get nuxIndex => 14;
+  @override
   int get defaultCab => SLO412.cabIndex;
 
   @override
@@ -644,9 +696,12 @@ class Slo100 extends PlugProAmplifier {
 }
 
 class FiremanHBE extends PlugProAmplifier {
+  @override
   final name = "Fireman HBE";
 
+  @override
   int get nuxIndex => 15;
+  @override
   int get defaultCab => FIREMAN412.cabIndex;
 
   @override
@@ -698,9 +753,12 @@ class FiremanHBE extends PlugProAmplifier {
 }
 
 class DualRect extends PlugProAmplifier {
+  @override
   final name = "Dual Rect";
 
+  @override
   int get nuxIndex => 16;
+  @override
   int get defaultCab => RECT412.cabIndex;
 
   @override
@@ -752,9 +810,12 @@ class DualRect extends PlugProAmplifier {
 }
 
 class DIEVH4 extends PlugProAmplifier {
+  @override
   final name = "DIE VH4";
 
+  @override
   int get nuxIndex => 17;
+  @override
   int get defaultCab => DIE412.cabIndex;
 
   @override
@@ -806,9 +867,12 @@ class DIEVH4 extends PlugProAmplifier {
 }
 
 class MrZ38 extends PlugProAmplifier {
+  @override
   final name = "Mr. Z38";
 
+  @override
   int get nuxIndex => 20;
+  @override
   int get defaultCab => Z212.cabIndex;
 
   @override
@@ -860,12 +924,17 @@ class MrZ38 extends PlugProAmplifier {
 }
 
 class SuperRvb extends PlugProAmplifier {
+  @override
   final name = "Super Rvb";
 
+  @override
   int get nuxIndex => 21;
+  @override
   int get defaultCab => SUPERVERB410.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -917,9 +986,12 @@ class SuperRvb extends PlugProAmplifier {
 }
 
 class AGL extends PlugProAmplifier {
+  @override
   final name = "AGL";
 
+  @override
   int get nuxIndex => 26;
+  @override
   int get defaultCab => AGLDB810.cabIndex;
 
   @override
@@ -971,12 +1043,17 @@ class AGL extends PlugProAmplifier {
 }
 
 class MLD extends PlugProAmplifier {
+  @override
   final name = "MLD";
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Bass";
 
+  @override
   int get nuxIndex => 27;
+  @override
   int get defaultCab => MKB410.cabIndex;
 
   @override
@@ -1028,12 +1105,17 @@ class MLD extends PlugProAmplifier {
 }
 
 class OptimaAir extends PlugProAmplifier {
+  @override
   final name = "Optima Air";
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Acoustic";
 
+  @override
   int get nuxIndex => 28;
+  @override
   int get defaultCab => GJ15Pro.cabIndex;
 
   @override
@@ -1078,9 +1160,12 @@ class OptimaAir extends PlugProAmplifier {
 }
 
 class Stageman extends PlugProAmplifier {
+  @override
   final name = "Stageman";
 
+  @override
   int get nuxIndex => 29;
+  @override
   int get defaultCab => MD45Pro.cabIndex;
 
   @override
@@ -1125,12 +1210,17 @@ class Stageman extends PlugProAmplifier {
 }
 
 class Unknown0 extends PlugProAmplifier {
+  @override
   final name = "Unknown 0";
 
+  @override
   int get nuxIndex => 0;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1182,12 +1272,17 @@ class Unknown0 extends PlugProAmplifier {
 }
 
 class Unknown5 extends PlugProAmplifier {
+  @override
   final name = "Unknown 5";
 
+  @override
   int get nuxIndex => 5;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1239,12 +1334,17 @@ class Unknown5 extends PlugProAmplifier {
 }
 
 class Unknown8 extends PlugProAmplifier {
+  @override
   final name = "Unknown 8";
 
+  @override
   int get nuxIndex => 8;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1296,12 +1396,17 @@ class Unknown8 extends PlugProAmplifier {
 }
 
 class Unknown18 extends PlugProAmplifier {
+  @override
   final name = "Unknown 18";
 
+  @override
   int get nuxIndex => 18;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1353,12 +1458,17 @@ class Unknown18 extends PlugProAmplifier {
 }
 
 class Unknown19 extends PlugProAmplifier {
+  @override
   final name = "Unknown 19";
 
+  @override
   int get nuxIndex => 19;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1410,12 +1520,17 @@ class Unknown19 extends PlugProAmplifier {
 }
 
 class Unknown22 extends PlugProAmplifier {
+  @override
   final name = "Unknown 22";
 
+  @override
   int get nuxIndex => 22;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1467,12 +1582,17 @@ class Unknown22 extends PlugProAmplifier {
 }
 
 class Unknown23 extends PlugProAmplifier {
+  @override
   final name = "Unknown 23";
 
+  @override
   int get nuxIndex => 23;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1524,12 +1644,17 @@ class Unknown23 extends PlugProAmplifier {
 }
 
 class Unknown24 extends PlugProAmplifier {
+  @override
   final name = "Unknown 24";
 
+  @override
   int get nuxIndex => 24;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1581,12 +1706,17 @@ class Unknown24 extends PlugProAmplifier {
 }
 
 class Unknown25 extends PlugProAmplifier {
+  @override
   final name = "Unknown 25";
 
+  @override
   int get nuxIndex => 25;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -1638,12 +1768,17 @@ class Unknown25 extends PlugProAmplifier {
 }
 
 class Unknown30 extends PlugProAmplifier {
+  @override
   final name = "Unknown 30";
 
+  @override
   int get nuxIndex => 30;
+  @override
   int get defaultCab => JZ120Pro.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override

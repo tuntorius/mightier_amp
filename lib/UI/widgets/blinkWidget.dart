@@ -7,11 +7,11 @@ class BlinkWidget extends StatefulWidget {
   final List<Widget> children;
   final int interval;
 
-  BlinkWidget({required this.children, this.interval = 500, Key? key})
+  const BlinkWidget({required this.children, this.interval = 500, Key? key})
       : super(key: key);
 
   @override
-  _BlinkWidgetState createState() => _BlinkWidgetState();
+  State createState() => _BlinkWidgetState();
 }
 
 class _BlinkWidgetState extends State<BlinkWidget>
@@ -19,6 +19,7 @@ class _BlinkWidgetState extends State<BlinkWidget>
   late AnimationController _controller;
   int _currentWidget = 0;
 
+  @override
   initState() {
     super.initState();
 
@@ -40,6 +41,7 @@ class _BlinkWidgetState extends State<BlinkWidget>
     _controller.forward();
   }
 
+  @override
   dispose() {
     _controller.dispose();
     super.dispose();

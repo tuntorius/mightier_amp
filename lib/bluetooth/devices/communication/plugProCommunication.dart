@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../NuxDevice.dart';
 import '../effects/plug_pro/Cabinet.dart';
 import '../presets/PlugProPreset.dart';
@@ -22,12 +24,14 @@ class PlugProCommunication extends DeviceCommunication {
   int _readyPresetsCount = 0;
   int _readyIRsCount = 0;
 
+  @override
   NuxPlugProConfiguration get config => super.config as NuxPlugProConfiguration;
 
-  static const int CustomIRStart = 34;
-  static const int CustomIRsCount = 20;
-  static const int IRLength = CustomIRStart + CustomIRsCount;
+  static const int customIRStart = 34;
+  static const int customIRsCount = 20;
+  static const int irLength = customIRStart + customIRsCount;
 
+  @override
   List<int> createFirmwareMessage() {
     List<int> msg = [];
 
@@ -46,13 +50,14 @@ class PlugProCommunication extends DeviceCommunication {
     return msg;
   }
 
+  @override
   void performNextConnectionStep() {
     switch (currentConnectionStep) {
       case 0: //presets
         device.deviceControl.sendBLEData(requestPresetByIndex(0));
         break;
       case 1: //IR names
-        device.deviceControl.sendBLEData(_requestIRName(CustomIRStart));
+        device.deviceControl.sendBLEData(_requestIRName(customIRStart));
         break;
       case 2:
         device.deviceControl.sendBLEData(_requestCurrentChannel());
@@ -66,6 +71,7 @@ class PlugProCommunication extends DeviceCommunication {
     }
   }
 
+  @override
   void saveCurrentPreset() {
     var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_SPEC_CMD, SyxDir.kSYXDIR_SET, [SysCtrlState.syscmd_save]);
@@ -73,6 +79,7 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   List<int> requestPresetByIndex(int index) {
     return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_PRESET, SyxDir.kSYXDIR_REQ, [index]);
@@ -103,6 +110,7 @@ class PlugProCommunication extends DeviceCommunication {
         SysexPrivacy.kSYSEX_PRIVATE, SyxMsg.kSYX_DRUM, SyxDir.kSYXDIR_REQ, []);
   }
 
+  @override
   void requestBatteryStatus() {
     if (!device.batterySupport) return;
     //TODO: Wrong!!!
@@ -124,6 +132,7 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendSlotEnabledState(int slot) {
     if (!device.deviceControl.isConnected) return;
     var preset = device.getPreset(device.selectedChannel);
@@ -141,6 +150,7 @@ class PlugProCommunication extends DeviceCommunication {
     _sendSlotData(slot, preset.slotEnabled(slot), index);
   }
 
+  @override
   void sendActiveChannels(List<bool> channels) {
     if (!device.deviceControl.isConnected) return;
     int channelsBitfield = 0;
@@ -152,6 +162,7 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendSlotOrder() {
     if (!device.deviceControl.isConnected) return;
     var preset = device.getPreset(device.selectedChannel);
@@ -159,7 +170,7 @@ class PlugProCommunication extends DeviceCommunication {
 
     var nuxOrder = [order.length];
     for (var i = 0; i < order.length; i++) {
-      var p = device.ProcessorListNuxIndex(order[i]);
+      var p = device.processorListNuxIndex(order[i]);
       if (p != null) nuxOrder.add(p.nuxOrderIndex);
     }
     var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
@@ -167,22 +178,26 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   List<int> setChannel(int channel) {
     return createPCMessage(channel);
   }
 
+  @override
   void sendDrumsEnabled(bool enabled) {
     if (!device.deviceControl.isConnected) return;
     var data = createCCMessage(MidiCCValuesPro.DRUMENABLE, enabled ? 1 : 0);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendDrumsStyle(int style) {
     if (!device.deviceControl.isConnected) return;
     var data = createCCMessage(MidiCCValuesPro.DRUMTYPE, style);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendDrumsLevel(double volume) {
     if (!device.deviceControl.isConnected) return;
     var data = createCCMessage(MidiCCValuesPro.DRUMLEVEL, volume.round());
@@ -207,6 +222,7 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendDrumsTempo(double tempo) {
     if (!device.deviceControl.isConnected) return;
 
@@ -231,20 +247,25 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void setEcoMode(bool enable) {}
+  @override
   void setBTEq(int eq) {}
+  @override
   void setUsbAudioMode(int mode) {
     if (!device.deviceControl.isConnected) return;
     var data = createCCMessage(MidiCCValuesPro.USBROUNT_3, mode);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void setUsbInputVolume(int vol) {
     if (!device.deviceControl.isConnected) return;
     var data = createCCMessage(MidiCCValuesPro.USBROUNT_1, vol);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void setUsbOutputVolume(int vol) {
     if (!device.deviceControl.isConnected) return;
     var data = createCCMessage(MidiCCValuesPro.USBROUNT_2, vol);
@@ -282,21 +303,21 @@ class PlugProCommunication extends DeviceCommunication {
   void _handlePresetDataPiece(List<int> data) {
     List<List<int>> presetData = _splitPresetData(data);
 
-    for (List<int> _data in presetData) {
+    for (List<int> data in presetData) {
       //remove last 2 bytes if needed
-      if (_data[_data.length - 1] == MidiMessageValues.sysExEnd) {
-        _data = _data.sublist(0, _data.length - 2);
+      if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
+        data = data.sublist(0, data.length - 2);
       }
 
-      var total = (_data[3] & 0xf0) >> 4;
-      var current = _data[3] & 0x0f;
+      var total = (data[3] & 0xf0) >> 4;
+      var current = data[3] & 0x0f;
 
-      print('preset ${_data[2] + 1}, piece ${current + 1} of $total');
+      debugPrint('preset ${data[2] + 1}, piece ${current + 1} of $total');
 
-      var preset = device.getPreset(_data[2]);
+      var preset = device.getPreset(data[2]);
       if (current == 0) preset.resetNuxData();
 
-      preset.addNuxPayloadPiece(_data.sublist(4), current, total);
+      preset.addNuxPayloadPiece(data.sublist(4), current, total);
 
       if (preset.payloadPiecesReady()) {
         preset.setupPresetFromNuxData();
@@ -305,11 +326,10 @@ class PlugProCommunication extends DeviceCommunication {
 
           if (_readyPresetsCount == device.channelsCount) {
             device.onPresetsReady();
-            print("Presets connection step ready");
+            debugPrint("Presets connection step ready");
             connectionStepReady();
           } else {
-            device.deviceControl
-                .sendBLEData(requestPresetByIndex(_data[2] + 1));
+            device.deviceControl.sendBLEData(requestPresetByIndex(data[2] + 1));
           }
         }
       }
@@ -319,9 +339,9 @@ class PlugProCommunication extends DeviceCommunication {
   void _handleIRName(List<int> data) {
     int index = data[1];
     bool hasIR = data[2] != 0;
-    var decoder = AsciiDecoder();
+    var decoder = const AsciiDecoder();
     String name = decoder.convert(data.sublist(6, 17));
-    print("IR $index, active: $hasIR, name: $name");
+    debugPrint("IR $index, active: $hasIR, name: $name");
 
     for (var preset in device.presets) {
       PlugProPreset proPreset = preset as PlugProPreset;
@@ -333,12 +353,13 @@ class PlugProCommunication extends DeviceCommunication {
     }
     _readyIRsCount++;
 
-    if (_readyIRsCount == CustomIRsCount) {
-      print("IR names connection step ready");
+    if (_readyIRsCount == irLength) {
+      debugPrint("IR names connection step ready");
       connectionStepReady();
-    } else
+    } else {
       device.deviceControl
-          .sendBLEData(_requestIRName(CustomIRStart + _readyIRsCount));
+          .sendBLEData(_requestIRName(customIRStart + _readyIRsCount));
+    }
   }
 
   bool _handleEffectsOrderData(List<int> data) {
@@ -446,9 +467,6 @@ class PlugProCommunication extends DeviceCommunication {
 };
 */
   void _handleSystemSettings(List<int> data) {
-    //TODO: usb audio settings here
-    print(data);
-
     config.routingMode = data[18];
     config.recLevel = data[16];
     config.playbackLevel = data[17];
@@ -482,19 +500,21 @@ const z = {
 
       config.drumsTempo = (data[8] + (data[7] << 7)).toDouble();
       if (!isConnectionReady()) {
-        print("Drums connection step ready");
+        debugPrint("Drums connection step ready");
         connectionStepReady();
-      } else
+      } else {
         device.deviceControl.forceNotifyListeners();
+      }
     }
   }
 
 //Some discovered stuff
 //kSYX_SYSTEMSET - for ACTIVE channels, mic stuff and USB stuff
 
+  @override
   void onDataReceive(List<int> data) {
     if (data.length > 2) {
-      print(data);
+      debugPrint(data.toString());
       switch (data[2]) {
         case MidiMessageValues.controlChange:
           switch (data[3]) {
@@ -529,7 +549,7 @@ const z = {
                   //to proceed with connection
                   if (data[9] == 0x32) {
                     device.setSelectedChannelNuxIndex(data[8], false);
-                    print("Current preset connection step ready");
+                    debugPrint("Current preset connection step ready");
                     connectionStepReady();
                   }
                   return;
@@ -562,6 +582,7 @@ const z = {
     }
   }
 
+  @override
   void onDisconnect() {
     super.onDisconnect();
     _readyPresetsCount = 0;

@@ -3,6 +3,7 @@ import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
 
 class UsbMidiController extends MidiController {
   MidiDevice device;
+  @override
   ControllerType get type => ControllerType.MidiUsb;
   UsbMidiController(this.device);
 
@@ -22,10 +23,11 @@ class UsbMidiController extends MidiController {
     for (int i = 0; i < 4; i++) {
       var devs = await MidiCommand().devices;
       if (devs != null) {
-        for (var d in devs)
+        for (var d in devs) {
           if (d.name == name && d.id == id && d.connected) device = d;
+        }
       }
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       if (device.connected) return true;
     }
 
@@ -36,11 +38,12 @@ class UsbMidiController extends MidiController {
     bool found = false;
     var devs = await MidiCommand().devices;
     if (devs != null) {
-      for (var d in devs)
+      for (var d in devs) {
         if (d.name == name && d.id == id) {
           device = d;
           found = true;
         }
+      }
     }
     //a shitty hack to work around missing functionality
     if (found == false) device.connected = false;

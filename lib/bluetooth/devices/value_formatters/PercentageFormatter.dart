@@ -1,6 +1,7 @@
 import 'ValueFormatter.dart';
 
 class PercentageFormatter extends ValueFormatter {
+  @override
   InputType get inputType => InputType.SliderInput;
 
   @override
@@ -20,6 +21,7 @@ class PercentageFormatter extends ValueFormatter {
 }
 
 class PercentageFormatterMPPro extends ValueFormatter {
+  @override
   InputType get inputType => InputType.SliderInput;
 
   @override

@@ -12,22 +12,23 @@ import 'effectEditors/SlidersEditor.dart';
 class EffectEditor extends StatefulWidget {
   final Preset preset;
   final int slot;
-  EffectEditor({required this.preset, required this.slot});
+  const EffectEditor({Key? key, required this.preset, required this.slot})
+      : super(key: key);
   @override
-  _EffectEditorState createState() => _EffectEditorState();
+  State createState() => _EffectEditorState();
 }
 
 class _EffectEditorState extends State<EffectEditor> {
   @override
   Widget build(BuildContext context) {
-    var _preset = widget.preset;
-    var _slot = widget.slot;
+    var preset = widget.preset;
+    var slot = widget.slot;
 
     //get all the parameters for the slot
-    List<Processor> prc = _preset.getEffectsForSlot(_slot);
+    List<Processor> prc = preset.getEffectsForSlot(slot);
 
     //create the widgets to edit them
-    var _selected = _preset.getSelectedEffectForSlot(_slot);
+    var _selected = preset.getSelectedEffectForSlot(slot);
 
     switch (prc[_selected].editorUI) {
       case EffectEditorUI.Sliders:

@@ -32,11 +32,12 @@ class AutomationEvent {
   void setPresetUuid(String presetUuid) {
     _presetUuid = presetUuid;
     if (presetUuid == "") return;
-    var _p = PresetsStorage().findPresetByUuid(presetUuid);
-    if (_p != null) {
-      if (_p.containsKey("cabinet"))
-        cabinetLevelOverride = _p["cabinet"]["level"];
-      _preset = _p;
+    var p = PresetsStorage().findPresetByUuid(presetUuid);
+    if (p != null) {
+      if (p.containsKey("cabinet")) {
+        cabinetLevelOverride = p["cabinet"]["level"];
+      }
+      _preset = p;
     }
   }
 
@@ -67,17 +68,17 @@ class AutomationEvent {
   factory AutomationEvent.fromJson(dynamic json) {
     var type = AutomationEventType.values[json["type"] ?? 0];
     Duration time = Duration(milliseconds: json["time"] ?? 0);
-    AutomationEvent _event = AutomationEvent(eventTime: time, type: type);
-    _event.setPresetUuid(json['preset_id'] ?? "");
-    _event.cabinetLevelOverrideEnable = json["cab_override"] ?? false;
-    _event.cabinetLevelOverride = json["cab_level"] ?? 0;
-    return _event;
+    AutomationEvent event = AutomationEvent(eventTime: time, type: type);
+    event.setPresetUuid(json['preset_id'] ?? "");
+    event.cabinetLevelOverrideEnable = json["cab_override"] ?? false;
+    event.cabinetLevelOverride = json["cab_level"] ?? 0;
+    return event;
   }
 }
 
 class TrackAutomation {
   AutomationEvent _initialEvent = AutomationEvent(
-      eventTime: Duration(seconds: 0), type: AutomationEventType.preset);
+      eventTime: const Duration(seconds: 0), type: AutomationEventType.preset);
 
   final _events = <AutomationEvent>[];
 
@@ -86,11 +87,13 @@ class TrackAutomation {
 
   TrackAutomation();
   fromJson(List<dynamic> jsonData) {
-    if (jsonData.length > 0)
+    if (jsonData.isNotEmpty) {
       _initialEvent = AutomationEvent.fromJson(jsonData[0]);
+    }
 
-    for (int i = 1; i < jsonData.length; i++)
+    for (int i = 1; i < jsonData.length; i++) {
       events.add(AutomationEvent.fromJson(jsonData[i]));
+    }
   }
 
   void sortEvents() {
@@ -102,7 +105,9 @@ class TrackAutomation {
 
     ev.add(initialEvent.toJson());
 
-    for (int i = 0; i < events.length; i++) ev.add(events[i].toJson());
+    for (int i = 0; i < events.length; i++) {
+      ev.add(events[i].toJson());
+    }
     return ev;
   }
 }

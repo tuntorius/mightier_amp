@@ -10,7 +10,7 @@ class MidiControllers extends StatefulWidget {
   const MidiControllers({Key? key}) : super(key: key);
 
   @override
-  _MidiControllersState createState() => _MidiControllersState();
+  State createState() => _MidiControllersState();
 }
 
 class _MidiControllersState extends State<MidiControllers> {
@@ -43,7 +43,7 @@ class _MidiControllersState extends State<MidiControllers> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("MIDI/HID Remote Control"),
+        title: const Text("MIDI/HID Remote Control"),
       ),
       body: StreamBuilder<MidiSetupStatus>(
           stream: midiHandler.status,
@@ -57,7 +57,7 @@ class _MidiControllersState extends State<MidiControllers> {
                   dense: true,
                   trailing: !ctrl.isScanning
                       ? null
-                      : SizedBox(
+                      : const SizedBox(
                           width: 15,
                           height: 15,
                           child: CircularProgressIndicator()),
@@ -74,8 +74,9 @@ class _MidiControllersState extends State<MidiControllers> {
                             if (!dev.connected) {
                               await dev.connect();
                               setState(() {});
-                            } else
+                            } else {
                               _onControllerSettings(dev);
+                            }
                           },
                           onSettings: () => _onControllerSettings(dev),
                         );
@@ -87,11 +88,11 @@ class _MidiControllersState extends State<MidiControllers> {
                 ElevatedButton(
                     onPressed: ctrl.isScanning ? ctrl.stopScan : ctrl.startScan,
                     child: !ctrl.isScanning
-                        ? Text("Start Scanning")
-                        : Text("Stop Scanning")),
+                        ? const Text("Start Scanning")
+                        : const Text("Stop Scanning")),
                 if (!midiHandler.bluetoothOn)
-                  Text("Enable Bluetooth to discover BLE MIDI devices"),
-                Divider(),
+                  const Text("Enable Bluetooth to discover BLE MIDI devices"),
+                const Divider(),
               ],
             );
           }),

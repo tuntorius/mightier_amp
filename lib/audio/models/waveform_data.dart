@@ -45,13 +45,14 @@ class WaveformData {
   }
 
   Path? path(Size size, {int? toFrame, int fromFrame = 0}) {
-    if (toFrame == _oldToFrame && fromFrame == _oldFromFrame && !_needsUpdate)
+    if (toFrame == _oldToFrame && fromFrame == _oldFromFrame && !_needsUpdate) {
       return _cachedPath;
+    }
 
     _needsUpdate = false;
 
     if (fromFrame < 0) fromFrame = 0;
-    if (toFrame == null) toFrame = data.length - 1;
+    toFrame ??= data.length - 1;
     if (toFrame < fromFrame + 50) toFrame = fromFrame + 50;
     if (toFrame > data.length - 1) toFrame = data.length - 1;
 
@@ -76,7 +77,7 @@ class WaveformData {
   }
 
   Path _path(List<int> samples, Size size) {
-    final upsample = 2;
+    const upsample = 2;
 
     List<double> points =
         List<double>.filled(size.width.ceil() * upsample + 1, 0);
@@ -90,8 +91,8 @@ class WaveformData {
     final path = Path();
     path.moveTo(0, middle);
 
-    for (var _i = 0, _len = samples.length; _i < _len; _i += 1) {
-      var d = samples[_i]; // / maxValue;
+    for (var p = 0, len = samples.length; p < len; p += 1) {
+      var d = samples[p]; // / maxValue;
       var pos = (t * i).round();
       points[pos] += d.toDouble();
 

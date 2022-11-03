@@ -4,17 +4,25 @@ import '../Processor.dart';
 
 abstract class Reverb extends Processor {
   //TODO: check if correct
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexLite.reverbtype;
+  @override
   int? get nuxEnableIndex => PresetDataIndexLite.reverbenable;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_ReverbEnable;
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_ReverbMode;
 }
 
 class RoomReverb extends Reverb {
+  @override
   final name = "Room";
 
+  @override
   int get nuxIndex => 0;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -34,9 +42,12 @@ class RoomReverb extends Reverb {
 }
 
 class HallReverb extends Reverb {
+  @override
   final name = "Hall";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -56,9 +67,12 @@ class HallReverb extends Reverb {
 }
 
 class PlateReverb extends Reverb {
+  @override
   final name = "Plate";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -78,9 +92,12 @@ class PlateReverb extends Reverb {
 }
 
 class SpringReverb extends Reverb {
+  @override
   final name = "Spring";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",

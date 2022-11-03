@@ -25,14 +25,14 @@ class SavePresetDialog {
     var preset = device.presetToJson();
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
-    final _height = MediaQuery.of(context).size.height * 0.25;
+    final height = MediaQuery.of(context).size.height * 0.25;
     final node = FocusScope.of(context);
 
     return StatefulBuilder(
       builder: (context, setState) {
         var dialog = AlertDialog(
           title: const Text('Save preset'),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             child: SingleChildScrollView(
               reverse: true,
@@ -48,7 +48,7 @@ class SavePresetDialog {
                       height: 10,
                     ),
                     Container(
-                      height: _height,
+                      height: height,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey[300]!),
                       ),
@@ -56,7 +56,7 @@ class SavePresetDialog {
                         controller: parentScroll,
                         child: ListTileTheme(
                           child: ListView.builder(
-                            physics: ClampingScrollPhysics(),
+                            physics: const ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title: Text(categories[index]),
@@ -73,7 +73,7 @@ class SavePresetDialog {
                       ),
                     ),
                     TextFormField(
-                      decoration: InputDecoration(labelText: "Category"),
+                      decoration: const InputDecoration(labelText: "Category"),
                       controller: categoryCtrl,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -84,7 +84,7 @@ class SavePresetDialog {
                       onEditingComplete: () => node.nextFocus(),
                     ),
                     TextFormField(
-                      decoration: InputDecoration(labelText: "Name"),
+                      decoration: const InputDecoration(labelText: "Name"),
                       controller: nameCtrl,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -101,7 +101,7 @@ class SavePresetDialog {
           ),
           actions: [
             TextButton(
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -136,12 +136,13 @@ class SavePresetDialog {
           ],
         );
 
-        if (isPortrait)
+        if (isPortrait) {
           return dialog;
-        else
+        } else {
           return SingleChildScrollView(
             child: dialog,
           );
+        }
       },
     );
   }

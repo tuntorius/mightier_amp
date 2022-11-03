@@ -3,17 +3,25 @@ import '../value_formatters/ValueFormatter.dart';
 import 'Processor.dart';
 
 class NoiseGate2Param extends Processor {
+  @override
   final name = "Noise Gate";
 
+  @override
   int get nuxIndex => 0;
+  @override
   int? get nuxEffectTypeIndex => null;
+  @override
   int? get nuxEnableIndex => PresetDataIndexPlugAir.ngenable;
 
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_GateEnable;
 
+  @override
   int get midiCCSelectionValue => 0;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Threshold",
@@ -33,19 +41,27 @@ class NoiseGate2Param extends Processor {
 }
 
 class NoiseGate1Param extends Processor {
+  @override
   final name = "Noise Gate";
 
+  @override
   int get nuxIndex => 0;
 
   //noise gate has no type specified
+  @override
   int? get nuxEffectTypeIndex => null;
+  @override
   int? get nuxEnableIndex => PresetDataIndexLite.ngenable;
 
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_GateEnable;
 
+  @override
   int get midiCCSelectionValue => 0;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Threshold",
@@ -58,20 +74,30 @@ class NoiseGate1Param extends Processor {
 }
 
 class NoiseGatePro extends Processor {
+  @override
   final name = "Noise Gate";
 
+  @override
   int get nuxIndex => 1;
 
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iNG;
+  @override
   int? get nuxEnableIndex => nuxEffectTypeIndex;
+  @override
   int get nuxEnableMask => 0x40;
+  @override
   bool get nuxEnableInverted => true;
 
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValuesPro.Head_iNG;
 
+  @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iNG;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Sensitivity",

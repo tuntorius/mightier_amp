@@ -3,7 +3,6 @@ import 'package:mighty_plug_manager/UI/popups/hotkeyInput.dart';
 import 'package:mighty_plug_manager/UI/popups/midiControlInfo.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
 import 'package:mighty_plug_manager/midi/ControllerConstants.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
@@ -16,7 +15,7 @@ class HotkeysSetup extends StatefulWidget {
       : super(key: key);
 
   @override
-  _HotkeysSetupState createState() => _HotkeysSetupState();
+  State createState() => _HotkeysSetupState();
 }
 
 class _HotkeysSetupState extends State<HotkeysSetup> {
@@ -30,17 +29,19 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     var hk =
         widget.controller.getHotkeyByFunction(ctrl, ctrlIndex, ctrlSubIndex);
     String key = hk == null ? "None" : hk.hotkeyName;
-    if (infoButton == null)
+    if (infoButton == null) {
       trailing = Text(key);
-    else
+    } else {
       trailing = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (enabled)
-            IconButton(onPressed: infoButton, icon: Icon(Icons.info_outline)),
+            IconButton(
+                onPressed: infoButton, icon: const Icon(Icons.info_outline)),
           Text(key)
         ],
       );
+    }
 
     return ListTile(
         enabled: enabled,
@@ -65,7 +66,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
           });
         },
         title: Text(name),
-        subtitle: enabled ? null : Text("Not supported in HID mode"),
+        subtitle: enabled ? null : const Text("Not supported in HID mode"),
         trailing: trailing);
   }
 
@@ -115,8 +116,9 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
       var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(i);
       int maxParams = 0;
       for (int p = 0; p < effects.length; p++) {
-        if (effects[p].parameters.length > maxParams)
+        if (effects[p].parameters.length > maxParams) {
           maxParams = effects[p].parameters.length;
+        }
       }
 
       //enumerate each slot for available params
@@ -136,9 +138,9 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
           }
         }
 
-        if (effects.length == 1 || params.length == 1)
+        if (effects.length == 1 || params.length == 1) {
           title = "$name ${effects[0].parameters[p].name}";
-        else {
+        } else {
           title = "$name parameter ${p + 1}";
           showInfo = true;
         }

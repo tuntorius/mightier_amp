@@ -100,9 +100,10 @@ class AlertDialogs {
       Color? confirmColor}) {
     final nameCtrl = TextEditingController(text: value);
 
-    if (selectAll)
+    if (selectAll) {
       nameCtrl.selection =
           TextSelection(baseOffset: 0, extentOffset: value.length);
+    }
     // set up the buttons
     Widget cancel = TextButton(
       child: Text(cancelButton),
@@ -210,7 +211,7 @@ class AlertDialogs {
       // set up the AlertDialog
       AlertDialog alert = AlertDialog(
         title: Text(title),
-        content: Container(
+        content: SizedBox(
           width: double.maxFinite,
           child: ListTileTheme(
             iconColor: Colors.white,

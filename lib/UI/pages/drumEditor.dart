@@ -14,9 +14,9 @@ import 'dart:math' as math;
 enum DrumEditorLayout { Standard, PlugPro }
 
 class DrumEditor extends StatefulWidget {
-  DrumEditor();
+  const DrumEditor({Key? key}) : super(key: key);
   @override
-  _DrumEditorState createState() => _DrumEditorState();
+  State createState() => _DrumEditorState();
 }
 
 class _DrumEditorState extends State<DrumEditor> {
@@ -24,7 +24,7 @@ class _DrumEditorState extends State<DrumEditor> {
   DrumEditorLayout _layout = DrumEditorLayout.Standard;
   int _selectedDrumPattern = 0;
   late NuxDevice device;
-  DelayTapTimer _timer = DelayTapTimer();
+  final DelayTapTimer _timer = DelayTapTimer();
 
   @override
   void initState() {
@@ -67,9 +67,9 @@ class _DrumEditorState extends State<DrumEditor> {
       return ListTile(
         title: Text(
           _getComplexListStyle(_drumStyles),
-          style: TextStyle(fontSize: 20),
+          style: const TextStyle(fontSize: 20),
         ),
-        trailing: Icon(Icons.keyboard_arrow_right),
+        trailing: const Icon(Icons.keyboard_arrow_right),
         onTap: !device.drumsEnabled
             ? null
             : () {
@@ -89,7 +89,7 @@ class _DrumEditorState extends State<DrumEditor> {
               },
       );
     }
-    return SizedBox();
+    return const SizedBox();
   }
 
   Widget _activeSwitch() {
@@ -202,14 +202,14 @@ class _DrumEditorState extends State<DrumEditor> {
 
   Widget _tapButton() {
     return MaterialButton(
-      child: Text(
-        "Tap Tempo",
-        style: TextStyle(fontSize: 20),
-      ),
       onPressed: device.drumsEnabled ? _onTapTempo : null,
       color: Colors.blue,
       splashColor: Colors.lightBlue[100],
       height: 80,
+      child: const Text(
+        "Tap Tempo",
+        style: TextStyle(fontSize: 20),
+      ),
     );
   }
 
@@ -239,7 +239,7 @@ class _DrumEditorState extends State<DrumEditor> {
             ),
             Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -268,10 +268,10 @@ class _DrumEditorState extends State<DrumEditor> {
                     children: [
                       _activeSwitch(),
                       ..._sliders(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Expanded(child: _tapButton())
                     ])),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Flexible(
@@ -303,7 +303,7 @@ class _DrumEditorState extends State<DrumEditor> {
                       ..._sliders(),
                       _tapButton(),
                     ])),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Flexible(

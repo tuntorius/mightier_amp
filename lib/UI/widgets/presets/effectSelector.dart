@@ -20,9 +20,10 @@ class EffectSelector extends StatefulWidget {
   final Preset preset;
   final NuxDevice device;
 
-  EffectSelector({required this.preset, required this.device});
+  const EffectSelector({Key? key, required this.preset, required this.device})
+      : super(key: key);
   @override
-  _EffectSelectorState createState() => _EffectSelectorState();
+  State createState() => _EffectSelectorState();
 }
 
 class _EffectSelectorState extends State<EffectSelector> {
@@ -73,10 +74,11 @@ class _EffectSelectorState extends State<EffectSelector> {
           }
         }
       }
-      if (totalChanges.length == 1)
+      if (totalChanges.length == 1) {
         NuxDeviceControl.instance().changes.add(totalChanges[0]);
-      else
+      } else {
         NuxDeviceControl.instance().changes.addGroup(totalChanges);
+      }
       NuxDeviceControl.instance().undoStackChanged();
     });
   }
@@ -89,18 +91,20 @@ class _EffectSelectorState extends State<EffectSelector> {
     _effectColor = _preset.effectColor(_selectedSlot);
 
     var proc = _preset.getProcessorAtSlot(_selectedSlot);
-    var effectInfo = widget.device.ProcessorListNuxIndex(proc)!;
+    var effectInfo = widget.device.processorListNuxIndex(proc)!;
 
     //create effect models dropdown list
     List<Processor> effects = _preset.getEffectsForSlot(_selectedSlot);
 
     //effect color for popup menu. Make sure it's contrasty to the text
-    var _popupEffectColor = _effectColor;
+    var popupEffectColor = _effectColor;
 
     //try to darken up to 2 times until the color is not light anymore
-    for (int i = 0; i < 2; i++)
-      if (TinyColor(_popupEffectColor).isLight())
-        _popupEffectColor = TinyColor(_popupEffectColor).darken(15).color;
+    for (int i = 0; i < 2; i++) {
+      if (TinyColor(popupEffectColor).isLight()) {
+        popupEffectColor = TinyColor(popupEffectColor).darken(15).color;
+      }
+    }
 
     _selectedEffectName = _preset
         .getEffectsForSlot(
@@ -120,7 +124,7 @@ class _EffectSelectorState extends State<EffectSelector> {
       _effectItems.add(custom.PopupMenuItem(
         value: f,
         backgroundColor: f == _preset.getSelectedEffectForSlot(_selectedSlot)
-            ? _popupEffectColor
+            ? popupEffectColor
             : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -154,7 +158,7 @@ class _EffectSelectorState extends State<EffectSelector> {
               style:
                   TextStyle(color: _effectColor, fontWeight: FontWeight.bold),
             ),
-            if (_effectItems.length > 1) SizedBox(height: 1, width: 8),
+            if (_effectItems.length > 1) const SizedBox(height: 1, width: 8),
             if (_effectItems.length > 1) Text(_selectedEffectName)
           ],
         ),
@@ -198,7 +202,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                 NuxDeviceControl.instance().undoStackChanged();
               });
             }),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -207,13 +211,13 @@ class _EffectSelectorState extends State<EffectSelector> {
           children: [
             if (_selectedSlot != 0 && _effectItems.length > 1)
               custom.PopupMenuButton(
-                child: effectSelectButton,
                 itemBuilder: (context) => _effectItems,
                 onSelected: setSelectedEffect,
+                child: effectSelectButton,
               )
             else
               effectSelectButton,
-            SizedBox(
+            const SizedBox(
                 width: 1,
                 height: 48), //used to even out sizes when switch is not visible
             Row(

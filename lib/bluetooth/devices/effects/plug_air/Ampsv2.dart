@@ -6,12 +6,17 @@ import 'Amps.dart';
 import 'Cabinet.dart';
 
 class JazzClean extends PlugAirAmplifier {
+  @override
   final name = "Jazz Clean";
 
+  @override
   int get nuxIndex => 0;
+  @override
   int get defaultCab => JZ120IR.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Clean";
 
   @override
@@ -61,6 +66,7 @@ class JazzClean extends PlugAirAmplifier {
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
 
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return JZ120().nuxIndex;
     return nuxIndex;
@@ -68,9 +74,12 @@ class JazzClean extends PlugAirAmplifier {
 }
 
 class DeluxeRvb extends PlugAirAmplifier {
+  @override
   final name = "Deluxe Rvb";
 
+  @override
   int get nuxIndex => 1;
+  @override
   int get defaultCab => DR112.cabIndex;
 
   @override
@@ -112,6 +121,7 @@ class DeluxeRvb extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return TweedDlx().nuxIndex;
     return nuxIndex;
@@ -119,9 +129,12 @@ class DeluxeRvb extends PlugAirAmplifier {
 }
 
 class TwinRvbV2 extends PlugAirAmplifier {
+  @override
   final name = "Twin Rvb";
 
+  @override
   int get defaultCab => TR212.cabIndex;
+  @override
   int get nuxIndex => 2;
 
   @override
@@ -170,6 +183,7 @@ class TwinRvbV2 extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return TwinVerb().nuxIndex;
     return nuxIndex;
@@ -177,12 +191,17 @@ class TwinRvbV2 extends PlugAirAmplifier {
 }
 
 class ClassA30 extends PlugAirAmplifier {
+  @override
   final name = "Class A30";
 
+  @override
   int get nuxIndex => 3;
+  @override
   int get defaultCab => A212.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Drive";
 
   @override
@@ -225,6 +244,7 @@ class ClassA30 extends PlugAirAmplifier {
         midiCC: MidiCCValues.bCC_OverDriveLevel),
   ];
 
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return TopBoost().nuxIndex;
     return nuxIndex;
@@ -232,9 +252,12 @@ class ClassA30 extends PlugAirAmplifier {
 }
 
 class Brit800 extends PlugAirAmplifier {
+  @override
   final name = "Brit 800";
 
+  @override
   int get nuxIndex => 4;
+  @override
   int get defaultCab => V1960.cabIndex;
 
   @override
@@ -283,6 +306,7 @@ class Brit800 extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return Lead100().nuxIndex;
     return nuxIndex;
@@ -290,9 +314,12 @@ class Brit800 extends PlugAirAmplifier {
 }
 
 class Plexi1987x50 extends PlugAirAmplifier {
+  @override
   final name = "1987x50";
 
+  @override
   int get nuxIndex => 5;
+  @override
   int get defaultCab => GB412.cabIndex;
 
   @override
@@ -341,6 +368,7 @@ class Plexi1987x50 extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptone,
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return Plexi().nuxIndex;
     return nuxIndex;
@@ -348,9 +376,12 @@ class Plexi1987x50 extends PlugAirAmplifier {
 }
 
 class FiremanHBE extends PlugAirAmplifier {
+  @override
   final name = "Fireman HBE";
 
+  @override
   int get nuxIndex => 6;
+  @override
   int get defaultCab => V412.cabIndex;
 
   @override
@@ -402,9 +433,12 @@ class FiremanHBE extends PlugAirAmplifier {
 }
 
 class DualRect extends PlugAirAmplifier {
+  @override
   final name = "Dual Rect";
 
+  @override
   int get nuxIndex => 7;
+  @override
   int get defaultCab => V412.cabIndex;
 
   @override
@@ -453,6 +487,7 @@ class DualRect extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptone,
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return Recto().nuxIndex;
     return nuxIndex;
@@ -460,9 +495,12 @@ class DualRect extends PlugAirAmplifier {
 }
 
 class DIEVH4v2 extends PlugAirAmplifier {
+  @override
   final name = "DIE VH4";
 
+  @override
   int get nuxIndex => 8;
+  @override
   int get defaultCab => GB412.cabIndex;
 
   @override
@@ -511,6 +549,7 @@ class DIEVH4v2 extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptone,
         midiCC: MidiCCValues.bCC_AmpPresence),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return DIEVH4().nuxIndex;
     return nuxIndex;
@@ -518,12 +557,17 @@ class DIEVH4v2 extends PlugAirAmplifier {
 }
 
 class AGLv2 extends PlugAirAmplifier {
+  @override
   final name = "AGL";
 
+  @override
   int get nuxIndex => 9;
+  @override
   int get defaultCab => AGLDB810.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Bass";
 
   @override
@@ -572,6 +616,7 @@ class AGLv2 extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return AGL().nuxIndex;
     return nuxIndex;
@@ -579,9 +624,12 @@ class AGLv2 extends PlugAirAmplifier {
 }
 
 class Starlift extends PlugAirAmplifier {
+  @override
   final name = "Starlift";
 
+  @override
   int get nuxIndex => 10;
+  @override
   int get defaultCab => MKB410.cabIndex;
 
   @override
@@ -630,6 +678,7 @@ class Starlift extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
         midiCC: MidiCCValues.bCC_AmpMaster),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return AGL().nuxIndex;
     return nuxIndex;
@@ -637,9 +686,12 @@ class Starlift extends PlugAirAmplifier {
 }
 
 class MLDv2 extends PlugAirAmplifier {
+  @override
   final name = "MLD";
 
+  @override
   int get nuxIndex => 11;
+  @override
   int get defaultCab => TRC410.cabIndex;
 
   @override
@@ -688,6 +740,7 @@ class MLDv2 extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return MLD().nuxIndex;
     return nuxIndex;
@@ -695,12 +748,17 @@ class MLDv2 extends PlugAirAmplifier {
 }
 
 class Stagemanv2 extends PlugAirAmplifier {
+  @override
   final name = "Stageman";
 
+  @override
   int get nuxIndex => 12;
+  @override
   int get defaultCab => MD45.cabIndex;
 
+  @override
   bool isSeparator = true;
+  @override
   String category = "Acoustic";
 
   @override
@@ -742,6 +800,7 @@ class Stagemanv2 extends PlugAirAmplifier {
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
         midiCC: MidiCCValues.bCC_OverDriveLevel),
   ];
+  @override
   int? getEquivalentEffect(int version) {
     if (version == PlugAirVersion.PlugAir15.index) return Stageman().nuxIndex;
     return nuxIndex;

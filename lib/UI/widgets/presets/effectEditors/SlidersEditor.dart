@@ -106,58 +106,58 @@ class _SlidersEditorState extends State<SlidersEditor> {
               .desaturate(80)
               .darken(15)
               .color,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(15.0),
+      shape: const CircleBorder(),
+      child: const Padding(
+        padding: EdgeInsets.all(10.0),
         child: Text(
           "Tap",
           style: TextStyle(color: Colors.white, fontSize: 20),
         ),
       ),
-      padding: EdgeInsets.all(15.0),
-      shape: CircleBorder(),
     );
   }
 
   Widget _createCabinetRename(Cabinet cab) {
     return Column(
       children: [
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton.icon(
                 onPressed: () {
-                  var _dev = NuxDeviceControl.instance().device;
+                  var dev = NuxDeviceControl.instance().device;
                   AlertDialogs.showInputDialog(context,
                       title: "Set cabinet name",
                       description: "",
                       value: cab.name, onConfirm: (value) {
-                    _dev.renameCabinet(cab.nuxIndex, value);
+                    dev.renameCabinet(cab.nuxIndex, value);
                   });
                 },
-                icon: Icon(Icons.drive_file_rename_outline),
-                label: Text("Rename Cabinet")),
+                icon: const Icon(Icons.drive_file_rename_outline),
+                label: const Text("Rename Cabinet")),
             ElevatedButton.icon(
                 onPressed: () {
-                  var _dev = NuxDeviceControl.instance().device;
-                  _dev.renameCabinet(cab.nuxIndex, cab.cabName);
+                  var dev = NuxDeviceControl.instance().device;
+                  dev.renameCabinet(cab.nuxIndex, cab.cabName);
                 },
-                icon: Icon(Icons.restart_alt),
-                label: Text("Reset Name"))
+                icon: const Icon(Icons.restart_alt),
+                label: const Text("Reset Name"))
           ],
         ),
         InkWell(
           onTap: () async {
-            var _url = AppConstants.patcherUrl;
-            await canLaunchUrlString(_url)
-                ? await launchUrlString(_url)
-                : throw 'Could not launch $_url';
+            var url = AppConstants.patcherUrl;
+            await canLaunchUrlString(url)
+                ? await launchUrlString(url)
+                : throw 'Could not launch $url';
           },
-          child: Container(
+          child: SizedBox(
             height: 50,
             child: Center(
               child: RichText(
-                  text: TextSpan(
+                  text: const TextSpan(
                 style: TextStyle(fontSize: 18),
                 children: [
                   TextSpan(text: "Use "),
@@ -179,23 +179,23 @@ class _SlidersEditorState extends State<SlidersEditor> {
 
   @override
   Widget build(BuildContext context) {
-    var _preset = widget.preset;
-    var _slot = widget.slot;
-    var _dev = NuxDeviceControl.instance().device;
+    var preset = widget.preset;
+    var slot = widget.slot;
+    var dev = NuxDeviceControl.instance().device;
     var sliders = <Widget>[];
 
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     //get all the parameters for the slot
-    List<Processor> prc = _preset.getEffectsForSlot(_slot);
+    List<Processor> prc = preset.getEffectsForSlot(slot);
 
     //create the widgets to edit them
-    var _selected = _preset.getSelectedEffectForSlot(_slot);
-    List<Parameter> params = prc[_selected].parameters;
+    var selected = preset.getSelectedEffectForSlot(slot);
+    List<Parameter> params = prc[selected].parameters;
 
-    if (params.length > 0) {
+    if (params.isNotEmpty) {
       for (int i = 0; i < params.length; i++) {
-        var widget;
+        Widget widget;
         switch (params[i].formatter.inputType) {
           case InputType.SliderInput:
             widget = Flexible(
@@ -214,10 +214,10 @@ class _SlidersEditorState extends State<SlidersEditor> {
         }
 
         //add cabinet rename if supported
-        if (_dev.cabinetSupport &&
-            _dev.cabinetSlotIndex == _slot &&
-            _dev.hackableIRs) {
-          sliders.add(_createCabinetRename(prc[_selected] as Cabinet));
+        if (dev.cabinetSupport &&
+            dev.cabinetSlotIndex == slot &&
+            dev.hackableIRs) {
+          sliders.add(_createCabinetRename(prc[selected] as Cabinet));
         }
       }
       sliders.add(const SizedBox(

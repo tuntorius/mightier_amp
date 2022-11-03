@@ -33,14 +33,14 @@ class EffectChainButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(horizontal: 1),
-                  padding: EdgeInsets.all(3),
+                  margin: const EdgeInsets.symmetric(horizontal: 1),
+                  padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                       color: selected ? _color : Colors.transparent,
                       border: Border.all(
                         color: _color,
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(3))),
+                      borderRadius: const BorderRadius.all(Radius.circular(3))),
                   child: Icon(
                     effectInfo.icon,
                     //size: 30,
@@ -49,7 +49,7 @@ class EffectChainButton extends StatelessWidget {
                 ),
                 Text(
                   effectInfo.shortName,
-                  style: TextStyle(fontSize: 10),
+                  style: const TextStyle(fontSize: 10),
                 ),
               ],
             ),

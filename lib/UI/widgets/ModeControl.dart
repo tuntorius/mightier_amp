@@ -51,7 +51,7 @@ class ModeControl extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Text(
         text,
-        style: TextStyle(fontSize: 20),
+        style: const TextStyle(fontSize: 20),
       ),
     );
   }
@@ -59,7 +59,7 @@ class ModeControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: 50),
+        constraints: const BoxConstraints(maxHeight: 50),
         child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
           //width = constraints.maxWidth - 1;
@@ -72,7 +72,7 @@ class ModeControl extends StatelessWidget {
           var active = List<bool>.filled(elements.length, false);
           var index = getIndexByValue(value.round());
           active[index] = true;
-          return Container(
+          return SizedBox(
             height: height,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -81,12 +81,9 @@ class ModeControl extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(getText(),
-                      style: TextStyle(color: Colors.white, fontSize: 20)),
+                      style:
+                          const TextStyle(color: Colors.white, fontSize: 20)),
                   ToggleButtons(
-                    children: [
-                      for (var i = 0; i < elements.length; i++)
-                        getButtonItem(elements[i]),
-                    ],
                     isSelected: active,
                     fillColor: TinyColor(color).darken(15).color,
                     borderColor: color,
@@ -97,6 +94,10 @@ class ModeControl extends StatelessWidget {
                       var val = getElementValues()[newIndex];
                       onChanged?.call(val.toDouble());
                     },
+                    children: [
+                      for (var i = 0; i < elements.length; i++)
+                        getButtonItem(elements[i]),
+                    ],
                   )
                 ],
               ),

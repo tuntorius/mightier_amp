@@ -32,12 +32,18 @@ class PlugProPreset extends Preset {
     Color.fromARGB(255, 231, 120, 215),
     Color(0xFFE1BEE7),
   ];
+  @override
   NuxDevice device;
+  @override
   int channel;
+  @override
   String channelName;
+  @override
   Color get channelColor => PlugProPreset.channelColors[channel];
+  @override
   List<Color> get channelColorsList => PlugProPreset.channelColors;
 
+  @override
   int get qrDataLength => 113;
 
   final WahDummyPro wahDummy = WahDummyPro();
@@ -48,6 +54,7 @@ class PlugProPreset extends Preset {
   final List<CabinetPro> cabinetList = <CabinetPro>[];
   final List<Modulation> modulationList = <Modulation>[];
   final List<Reverb> reverbList = <Reverb>[];
+  @override
   final List<Amplifier> amplifierList = <Amplifier>[];
   final List<Delay> delayList = <Delay>[];
   final List<EQ> eqList = <EQ>[];
@@ -187,9 +194,9 @@ class PlugProPreset extends Preset {
     ]);
 
     //add the user cabs
-    for (int i = 0; i < PlugProCommunication.CustomIRsCount; i++) {
+    for (int i = 0; i < PlugProCommunication.customIRsCount; i++) {
       var userCab = UserCab();
-      userCab.setNuxIndex(i + PlugProCommunication.CustomIRStart);
+      userCab.setNuxIndex(i + PlugProCommunication.customIRStart);
       if (i == 0) {
         userCab.isSeparator = true;
         userCab.category = "User IRs";
@@ -209,11 +216,13 @@ class PlugProPreset extends Preset {
       ShimmerReverb()
     ]);
 
-    for (int i = 0; i < PresetDataIndexPlugPro.defaultEffects.length; i++)
+    for (int i = 0; i < PresetDataIndexPlugPro.defaultEffects.length; i++) {
       processorAtSlot.add(PresetDataIndexPlugPro.defaultEffects[i]);
+    }
   }
 
   /// checks if the effect slot can be switched on and off
+  @override
   bool slotSwitchable(int index) {
     return true;
   }
@@ -307,12 +316,14 @@ class PlugProPreset extends Preset {
     var fxFrom = processorAtSlot[from];
 
     //shift all after 'from' one position to the left
-    for (int i = from; i < device.processorList.length - 1; i++)
+    for (int i = from; i < device.processorList.length - 1; i++) {
       processorAtSlot[i] = processorAtSlot[i + 1];
+    }
 
     //shift all at and after 'to' one position to the right to make room
-    for (int i = device.processorList.length - 1; i > to; i--)
+    for (int i = device.processorList.length - 1; i > to; i--) {
       processorAtSlot[i] = processorAtSlot[i - 1];
+    }
 
     //place the moved one
     processorAtSlot[to] = fxFrom;
@@ -465,21 +476,22 @@ class PlugProPreset extends Preset {
     }
   }
 
+  @override
   Color effectColor(int index) {
     index = getProcessorAtSlot(index);
-    return device.ProcessorListNuxIndex(index)?.color ?? Colors.grey;
+    return device.processorListNuxIndex(index)?.color ?? Colors.grey;
   }
 
   @override
-  setFirmwareVersion(int ver) {
-    version = PlugProVersion.values[ver];
+  setFirmwareVersion(int version) {
+    this.version = PlugProVersion.values[version];
   }
 
   @override
-  void setupPresetFromNuxDataArray(List<int> _nuxData) {
-    if (_nuxData.length < 10) return;
+  void setupPresetFromNuxDataArray(List<int> nuxData) {
+    if (nuxData.length < 10) return;
 
-    var loadedPreset = hex.encode(_nuxData);
+    var loadedPreset = hex.encode(nuxData);
 
     NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
     NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
@@ -487,7 +499,7 @@ class PlugProPreset extends Preset {
     for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
       int nuxSlot = PresetDataIndexPlugPro.effectTypesIndex[i];
       //set proper effect
-      int effectParam = _nuxData[nuxSlot];
+      int effectParam = nuxData[nuxSlot];
       int effectIndex = effectParam & 0x3f;
       bool effectOn = (effectParam & 0x40) == 0;
 
@@ -498,18 +510,18 @@ class PlugProPreset extends Preset {
       //enable/disable effect
       _setNuxSlotEnabled(nuxSlot, effectOn);
 
-      _getEffectsForNuxSlot(nuxSlot)[effectIndex].setupFromNuxPayload(_nuxData);
+      _getEffectsForNuxSlot(nuxSlot)[effectIndex].setupFromNuxPayload(nuxData);
     }
 
     //effects chain arrangement
     //fix for QR
     int start = PresetDataIndexPlugPro.LINK1;
     for (int i = 0; i < 3; i++) {
-      if (_nuxData[start] == 0) start++;
+      if (nuxData[start] == 0) start++;
     }
 
     for (int i = 0; i < device.effectsChainLength; i++) {
-      processorAtSlot[i] = _nuxData[start + i];
+      processorAtSlot[i] = nuxData[start + i];
     }
   }
 

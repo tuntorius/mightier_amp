@@ -13,7 +13,8 @@ class AutomationController {
   final JamTrack track;
   final player = AudioPlayer();
 
-  StreamController<Duration> _positionController = StreamController<Duration>();
+  final StreamController<Duration> _positionController =
+      StreamController<Duration>();
   //StreamController<AutomationEvent> _eventController =
   //    StreamController<AutomationEvent>();
 
@@ -32,7 +33,7 @@ class AutomationController {
 
   Stream<Duration> get positionStream => _positionController.stream;
 
-  Duration get duration => player.duration ?? Duration();
+  Duration get duration => player.duration ?? const Duration();
   PlayerState get playerState => player.playerState;
   Stream<PlayerState> get playerStateStream => player.playerStateStream;
   bool get playing => player.playing;
@@ -40,7 +41,7 @@ class AutomationController {
   Function? onTrackComplete;
 
   int _latency = 0;
-  int _speed = 1;
+  final int _speed = 1;
 
   //loop variables
 
@@ -79,20 +80,22 @@ class AutomationController {
     var source = ProgressiveAudioSource(Uri.parse(path));
     await player.setAudioSource(source);
 
-    if (NuxDeviceControl.instance().isConnected)
+    if (NuxDeviceControl.instance().isConnected) {
       _latency = SharedPrefs().getInt(SettingsKeys.latency, 0);
-    else
+    } else {
       _latency = 0;
+    }
 
     setSpeed(speed);
     setPitch(pitch);
 
     //force 1ms precision. It's needed for accurate event switch
-    player.createPositionStream(
-        steps: 99999999999,
-        minPeriod: Duration(microseconds: 1),
-        maxPeriod: Duration(milliseconds: 200))
-      ..listen(playPositionUpdate);
+    player
+        .createPositionStream(
+            steps: 99999999999,
+            minPeriod: const Duration(microseconds: 1),
+            maxPeriod: const Duration(milliseconds: 200))
+        .listen(playPositionUpdate);
 
     _positionResolution = max(1, positionResolution);
   }
@@ -104,8 +107,9 @@ class AutomationController {
   //stream listener for track position updates
   void playPositionUpdate(Duration position) {
     //switch presets here when needed
-    if (_positionReport % _positionResolution == 0)
+    if (_positionReport % _positionResolution == 0) {
       _positionController.add(position);
+    }
 
     _positionReport++;
 
@@ -116,7 +120,7 @@ class AutomationController {
       if (loopEnable && !useLoopPoints) {
         if (loopTimes == 0 || _currentLoop < loopTimes) {
           //seek to beginning
-          seek(Duration(seconds: 0));
+          seek(const Duration(seconds: 0));
           looped = true;
           if (loopTimes > 0) _currentLoop++;
         }
@@ -146,8 +150,9 @@ class AutomationController {
           if (automation.events[_nextEvent].eventTime.inMilliseconds <=
               position.inMilliseconds) {
             //set event
-            if (loopEnable && useLoopPoints)
+            if (loopEnable && useLoopPoints) {
               executeEvent(automation.events[_nextEvent]);
+            }
             //increment expected event
             _nextEvent++;
             if (kDebugMode) print("FKT next event $_nextEvent");
@@ -164,17 +169,18 @@ class AutomationController {
       case AutomationEventType.preset:
         if (kDebugMode) print("FKT Changing preset ${event.name}");
         var preset = event.getPreset();
-        if (preset != null && preset["product_id"] == device.productStringId)
+        if (preset != null && preset["product_id"] == device.productStringId) {
           device.presetFromJson(
               preset,
               event.cabinetLevelOverrideEnable
                   ? event.cabinetLevelOverride
                   : null);
+        }
         break;
       case AutomationEventType.loop:
         if (kDebugMode) print("FKT loop");
         //find previous loop point
-        for (int i = _nextEvent - 1; i >= 0; i--)
+        for (int i = _nextEvent - 1; i >= 0; i--) {
           if (events[i].type == AutomationEventType.loop) {
             if (loopTimes == 0 || loopTimes > 0 && _currentLoop < loopTimes) {
               seek(events[i].eventTime);
@@ -183,24 +189,27 @@ class AutomationController {
             }
             break;
           }
+        }
         break;
     }
     //_eventController.add(event);
   }
 
   Future play() async {
-    if (playerState.processingState == ProcessingState.completed)
-      await player.seek(Duration(seconds: 0));
+    if (playerState.processingState == ProcessingState.completed) {
+      await player.seek(const Duration(seconds: 0));
+    }
     player.play();
     seek(player.position);
   }
 
   Future playPause() async {
     if (playerState.playing == false ||
-        playerState.processingState == ProcessingState.completed)
+        playerState.processingState == ProcessingState.completed) {
       await play();
-    else
+    } else {
       await player.pause();
+    }
   }
 
   void setSpeed(double speed) {
@@ -208,13 +217,13 @@ class AutomationController {
   }
 
   void setPitch(int pitch) {
-    double _pitch = pow(2, pitch / 12).toDouble();
-    player.setPitch(_pitch);
+    double lPitch = pow(2, pitch / 12).toDouble();
+    player.setPitch(lPitch);
   }
 
   void rewind() {
     _currentLoop = 0;
-    seek(Duration(seconds: 0));
+    seek(const Duration(seconds: 0));
   }
 
   void forceLoopDisable() {
@@ -227,11 +236,12 @@ class AutomationController {
 
     //check if seek before the first loop and if so - reset the loop counter
     if (useLoopPoints && loopTimes > 0) {
-      for (int i = 0; i < events.length; i++)
+      for (int i = 0; i < events.length; i++) {
         if (events[i].type == AutomationEventType.loop) {
           if (position < events[i].eventTime) _currentLoop = 0;
           break;
         }
+      }
     }
   }
 
@@ -257,20 +267,21 @@ class AutomationController {
     if (kDebugMode) print("FKT next event $_nextEvent");
 
     //find previous preset event
-    int _prevEvent = -1;
+    int prevEvent = -1;
     for (int i = _nextEvent - 1; i >= 0; i--) {
       if (automation.events[i].type == AutomationEventType.preset) {
-        _prevEvent = i;
+        prevEvent = i;
         break;
       }
     }
 
     //execute the previous
-    if (_prevEvent >= 0) {
+    if (prevEvent >= 0) {
       //find last
-      executeEvent(automation.events[_prevEvent]);
-    } else
+      executeEvent(automation.events[prevEvent]);
+    } else {
       executeEvent(automation.initialEvent);
+    }
   }
 
   AutomationEvent addEvent(Duration atPosition, AutomationEventType type) {

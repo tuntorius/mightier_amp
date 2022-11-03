@@ -23,8 +23,9 @@ class ThickSlider extends StatefulWidget {
   final bool handleVerticalDrag;
   final Parameter? parameter;
 
-  ThickSlider(
-      {required this.activeColor,
+  const ThickSlider(
+      {Key? key,
+      required this.activeColor,
       required this.label,
       this.min = 0,
       this.max = 1,
@@ -36,10 +37,11 @@ class ThickSlider extends StatefulWidget {
       required this.labelFormatter,
       this.skipEmitting = 3,
       this.enabled = true,
-      this.parameter});
+      this.parameter})
+      : super(key: key);
 
   @override
-  _ThickSliderState createState() => _ThickSliderState();
+  State createState() => _ThickSliderState();
 }
 
 class _ThickSliderState extends State<ThickSlider> {
@@ -49,7 +51,7 @@ class _ThickSliderState extends State<ThickSlider> {
   int emitCounter = 0;
   double scale = 1;
 
-  Offset startDragPos = Offset(0, 0);
+  Offset startDragPos = const Offset(0, 0);
   double width = 0;
   double height = 0;
 
@@ -182,7 +184,7 @@ class _ThickSliderState extends State<ThickSlider> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: 50),
+      constraints: const BoxConstraints(maxHeight: 50),
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         width = constraints.maxWidth - 1;
@@ -216,6 +218,7 @@ class _ThickSliderState extends State<ThickSlider> {
             color: Colors.transparent,
             height: height,
             child: Stack(
+              alignment: Alignment.centerLeft,
               children: [
                 Container(
                   height: height * 0.75,
@@ -258,7 +261,6 @@ class _ThickSliderState extends State<ThickSlider> {
                 ),
                 Center(child: Text(scale < 1 ? "x$scale" : ""))
               ],
-              alignment: Alignment.centerLeft,
             ),
           ),
         );

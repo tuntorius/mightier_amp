@@ -275,7 +275,7 @@ class PopupMenuDivider extends PopupMenuEntry<Null> {
   bool represents(void value) => false;
 
   @override
-  _PopupMenuDividerState createState() => _PopupMenuDividerState();
+  State createState() => _PopupMenuDividerState();
 }
 
 class _PopupMenuDividerState extends State<PopupMenuDivider> {
@@ -439,9 +439,7 @@ class PopupMenuItemState<T, W extends PopupMenuItem<T>> extends State<W> {
     return InkWell(
       onTap: widget.enabled ? handleTap : null,
       child: Container(
-        color: widget.backgroundColor != null
-            ? widget.backgroundColor
-            : Theme.of(context).popupMenuTheme.color,
+        color: widget.backgroundColor ?? Theme.of(context).popupMenuTheme.color,
         height: widget.height,
         padding:
             const EdgeInsets.symmetric(horizontal: _kMenuHorizontalPadding),
@@ -575,10 +573,11 @@ class _CheckedPopupMenuItemState<T>
   @override
   void handleTap() {
     // This fades the checkmark in or out when tapped.
-    if (widget.checked)
+    if (widget.checked) {
       _controller.reverse();
-    else
+    } else {
       _controller.forward();
+    }
     super.handleTap();
   }
 
@@ -749,14 +748,16 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
 
     // Avoid going outside an area defined as the rectangle 8.0 pixels from the
     // edge of the screen in every direction.
-    if (x < _kMenuScreenPadding)
+    if (x < _kMenuScreenPadding) {
       x = _kMenuScreenPadding;
-    else if (x + childSize.width > size.width - _kMenuScreenPadding)
+    } else if (x + childSize.width > size.width - _kMenuScreenPadding) {
       x = size.width - childSize.width - _kMenuScreenPadding;
-    if (y < _kMenuScreenPadding)
+    }
+    if (y < _kMenuScreenPadding) {
       y = _kMenuScreenPadding;
-    else if (y + childSize.height > size.height - _kMenuScreenPadding)
+    } else if (y + childSize.height > size.height - _kMenuScreenPadding) {
       y = size.height - childSize.height - _kMenuScreenPadding;
+    }
     return Offset(x, y);
   }
 
@@ -1120,7 +1121,6 @@ class _PopupMenuButtonState<T> extends State<PopupMenuButton<T>> {
   }
 
   Icon _getIcon(TargetPlatform platform) {
-    assert(platform != null);
     switch (platform) {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:

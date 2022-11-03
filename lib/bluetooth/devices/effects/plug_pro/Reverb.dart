@@ -6,19 +6,29 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
 
 abstract class Reverb extends Processor {
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iRVB;
+  @override
   int? get nuxEnableIndex => nuxEffectTypeIndex;
+  @override
   int get nuxEnableMask => 0x40;
+  @override
   bool get nuxEnableInverted => true;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValuesPro.Head_iRVB;
+  @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iRVB;
 }
 
 class RoomReverb extends Reverb {
+  @override
   final name = "Room";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -45,9 +55,12 @@ class RoomReverb extends Reverb {
 }
 
 class HallReverb extends Reverb {
+  @override
   final name = "Hall";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -81,9 +94,12 @@ class HallReverb extends Reverb {
 }
 
 class PlateReverb extends Reverb {
+  @override
   final name = "Plate";
 
+  @override
   int get nuxIndex => 3;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -103,9 +119,12 @@ class PlateReverb extends Reverb {
 }
 
 class SpringReverb extends Reverb {
+  @override
   final name = "Spring";
 
+  @override
   int get nuxIndex => 4;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Decay",
@@ -125,9 +144,12 @@ class SpringReverb extends Reverb {
 }
 
 class ShimmerReverb extends Reverb {
+  @override
   final name = "Shimmer";
 
+  @override
   int get nuxIndex => 5;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Mix",
@@ -154,9 +176,12 @@ class ShimmerReverb extends Reverb {
 }
 
 class DampReverb extends Reverb {
+  @override
   final name = "Damp";
 
+  @override
   int get nuxIndex => 6;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Mix",

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
@@ -10,6 +11,7 @@ class BleMidiController extends MidiController {
   StreamSubscription? _characteristicSubscription;
   StreamSubscription? _deviceStatusSubscription;
 
+  @override
   ControllerType get type => ControllerType.MidiBle;
 
   BleMidiController(this.scanResult);
@@ -24,6 +26,7 @@ class BleMidiController extends MidiController {
   bool get connected => _connected;
   bool _connected = false;
 
+  @override
   Future<bool> connect() async {
     _characteristic =
         await BLEMidiHandler.instance().connectToController(scanResult.device);
@@ -50,7 +53,7 @@ class BleMidiController extends MidiController {
   _deviceStateListener(event) {
     if (event == BluetoothDeviceState.disconnected) {
       //remove device from the list
-      print("Midi controller disconnected");
+      debugPrint("Midi controller disconnected");
       _connected = false;
       onStatus?.call(this, ControllerStatus.Disconnected);
       _characteristicSubscription?.cancel();

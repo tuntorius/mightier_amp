@@ -7,18 +7,26 @@ import '../Processor.dart';
 
 abstract class Delay extends Processor {
   //TODO: check if correct
+  @override
   int? get nuxEffectTypeIndex => PresetDataIndexLite.delaytype;
+  @override
   int? get nuxEnableIndex => PresetDataIndexLite.delayenable;
+  @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
+  @override
   int get midiCCEnableValue => MidiCCValues.bCC_DelayEnable;
+  @override
   int get midiCCSelectionValue => MidiCCValues.bCC_DelayMode;
 }
 
 class AnalogDelay extends Delay {
+  @override
   final name = "Analog Delay";
 
+  @override
   int get nuxIndex => 0;
 
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -45,9 +53,12 @@ class AnalogDelay extends Delay {
 }
 
 class ModulationDelay extends Delay {
+  @override
   final name = "Modulation";
 
+  @override
   int get nuxIndex => 1;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",
@@ -74,9 +85,12 @@ class ModulationDelay extends Delay {
 }
 
 class DigitalDelay extends Delay {
+  @override
   final name = "Digital Delay";
 
+  @override
   int get nuxIndex => 2;
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Repeat",

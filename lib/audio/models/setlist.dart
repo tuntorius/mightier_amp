@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:mighty_plug_manager/audio/models/jamTrack.dart';
 import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 
@@ -12,17 +13,19 @@ class Setlist {
   String name = "";
   List<SetlistItem> items = <SetlistItem>[];
 
-  Setlist(_name, List _items) {
-    name = _name;
-    for (int i = 0; i < _items.length; i++) addTrackByUuid(_items[i]);
+  Setlist(this.name, List items) {
+    for (int i = 0; i < items.length; i++) {
+      addTrackByUuid(items[i]);
+    }
   }
 
   void addTrackByUuid(String uuid) {
     JamTrack? track = TrackData().findByUuid(uuid);
-    if (track != null)
+    if (track != null) {
       items.add(SetlistItem(trackUuid: track.uuid, trackReference: track));
-    else
-      print("Track with uuid $uuid not found!");
+    } else {
+      debugPrint("Track with uuid $uuid not found!");
+    }
   }
 
   void addTrack(JamTrack track) {
@@ -40,7 +43,9 @@ class Setlist {
   Map<String, dynamic> toJson() {
     var json = <String, dynamic>{};
     var tracks = <String>[];
-    for (int i = 0; i < items.length; i++) tracks.add(items[i].trackUuid);
+    for (int i = 0; i < items.length; i++) {
+      tracks.add(items[i].trackUuid);
+    }
 
     json["name"] = name;
     json["tracks"] = tracks;

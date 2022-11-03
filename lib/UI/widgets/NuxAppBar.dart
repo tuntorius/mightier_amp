@@ -104,9 +104,9 @@ class NuxAppBar extends StatelessWidget implements PreferredSizeWidget {
                       //so keep search status
                       case MidiSetupStatus.deviceSearching:
                         icon = Icons.bluetooth_searching;
-                        return BlinkWidget(
+                        return const BlinkWidget(
                           interval: 500,
-                          children: const [
+                          children: [
                             Icon(
                               Icons.bluetooth_searching,
                               color: Colors.grey,

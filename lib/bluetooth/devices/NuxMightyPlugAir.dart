@@ -29,21 +29,31 @@ class NuxMightyPlug extends NuxDevice {
   //this is used in conversion of very old format of presets which
   // didn't contain device id. They were always for mighty plug/air
   static const defaultNuxId = "mighty_plug_air";
+  @override
   int get productVID => 48;
 
-  late PlugAirCommunication _communication = PlugAirCommunication(this, config);
+  late final PlugAirCommunication _communication =
+      PlugAirCommunication(this, config);
+  @override
   DeviceCommunication get communication => _communication;
 
-  NuxMightyPlugConfiguration _config = NuxMightyPlugConfiguration();
+  final NuxMightyPlugConfiguration _config = NuxMightyPlugConfiguration();
+  @override
   NuxMightyPlugConfiguration get config => _config;
 
   PlugAirVersion version = PlugAirVersion.PlugAir21;
 
+  @override
   String get productName => "NUX Mighty Plug/Air";
+  @override
   String get productNameShort => "Mighty Plug/Air";
+  @override
   String get productStringId => "mighty_plug_air";
+  @override
   int get productVersion => version.index;
+  @override
   IconData get productIcon => MightierIcons.amp_plugair;
+  @override
   List<String> get productBLENames =>
       ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
 
@@ -54,24 +64,41 @@ class NuxMightyPlug extends NuxDevice {
   int get outputVol => config.outputVol;
   int get btEq => config.btEq;
 
+  @override
   int get channelsCount => 7;
+  @override
   int get effectsChainLength => 7;
   int get groupsCount => 1;
+  @override
   int get amplifierSlotIndex => 2;
+  @override
   bool get fakeMasterVolume => true;
+  @override
   bool get activeChannelRetrieval => true;
+  @override
   bool get longChannelNames => false;
+  @override
   bool get cabinetSupport => true;
+  @override
   bool get hackableIRs => true;
+  @override
   int get cabinetSlotIndex => 3;
+  @override
   bool get presetSaveSupport => true;
+  @override
   bool get reorderableFXChain => false;
+  @override
   bool get batterySupport => true;
+  @override
   bool get nativeActiveChannelsSupport => false;
+  @override
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
+  @override
   int get deviceQRId => 6;
+  @override
   int get deviceQRVersion => version == PlugAirVersion.PlugAir21 ? 2 : 0;
 
+  @override
   List<ProcessorInfo> get processorList => _processorList;
 
   final List<ProcessorInfo> _processorList = [
@@ -140,9 +167,9 @@ class NuxMightyPlug extends NuxDevice {
 
   NuxMightyPlug(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
-    PlugAirChannel.values.forEach((element) {
+    for (var element in PlugAirChannel.values) {
       channelNames.add(element.toString().split('.')[1]);
-    });
+    }
 
     //clean
     guitarPresets.add(PlugAirPreset(
@@ -179,12 +206,15 @@ class NuxMightyPlug extends NuxDevice {
     presets.addAll(guitarPresets);
     presets.addAll(bassPresets);
 
-    for (var preset in presets)
+    for (var preset in presets) {
       (preset as PlugAirPreset).setFirmwareVersion(version.index);
+    }
   }
 
+  @override
   dynamic getDrumStyles() => drumStyles;
 
+  @override
   List<Preset> getPresetsList() {
     return presets;
   }
@@ -196,15 +226,16 @@ class NuxMightyPlug extends NuxDevice {
 
   @override
   void setFirmwareVersion(int ver) {
-    if (ver < 21)
+    if (ver < 21) {
       version = PlugAirVersion.PlugAir15;
-    else {
+    } else {
       version = PlugAirVersion.PlugAir21;
     }
 
     //set all presets with that firmware
-    for (var preset in presets)
+    for (var preset in presets) {
       (preset as PlugAirPreset).setFirmwareVersion(version.index);
+    }
   }
 
   @override
@@ -212,8 +243,9 @@ class NuxMightyPlug extends NuxDevice {
     version = PlugAirVersion.values[ver];
 
     //set all presets with that firmware
-    for (var preset in presets)
+    for (var preset in presets) {
       (preset as PlugAirPreset).setFirmwareVersion(version.index);
+    }
   }
 
   @override
@@ -259,14 +291,18 @@ class NuxMightyPlug extends NuxDevice {
     communication.setBTEq(eq);
   }
 
+  @override
   Widget getSettingsWidget() {
     return PlugAirSettings(device: this);
   }
 
+  @override
   bool checkQRVersionValid(int ver) {
-    if (version == PlugAirVersion.PlugAir15 && ver == 0)
+    if (version == PlugAirVersion.PlugAir15 && ver == 0) {
       return true;
-    else if (version == PlugAirVersion.PlugAir21 && ver > 0) return true;
+    } else if (version == PlugAirVersion.PlugAir21 && ver > 0) {
+      return true;
+    }
 
     return false;
   }

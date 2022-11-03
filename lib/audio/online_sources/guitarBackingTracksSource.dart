@@ -46,7 +46,7 @@ class GuitarBackingTracksSource extends OnlineSource {
   Future<List<String>> getSuggestions(String query) async {
     //build suggestion path
     query = query.split(' ')[0];
-    if (query.length > 0) {
+    if (query.isNotEmpty) {
       var url = "$baseUrl$suggestionsPath${query[0]}/$query.js";
       var result = await http.get(Uri.parse(url));
       if (result.statusCode == 200) {

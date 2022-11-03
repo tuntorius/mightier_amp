@@ -36,6 +36,7 @@ class PlugProPreset extends Preset {
   int channel;
   String channelName;
   Color get channelColor => PlugProPreset.channelColors[channel];
+  List<Color> get channelColorsList => PlugProPreset.channelColors;
 
   int get qrDataLength => 113;
 

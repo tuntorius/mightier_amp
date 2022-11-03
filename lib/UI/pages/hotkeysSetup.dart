@@ -76,9 +76,11 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     widgets.add(buildWidget("Next Channel", Icons.keyboard_arrow_right, null,
         HotkeyControl.NextChannel, 0, 0, false));
 
+    var colors =
+        NuxDeviceControl.instance().device.presets[0].channelColorsList;
     for (int i = 0; i < NuxDeviceControl.instance().device.channelsCount; i++) {
-      widgets.add(buildWidget("Channel ${i + 1}", Icons.circle,
-          Preset.channelColors[i], HotkeyControl.ChannelByIndex, i, 0, false));
+      widgets.add(buildWidget("Channel ${i + 1}", Icons.circle, colors[i],
+          HotkeyControl.ChannelByIndex, i, 0, false));
     }
     return widgets;
   }

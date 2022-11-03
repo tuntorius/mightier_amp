@@ -26,6 +26,7 @@ abstract class Preset {
   int channel;
   String channelName;
   Color get channelColor => channelColors[channel];
+  List<Color> get channelColorsList => channelColors;
   List<Amplifier> get amplifierList;
 
   List<List<int>> nuxDataPieces = [];

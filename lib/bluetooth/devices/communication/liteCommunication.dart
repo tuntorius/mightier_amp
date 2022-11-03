@@ -18,14 +18,17 @@ class LiteCommunication extends DeviceCommunication {
     return [];
   }
 
+  @override
   List<int> requestPresetByIndex(int index) {
     return [];
   }
 
+  @override
   List<int> setChannel(int channel) {
     return createCCMessage(device.channelChangeCC, channel);
   }
 
+  @override
   void requestBatteryStatus() {
     if (!device.batterySupport) return;
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
@@ -33,25 +36,33 @@ class LiteCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendDrumsEnabled(bool enabled) {}
+  @override
   void sendDrumsStyle(int style) {}
+  @override
   void sendDrumsLevel(double volume) {}
+  @override
   void sendDrumsTempo(double tempo) {}
+  @override
   void setEcoMode(bool enable) {}
+  @override
   void setBTEq(int eq) {}
+  @override
   void setUsbAudioMode(int mode) {}
+  @override
   void setUsbInputVolume(int vol) {}
+  @override
   void setUsbOutputVolume(int vol) {}
+  @override
   void saveCurrentPreset() {}
 
+  @override
   void onDataReceive(List<int> data) {
     device.onDataReceived(data.sublist(2));
   }
 
-  void onDisconnect() {
-    super.onDisconnect();
-  }
-
+  @override
   void performNextConnectionStep() {
     connectionStepReady();
     device.selectedChannelNormalized = 0;

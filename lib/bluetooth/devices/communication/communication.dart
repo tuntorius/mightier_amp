@@ -13,9 +13,7 @@ abstract class DeviceCommunication {
   NuxDevice device;
   NuxDeviceConfiguration config;
 
-  DeviceCommunication(NuxDevice _device, NuxDeviceConfiguration _config)
-      : device = _device,
-        config = _config;
+  DeviceCommunication(this.device, this.config);
   List<int> createFirmwareMessage();
 
   List<int> requestPresetByIndex(int index);
@@ -126,10 +124,11 @@ abstract class DeviceCommunication {
     ]);
 
     //add payload
-    if (data is int)
+    if (data is int) {
       msg.add(data);
-    else
+    } else {
       msg.addAll(data);
+    }
 
     //add termination symbol
     msg.addAll([0x80, MidiMessageValues.sysExEnd]);

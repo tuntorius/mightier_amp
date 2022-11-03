@@ -1,13 +1,12 @@
-import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
-
+import '../NuxMightyPlugAir.dart';
 import '../../../platform/simpleSharedPrefs.dart';
 import '../NuxDevice.dart';
 import '../NuxConstants.dart';
 import 'communication.dart';
 
 class PlugAirCommunication extends DeviceCommunication {
-  PlugAirCommunication(NuxDevice _device, NuxDeviceConfiguration _config)
-      : super(_device, _config);
+  PlugAirCommunication(NuxDevice device, NuxDeviceConfiguration config)
+      : super(device, config);
 
   @override
   int get productVID => 48;
@@ -17,9 +16,11 @@ class PlugAirCommunication extends DeviceCommunication {
 
   int _readyPresetsCount = 0;
 
+  @override
   NuxMightyPlugConfiguration get config =>
       super.config as NuxMightyPlugConfiguration;
 
+  @override
   List<int> createFirmwareMessage() {
     List<int> msg = [];
 
@@ -43,6 +44,7 @@ class PlugAirCommunication extends DeviceCommunication {
     return msg;
   }
 
+  @override
   void performNextConnectionStep() {
     switch (currentConnectionStep) {
       case 0:
@@ -60,15 +62,18 @@ class PlugAirCommunication extends DeviceCommunication {
     }
   }
 
+  @override
   void saveCurrentPreset() {
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   List<int> requestPresetByIndex(int index) {
     return createSysExMessage(DeviceMessageID.devReqPresetMsgID, index);
   }
 
+  @override
   void requestBatteryStatus() {
     if (!device.batterySupport) return;
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
@@ -76,6 +81,7 @@ class PlugAirCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   List<int> setChannel(int channel) {
     return createCCMessage(device.channelChangeCC, channel);
   }
@@ -83,6 +89,7 @@ class PlugAirCommunication extends DeviceCommunication {
   //*************/
   //Drums section
   //*************/
+  @override
   void sendDrumsEnabled(bool enabled) {
     if (!device.deviceControl.isConnected) return;
     var data =
@@ -90,12 +97,14 @@ class PlugAirCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendDrumsStyle(int style) {
     if (!device.deviceControl.isConnected) return;
     var data = createCCMessage(MidiCCValues.bCC_drumType_No, style);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendDrumsLevel(double volume) {
     if (!device.deviceControl.isConnected) return;
     int val = percentageTo7Bit(volume);
@@ -103,6 +112,7 @@ class PlugAirCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void sendDrumsTempo(double tempo) {
     if (!device.deviceControl.isConnected) return;
 
@@ -125,29 +135,34 @@ class PlugAirCommunication extends DeviceCommunication {
   //***************/
   //Settings section
   //***************/
+  @override
   void setEcoMode(bool enable) {
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
         [SysCtrlState.syscmd_eco_pro, enable ? 1 : 0, 0, 0, 0]);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void setBTEq(int eq) {
     var data = createSysExMessage(
         DeviceMessageID.devSysCtrlMsgID, [SysCtrlState.syscmd_bt, 1, eq, 0, 0]);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void setUsbAudioMode(int mode) {
     var data = createCCMessage(MidiCCValues.bCC_VolumePedalMin, mode);
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void setUsbInputVolume(int vol) {
     var data = createCCMessage(
         MidiCCValues.bCC_VolumePedal, percentageTo7Bit(vol.toDouble()));
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
   void setUsbOutputVolume(int vol) {
     var data = createCCMessage(
         MidiCCValues.bCC_VolumePrePost, percentageTo7Bit(vol.toDouble()));
@@ -158,7 +173,6 @@ class PlugAirCommunication extends DeviceCommunication {
     var total = (data[3] & 0xf0) >> 4;
     var current = data[3] & 0x0f;
 
-    print('preset ${data[2]}, piece ${current + 1} of $total');
     var preset = device.getPreset(data[2]);
     if (current == 0) preset.resetNuxData();
 
@@ -211,6 +225,7 @@ class PlugAirCommunication extends DeviceCommunication {
     connectionStepReady();
   }
 
+  @override
   void onDataReceive(List<int> data) {
     if (data.length > 2) {
       switch (data[2] & 0xf0) {
@@ -220,7 +235,9 @@ class PlugAirCommunication extends DeviceCommunication {
               if (data[9] == DeviceMessageID.devSysCtrlMsgID &&
                   data[10] == SysCtrlState.syscmd_usbaudio) {
                 _handleUSBConfig(data.sublist(2));
-              } else if (_handleFirmwareData(data)) return;
+              } else if (_handleFirmwareData(data)) {
+                return;
+              }
               break;
             case DeviceMessageID.devGetManuMsgID:
               _handleBTEcoMode(data.sublist(2));
@@ -235,6 +252,7 @@ class PlugAirCommunication extends DeviceCommunication {
     }
   }
 
+  @override
   void onDisconnect() {
     super.onDisconnect();
     _readyPresetsCount = 0;

@@ -9,6 +9,7 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:undo/undo.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
+import '../../utils.dart';
 import 'effectEditor.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
@@ -82,8 +83,7 @@ class _EffectSelectorState extends State<EffectSelector> {
 
   @override
   Widget build(BuildContext context) {
-    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-
+    var layout = getEditorLayoutMode(MediaQuery.of(context));
     _preset = widget.preset;
 
     _effectColor = _preset.effectColor(_selectedSlot);
@@ -266,7 +266,7 @@ class _EffectSelectorState extends State<EffectSelector> {
             ),
           ],
         ),
-        if (isPortrait)
+        if (layout == EditorLayoutMode.expand)
           Expanded(
               child: EffectEditor(
             preset: _preset,

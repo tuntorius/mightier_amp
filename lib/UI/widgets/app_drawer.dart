@@ -130,7 +130,7 @@ class _DrawerTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final color =
         tileIndex == currentIndex ? colorScheme.primary : colorScheme.secondary;
-    if (expanded)
+    if (expanded) {
       return ListTile(
         title: Text(
           _tiles.elementAt(tileIndex).title,
@@ -143,7 +143,7 @@ class _DrawerTile extends StatelessWidget {
         minLeadingWidth: 10,
         onTap: () => onSwitchPageIndex(tileIndex),
       );
-    else
+    } else {
       return Padding(
         padding: const EdgeInsets.all(4),
         child: IconButton(
@@ -153,6 +153,7 @@ class _DrawerTile extends StatelessWidget {
               color: color,
             )),
       );
+    }
   }
 }
 

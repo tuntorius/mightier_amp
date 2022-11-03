@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
 import 'package:mighty_plug_manager/UI/utils.dart';
 import 'package:mighty_plug_manager/UI/widgets/app_drawer.dart';
+import 'package:mighty_plug_manager/UI/widgets/presets/presetListTest.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
@@ -30,8 +31,6 @@ import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
 //recreate this file with your own api keys
 import 'configKeys.dart';
-
-enum LayoutMode { navBar, drawer }
 
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();

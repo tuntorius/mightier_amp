@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../popups/savePreset.dart';
+import '../utils.dart';
 import '../widgets/presets/channelSelector.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 
@@ -56,8 +57,8 @@ class _PresetEditorState extends State<PresetEditor> {
     setState(() {});
   }
 
-  Widget wrapContainer(bool isPortrait, List<Widget> children) {
-    if (isPortrait) {
+  Widget wrapContainer(bool isExpanded, List<Widget> children) {
+    if (isExpanded) {
       return ConstrainedBox(
         child: Column(children: children),
         constraints: BoxConstraints(minHeight: 592),
@@ -68,14 +69,14 @@ class _PresetEditorState extends State<PresetEditor> {
 
   @override
   Widget build(BuildContext context) {
-    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    var layout = getEditorLayoutMode(MediaQuery.of(context));
 
     bool uploadPresetEnabled =
         device.deviceControl.isConnected && device.presetSaveSupport;
 
     return SafeArea(
       child: wrapContainer(
-        isPortrait,
+        layout == EditorLayoutMode.expand,
         [
           ButtonTheme(
             minWidth: 45,
@@ -184,7 +185,7 @@ class _PresetEditorState extends State<PresetEditor> {
               ],
             ),
           ),
-          if (isPortrait)
+          if (layout == EditorLayoutMode.expand)
             Flexible(child: ChannelSelector(device: device))
           else
             ChannelSelector(device: device)

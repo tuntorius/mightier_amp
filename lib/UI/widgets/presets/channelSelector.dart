@@ -11,6 +11,7 @@ import 'package:qr_utils/qr_utils.dart';
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../theme.dart';
+import '../../utils.dart';
 import 'effectSelector.dart';
 
 class ChannelSelector extends StatefulWidget {
@@ -23,7 +24,7 @@ class ChannelSelector extends StatefulWidget {
 
 class _ChannelSelectorState extends State<ChannelSelector> {
   late List<Preset> _presets;
-  bool isPortrait = false;
+  EditorLayoutMode layout = EditorLayoutMode.expand;
 
   var qrMenu = <PopupMenuEntry>[
     PopupMenuItem(
@@ -77,7 +78,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     List<Widget> _buttons = <Widget>[];
 
     _presets = widget.device.getPresetsList();
-    int row1 = isPortrait && _presets.length > 4
+    int row1 = _width < 400 && _presets.length > 4
         ? (_presets.length / 2).ceil()
         : _presets.length;
 
@@ -202,7 +203,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
   @override
   Widget build(BuildContext context) {
-    isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    layout = getEditorLayoutMode(MediaQuery.of(context));
 
     _presets = widget.device.getPresetsList();
 
@@ -277,7 +278,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             ),
           ),
         ),
-        if (isPortrait)
+        if (layout == EditorLayoutMode.expand)
           Expanded(
             child: EffectSelector(
                 device: widget.device,

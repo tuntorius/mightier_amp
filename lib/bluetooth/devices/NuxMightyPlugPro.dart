@@ -28,7 +28,7 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
   int routingMode = 1;
   int recLevel = 50;
   int playbackLevel = 50;
-  double usbDryWet = 50;
+  int usbDryWet = 50;
 }
 
 class NuxMightyPlugPro extends NuxDevice {
@@ -361,6 +361,26 @@ class NuxMightyPlugPro extends NuxDevice {
     var preset = PlugProPreset(device: this, channel: channel, channelName: "");
     preset.setFirmwareVersion(productVersion);
     return preset;
+  }
+
+  void setUsbMode(int mode) {
+    config.routingMode = mode;
+    communication.setUsbAudioMode(mode);
+  }
+
+  void setUsbRecordingVol(int vol) {
+    config.recLevel = vol;
+    communication.setUsbInputVolume(vol);
+  }
+
+  void setUsbPlaybackVol(int vol) {
+    config.playbackLevel = vol;
+    communication.setUsbOutputVolume(vol);
+  }
+
+  void setUsbDryWetVol(int vol) {
+    config.usbDryWet = vol;
+    _communication.setUsbDryWet(vol);
   }
 
   Widget getSettingsWidget() {

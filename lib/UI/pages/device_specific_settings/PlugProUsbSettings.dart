@@ -2,86 +2,172 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 
+class RouteModel {
+  final String name;
+  final int value;
+  final String schemeAsset;
+  final bool loopback;
+  final bool dryWet;
+  const RouteModel(
+      {required this.name,
+      required this.value,
+      required this.schemeAsset,
+      required this.loopback,
+      required this.dryWet});
+}
+
 class PlugProUsbSettings extends StatefulWidget {
+  static const List<RouteModel> routes = [
+    RouteModel(
+        name: "Normal",
+        value: 1,
+        schemeAsset: "assets/images/route_normal.png",
+        loopback: true,
+        dryWet: true),
+    RouteModel(
+        name: "Reamp",
+        value: 2,
+        schemeAsset: "assets/images/route_reamp.png",
+        loopback: false,
+        dryWet: false),
+    RouteModel(
+        name: "Dry Out",
+        value: 0,
+        schemeAsset: "assets/images/route_dryout.png",
+        loopback: false,
+        dryWet: false),
+  ];
+
   @override
   _PlugProUsbSettingsState createState() => _PlugProUsbSettingsState();
 }
 
 class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
-  final usbModes = ["Reamp", "Normal", "Dry Out"];
+  final loopbackMask = 0x10;
+  final modeMask = 0x07;
   final device = NuxDeviceControl.instance().device as NuxMightyPlugPro;
+
+  Widget _modeButton(String mode) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Text(mode),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final routes = PlugProUsbSettings.routes;
+    var routeModeInt = device.config.routingMode & modeMask;
+    var routeMode = routes.firstWhere((r) => r.value == routeModeInt);
+    var arrayIndex = routes.indexOf(routeMode);
+    var loopback = device.config.routingMode & loopbackMask != 0;
+
+    var selected = List<bool>.filled(routes.length, false);
+    selected[arrayIndex] = true;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("USB Audio Settings"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListTileTheme(
-          iconColor: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ListTile(
-                title: Text("Routing"),
-                subtitle: Text(usbModes[device.config.routingMode]),
-                onTap: () {
-                  var dialog = AlertDialogs.showOptionDialog(context,
-                      confirmButton: "OK",
-                      cancelButton: "Cancel",
-                      title: "Select Routing Mode",
-                      value: device.config.routingMode,
-                      confirmColor: Colors.blue,
-                      options: usbModes, onConfirm: (changed, newValue) {
-                    if (changed) {
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTileTheme(
+            iconColor: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text("Route Mode"),
+                ),
+                ToggleButtons(
+                  children: [
+                    for (var i = 0; i < routes.length; i++)
+                      _modeButton(routes[i].name)
+                  ],
+                  fillColor: Colors.blue,
+                  selectedBorderColor: Colors.blue,
+                  color: Colors.grey,
+                  isSelected: selected,
+                  onPressed: (index) {
+                    var mode = routes[index];
+                    var value = mode.value;
+                    if (mode.loopback && loopback) value |= loopbackMask;
+                    device.setUsbMode(value);
+                    setState(() {});
+                  },
+                ),
+                CheckboxListTile(
+                    title: Text("Loopback"),
+                    value: loopback,
+                    onChanged: !routeMode.loopback
+                        ? null
+                        : (value) {
+                            if (value != null) {
+                              if (value)
+                                routeModeInt |= loopbackMask;
+                              else
+                                routeModeInt &= modeMask;
+                              device.setUsbMode(routeModeInt);
+                              setState(() {});
+                            }
+                          }),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Image.asset(routeMode.schemeAsset),
+                ),
+                ListTile(
+                  title: Text("Dry/Wet"),
+                  subtitle: Slider(
+                    min: 0,
+                    max: 100,
+                    label: "${device.config.usbDryWet}",
+                    divisions: 100,
+                    value: device.config.usbDryWet.toDouble(),
+                    onChanged: !routeMode.dryWet
+                        ? null
+                        : (val) {
+                            device.setUsbDryWetVol(val.round());
+                            setState(() {});
+                          },
+                  ),
+                ),
+                ListTile(
+                  title: Text("Recording Level"),
+                  subtitle: Slider(
+                    min: 0,
+                    max: 100,
+                    divisions: 100,
+                    label: "${device.config.recLevel}",
+                    value: device.config.recLevel.toDouble(),
+                    onChanged: (val) {
                       setState(() {
-                        //device.setUsbMode(newValue);
+                        device.setUsbRecordingVol(val.round());
                       });
-                    }
-                  });
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => dialog,
-                  );
-                },
-              ),
-              ListTile(
-                title: Text("Playback Level"),
-                subtitle: Slider(
-                  min: 0,
-                  max: 100,
-                  label: "${device.config.playbackLevel}",
-                  divisions: 100,
-                  value: device.config.playbackLevel.toDouble(),
-                  onChanged: (val) {
-                    setState(() {
-                      //device.setUsbInputVol(val.round());
-                    });
-                  },
+                    },
+                  ),
                 ),
-              ),
-              ListTile(
-                title: Text("Recording Level"),
-                subtitle: Slider(
-                  min: 0,
-                  max: 100,
-                  divisions: 100,
-                  label: "${device.config.recLevel}",
-                  value: device.config.recLevel.toDouble(),
-                  onChanged: (val) {
-                    setState(() {
-                      //device.setUsbOutputVol(val.round());
-                    });
-                  },
+                ListTile(
+                  title: Text("Playback Level"),
+                  subtitle: Slider(
+                    min: 0,
+                    max: 100,
+                    label: "${device.config.playbackLevel}",
+                    divisions: 100,
+                    value: device.config.playbackLevel.toDouble(),
+                    onChanged: (val) {
+                      setState(() {
+                        device.setUsbPlaybackVol(val.round());
+                      });
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

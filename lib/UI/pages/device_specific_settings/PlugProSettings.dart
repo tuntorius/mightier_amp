@@ -22,14 +22,12 @@ class _PlugProSettingsState extends State<PlugProSettings> {
     return Column(
       children: [
         ListTile(
-          enabled: widget.device.deviceControl.isConnected,
+          //enabled: widget.device.deviceControl.isConnected,
           title: const Text("USB Audio Settings"),
           trailing: const Icon(Icons.keyboard_arrow_right),
           onTap: () {
-            //if (midiHandler.connectedDevice != null) {
             Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => PlugProUsbSettings()));
-            //}
           },
         ),
         ListTile(

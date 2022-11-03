@@ -233,9 +233,29 @@ class PlugProCommunication extends DeviceCommunication {
 
   void setEcoMode(bool enable) {}
   void setBTEq(int eq) {}
-  void setUsbAudioMode(int mode) {}
-  void setUsbInputVolume(int vol) {}
-  void setUsbOutputVolume(int vol) {}
+  void setUsbAudioMode(int mode) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.USBROUNT_3, mode);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setUsbInputVolume(int vol) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.USBROUNT_1, vol);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setUsbOutputVolume(int vol) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.USBROUNT_2, vol);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setUsbDryWet(int vol) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.USBROUNT_4, vol);
+    device.deviceControl.sendBLEData(data);
+  }
 
   List<List<int>> _splitPresetData(List<int> data) {
     List<List<int>> presetData = [];
@@ -428,6 +448,11 @@ class PlugProCommunication extends DeviceCommunication {
   void _handleSystemSettings(List<int> data) {
     //TODO: usb audio settings here
     print(data);
+
+    config.routingMode = data[18];
+    config.recLevel = data[16];
+    config.playbackLevel = data[17];
+    config.usbDryWet = data[19];
     for (int i = 0; i < config.activeChannels.length; i++) {
       config.activeChannels[i] = ((data[20] >> i) & 1) != 0;
     }

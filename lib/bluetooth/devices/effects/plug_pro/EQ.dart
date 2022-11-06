@@ -89,80 +89,186 @@ class EQTenBand extends EQ {
   List<Parameter> parameters = [
     Parameter(
         name: "Vol",
-        handle: "eq_p1",
-        value: 15,
+        handle: "eq_vol",
+        value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para1,
         midiCC: MidiCCValuesPro.EQ_Para1),
     Parameter(
         name: "31",
-        handle: "eq_p2",
+        handle: "eq_b1",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para2,
         midiCC: MidiCCValuesPro.EQ_Para2),
     Parameter(
         name: "62",
-        handle: "eq_p3",
+        handle: "eq_b2",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para3,
         midiCC: MidiCCValuesPro.EQ_Para3),
     Parameter(
         name: "125",
-        handle: "eq_p4",
+        handle: "eq_b3",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para4,
         midiCC: MidiCCValuesPro.EQ_Para4),
     Parameter(
         name: "250",
-        handle: "eq_p5",
+        handle: "eq_b4",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para5,
         midiCC: MidiCCValuesPro.EQ_Para5),
     Parameter(
         name: "500",
-        handle: "eq_p6",
+        handle: "eq_b5",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para6,
         midiCC: MidiCCValuesPro.EQ_Para6),
     Parameter(
         name: "1K",
-        handle: "eq_p7",
+        handle: "eq_b6",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para7,
         midiCC: MidiCCValuesPro.EQ_Para7),
     Parameter(
         name: "2K",
-        handle: "eq_p8",
+        handle: "eq_b7",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para8,
         midiCC: MidiCCValuesPro.EQ_Para8),
     Parameter(
         name: "4K",
-        handle: "eq_p9",
+        handle: "eq_b8",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para9,
         midiCC: MidiCCValuesPro.EQ_Para9),
     Parameter(
         name: "8K",
-        handle: "eq_p10",
+        handle: "eq_b9",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para10,
         midiCC: MidiCCValuesPro.EQ_Para10),
     Parameter(
         name: "16K",
-        handle: "eq_p11",
+        handle: "eq_b10",
         value: 0,
         formatter: ValueFormatters.decibelEQ,
         devicePresetIndex: PresetDataIndexPlugPro.EQ_Para11,
         midiCC: MidiCCValuesPro.EQ_Para11),
   ];
+}
+
+class EQTenBandBT extends EQ {
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Vol",
+        handle: "eq_vol",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para1,
+        midiCC: MidiCCValuesPro.AUX_BAND_1),
+    Parameter(
+        name: "31",
+        handle: "eq_b1",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para2,
+        midiCC: MidiCCValuesPro.AUX_BAND_2),
+    Parameter(
+        name: "62",
+        handle: "eq_b2",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para3,
+        midiCC: MidiCCValuesPro.AUX_BAND_3),
+    Parameter(
+        name: "125",
+        handle: "eq_b3",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para4,
+        midiCC: MidiCCValuesPro.AUX_BAND_4),
+    Parameter(
+        name: "250",
+        handle: "eq_b4",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para5,
+        midiCC: MidiCCValuesPro.AUX_BAND_5),
+    Parameter(
+        name: "500",
+        handle: "eq_b5",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para6,
+        midiCC: MidiCCValuesPro.AUX_BAND_6),
+    Parameter(
+        name: "1K",
+        handle: "eq_b6",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para7,
+        midiCC: MidiCCValuesPro.AUX_BAND_7),
+    Parameter(
+        name: "2K",
+        handle: "eq_b7",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para8,
+        midiCC: MidiCCValuesPro.AUX_BAND_8),
+    Parameter(
+        name: "4K",
+        handle: "eq_b8",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para9,
+        midiCC: MidiCCValuesPro.AUX_BAND_9),
+    Parameter(
+        name: "8K",
+        handle: "eq_b9",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para10,
+        midiCC: MidiCCValuesPro.AUX_BAND_10),
+    Parameter(
+        name: "16K",
+        handle: "eq_b10",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para11,
+        midiCC: MidiCCValuesPro.AUX_BAND_11),
+  ];
+
+  //TODO: this might not be needed
+  List<int> getNuxCommand() {
+    List<int> data = [];
+
+    for (int i = 0; i < parameters.length; i++) {
+      data.add(parameters[i].midiValue);
+    }
+    return data;
+  }
+
+  @override
+  void setupFromNuxPayload(List<int> nuxData) {
+    for (int i = 0; i < parameters.length; i++) {
+      parameters[i].midiValue = nuxData[i];
+    }
+  }
+
+  @override
+  String get name => "Bluetooth EQ";
+
+  @override
+  int get nuxIndex => 0;
 }

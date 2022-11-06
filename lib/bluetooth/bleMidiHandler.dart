@@ -280,7 +280,7 @@ class BLEMidiHandler {
     }
 
     if (midiService != null) {
-      for (var element in midiService!.characteristics) {
+      for (var element in midiService.characteristics) {
         if (element.uuid == Guid(midiCharacteristicGuid)) {
           _connectAmpDevice(device, element);
         }

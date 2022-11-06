@@ -16,7 +16,7 @@ class AppDrawer extends StatefulWidget {
   final int currentIndex;
   final int totalTabs;
 
-  final ValueChanged<double> onVolumeChanged;
+  final Function(double value, bool skip) onVolumeChanged;
   final ValueChanged<double> onVolumeDragEnd;
   final double currentVolume;
 

@@ -52,6 +52,15 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
   final modeMask = 0x07;
   final device = NuxDeviceControl.instance().device as NuxMightyPlugPro;
 
+  @override
+  void didChangeDependencies() {
+    // Adjust the provider based on the image type
+    for (var route in PlugProUsbSettings.routes) {
+      precacheImage(AssetImage(route.schemeAsset), context);
+    }
+    super.didChangeDependencies();
+  }
+
   Widget _modeButton(String mode) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -103,21 +112,21 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                       _modeButton(routes[i].name)
                   ],
                 ),
-                CheckboxListTile(
+                SwitchListTile(
                     title: const Text("Loopback"),
+                    subtitle: const Text(
+                        "Redirect Bluetooth and microphone audio to USB input"),
                     value: loopback,
                     onChanged: !routeMode.loopback
                         ? null
                         : (value) {
-                            if (value != null) {
-                              if (value) {
-                                routeModeInt |= loopbackMask;
-                              } else {
-                                routeModeInt &= modeMask;
-                              }
-                              device.setUsbMode(routeModeInt);
-                              setState(() {});
+                            if (value) {
+                              routeModeInt |= loopbackMask;
+                            } else {
+                              routeModeInt &= modeMask;
                             }
+                            device.setUsbMode(routeModeInt);
+                            setState(() {});
                           }),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),

@@ -15,7 +15,7 @@ class ThickSlider extends StatefulWidget {
   final double min, max;
   final double value;
   final ValueChanged<double>? onDragStart;
-  final ValueChanged<double>? onChanged;
+  final Function(double value, bool skip)? onChanged;
   final ValueChanged<double>? onDragEnd;
   final String Function(double) labelFormatter;
   final int skipEmitting;
@@ -120,16 +120,15 @@ class _ThickSliderState extends State<ThickSlider> {
     if (!widget.enabled) return;
     addPercentage(delta.dx * scale, width);
     emitCounter++;
-    if (emitCounter % widget.skipEmitting == 0) {
-      widget.onChanged?.call(_lerp(factor));
-    }
+    bool skip = emitCounter % widget.skipEmitting != 0;
+    widget.onChanged?.call(_lerp(factor), skip);
   }
 
   void dragEnd(DragEndDetails details) {
     if (!widget.enabled) return;
     scale = 1;
     //call the last factor value here
-    widget.onChanged?.call(_lerp(factor));
+    widget.onChanged?.call(_lerp(factor), false);
     widget.onDragEnd?.call(_lerp(factor));
   }
 
@@ -176,7 +175,7 @@ class _ThickSliderState extends State<ThickSlider> {
           }
 
           widget.onDragStart?.call(widget.value);
-          widget.onChanged?.call(val);
+          widget.onChanged?.call(val, false);
           widget.onDragEnd?.call(val);
         });
   }

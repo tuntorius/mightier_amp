@@ -16,7 +16,7 @@ class VerticalThickSlider extends StatefulWidget {
   final double value;
   final double width;
   final ValueChanged<double>? onDragStart;
-  final ValueChanged<double>? onChanged;
+  final Function(double value, bool skip)? onChanged;
   final ValueChanged<double>? onDragEnd;
   final String Function(double) labelFormatter;
   final int skipEmitting;
@@ -88,7 +88,7 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
     //range check
     assert(widget.min < widget.max);
     assert(widget.value >= widget.min && widget.value <= widget.max);
-    assert(widget.skipEmitting > 0);
+    assert(widget.skipEmitting >= 0);
     //normalize value to 0-1
     factor = _unlerp(widget.value);
   }
@@ -122,16 +122,18 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
     if (!widget.enabled) return;
     addPercentage(-delta.dy * scale, height);
     emitCounter++;
-    if (emitCounter % widget.skipEmitting == 0) {
-      widget.onChanged?.call(_lerp(factor));
-    }
+
+    bool skip =
+        widget.skipEmitting == 0 || emitCounter % widget.skipEmitting != 0;
+
+    widget.onChanged?.call(_lerp(factor), skip);
   }
 
   void dragEnd(DragEndDetails details) {
     if (!widget.enabled) return;
     scale = 1;
     //call the last factor value here
-    widget.onChanged?.call(_lerp(factor));
+    widget.onChanged?.call(_lerp(factor), false);
     widget.onDragEnd?.call(_lerp(factor));
   }
 
@@ -178,7 +180,7 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
           }
 
           widget.onDragStart?.call(widget.value);
-          widget.onChanged?.call(val);
+          widget.onChanged?.call(val, false);
           widget.onDragEnd?.call(val);
         });
   }

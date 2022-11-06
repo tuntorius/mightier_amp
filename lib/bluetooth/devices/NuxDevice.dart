@@ -178,6 +178,8 @@ abstract class NuxDevice extends ChangeNotifier {
   bool get ecoMode => config.ecoMode;
 
   //drum stuff
+  double get drumsMinTempo => 40;
+  double get drumsMaxTempo => 240;
   bool get drumsEnabled => config.drumsEnabled;
   int get selectedDrumStyle => config.selectedDrumStyle;
   double get drumsVolume => config.drumsVolume;
@@ -218,16 +220,16 @@ abstract class NuxDevice extends ChangeNotifier {
     communication.sendDrumsStyle(style);
   }
 
-  void setDrumsLevel(double level) {
+  void setDrumsLevel(double level, bool send) {
     if (config.drumsVolume == level) return;
     config.drumsVolume = level;
-    communication.sendDrumsLevel(level);
+    if (send) communication.sendDrumsLevel(level);
   }
 
-  void setDrumsTempo(double tempo) {
+  void setDrumsTempo(double tempo, bool send) {
     if (config.drumsTempo == tempo) return;
     config.drumsTempo = tempo;
-    communication.sendDrumsTempo(tempo);
+    if (send) communication.sendDrumsTempo(tempo);
   }
 
   void setEcoMode(bool enabled) {

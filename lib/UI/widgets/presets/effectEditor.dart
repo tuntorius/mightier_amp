@@ -36,9 +36,9 @@ class _EffectEditorState extends State<EffectEditor> {
       case EffectEditorUI.EQ:
         return EqualizerEditor(
           eqEffect: prc[_selected],
-          onChanged: (parameter, value) {
+          onChanged: (parameter, value, skip) {
             setState(() {
-              widget.preset.setParameterValue(parameter, value);
+              widget.preset.setParameterValue(parameter, value, notify: !skip);
             });
           },
           onChangedFinal: (parameter, newValue, oldValue) {

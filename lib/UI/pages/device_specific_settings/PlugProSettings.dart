@@ -4,7 +4,9 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import '../../../bluetooth/bleMidiHandler.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../popups/alertDialogs.dart';
+import 'PlugProMicSettings.dart';
 import 'PlugProUsbSettings.dart';
+import 'PlugProEQSettings.dart';
 
 class PlugProSettings extends StatefulWidget {
   final NuxDevice device;
@@ -22,28 +24,38 @@ class _PlugProSettingsState extends State<PlugProSettings> {
     return Column(
       children: [
         ListTile(
-          //enabled: widget.device.deviceControl.isConnected,
+          enabled: widget.device.deviceControl.isConnected,
+          leading: const Icon(Icons.volume_up),
           title: const Text("USB Audio Settings"),
           trailing: const Icon(Icons.keyboard_arrow_right),
           onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => PlugProUsbSettings()));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const PlugProUsbSettings()));
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.bluetooth_audio),
+          enabled: widget.device.deviceControl.isConnected,
+          title: const Text("Bluetooth Audio EQ"),
+          trailing: const Icon(Icons.keyboard_arrow_right),
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const PlugProEQSettings()));
           },
         ),
         ListTile(
           enabled: widget.device.deviceControl.isConnected,
-          title: const Text("Bluetooth Audio EQ"),
-          trailing: const Icon(Icons.keyboard_arrow_right),
-          onTap: () {},
-        ),
-        ListTile(
-          enabled: widget.device.deviceControl.isConnected,
+          leading: const Icon(Icons.mic),
           title: const Text("Microphone Settings"),
           trailing: const Icon(Icons.keyboard_arrow_right),
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const PlugProMicSettings()));
+          },
         ),
         ListTile(
           enabled: widget.device.deviceControl.isConnected,
+          leading: const Icon(Icons.restart_alt),
           title: const Text("Reset Device Presets"),
           onTap: () {
             if (BLEMidiHandler.instance().connectedDevice != null) {

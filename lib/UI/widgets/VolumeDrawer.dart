@@ -65,7 +65,7 @@ class BottomDrawer extends StatelessWidget {
 }
 
 class VolumeSlider extends StatelessWidget {
-  final ValueChanged<double> onVolumeChanged;
+  final Function(double value, bool skip) onVolumeChanged;
   final ValueChanged<double> onVolumeDragEnd;
   final double currentVolume;
 

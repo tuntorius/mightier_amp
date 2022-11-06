@@ -11,6 +11,7 @@ import '../NuxDeviceControl.dart';
 import 'NuxConstants.dart';
 import 'NuxDevice.dart';
 import 'effects/Processor.dart';
+import 'effects/plug_pro/EQ.dart';
 import 'presets/PlugProPreset.dart';
 import 'presets/Preset.dart';
 
@@ -21,6 +22,8 @@ enum PlugProVersion { PlugPro1 }
 enum DrumsToneControl { Bass, Middle, Treble }
 
 class NuxPlugProConfiguration extends NuxDeviceConfiguration {
+  static const bluetoothEQCount = 4;
+
   double drumsBass = 50;
   double drumsMiddle = 50;
   double drumsTreble = 50;
@@ -29,12 +32,21 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
   int recLevel = 50;
   int playbackLevel = 50;
   int usbDryWet = 50;
+
+  //Bluetooth and mic
+  EQTenBandBT bluetoothEQ = EQTenBandBT();
+  int bluetoothGroup = 0;
+  bool bluetoothEQMute = false;
+  bool bluetoothInvertChannel = false;
+
+  bool micMute = false;
+  int micVolume = 50;
+  bool micNoiseGate = false;
+  int micNGSensitivity = 50;
+  int micNGDecay = 50;
 }
 
 class NuxMightyPlugPro extends NuxDevice {
-  //this is used in conversion of very old format of presets which
-  // didn't contain device id. They were always for mighty plug/air
-  static const defaultNuxId = "mighty_plug_air";
   @override
   int get productVID => 48;
   late final PlugProCommunication _communication =
@@ -431,7 +443,7 @@ class NuxMightyPlugPro extends NuxDevice {
     return ver == 1;
   }
 
-  void setDrumsTone(double value, DrumsToneControl control) {
+  void setDrumsTone(double value, DrumsToneControl control, bool send) {
     switch (control) {
       case DrumsToneControl.Bass:
         config.drumsBass = value;
@@ -443,6 +455,6 @@ class NuxMightyPlugPro extends NuxDevice {
         config.drumsTreble = value;
         break;
     }
-    _communication.setDrumsTone(value, control);
+    if (send) _communication.setDrumsTone(value, control);
   }
 }

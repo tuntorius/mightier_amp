@@ -69,9 +69,11 @@ abstract class Preset {
   void setFirmwareVersion(int version);
 
   //change a parameter and announce it
-  void setParameterValue(Parameter param, double value) {
+  void setParameterValue(Parameter param, double value, {bool notify = true}) {
     param.value = value;
-    device.parameterChanged.add(param);
+    if (notify) {
+      device.parameterChanged.add(param);
+    }
   }
 
   int getEffectArrayIndexFromNuxIndex(int nuxSlot, int nuxIndex) {

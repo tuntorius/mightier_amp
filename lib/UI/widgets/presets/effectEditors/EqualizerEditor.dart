@@ -4,7 +4,7 @@ import '../../../../bluetooth/devices/effects/Processor.dart';
 
 class EqualizerEditor extends StatefulWidget {
   final Processor eqEffect;
-  final Function(Parameter, double)? onChanged;
+  final Function(Parameter, double value, bool skip)? onChanged;
   final Function(Parameter, double, double)? onChangedFinal;
   const EqualizerEditor(
       {required this.eqEffect,
@@ -45,8 +45,8 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
             return val.toStringAsFixed(1);
           },
           value: param.value,
-          onChanged: (val) {
-            widget.onChanged?.call(param, val);
+          onChanged: (val, bool skip) {
+            widget.onChanged?.call(param, val, skip);
           },
           onDragStart: (val) {
             _oldValue = val;

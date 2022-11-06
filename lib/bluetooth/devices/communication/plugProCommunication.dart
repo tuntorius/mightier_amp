@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -15,11 +16,15 @@ class PlugProCommunication extends DeviceCommunication {
   PlugProCommunication(NuxDevice device, NuxDeviceConfiguration config)
       : super(device, config);
 
+  StreamController<List<int>>? _bluetoothEQReceived;
+
+  Stream<List<int>>? get bluetoothEQStream => _bluetoothEQReceived?.stream;
+
   @override
   int get productVID => 48;
 
   @override
-  get connectionSteps => 5;
+  get connectionSteps => 7;
 
   int _readyPresetsCount = 0;
   int _readyIRsCount = 0;
@@ -68,6 +73,12 @@ class PlugProCommunication extends DeviceCommunication {
       case 4:
         device.deviceControl.sendBLEData(_requestDrumData());
         break;
+      case 5:
+        device.deviceControl.sendBLEData(_requestMicSettings());
+        break;
+      case 6:
+        requestBTEQData(4, skipStream: true);
+        break;
     }
   }
 
@@ -110,10 +121,31 @@ class PlugProCommunication extends DeviceCommunication {
         SysexPrivacy.kSYSEX_PRIVATE, SyxMsg.kSYX_DRUM, SyxDir.kSYXDIR_REQ, []);
   }
 
+  List<int> _requestMicSettings() {
+    return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_CURSTATE, SyxDir.kSYXDIR_REQ, []);
+  }
+
+  void requestBTEQData(int index, {bool skipStream = false}) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_BTSET, SyxDir.kSYXDIR_REQ, [index]);
+    device.deviceControl.sendBLEData(data);
+
+    if (!skipStream) _bluetoothEQReceived = StreamController<List<int>>();
+  }
+
   @override
   void requestBatteryStatus() {
     if (!device.batterySupport) return;
     //TODO: Wrong!!!
+
+    // var data = createSysExMessagePro(
+    //     SysexPrivacy.kSYSEX_PRIVATE,
+    //     SyxMsg.kSYX_SPEC_CMD,
+    //     SyxDir.kSYXDIR_REQ,
+    //     [SysCtrlState.syscmd_dsprun_battery]);
+
     var data = createSysExMessage(DeviceMessageID.devSysCtrlMsgID,
         [SysCtrlState.syscmd_dsprun_battery, 0, 0, 0, 0]);
     device.deviceControl.sendBLEData(data);
@@ -231,8 +263,6 @@ class PlugProCommunication extends DeviceCommunication {
     int tempoL = tempo.round() & 0x7f;
     int tempoH = (tempo.round() >> 7);
 
-    //var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
-    //    SyxMsg.kSYX_SENDCMD, SyxDir.kSYXDIR_SET, [SyxMsg.kSYX_DRUM]);
     var data = createSysExMessagePro(
         SysexPrivacy.kSYSEX_PRIVATE, SyxMsg.kSYX_DRUM, SyxDir.kSYXDIR_SET, [
       config.drumsEnabled ? 1 : 0,
@@ -249,8 +279,68 @@ class PlugProCommunication extends DeviceCommunication {
 
   @override
   void setEcoMode(bool enable) {}
+
+  //sets eq group
   @override
-  void setBTEq(int eq) {}
+  void setBTEq(int eq) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.AUXEQENABLE, eq);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void saveEQGroup(int group) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createSysExMessagePro(
+        SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_SPEC_CMD,
+        SyxDir.kSYXDIR_SET,
+        [SysCtrlState.speccmd_auxeqsave, group]);
+
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setBTInvert(bool invert) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.AUX_PHASE, invert ? 1 : 0);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setBTMute(bool mute) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.AUX_MUTE, mute ? 1 : 0);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setMicMute(bool mute) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.MICMUTE, mute ? 1 : 0);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setMicLevel(int level) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.MICVOLUME, level);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setMicNoiseGate(bool enable) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.NR_ENABLE, enable ? 1 : 0);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setMicNoiseGateSens(int level) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.NR_SENS, level);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setMicNoiseGateDecay(int level) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.NR_DECAY, level);
+    device.deviceControl.sendBLEData(data);
+  }
+
   @override
   void setUsbAudioMode(int mode) {
     if (!device.deviceControl.isConnected) return;
@@ -353,7 +443,7 @@ class PlugProCommunication extends DeviceCommunication {
     }
     _readyIRsCount++;
 
-    if (_readyIRsCount == irLength) {
+    if (_readyIRsCount == customIRsCount) {
       debugPrint("IR names connection step ready");
       connectionStepReady();
     } else {
@@ -467,10 +557,12 @@ class PlugProCommunication extends DeviceCommunication {
 };
 */
   void _handleSystemSettings(List<int> data) {
+    config.micMute = data[1] > 0;
     config.routingMode = data[18];
     config.recLevel = data[16];
     config.playbackLevel = data[17];
     config.usbDryWet = data[19];
+    config.micVolume = data[21];
     for (int i = 0; i < config.activeChannels.length; i++) {
       config.activeChannels[i] = ((data[20] >> i) & 1) != 0;
     }
@@ -504,6 +596,35 @@ const z = {
         connectionStepReady();
       } else {
         device.deviceControl.forceNotifyListeners();
+      }
+    }
+  }
+
+  void _handleMicSettings(List<int> data) {
+    if (data[0] == SyxDir.kSYXDIR_REQ) {
+      config.bluetoothGroup = data[2];
+      config.micNoiseGate = data[3] > 0;
+      config.micNGSensitivity = data[4];
+      config.micNGDecay = data[5];
+
+      debugPrint("Current state step ready");
+      connectionStepReady();
+    }
+  }
+
+  void _handleBTEqData(List<int> data) {
+    if (data[0] == SyxDir.kSYXDIR_REQ) {
+      //Strange Plug pro bug.
+      //this BT group request should return phase and mute value, however it doesn't.
+      //BUT if I request group 4 (remember, groups are valid from 1 to 3)
+      //it gives the values, together with values for group 3
+      if (data[1] == 4) {
+        config.bluetoothInvertChannel = data[14] > 0;
+        config.bluetoothEQMute = data[15] > 0;
+        connectionStepReady();
+      } else {
+        _bluetoothEQReceived?.add(data.sublist(2));
+        _bluetoothEQReceived?.close();
       }
     }
   }
@@ -558,6 +679,12 @@ const z = {
                   break;
                 case SyxMsg.kSYX_DRUM:
                   _handleDrumData(data.sublist(7));
+                  return;
+                case SyxMsg.kSYX_CURSTATE:
+                  _handleMicSettings(data.sublist(7));
+                  return;
+                case SyxMsg.kSYX_BTSET:
+                  _handleBTEqData(data.sublist(7));
                   return;
                 case SyxMsg.kSYX_SENDCMD:
                   if (data[7] == SyxDir.kSYXDIR_REQ) {

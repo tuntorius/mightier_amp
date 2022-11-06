@@ -196,7 +196,7 @@ class PlugProPreset extends Preset {
     //add the user cabs
     for (int i = 0; i < PlugProCommunication.customIRsCount; i++) {
       var userCab = UserCab();
-      userCab.setNuxIndex(i + PlugProCommunication.customIRStart);
+      userCab.setNuxIndex(i + PlugProCommunication.customIRStart + 1);
       if (i == 0) {
         userCab.isSeparator = true;
         userCab.category = "User IRs";

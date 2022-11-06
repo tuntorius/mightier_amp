@@ -42,9 +42,9 @@ class _SlidersEditorState extends State<SlidersEditor> {
           : TinyColor(widget.preset.effectColor(widget.slot))
               .desaturate(80)
               .color,
-      onChanged: (val) {
+      onChanged: (value, bool skip) {
         setState(() {
-          widget.preset.setParameterValue(param, val);
+          widget.preset.setParameterValue(param, value, notify: !skip);
         });
       },
       onDragStart: (val) {

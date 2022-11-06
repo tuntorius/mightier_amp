@@ -24,12 +24,15 @@ class CherubSysExMessageID {
 class SysCtrlState {
   static const syscmd_null = 0;
   static const syscmd_save = 48;
+  static const syscmd_footsw = 49;
   static const syscmd_resetall = 50;
   static const syscmd_refresh_preset = 51;
   static const syscmd_bt = 64;
   static const syscmd_eco_pro = 65;
   static const syscmd_dsprun_battery = 66;
   static const syscmd_usbaudio = 67;
+  static const speccmd_auxeqsave = 68;
+  static const syscmd_midicc_ex = 112;
 }
 
 class DeviceMessageID {
@@ -388,13 +391,14 @@ class SyxMsg {
   static const kSYX_PRESETNAME = 18; //const SyxMsg._internal(18);
   static const kSYX_PEDALSET = 19; //const SyxMsg._internal(19);
   static const kSYX_SYSTEMSET = 20;
-  static const kSYX_CURSTATE = const SyxMsg._internal(21);
+  static const kSYX_CURSTATE = 21;
   static const kSYX_IRDELETE = const SyxMsg._internal(22);
   static const kSYX_CUTOVER = const SyxMsg._internal(23);
   static const kSYX_LOOP = const SyxMsg._internal(24);
   static const kSYX_DRUM = 25;
   static const kSYX_CABNAME = 26; //const SyxMsg._internal(26);
-  static const kSYX_BTSET = const SyxMsg._internal(27);
+  static const kSYX_BTSET =
+      27; //bluetooth eq groups 1-3, however use group 4 to retrieve mute and phase
   static const kSYX_PARAINIT = const SyxMsg._internal(96);
   static const kSYX_WELCOME = const SyxMsg._internal(97);
   static const kSYX_QTVERSION = const SyxMsg._internal(98);

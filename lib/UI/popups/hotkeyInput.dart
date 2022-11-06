@@ -46,6 +46,7 @@ class HotkeyInputDialog {
 
   _onControllerData(int code, int? sliderValue, String name) {
     if (_sliderMode) {
+      code &= 0xffffff00;
       if (code == _previousCode && previousSliderValue != sliderValue) {
         //valid adjustment
         controller.text = name;

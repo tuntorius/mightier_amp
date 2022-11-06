@@ -78,7 +78,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     List<Widget> buttons = <Widget>[];
 
     _presets = widget.device.getPresetsList();
-    int row1 = _width < 400 && _presets.length > 4
+    int row1 = _width < 330 && _presets.length > 4
         ? (_presets.length / 2).ceil()
         : _presets.length;
 

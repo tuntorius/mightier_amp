@@ -18,7 +18,7 @@ class PaintedWaveform extends StatefulWidget {
   final AutomationEventType? showType;
   final AutomationController automation;
   final Function(double, double) onTimingData;
-  PaintedWaveform(
+  const PaintedWaveform(
       {Key? key,
       required this.sampleData,
       required this.onWaveformTap,
@@ -70,8 +70,9 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
     var _extent = ((endPosition - startPosition) / 2).round();
 
     if (_position - _extent < 0) _position = _extent;
-    if (_position + _extent > widget.sampleData!.data.length - 1)
+    if (_position + _extent > widget.sampleData!.data.length - 1) {
       _position = widget.sampleData!.data.length - 1 - _extent;
+    }
 
     _offset = -_scale * startPosition;
     setState(() {
@@ -140,8 +141,9 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
         _scale = _oldScale;
 
         if (startPosition < 0) startPosition = 0;
-      } else
+      } else {
         endPosition = (startPosition + canvasSize / _scale).round();
+      }
     });
   }
 
@@ -197,11 +199,11 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
                 },
                 backgroundColor:
                     empty ? Colors.grey : Preset.channelColors[element.channel],
+                heroTag: "dragTag$i",
                 child: Icon(widget.automation.selectedEvent ==
                         widget.automation.events[i]
                     ? Icons.circle
-                    : null),
-                heroTag: "dragTag$i"),
+                    : null)),
           ),
         );
 
@@ -241,7 +243,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
                       automation: widget.automation,
                       showType: widget.showType,
                       overallWaveform: true,
-                      color: Color(0xff3994DB),
+                      color: const Color(0xff3994DB),
                     ),
                   ),
                 ),
@@ -266,7 +268,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
                       overallWaveform: false,
                       automation: widget.automation,
                       showType: widget.showType,
-                      color: Color(0xff3994DB),
+                      color: const Color(0xff3994DB),
                     ),
                   ),
                 ),

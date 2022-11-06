@@ -22,7 +22,7 @@ class EventEditor {
         name,
         style: TextStyle(color: color),
       ),
-      trailing: Icon(Icons.keyboard_arrow_right),
+      trailing: const Icon(Icons.keyboard_arrow_right),
       onTap: () {
         showDialog(
           context: context,
@@ -62,31 +62,32 @@ class EventEditor {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back,
                         color: Colors.white,
                       ),
                       onPressed: () => Navigator.of(context).pop()),
-                  Text("Edit Event", style: TextStyle(color: Colors.white)),
+                  const Text("Edit Event",
+                      style: TextStyle(color: Colors.white)),
                 ],
               ),
-              contentPadding:
-                  EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 30),
+              contentPadding: const EdgeInsets.only(
+                  left: 10, right: 10, bottom: 20, top: 30),
               content: ListTileTheme(
                 iconColor: Colors.white,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("Preset",
+                    const Text("Preset",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),
                     ...createPresetTiles(context, preset, setState),
-                    if (cab) Divider(),
+                    if (cab) const Divider(),
                     if (cab)
                       CheckboxListTile(
-                        title: Text("Cabinet level override"),
+                        title: const Text("Cabinet level override"),
                         value: event.cabinetLevelOverrideEnable,
                         onChanged: (val) {
                           if (val == null) return;
@@ -97,7 +98,7 @@ class EventEditor {
                     if (cab)
                       ListTile(
                         enabled: event.cabinetLevelOverrideEnable,
-                        title: Container(
+                        title: SizedBox(
                           height: 50,
                           width: 1,
                           child: ThickSlider(
@@ -106,7 +107,7 @@ class EventEditor {
                             min: -6,
                             max: 6,
                             value: event.cabinetLevelOverride,
-                            onChanged: (value) {
+                            onChanged: (value, skip) {
                               event.cabinetLevelOverride = value;
                               setState(() {});
                             },
@@ -117,13 +118,14 @@ class EventEditor {
                           ),
                         ),
                         trailing: IconButton(
-                          icon: Icon(Icons.replay_sharp),
+                          icon: const Icon(Icons.replay_sharp),
                           onPressed: !event.cabinetLevelOverrideEnable
                               ? null
                               : () {
-                                  if (preset != null)
+                                  if (preset != null) {
                                     event.cabinetLevelOverride =
                                         preset["cabinet"]["level"];
+                                  }
                                   setState(() {});
                                 },
                         ),

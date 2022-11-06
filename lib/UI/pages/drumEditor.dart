@@ -65,6 +65,12 @@ class _DrumEditorState extends State<DrumEditor> {
       );
     } else if (_layout == DrumEditorLayout.PlugPro) {
       return ListTile(
+        enabled: device.drumsEnabled,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: BorderSide(
+                width: 1,
+                color: device.drumsEnabled ? Colors.white : Colors.grey)),
         title: Text(
           _getComplexListStyle(_drumStyles),
           style: const TextStyle(fontSize: 20),
@@ -109,39 +115,34 @@ class _DrumEditorState extends State<DrumEditor> {
 
   List<Widget> _sliders() {
     return [
-      Flexible(
-        child: ThickSlider(
-          min: 0,
-          max: 100,
-          enabled: device.drumsEnabled,
-          activeColor: Colors.blue,
-          label: "Volume",
-          value: device.drumsVolume.toDouble(),
-          labelFormatter: (val) => "${device.drumsVolume.round()} %",
-          onChanged: (val) {
-            setState(() {
-              device.setDrumsLevel(val);
-            });
-          },
-        ),
+      ThickSlider(
+        min: 0,
+        max: 100,
+        enabled: device.drumsEnabled,
+        activeColor: Colors.blue,
+        label: "Volume",
+        value: device.drumsVolume.toDouble(),
+        labelFormatter: (val) => "${device.drumsVolume.round()} %",
+        onChanged: (value, skip) {
+          setState(() {
+            device.setDrumsLevel(value, !skip);
+          });
+        },
       ),
-      Flexible(
-        child: ThickSlider(
-          min: 40,
-          max: 240,
-          enabled: device.drumsEnabled,
-          skipEmitting: 5,
-          activeColor: Colors.blue,
-          label: "Tempo",
-          value: device.drumsTempo,
-          labelFormatter: (val) =>
-              "${device.drumsTempo.toStringAsFixed(1)} BPM",
-          onChanged: (val) {
-            setState(() {
-              device.setDrumsTempo(val);
-            });
-          },
-        ),
+      ThickSlider(
+        min: device.drumsMinTempo,
+        max: device.drumsMaxTempo,
+        enabled: device.drumsEnabled,
+        skipEmitting: 5,
+        activeColor: Colors.blue,
+        label: "Tempo",
+        value: device.drumsTempo,
+        labelFormatter: (val) => "${device.drumsTempo.toStringAsFixed(1)} BPM",
+        onChanged: (val, skip) {
+          setState(() {
+            device.setDrumsTempo(val, !skip);
+          });
+        },
       ),
     ];
   }
@@ -149,66 +150,131 @@ class _DrumEditorState extends State<DrumEditor> {
   List<Widget> _toneSliders() {
     var dev = device as NuxMightyPlugPro;
     return [
-      Flexible(
-        child: ThickSlider(
-          min: 0,
-          max: 100,
-          enabled: device.drumsEnabled,
-          skipEmitting: 5,
-          activeColor: Colors.blue,
-          label: "Bass",
-          value: dev.drumsBass,
-          labelFormatter: (val) => "${dev.drumsBass.round()} %",
-          onChanged: (val) {
-            dev.setDrumsTone(val, DrumsToneControl.Bass);
-            setState(() {});
-          },
-        ),
+      ThickSlider(
+        min: 0,
+        max: 100,
+        enabled: device.drumsEnabled,
+        skipEmitting: 5,
+        activeColor: Colors.blue,
+        label: "Bass",
+        value: dev.drumsBass,
+        labelFormatter: (val) => "${dev.drumsBass.round()} %",
+        onChanged: (val, skip) {
+          dev.setDrumsTone(val, DrumsToneControl.Bass, !skip);
+          setState(() {});
+        },
       ),
-      Flexible(
-        child: ThickSlider(
-          min: 0,
-          max: 100,
-          enabled: device.drumsEnabled,
-          skipEmitting: 5,
-          activeColor: Colors.blue,
-          label: "Middle",
-          value: dev.drumsMiddle,
-          labelFormatter: (val) => "${dev.drumsMiddle.round()} %",
-          onChanged: (val) {
-            dev.setDrumsTone(val, DrumsToneControl.Middle);
-            setState(() {});
-          },
-        ),
+      ThickSlider(
+        min: 0,
+        max: 100,
+        enabled: device.drumsEnabled,
+        skipEmitting: 5,
+        activeColor: Colors.blue,
+        label: "Middle",
+        value: dev.drumsMiddle,
+        labelFormatter: (val) => "${dev.drumsMiddle.round()} %",
+        onChanged: (val, skip) {
+          dev.setDrumsTone(val, DrumsToneControl.Middle, !skip);
+          setState(() {});
+        },
       ),
-      Flexible(
-        child: ThickSlider(
-          min: 0,
-          max: 100,
-          enabled: device.drumsEnabled,
-          skipEmitting: 5,
-          activeColor: Colors.blue,
-          label: "Treble",
-          value: dev.drumsTreble,
-          labelFormatter: (val) => "${dev.drumsTreble.round()} %",
-          onChanged: (val) {
-            dev.setDrumsTone(val, DrumsToneControl.Treble);
-            setState(() {});
-          },
-        ),
+      ThickSlider(
+        min: 0,
+        max: 100,
+        enabled: device.drumsEnabled,
+        skipEmitting: 5,
+        activeColor: Colors.blue,
+        label: "Treble",
+        value: dev.drumsTreble,
+        labelFormatter: (val) => "${dev.drumsTreble.round()} %",
+        onChanged: (val, skip) {
+          dev.setDrumsTone(val, DrumsToneControl.Treble, !skip);
+          setState(() {});
+        },
       )
     ];
   }
 
   Widget _tapButton() {
-    return MaterialButton(
-      onPressed: device.drumsEnabled ? _onTapTempo : null,
-      color: Colors.blue,
-      splashColor: Colors.lightBlue[100],
-      height: 80,
-      child: const Text(
-        "Tap Tempo",
-        style: TextStyle(fontSize: 20),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 120),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 5,
+            child: MaterialButton(
+              onPressed: device.drumsEnabled ? _onTapTempo : null,
+              color: Colors.blue,
+              splashColor: Colors.lightBlue[100],
+              child: const Text(
+                "Tap Tempo",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+
+          //TapOrHoldButton here
+          //https://stackoverflow.com/questions/52128572/flutter-execute-method-so-long-the-button-pressed
+
+          Expanded(
+            flex: 4,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: MaterialButton(
+                      color: Colors.blue,
+                      onPressed:
+                          device.drumsEnabled ? () => _modifyTempo(-5) : null,
+                      child: const Text("-5"),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: MaterialButton(
+                      color: Colors.blue,
+                      onPressed:
+                          device.drumsEnabled ? () => _modifyTempo(-1) : null,
+                      child: const Text("-1"),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: MaterialButton(
+                      color: Colors.blue,
+                      onPressed:
+                          device.drumsEnabled ? () => _modifyTempo(1) : null,
+                      child: const Text("+1"),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: MaterialButton(
+                      color: Colors.blue,
+                      onPressed:
+                          device.drumsEnabled ? () => _modifyTempo(5) : null,
+                      child: const Text("+5"),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -258,67 +324,80 @@ class _DrumEditorState extends State<DrumEditor> {
     } else {
       if (_layout == DrumEditorLayout.Standard) {
         return SafeArea(
-            child: Row(
-          mainAxisSize: MainAxisSize.min,
+            child: Column(
           children: [
-            Flexible(
-                flex: 4,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _activeSwitch(),
-                      ..._sliders(),
-                      const SizedBox(height: 10),
-                      Expanded(child: _tapButton())
-                    ])),
-            const SizedBox(
-              width: 12,
+            _activeSwitch(),
+            Expanded(
+              child: Row(
+                children: [
+                  Flexible(
+                    flex: 4,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ..._sliders(),
+                          const SizedBox(height: 10),
+                          _tapButton()
+                        ]),
+                  ),
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  Flexible(
+                      flex: 3,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(child: _createScrollPicker()),
+                          // Container(
+                          //   height: 120,
+                          //   color: Colors.orange,
+                          // )
+                        ],
+                      ))
+                ],
+              ),
             ),
-            Flexible(
-                flex: 3,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Expanded(child: _createScrollPicker()),
-                    Container(
-                      height: 120,
-                      color: Colors.orange,
-                    )
-                  ],
-                ))
           ],
         ));
       } else {
         return SafeArea(
-            child: Row(
-          mainAxisSize: MainAxisSize.min,
+            child: Column(
           children: [
-            Flexible(
-                flex: 4,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _activeSwitch(),
-                      Expanded(child: _createScrollPicker()),
-                      ..._sliders(),
-                      _tapButton(),
-                    ])),
-            const SizedBox(
-              width: 12,
+            _activeSwitch(),
+            Expanded(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                      flex: 5,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ..._sliders(),
+                            const SizedBox(height: 10),
+                            _tapButton(),
+                          ])),
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  Flexible(
+                      flex: 4,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _createScrollPicker(),
+                          ..._toneSliders(),
+                          // Container(
+                          //   height: 120,
+                          //   color: Colors.orange,
+                          // )
+                        ],
+                      ))
+                ],
+              ),
             ),
-            Flexible(
-                flex: 3,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ..._toneSliders(),
-                    Container(
-                      height: 120,
-                      color: Colors.orange,
-                    )
-                  ],
-                ))
           ],
         ));
       }
@@ -349,9 +428,18 @@ class _DrumEditorState extends State<DrumEditor> {
       _selectedDrumPattern = value;
       //setState(() {
       device?.setDrumsStyle(value);
-      device?.setDrumsTempo(device.drumsTempo);
+      device?.setDrumsTempo(device.drumsTempo, true);
       //});
     }
+  }
+
+  void _modifyTempo(double amount) {
+    setState(() {
+      double newTempo = device.drumsTempo + amount;
+      newTempo = math.max(
+          math.min(newTempo, device.drumsMaxTempo), device.drumsMinTempo);
+      device.setDrumsTempo(newTempo, true);
+    });
   }
 
   void _onTapTempo() {
@@ -360,8 +448,9 @@ class _DrumEditorState extends State<DrumEditor> {
     if (result != false) {
       setState(() {
         var bpm = 60 / (result / 1000);
-        bpm = math.min(math.max(bpm, 40), 240);
-        device.setDrumsTempo(bpm);
+        bpm =
+            math.min(math.max(bpm, device.drumsMinTempo), device.drumsMaxTempo);
+        device.setDrumsTempo(bpm, true);
       });
     }
   }

@@ -10,10 +10,11 @@ class AlbumTracks extends StatefulWidget {
   final String albumId;
   final String artist;
 
-  AlbumTracks(this.albumName, this.albumId, this.artist);
+  const AlbumTracks(this.albumName, this.albumId, this.artist, {Key? key})
+      : super(key: key);
 
   @override
-  _AlbumTracksState createState() => _AlbumTracksState();
+  State createState() => _AlbumTracksState();
 }
 
 class _AlbumTracksState extends State<AlbumTracks> {
@@ -31,13 +32,13 @@ class _AlbumTracksState extends State<AlbumTracks> {
   }
 
   void multiselectHandler(int index) {
-    if (selected.length == 0 || !selected.containsKey(index)) {
+    if (selected.isEmpty || !selected.containsKey(index)) {
       //fill it first if not created
       selected[index] = true;
       _multiselectMode = true;
     } else {
       selected.remove(index);
-      if (selected.length == 0) _multiselectMode = false;
+      if (selected.isEmpty) _multiselectMode = false;
     }
     setState(() {});
   }
@@ -49,13 +50,14 @@ class _AlbumTracksState extends State<AlbumTracks> {
   }
 
   Widget? createTrailingWidget(BuildContext context, int index) {
-    if (_multiselectMode)
+    if (_multiselectMode) {
       return Icon(
         selected.containsKey(index)
             ? Icons.check_circle
             : Icons.brightness_1_outlined,
         color: selected.containsKey(index) ? null : Colors.grey[800],
       );
+    }
 
     return null;
   }
@@ -88,7 +90,7 @@ class _AlbumTracksState extends State<AlbumTracks> {
               case ConnectionState.done:
                 songList = snapshot.data!;
                 return ListTileTheme(
-                  selectedTileColor: Color.fromARGB(255, 9, 51, 116),
+                  selectedTileColor: const Color.fromARGB(255, 9, 51, 116),
                   selectedColor: Colors.white,
                   child: ListView.builder(
                       itemCount: snapshot.data!.length,
@@ -110,17 +112,17 @@ class _AlbumTracksState extends State<AlbumTracks> {
                               onLongPress: () => multiselectHandler(index),
                               title: Text(
                                 snapshot.data![index].title,
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               ),
                               trailing: createTrailingWidget(context, index)),
                         );
                       }),
                 );
             }
-            return Text("Loading...");
+            return const Text("Loading...");
           },
         ),
-        floatingActionButton: _multiselectMode && selected.length > 0
+        floatingActionButton: _multiselectMode && selected.isNotEmpty
             ? FloatingActionButton(
                 onPressed: () {
                   List<SongInfo> sel = [];
@@ -132,10 +134,10 @@ class _AlbumTracksState extends State<AlbumTracks> {
                   }
                   Navigator.of(context).pop(sel);
                 },
-                child: Icon(Icons.add),
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
-                shape: StadiumBorder(),
+                shape: const StadiumBorder(),
+                child: const Icon(Icons.add),
               )
             : null,
       ),

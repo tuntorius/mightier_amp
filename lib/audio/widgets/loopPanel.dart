@@ -7,12 +7,13 @@ class LoopPanel extends StatelessWidget {
   final Function(bool?) onLoopEnable;
   final Function(bool) onUseLoopPoints;
   final Function(int) onLoopTimes;
-  LoopPanel({
+  const LoopPanel({
+    Key? key,
     required this.automation,
     required this.onLoopEnable,
     required this.onUseLoopPoints,
     required this.onLoopTimes,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,18 +37,18 @@ class LoopPanel extends StatelessWidget {
           ),*/
 
           CheckboxListTile(
-              title: Text("Enable Loop"),
+              title: const Text("Enable Loop"),
               value: automation.loopEnable,
               dense: dense,
               onChanged: onLoopEnable),
           SwitchListTile(
-              title: Text("Use Loop Points"),
+              title: const Text("Use Loop Points"),
               value: automation.useLoopPoints,
               dense: dense,
               onChanged:
                   automation.loopEnable == false ? null : onUseLoopPoints),
           if (!dense)
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
           Center(

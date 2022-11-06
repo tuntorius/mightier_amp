@@ -8,11 +8,13 @@ class SpeedPanel extends StatelessWidget {
   final Function(double) onSpeedChanged;
   final Function(int) onSemitonesChanged;
 
-  SpeedPanel(
-      {required this.speed,
+  const SpeedPanel(
+      {Key? key,
+      required this.speed,
       required this.semitones,
       required this.onSpeedChanged,
-      required this.onSemitonesChanged});
+      required this.onSemitonesChanged})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +32,14 @@ class SpeedPanel extends StatelessWidget {
                     _speed = max(_speed, 0.01);
                     onSpeedChanged(_speed);
                   },
-                  child: Text("-")),
+                  child: const Text("-")),
               ElevatedButton(
                   onPressed: () {
                     if (speed > 3) return;
                     var _speed = speed + 0.02;
                     onSpeedChanged(_speed);
                   },
-                  child: Text("+"))
+                  child: const Text("+"))
             ],
           ),
         ),
@@ -52,14 +54,14 @@ class SpeedPanel extends StatelessWidget {
                     var _semitones = semitones - 1;
                     onSemitonesChanged(_semitones);
                   },
-                  child: Text("-")),
+                  child: const Text("-")),
               ElevatedButton(
                   onPressed: () {
                     if (semitones == 12) return;
                     var _semitones = semitones + 1;
                     onSemitonesChanged(_semitones);
                   },
-                  child: Text("+"))
+                  child: const Text("+"))
             ],
           ),
         ),

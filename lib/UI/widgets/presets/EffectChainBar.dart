@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
@@ -58,6 +59,23 @@ class EffectChainBar extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: device.effectsChainLength,
+        proxyDecorator: (widget, index, animation) {
+          return AnimatedBuilder(
+            animation: animation,
+            builder: (BuildContext context, Widget? child) {
+              final double animValue =
+                  Curves.easeInOut.transform(animation.value);
+              final double offset = lerpDouble(0, -15, animValue)!;
+              return Material(
+                color: Colors.transparent,
+                child: Transform.translate(
+                  offset: Offset(0, offset),
+                  child: widget,
+                ),
+              );
+            },
+          );
+        },
         itemBuilder: buildItem,
         onReorder: (a, b) {
           if (b > a) b--;

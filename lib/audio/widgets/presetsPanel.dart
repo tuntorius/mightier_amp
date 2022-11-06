@@ -9,12 +9,14 @@ class PresetsPanel extends StatelessWidget {
   final Function(AutomationEvent) onDuplicateEvent;
   final Function(AutomationEvent) onEditEvent;
   final Function onDelete;
-  PresetsPanel(
-      {required this.onSelectedPreset,
+  const PresetsPanel(
+      {Key? key,
+      required this.onSelectedPreset,
       required this.automation,
       required this.onDelete,
       required this.onEditEvent,
-      required this.onDuplicateEvent});
+      required this.onDuplicateEvent})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class PresetsPanel extends StatelessWidget {
                       }
                     });
                   },
-                  child: Text("Insert Event"),
+                  child: const Text("Insert Event"),
                 ),
               ),
               const SizedBox(
@@ -46,12 +48,12 @@ class PresetsPanel extends StatelessWidget {
               ),
               Expanded(
                 child: ElevatedButton(
-                  child: Text("Duplicate"),
                   onPressed: automation.selectedEvent != null
                       ? () {
                           onDuplicateEvent(automation.selectedEvent!);
                         }
                       : null,
+                  child: const Text("Duplicate"),
                 ),
               ),
             ],
@@ -60,12 +62,12 @@ class PresetsPanel extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  child: Text("Edit"),
                   onPressed: automation.selectedEvent == null
                       ? null
                       : () {
                           onEditEvent(automation.selectedEvent!);
                         },
+                  child: const Text("Edit"),
                 ),
               ),
               const SizedBox(
@@ -73,12 +75,12 @@ class PresetsPanel extends StatelessWidget {
               ),
               Expanded(
                 child: ElevatedButton(
-                  child: Text("Delete"),
                   onPressed: automation.selectedEvent == null
                       ? null
                       : () {
                           onDelete();
                         },
+                  child: const Text("Delete"),
                 ),
               )
             ],
@@ -88,7 +90,7 @@ class PresetsPanel extends StatelessWidget {
                 ? Colors.orange[700]
                 : Colors.blue,
             textColor: Colors.white,
-            child: Text("Edit Initial Parameters"),
+            child: const Text("Edit Initial Parameters"),
             onPressed: () {
               onEditEvent(automation.initialEvent);
             },

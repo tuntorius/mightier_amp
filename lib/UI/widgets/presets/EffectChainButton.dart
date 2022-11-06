@@ -25,7 +25,7 @@ class EffectChainButton extends StatelessWidget {
       aspectRatio: 0.8,
       child: FittedBox(
         fit: BoxFit.fitHeight,
-        child: InkWell(
+        child: GestureDetector(
           onTap: onTap,
           child: Transform.translate(
             offset: Offset(0, selected ? -5 : 0),
@@ -36,7 +36,7 @@ class EffectChainButton extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(horizontal: 1),
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                      color: selected ? _color : Colors.transparent,
+                      color: selected ? _color : Colors.grey[900],
                       border: Border.all(
                         color: _color,
                       ),

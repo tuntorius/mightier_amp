@@ -9,7 +9,7 @@ import 'albumTracks.dart';
 class ArtistAlbums extends StatelessWidget {
   final String artist;
   final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-  ArtistAlbums(this.artist);
+  ArtistAlbums(this.artist, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     Future<List<AlbumInfo>> album =
@@ -48,13 +48,13 @@ class ArtistAlbums extends StatelessWidget {
                           },
                           title: Text(
                             snapshot.data![index].title,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          trailing: Icon(Icons.keyboard_arrow_right)),
+                          trailing: const Icon(Icons.keyboard_arrow_right)),
                     );
                   });
           }
-          return Text("Loading...");
+          return const Text("Loading...");
         },
       ),
     );

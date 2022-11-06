@@ -83,6 +83,7 @@ class _SettingsState extends State<Settings> {
               ),
             ),
           ListTileTheme(
+            minLeadingWidth: 0,
             iconColor: Colors.white,
             child: Column(
               children: [
@@ -209,7 +210,7 @@ class _SettingsState extends State<Settings> {
                   title: const Text("Remote Control"),
                   subtitle:
                       const Text("Uses HID/MIDI device to control the amp"),
-                  trailing: const Icon(Icons.arrow_right),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
                   onTap: () {
                     //if (midiHandler.connectedDevice != null) {
                     Navigator.of(context).push(MaterialPageRoute(

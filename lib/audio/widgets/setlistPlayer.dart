@@ -41,13 +41,13 @@ class SetlistPlayer extends StatelessWidget {
   }
 
   Widget createPlayerView(BuildContext context, bool expanded) {
-    if (expanded)
+    if (expanded) {
       return ListView(
         //crossAxisAlignment: CrossAxisAlignment.stretch,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: [
-          Icon(Icons.keyboard_arrow_down),
-          Container(height: 30, child: Center(child: createTitle())),
+          const Icon(Icons.keyboard_arrow_down),
+          SizedBox(height: 30, child: Center(child: createTitle())),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: createFullTrackControls(),
@@ -84,7 +84,7 @@ class SetlistPlayer extends StatelessWidget {
             title: Text("Current preset: aoufh"),
           ),*/
           CheckboxListTile(
-              title: Text("Auto Advance"),
+              title: const Text("Auto Advance"),
               value: state.autoAdvance,
               onChanged: (value) {
                 state.autoAdvance = value ?? true;
@@ -93,7 +93,7 @@ class SetlistPlayer extends StatelessWidget {
             ListTile(
               title: Text("Loop ${createLoopLabel()}"),
               trailing: ElevatedButton(
-                child: Text("Cancel Loop"),
+                child: const Text("Cancel Loop"),
                 onPressed: () {
                   state.automation?.forceLoopDisable();
                 },
@@ -113,10 +113,11 @@ class SetlistPlayer extends StatelessWidget {
           )
         ],
       );
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.keyboard_arrow_up),
+        const Icon(Icons.keyboard_arrow_up),
         ListTile(
           title: createTitle(),
           trailing: Row(
@@ -141,7 +142,7 @@ class SetlistPlayer extends StatelessWidget {
         },
         minWidth: 0,
         height: 80,
-        child: Icon(
+        child: const Icon(
           Icons.skip_previous,
           color: Colors.white,
           size: 70,
@@ -163,7 +164,7 @@ class SetlistPlayer extends StatelessWidget {
         onPressed: state.next,
         minWidth: 0,
         height: 80,
-        child: Icon(
+        child: const Icon(
           Icons.skip_next,
           color: Colors.white,
           size: 70,
@@ -190,7 +191,7 @@ class SetlistPlayer extends StatelessWidget {
         onPressed: state.next,
         //height: 70,
         minWidth: 0,
-        child: Icon(
+        child: const Icon(
           Icons.skip_next,
           color: Colors.white,
           size: 40,
@@ -257,8 +258,9 @@ class SliderRepeatTrackShape extends RoundedRectSliderTrackShape {
       var paint = repeatPaintOff;
       if (posPercentage >= p1 &&
           (state.automation!.loopTimes == 0 ||
-              state.automation!.currentLoop < state.automation!.loopTimes))
+              state.automation!.currentLoop < state.automation!.loopTimes)) {
         paint = repeatPaint;
+      }
       context.canvas.drawRect(
           Rect.fromLTRB(
             pos1,

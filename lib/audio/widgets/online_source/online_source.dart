@@ -31,11 +31,11 @@ class _OnlineSourceSearchState extends State<OnlineSourceSearch> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Online Sources")),
+        appBar: AppBar(title: const Text("Online Sources")),
         body: ListView(
           children: [
             ListTile(
-                leading: Icon(Icons.cloud),
+                leading: const Icon(Icons.cloud),
                 onTap: () async {
                   var result = await Navigator.of(context).push(
                       MaterialPageRoute(
@@ -43,10 +43,10 @@ class _OnlineSourceSearchState extends State<OnlineSourceSearch> {
                               source: GuitarBackingTracksSource())));
                   if (result != null) Navigator.of(context).pop(result);
                 },
-                title: Text("guitarbackingtracks.com"),
-                trailing: Icon(Icons.keyboard_arrow_right)),
+                title: const Text("guitarbackingtracks.com"),
+                trailing: const Icon(Icons.keyboard_arrow_right)),
             ListTile(
-                leading: Icon(Icons.cloud),
+                leading: const Icon(Icons.cloud),
                 onTap: () async {
                   var result = await Navigator.of(context).push(
                       MaterialPageRoute(
@@ -54,8 +54,8 @@ class _OnlineSourceSearchState extends State<OnlineSourceSearch> {
                               source: BackingTracksCoSource())));
                   if (result != null) Navigator.of(context).pop(result);
                 },
-                title: Text("backingtracks.co"),
-                trailing: Icon(Icons.keyboard_arrow_right))
+                title: const Text("backingtracks.co"),
+                trailing: const Icon(Icons.keyboard_arrow_right))
           ],
         ));
   }

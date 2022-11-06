@@ -12,10 +12,10 @@ import 'package:mighty_plug_manager/audio/online_sources/onlineTrack.dart';
 class OnlineSearchScreen extends StatefulWidget {
   final OnlineSource source;
 
-  OnlineSearchScreen({required this.source});
+  OnlineSearchScreen({Key? key, required this.source}) : super(key: key);
 
   @override
-  _OnlineSearchScreenState createState() => _OnlineSearchScreenState();
+  State createState() => _OnlineSearchScreenState();
 }
 
 class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
@@ -41,13 +41,13 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
   }
 
   void multiselectHandler(int index) {
-    if (selected.length == 0 || !selected.containsKey(index)) {
+    if (selected.isEmpty || !selected.containsKey(index)) {
       //fill it first if not created
       selected[index] = true;
       _multiselectMode = true;
     } else {
       selected.remove(index);
-      if (selected.length == 0) _multiselectMode = false;
+      if (selected.isEmpty) _multiselectMode = false;
     }
     setState(() {});
   }
@@ -59,13 +59,14 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
   }
 
   Widget? createTrailingWidget(BuildContext context, int index) {
-    if (_multiselectMode)
+    if (_multiselectMode) {
       return Icon(
         selected.containsKey(index)
             ? Icons.check_circle
             : Icons.brightness_1_outlined,
         color: selected.containsKey(index) ? null : Colors.grey[800],
       );
+    }
 
     return null;
   }
@@ -95,8 +96,9 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
     }
     await player?.dispose();
 
-    if (tracks[index].url == "")
+    if (tracks[index].url == "") {
       tracks[index].url = await widget.source.getTrackUrl(tracks[index]);
+    }
 
     var as = ProgressiveAudioSource(Uri.parse(tracks[index].url));
     player = AudioPlayer();
@@ -124,124 +126,124 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
       },
       child: Scaffold(
         appBar: AppBar(title: Text(widget.source.name)),
-        body: Container(
-          child: ListTileTheme(
-            minLeadingWidth: 0,
-            selectedTileColor: Color.fromARGB(255, 9, 51, 116),
-            selectedColor: Colors.white,
-            child: Column(
-              children: [
-                TypeAheadField(
-                  textFieldConfiguration: TextFieldConfiguration(
-                      autofocus: true,
-                      controller: editingController,
-                      onSubmitted: (value) => onSubmit(),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "Search",
-                        prefixIcon: Icon(Icons.search),
-                      )),
-                  suggestionsCallback: (pattern) async {
-                    return await widget.source.getSuggestions(pattern);
-                  },
-                  itemBuilder: (context, suggestion) {
-                    return ListTile(
-                      title: Text(suggestion.toString()),
-                    );
-                  },
-                  transitionBuilder: (context, suggestionsBox, controller) {
-                    return suggestionsBox;
-                  },
-                  onSuggestionSelected: (suggestion) async {
-                    editingController.text = suggestion!.toString();
-                    onSubmit();
-                  },
-                ),
-                Expanded(
-                  child: IndexedStack(
-                    alignment: Alignment.center,
-                    index: loading == true ? 0 : 1,
-                    children: [
-                      CircularProgressIndicator(),
-                      ListView.builder(
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                              selected: _multiselectMode &&
-                                  selected.containsKey(index),
-                              onTap: () async {
-                                if (_multiselectMode) {
-                                  multiselectHandler(index);
-                                  return;
-                                }
-                                //return list of 1 track
+        body: ListTileTheme(
+          minLeadingWidth: 0,
+          selectedTileColor: const Color.fromARGB(255, 9, 51, 116),
+          selectedColor: Colors.white,
+          child: Column(
+            children: [
+              TypeAheadField(
+                textFieldConfiguration: TextFieldConfiguration(
+                    autofocus: true,
+                    controller: editingController,
+                    onSubmitted: (value) => onSubmit(),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Search",
+                      prefixIcon: Icon(Icons.search),
+                    )),
+                suggestionsCallback: (pattern) async {
+                  return await widget.source.getSuggestions(pattern);
+                },
+                itemBuilder: (context, suggestion) {
+                  return ListTile(
+                    title: Text(suggestion.toString()),
+                  );
+                },
+                transitionBuilder: (context, suggestionsBox, controller) {
+                  return suggestionsBox;
+                },
+                onSuggestionSelected: (suggestion) async {
+                  editingController.text = suggestion!.toString();
+                  onSubmit();
+                },
+              ),
+              Expanded(
+                child: IndexedStack(
+                  alignment: Alignment.center,
+                  index: loading == true ? 0 : 1,
+                  children: [
+                    const CircularProgressIndicator(),
+                    ListView.builder(
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                            selected:
+                                _multiselectMode && selected.containsKey(index),
+                            onTap: () async {
+                              if (_multiselectMode) {
+                                multiselectHandler(index);
+                                return;
+                              }
+                              //return list of 1 track
 
-                                if (tracks[index].url == "")
-                                  tracks[index].url = await widget.source
-                                      .getTrackUrl(tracks[index]);
-                                closeTrack();
-                                Navigator.of(context).pop([tracks[index]]);
-                              },
-                              onLongPress: () => multiselectHandler(index),
-                              leading: ColoredBox(
-                                color: Colors.red,
-                                child: IconButton(
-                                  icon: Icon(
-                                    index == playedTrack
-                                        ? Icons.pause
-                                        : Icons.play_arrow,
-                                    size: 30,
-                                  ),
-                                  onPressed: () => previewPlay(index),
+                              if (tracks[index].url == "") {
+                                tracks[index].url = await widget.source
+                                    .getTrackUrl(tracks[index]);
+                              }
+                              closeTrack();
+                              Navigator.of(context).pop([tracks[index]]);
+                            },
+                            onLongPress: () => multiselectHandler(index),
+                            leading: ColoredBox(
+                              color: Colors.red,
+                              child: IconButton(
+                                icon: Icon(
+                                  index == playedTrack
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
+                                  size: 30,
                                 ),
+                                onPressed: () => previewPlay(index),
                               ),
-                              title: Text(tracks[index].artist),
-                              subtitle: Text(tracks[index].title),
-                              trailing: createTrailingWidget(context, index));
-                        },
-                        itemCount: tracks.length,
-                      ),
-                    ],
-                  ),
-                ),
-                if (player != null)
-                  ListTile(
-                    title: Slider(
-                      max: player?.duration?.inSeconds.toDouble() ?? 1,
-                      value: player?.position.inSeconds.toDouble() ?? 0,
-                      onChanged: (value) {
-                        player?.seek(Duration(seconds: value.round()));
-                        setState(() {});
+                            ),
+                            title: Text(tracks[index].artist),
+                            subtitle: Text(tracks[index].title),
+                            trailing: createTrailingWidget(context, index));
                       },
+                      itemCount: tracks.length,
                     ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: closeTrack,
-                    ),
-                  )
-              ],
-            ),
+                  ],
+                ),
+              ),
+              if (player != null)
+                ListTile(
+                  title: Slider(
+                    max: player?.duration?.inSeconds.toDouble() ?? 1,
+                    value: player?.position.inSeconds.toDouble() ?? 0,
+                    onChanged: (value) {
+                      player?.seek(Duration(seconds: value.round()));
+                      setState(() {});
+                    },
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: closeTrack,
+                  ),
+                )
+            ],
           ),
         ),
-        floatingActionButton: _multiselectMode && selected.length > 0
+        floatingActionButton: _multiselectMode && selected.isNotEmpty
             ? FloatingActionButton(
                 onPressed: () async {
                   List<OnlineTrack> sel = [];
                   for (int i = 0; i < selected.length; i++) {
                     var index = selected.keys.elementAt(i);
                     if (selected[index] == true) {
-                      if (tracks[index].url == "")
+                      if (tracks[index].url == "") {
                         tracks[index].url =
                             await widget.source.getTrackUrl(tracks[index]);
+                      }
                       sel.add(tracks[index]);
                     }
                   }
                   closeTrack();
                   Navigator.of(context).pop(sel);
                 },
-                child: Icon(Icons.add),
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
-                shape: StadiumBorder(),
+                shape: const StadiumBorder(),
+                child: const Icon(Icons.add),
               )
             : null,
       ),

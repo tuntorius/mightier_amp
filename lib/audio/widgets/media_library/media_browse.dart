@@ -34,7 +34,7 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
 
   Future<void> getArtists({bool refresh = true}) async {
     final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-    if (artists.length == 0 || refresh) artists = await audioQuery.getArtists();
+    if (artists.isEmpty || refresh) artists = await audioQuery.getArtists();
     print("Artists ready");
     _refreshController.add("");
   }
@@ -42,13 +42,13 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Media Library")),
+      appBar: AppBar(title: const Text("Media Library")),
       body: Center(
         child: Column(
           children: [
             TextField(
               controller: editingController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: "Search",
                   hintText: "Search",
                   prefixIcon: Icon(Icons.search),
@@ -75,8 +75,9 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
                             _artists.add(item);
                           }
                         });
-                      } else
+                      } else {
                         _artists = artists;
+                      }
 
                       return RefreshIndicator(
                         onRefresh: getArtists,
@@ -93,18 +94,20 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
                                               builder: (context) =>
                                                   ArtistAlbums(
                                                       _artists[index].name)));
-                                      if (result != null)
+                                      if (result != null) {
                                         Navigator.of(context).pop(result);
+                                      }
                                     },
                                     title: Text(
-                                      "${_artists[index].name}",
+                                      _artists[index].name,
                                     ),
-                                    trailing: Icon(Icons.keyboard_arrow_right)),
+                                    trailing:
+                                        const Icon(Icons.keyboard_arrow_right)),
                               );
                             }),
                       );
                   }
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 },
               ),
             ),

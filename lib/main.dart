@@ -33,6 +33,7 @@ import 'configKeys.dart';
 
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();
+final bucketGlobal = PageStorageBucket();
 
 void main() {
   //configuration data is needed before start of the app
@@ -312,68 +313,71 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
     //WARNING: Workaround for a flutter bug - if the app is started with screen off,
     //one of the widgets throwns an exception and the app scaffold is empty
-    if (screenWidth < 10) return Container();
-    return FocusScope(
-      autofocus: true,
-      onKey: (node, event) {
-        if (event.runtimeType.toString() == 'RawKeyDownEvent' &&
-            event.logicalKey.keyId != 0x100001005) {
-          MidiControllerManager().onHIDData(event);
-        }
-        return KeyEventResult.skipRemainingHandlers;
-      },
-      child: NestedWillPopScope(
-        onWillPop: _willPopCallback,
-        child: Scaffold(
-          appBar: layoutMode != LayoutMode.navBar ? null : const NuxAppBar(),
-          body: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Row(
-                children: [
-                  if (layoutMode == LayoutMode.drawer)
-                    AppDrawer(
-                      onSwitchPageIndex: _onSwitchPageIndex,
-                      currentIndex: _currentIndex,
-                      totalTabs: _tabs.length,
+    if (screenWidth < 10) return const SizedBox();
+    return PageStorage(
+      bucket: bucketGlobal,
+      child: FocusScope(
+        autofocus: true,
+        onKey: (node, event) {
+          if (event.runtimeType.toString() == 'RawKeyDownEvent' &&
+              event.logicalKey.keyId != 0x100001005) {
+            MidiControllerManager().onHIDData(event);
+          }
+          return KeyEventResult.skipRemainingHandlers;
+        },
+        child: NestedWillPopScope(
+          onWillPop: _willPopCallback,
+          child: Scaffold(
+            appBar: layoutMode != LayoutMode.navBar ? null : const NuxAppBar(),
+            body: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                Row(
+                  children: [
+                    if (layoutMode == LayoutMode.drawer)
+                      AppDrawer(
+                        onSwitchPageIndex: _onSwitchPageIndex,
+                        currentIndex: _currentIndex,
+                        totalTabs: _tabs.length,
+                        currentVolume: currentVolume,
+                        onVolumeChanged: _onVolumeChanged,
+                        onVolumeDragEnd: _onVolumeDragEnd,
+                      ),
+                    Expanded(
+                      child: layoutMode == LayoutMode.navBar
+                          ? TabBarView(
+                              physics: const NeverScrollableScrollPhysics(),
+                              controller: controller,
+                              children: _tabs,
+                            )
+                          : _tabs.elementAt(_currentIndex),
+                    ),
+                  ],
+                ),
+                if (layoutMode != LayoutMode.drawer)
+                  BottomDrawer(
+                    isBottomDrawerOpen: isBottomDrawerOpen,
+                    onExpandChange: (val) => setState(() {
+                      isBottomDrawerOpen = val;
+                    }),
+                    child: VolumeSlider(
                       currentVolume: currentVolume,
                       onVolumeChanged: _onVolumeChanged,
                       onVolumeDragEnd: _onVolumeDragEnd,
                     ),
-                  Expanded(
-                    child: layoutMode == LayoutMode.navBar
-                        ? TabBarView(
-                            physics: const NeverScrollableScrollPhysics(),
-                            controller: controller,
-                            children: _tabs,
-                          )
-                        : _tabs.elementAt(_currentIndex),
                   ),
-                ],
-              ),
-              if (layoutMode != LayoutMode.drawer)
-                BottomDrawer(
-                  isBottomDrawerOpen: isBottomDrawerOpen,
-                  onExpandChange: (val) => setState(() {
-                    isBottomDrawerOpen = val;
-                  }),
-                  child: VolumeSlider(
-                    currentVolume: currentVolume,
-                    onVolumeChanged: _onVolumeChanged,
-                    onVolumeDragEnd: _onVolumeDragEnd,
-                  ),
-                ),
-            ],
+              ],
+            ),
+            bottomNavigationBar: layoutMode == LayoutMode.navBar
+                ? GestureDetector(
+                    onVerticalDragUpdate: _onBottomBarSwipe,
+                    child: BottomBar(
+                      index: _currentIndex,
+                      onTap: _onSwitchPageIndex,
+                    ),
+                  )
+                : null,
           ),
-          bottomNavigationBar: layoutMode == LayoutMode.navBar
-              ? GestureDetector(
-                  onVerticalDragUpdate: _onBottomBarSwipe,
-                  child: BottomBar(
-                    index: _currentIndex,
-                    onTap: _onSwitchPageIndex,
-                  ),
-                )
-              : null,
         ),
       ),
     );
@@ -386,7 +390,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     );
   }
 
-  void _onVolumeChanged(value) {
+  void _onVolumeChanged(value, bool skip) {
     setState(() {
       NuxDeviceControl.instance().masterVolume = value;
     });

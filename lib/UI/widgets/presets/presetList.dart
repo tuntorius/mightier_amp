@@ -1,59 +1,44 @@
-// (c) 2020-2021 Dian Iliev (Tuntorius)
-// This code is licensed under MIT license (see LICENSE.md for details)
-
+import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/popups/exportQRCode.dart';
-import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:qr_utils/qr_utils.dart';
-import 'package:tinycolor2/tinycolor2.dart';
 
-import '../../../UI/popups/alertDialogs.dart';
-import '../../../UI/popups/changeCategory.dart';
+import '../../../audio/trackdata/trackData.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
-import '../../../bluetooth/devices/presets/Preset.dart';
 import '../../../bluetooth/devices/presets/presetsStorage.dart';
 import '../../../platform/fileSaver.dart';
-import '../../mightierIcons.dart';
+import '../../popups/alertDialogs.dart';
+import '../../popups/changeCategory.dart';
+import '../../popups/exportQRCode.dart';
 import '../../theme.dart';
-import '../dynamic_treeview.dart';
+import 'presetItem.dart';
 
 enum PresetsTopMenuActions { ExportAll, Import }
 
 enum CategoryMenuActions { Delete, Rename, Export }
-
-enum PresetItemActions {
-  Delete,
-  Rename,
-  ChangeChannel,
-  Duplicate,
-  Export,
-  ChangeCategory,
-  ExportQR
-}
 
 class PresetList extends StatefulWidget {
   final void Function(dynamic)? onTap;
   final bool simplified;
   final bool noneOption;
   final String? customProductId;
+
   const PresetList(
       {Key? key,
       this.onTap,
       this.simplified = false,
-      this.noneOption = false,
-      this.customProductId})
+      this.customProductId,
+      this.noneOption = false})
       : super(key: key);
+
   @override
-  State createState() => _PresetListState();
+  State<PresetList> createState() => _PresetListState();
 }
 
 class _PresetListState extends State<PresetList>
     with AutomaticKeepAliveClientMixin<PresetList> {
-  Map<String, NuxDevice> devices = <String, NuxDevice>{};
-
-  var presetsMenu = <PopupMenuEntry>[
+  //main menu
+  static final presetsMenu = <PopupMenuEntry>[
     PopupMenuItem(
       value: PresetsTopMenuActions.ExportAll,
       child: Row(
@@ -83,7 +68,7 @@ class _PresetListState extends State<PresetList>
   ];
 
   //menu for category
-  var popupMenu = <PopupMenuEntry>[
+  static final List<PopupMenuEntry> _popupMenu = <PopupMenuEntry>[
     PopupMenuItem(
       value: CategoryMenuActions.Delete,
       child: Row(
@@ -111,7 +96,7 @@ class _PresetListState extends State<PresetList>
       ),
     ),
     PopupMenuItem(
-      value: CategoryMenuActions.Rename,
+      value: CategoryMenuActions.Export,
       child: Row(
         children: <Widget>[
           Icon(
@@ -125,103 +110,238 @@ class _PresetListState extends State<PresetList>
     )
   ];
 
-  //menu for preset
-  var popupSubmenu = <PopupMenuEntry>[
-    PopupMenuItem(
-      value: PresetItemActions.Delete,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.delete,
-            color: AppThemeConfig.contextMenuIconColor,
+  NuxDevice get device => NuxDeviceControl.instance().device;
+  List<dynamic> get _lists => PresetsStorage().presetsData;
+  Map<String, NuxDevice> devices = <String, NuxDevice>{};
+
+  @override
+  void initState() {
+    super.initState();
+    NuxDeviceControl.instance().addListener(refreshPresets);
+    PresetsStorage().addListener(refreshPresets);
+
+    //cache devices
+    for (var element in NuxDeviceControl.instance().deviceList) {
+      devices[element.productStringId] = element;
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    NuxDeviceControl.instance().removeListener(refreshPresets);
+    PresetsStorage().removeListener(refreshPresets);
+  }
+
+  void refreshPresets() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    List<DragAndDropListExpansion> list =
+        List.generate(_lists.length, (index) => _buildList(index));
+
+    var presetsList = DragAndDropLists(
+        key: const PageStorageKey<String>("presets"),
+        children: list,
+        contentsWhenEmpty: const SizedBox(
+          height: 50,
+          child: Center(
+            child: Text("Empty"),
           ),
-          const SizedBox(width: 5),
-          const Text("Delete"),
+        ),
+        onItemReorder: _onItemReorder,
+        onListReorder: _onListReorder,
+        // listGhost is mandatory when using expansion tiles to prevent multiple widgets using the same globalkey
+        listGhost: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Center(
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 100.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(7.0),
+              ),
+              child: const Icon(Icons.add_box),
+            ),
+          ),
+        ));
+
+    if (widget.simplified) return presetsList;
+    return SafeArea(
+      child: ListView(
+        children: [
+          ListTile(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            contentPadding: const EdgeInsets.only(left: 16, right: 12),
+            title: const Text("Presets"),
+            trailing: PopupMenuButton(
+              child: const Padding(
+                padding:
+                    EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
+                child: Icon(Icons.more_vert, color: Colors.grey),
+              ),
+              itemBuilder: (context) {
+                return presetsMenu;
+              },
+              onSelected: (pos) {
+                mainMenuActions(pos);
+              },
+            ),
+          ),
+          presetsList
         ],
       ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.ChangeChannel,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.circle,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Change Channel"),
-        ],
+    );
+  }
+
+  void _categoryMenu(CategoryMenuActions action, String item) {
+    switch (action) {
+      case CategoryMenuActions.Delete:
+        _deleteCategory(item);
+        break;
+      case CategoryMenuActions.Rename:
+        _renameCategory(item);
+        break;
+      case CategoryMenuActions.Export:
+        _exportCategory(item);
+        break;
+    }
+  }
+
+  _buildList(int outerIndex) {
+    Map category = _lists[outerIndex];
+    List presets = category["presets"];
+    return DragAndDropListExpansion(
+      title: Text(category["name"]),
+      titleColor: Colors.grey[700],
+      titleColorExpanded: Colors.grey[600],
+      itemsBackgroundColor: Colors.grey[900]!,
+      trailing: widget.simplified
+          ? null
+          : PopupMenuButton(
+              child: const Padding(
+                padding:
+                    EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
+                child: Icon(Icons.more_vert, color: Colors.grey),
+              ),
+              itemBuilder: (context) {
+                return _popupMenu;
+              },
+              onSelected: (pos) {
+                _categoryMenu(pos as CategoryMenuActions, category["name"]);
+              },
+            ),
+      children: List.generate(
+          presets.length, (index) => _buildPresetItem(presets[index])),
+      listKey: ObjectKey(category),
+    );
+  }
+
+  Widget _presetWidget(Map<String, dynamic> item) {
+    return PresetItem(
+      device: device,
+      item: item,
+      ampTextStyle: Theme.of(context).textTheme.bodyText1,
+      simplified: widget.simplified,
+      customProductId: widget.customProductId,
+      onTap: () {
+        //remove the new marker if exists
+        if (!widget.simplified) {
+          PresetsStorage().clearNewFlag(item["category"], item["name"]);
+        }
+
+        if (widget.onTap != null) {
+          widget.onTap!(item);
+        } else {
+          var dev = device;
+          if (dev.isPresetSupported(item)) {
+            device.presetFromJson(item, null);
+          }
+        }
+        setState(() {});
+      },
+      onPopupMenuTap: (action, item) {
+        switch (action) {
+          case PresetItemActions.Delete:
+            _deletePreset(item);
+            break;
+          case PresetItemActions.Rename:
+            _renamePreset(item);
+            break;
+          case PresetItemActions.ChangeChannel:
+            _changePresetChannel(item);
+            break;
+          case PresetItemActions.Duplicate:
+            _duplicatePreset(item);
+            break;
+          case PresetItemActions.Export:
+            _exportPreset(item);
+            break;
+          case PresetItemActions.ChangeCategory:
+            _changePresetCategory(item);
+            break;
+          case PresetItemActions.ExportQR:
+            _exportQR(item);
+            break;
+        }
+      },
+    );
+  }
+
+  _buildPresetItem(Map<String, dynamic> item) {
+    return DragAndDropItem(
+      feedbackWidget: ListTile(
+        tileColor: const Color.fromARGB(127, 127, 127, 127),
+        title: Text(item["name"]),
       ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.ChangeCategory,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            MightierIcons.tag,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Change Category"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.Rename,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.drive_file_rename_outline,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Rename"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.Duplicate,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.copy,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Duplicate"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.ExportQR,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.qr_code_2,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Export QR Code"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.Export,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.save_alt,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Export Preset"),
-        ],
-      ),
-    )
-  ];
+      child: _presetWidget(item),
+    );
+  }
+
+  _onItemReorder(
+      int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+    if (PresetsStorage().reorderPresets(
+        oldItemIndex, oldListIndex, newItemIndex, newListIndex)) {
+      setState(() {});
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.deepOrange,
+          content: Text(
+            "Destination category contains preset with the same name!",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          )));
+    }
+  }
+
+  _onListReorder(int oldListIndex, int newListIndex) {
+    setState(() {
+      PresetsStorage().reorderCategories(oldListIndex, newListIndex);
+    });
+  }
 
   @override
   bool get wantKeepAlive => true;
+
+  ///Actions
+  ///
+  ///
+  void mainMenuActions(action) {
+    switch (action) {
+      case PresetsTopMenuActions.ExportAll:
+        _exportCategory("");
+        break;
+      case PresetsTopMenuActions.Import:
+        _importPresets();
+        break;
+    }
+  }
 
   void _deleteCategory(String category) {
     AlertDialogs.showConfirmDialog(context,
@@ -264,6 +384,14 @@ class _PresetListState extends State<PresetList>
 
     if (data != null) {
       saveFileString("application/octet-stream", "$category.nuxpreset", data);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.deepOrange,
+          content: Text(
+            "Cannot export empty category!",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          )));
     }
   }
 
@@ -312,8 +440,7 @@ class _PresetListState extends State<PresetList>
         value: preset["name"],
         validationErrorMessage: "Name already taken!",
         validation: (newName) {
-          return PresetsStorage().findPreset(newName, preset["category"]) ==
-              null;
+          return !PresetsStorage().presetExists(newName, preset["category"]);
         },
         confirmColor: Theme.of(context).hintColor,
         onConfirm: (newName) {
@@ -412,361 +539,5 @@ class _PresetListState extends State<PresetList>
         });
       }
     }
-  }
-
-  void mainMenuActions(action) {
-    switch (action) {
-      case PresetsTopMenuActions.ExportAll:
-        _exportCategory("");
-        break;
-      case PresetsTopMenuActions.Import:
-        _importPresets();
-        break;
-    }
-  }
-
-  void menuActions(action, item) async {
-    {
-      if (item is String) {
-        //category
-        switch (action) {
-          case CategoryMenuActions.Delete:
-            _deleteCategory(item);
-            break;
-          case CategoryMenuActions.Rename:
-            _renameCategory(item);
-            break;
-          case CategoryMenuActions.Export:
-            _exportCategory(item);
-            break;
-        }
-      } else {
-        //preset
-        switch (action) {
-          case PresetItemActions.Delete:
-            _deletePreset(item);
-            break;
-          case PresetItemActions.Rename:
-            _renamePreset(item);
-            break;
-          case PresetItemActions.ChangeChannel:
-            _changePresetChannel(item);
-            break;
-          case PresetItemActions.Duplicate:
-            _duplicatePreset(item);
-            break;
-          case PresetItemActions.Export:
-            _exportPreset(item);
-            break;
-          case PresetItemActions.ChangeCategory:
-            _changePresetCategory(item);
-            break;
-          case PresetItemActions.ExportQR:
-            _exportQR(item);
-            break;
-        }
-      }
-    }
-  }
-
-  void showContextMenu(
-      Offset position, dynamic item, List<PopupMenuEntry> menu) {
-    final RenderBox? overlay =
-        Overlay.of(context)?.context.findRenderObject() as RenderBox?;
-    //open menu
-    if (overlay != null) {
-      var rect = RelativeRect.fromRect(
-          position & const Size(40, 40), // smaller rect, the touch area
-          Offset.zero & overlay.size);
-      showMenu(
-        position: rect,
-        items: menu,
-        context: context,
-      ).then((value) {
-        menuActions(value, item);
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    NuxDeviceControl.instance().addListener(refreshPresets);
-    PresetsStorage().addListener(refreshPresets);
-
-    //cache devices
-    for (var element in NuxDeviceControl.instance().deviceList) {
-      devices[element.productStringId] = element;
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    NuxDeviceControl.instance().removeListener(refreshPresets);
-    PresetsStorage().removeListener(refreshPresets);
-  }
-
-  void refreshPresets() {
-    setState(() {});
-  }
-
-  List<Widget> buildEffectsPreview(Map<String, dynamic> preset) {
-    var widgets = <Widget>[];
-    NuxDevice? dev = devices[preset["product_id"]];
-    //int presetVersion = preset["version"] ?? 0;
-
-    if (dev != null) {
-      for (int i = 0; i < dev.processorList.length; i++) {
-        ProcessorInfo pi = dev.processorList[i];
-        if (preset.containsKey(pi.keyName)) {
-          //special case for amp
-          if (pi.keyName == "amp") {
-            var name = dev.getAmpNameByIndex(preset[pi.keyName]["fx_type"]);
-            widgets.insert(
-                0,
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Text(
-                    name,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ));
-          } else if (pi.keyName == "cabinet") {
-            continue;
-          } else {
-            bool enabled = preset[pi.keyName]["enabled"];
-            widgets.add(Icon(
-              pi.icon,
-              color: enabled ? pi.color : Colors.grey,
-              size: 16,
-            ));
-          }
-        }
-      }
-    }
-    return widgets;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return SafeArea(
-      child: ListView(
-        children: [
-          if (!widget.simplified)
-            ListTile(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              contentPadding: const EdgeInsets.only(left: 16, right: 12),
-              title: const Text("Presets"),
-              trailing: PopupMenuButton(
-                child: const Padding(
-                  padding: EdgeInsets.only(
-                      left: 12.0, right: 4, bottom: 10, top: 10),
-                  child: Icon(Icons.more_vert, color: Colors.grey),
-                ),
-                itemBuilder: (context) {
-                  return presetsMenu;
-                },
-                onSelected: (pos) {
-                  mainMenuActions(pos);
-                },
-              ),
-            ),
-          _buildList(context)
-        ],
-      ),
-    );
-  }
-
-  Widget _buildList(BuildContext context) {
-    if (PresetsStorage().getCategories().isEmpty) {
-      return Center(
-          child: Text("Empty", style: Theme.of(context).textTheme.bodyText1));
-    }
-    late Offset position;
-
-    Widget out = GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTapDown: (details) {
-        position = details.globalPosition;
-      },
-      child: DynamicTreeView(
-        simplified: widget.simplified,
-        onCategoryTap: (val) {
-          //print(val);
-        },
-        onCategoryLongPress: (val) {
-          showContextMenu(position, val, popupMenu);
-        },
-        itemBuilder: (context) {
-          return popupMenu;
-        },
-        onSelected: (pos, item) {
-          menuActions(pos, item);
-        },
-        categories: PresetsStorage().getCategories(),
-        items: PresetsStorage().presetsData,
-        childBuilder: (item) {
-          //this creates the presets
-          var device = NuxDeviceControl.instance().device;
-          var pVersion = item["version"] ?? 0;
-          var devVersion = device.productVersion;
-          bool newItem = false;
-          //check if enabled and desaturate color if needed
-
-          bool enabled = true;
-          if (widget.customProductId == null) {
-            enabled = item["product_id"] == device.productStringId;
-          } else {
-            enabled = item["product_id"] == widget.customProductId;
-          }
-
-          Color color = Preset.channelColors[item["channel"]];
-          if (!enabled) color = TinyColor(color).desaturate(90).color;
-          bool selected = item["category"] == device.presetCategory &&
-              item["name"] == device.presetName;
-
-          //create trailing widget based on whether the preset is new
-          Widget? trailingWidget;
-          if (widget.simplified) {
-            trailingWidget = null;
-          } else {
-            var button = PopupMenuButton(
-              child: const Padding(
-                padding:
-                    EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
-                child: const Icon(Icons.more_vert, color: Colors.grey),
-              ),
-              itemBuilder: (context) {
-                return popupSubmenu;
-              },
-              onSelected: (pos) {
-                menuActions(pos, item);
-              },
-            );
-            if (item.containsKey("new")) {
-              newItem = true;
-              trailingWidget = Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.circle,
-                    color: Colors.blue,
-                    size: 16,
-                  ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  button
-                ],
-              );
-            } else {
-              trailingWidget = button;
-            }
-          }
-          var out = ChildBuilderInfo();
-          out.hasNewItems = newItem;
-          int alpha = selected && !widget.simplified ? 105 : 0;
-          out.widget = ColoredBox(
-            color: Color.fromARGB(alpha, 8, 102, 232),
-            child: ListTile(
-                enabled: enabled,
-                //this is buggy
-                //selectedTileColor: Color.fromARGB(
-                //    255, 9, 51, 116), //Color.fromARGB(255, 45, 60, 68),
-                //selected: selected && !widget.simplified ? 255 : 0;,
-                onTap: () {
-                  //remove the new marker if exists
-                  if (!widget.simplified) {
-                    PresetsStorage()
-                        .clearNewFlag(item["category"], item["name"]);
-                  }
-
-                  if (widget.onTap != null) {
-                    widget.onTap!(item);
-                  } else {
-                    var dev = NuxDeviceControl.instance().device;
-                    if (dev.isPresetSupported(item)) {
-                      NuxDeviceControl.instance()
-                          .device
-                          .presetFromJson(item, null);
-                    }
-                  }
-                  setState(() {});
-                },
-                onLongPress: () {
-                  if (!widget.simplified) {
-                    showContextMenu(position, item, popupSubmenu);
-                  }
-                },
-                minLeadingWidth: 0,
-                leading: SizedBox(
-                  height:
-                      double.infinity, //strange hack to center icon vertically
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Icon(
-                        NuxDeviceControl.instance()
-                            .getDeviceFromId(item["product_id"])!
-                            .productIcon,
-                        size: 30,
-                        color: color,
-                      ),
-                      if (pVersion != devVersion)
-                        Transform(
-                          transform: Matrix4.translationValues(10, 10, 0),
-                          child: const Icon(
-                            Icons.warning,
-                            color: Colors.amber,
-                            size: 20,
-                          ),
-                        )
-                    ],
-                  ),
-                ),
-                title: Text(item["name"],
-                    style: TextStyle(
-                        color: enabled ? Colors.white : Colors.grey[600])),
-                subtitle: Opacity(
-                  opacity: enabled ? 1 : 0.5,
-                  child: Row(
-                    children: buildEffectsPreview(item),
-                  ),
-                ),
-                trailing: trailingWidget),
-          );
-          return out;
-        },
-        config: const Config(
-            parentTextStyle: TextStyle(color: Colors.white),
-            parentPaddingEdgeInsets: EdgeInsets.only(left: 16, right: 16),
-            childrenPaddingEdgeInsets: EdgeInsets.only(left: 0, right: 0),
-            arrowIcon: Icon(Icons.keyboard_arrow_down, color: Colors.white)),
-      ),
-    );
-
-    if (widget.noneOption) {
-      out = Column(
-        children: [
-          ListTile(
-            contentPadding: const EdgeInsets.only(left: 16, right: 4),
-            leading: const Icon(
-              Icons.close,
-              color: Colors.white,
-            ),
-            title: Transform.translate(
-                offset: const Offset(-16, 0), child: const Text("None")),
-            onTap: () {
-              widget.onTap?.call(false);
-            },
-          ),
-          out
-        ],
-      );
-    }
-    return out;
   }
 }

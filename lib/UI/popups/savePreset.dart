@@ -111,9 +111,8 @@ class SavePresetDialog {
                 if (_formKey.currentState!.validate()) {
                   //save and pop
 
-                  if (PresetsStorage().findPreset(
-                          nameCtrl.value.text, categoryCtrl.value.text) !=
-                      null) {
+                  if (PresetsStorage().presetExists(
+                      nameCtrl.value.text, categoryCtrl.value.text)) {
                     //overwriting preset
                     AlertDialogs.showConfirmDialog(context,
                         title: "Confirm",

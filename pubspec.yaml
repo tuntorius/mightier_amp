@@ -34,6 +34,10 @@ dependencies:
   package_info_plus: ^1.4.2
   device_info_plus: ^3.2.3
   url_launcher: ^6.0.10
+
+  drag_and_drop_lists:
+    path: ./drag_and_drop_list
+
   #modified to include qr scanning from gallery (for android only)
   #and to make it null safe
   qr_utils:

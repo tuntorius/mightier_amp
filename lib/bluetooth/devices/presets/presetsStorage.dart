@@ -12,6 +12,7 @@ import 'package:uuid/uuid.dart';
 class PresetsStorage extends ChangeNotifier {
   static final PresetsStorage _storage = PresetsStorage._();
   static const presetsFile = "presets.json";
+  static const presetsVersion = 1;
 
   static const presetsSingle = "preset-single";
   static const presetsMultiple = "preset-multiple";
@@ -27,16 +28,15 @@ class PresetsStorage extends ChangeNotifier {
   File? _presetsFile;
   bool _presetsReady = false;
 
-  List<dynamic> presetsData = <dynamic>[];
-  List<String> categoriesCache = <String>[];
+  List presetsData = [];
+  List<String> _categoriesCache = <String>[];
 
   PresetsStorage._() {
-    presetsData = <Map<String, dynamic>>[];
     _init();
   }
 
   _init() async {
-    categoriesCache = <String>[];
+    _categoriesCache = <String>[];
     await _getDirectory();
     await _loadPresets();
   }
@@ -58,11 +58,21 @@ class PresetsStorage extends ChangeNotifier {
     try {
       if (_presetsFile != null) {
         var _presetJson = await _presetsFile!.readAsString();
-        presetsData = json.decode(_presetJson);
+        var data = json.decode(_presetJson);
 
-        //fix any old compatibility issues
-        for (int i = 0; i < presetsData.length; i++) {
-          presetsData[i] = fixPresetCompatibility(presetsData[i]);
+        if (data is List) {
+          debugPrint("Old preset format");
+
+          //fix any old compatibility issues
+          for (int i = 0; i < data.length; i++) {
+            data[i] = fixPresetCompatibility(data[i]);
+          }
+
+          data = _convertOldToNewFormat(data);
+          presetsData = data["Categories"];
+          _savePresets();
+        } else {
+          presetsData = data["Categories"];
         }
 
         _buildCategoryCache();
@@ -70,14 +80,18 @@ class PresetsStorage extends ChangeNotifier {
       }
     } catch (e) {
       _presetsReady = true;
-      //   //no file
-      //   print("Presets file not available");
     }
   }
 
   _savePresets() async {
     _buildCategoryCache();
-    String jsonData = json.encode(presetsData);
+
+    Map<String, dynamic> file = {
+      "Version": presetsVersion,
+      "Categories": presetsData
+    };
+
+    String jsonData = json.encode(file);
     await _presetsFile!.writeAsString(jsonData);
     notifyListeners();
   }
@@ -90,74 +104,112 @@ class PresetsStorage extends ChangeNotifier {
   }
 
   List<String> getCategories() {
-    return categoriesCache;
+    return _categoriesCache;
   }
 
   _buildCategoryCache() {
-    categoriesCache.clear();
+    _categoriesCache.clear();
     for (var element in presetsData) {
-      if (!categoriesCache.contains(element["category"])) {
-        categoriesCache.add(element["category"]);
-      }
+      _categoriesCache.add(element["name"]);
     }
-    categoriesCache.sort();
   }
 
-  int? findPreset(String name, String category) {
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["name"] == name &&
-          presetsData[i]["category"] == category) return i;
+  Map<String, dynamic>? _findCategory(String category) {
+    for (Map<String, dynamic> cat in presetsData) {
+      if (cat["name"] == category) return cat;
+    }
+    return null;
+  }
+
+  bool presetExists(String name, String category) =>
+      findPreset(name, category) != null;
+
+  Map<String, dynamic>? findPreset(String name, String category) {
+    var cat = _findCategory(category);
+
+    return findPresetInCategory(name, cat);
+  }
+
+  Map<String, dynamic>? findPresetInCategory(
+      String name, Map<String, dynamic>? category) {
+    if (category != null) {
+      for (Map<String, dynamic> preset in category["presets"]) {
+        if (preset["name"] == name) return preset;
+      }
     }
     return null;
   }
 
   dynamic findPresetByUuid(String uuid) {
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["uuid"] == uuid) return presetsData[i];
+    for (var cat in presetsData) {
+      for (var preset in cat["presets"]) {
+        if (preset["uuid"] == uuid) return preset;
+      }
     }
     return null;
   }
 
-  savePreset(Map<String, dynamic> preset, String name, String category) async {
-    preset["name"] = name;
-    preset["category"] = category;
+  Map<String, dynamic> _findOrCreateCategory(String name) {
+    var category = _findCategory(name);
 
-    var index = findPreset(name, category);
-    if (index != null) {
+    if (category == null) {
+      category = {"name": name, "presets": []};
+      presetsData.add(category);
+    }
+
+    return category;
+  }
+
+  savePreset(
+      Map<String, dynamic> preset, String name, String categoryName) async {
+    preset["name"] = name;
+
+    var category = _findOrCreateCategory(categoryName);
+
+    var data = findPresetInCategory(name, category);
+    if (data != null) {
       //overwrite preset
       for (var key in preset.keys) {
-        if (key != "uuid") presetsData[index][key] = preset[key];
+        if (key != "uuid") data[key] = preset[key];
       }
     } else {
       _addUuid(preset);
-      presetsData.add(preset);
+      category["presets"].add(preset);
     }
 
     _savePresets();
   }
 
   Future deletePreset(String category, String name) {
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category &&
-          presetsData[i]["name"] == name) {
-        presetsData.removeAt(i);
+    var cat = _findCategory(category);
+
+    if (cat != null) {
+      var p = findPresetInCategory(name, cat);
+      if (p != null) {
+        (cat["presets"] as List).remove(p);
         return _savePresets();
       }
     }
+
     return Future.error("Preset not found");
   }
 
   Future duplicatePreset(String category, String name) {
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category &&
-          presetsData[i]["name"] == name) {
-        var clone = json.decode(json.encode(presetsData[i]));
+    var cat = _findCategory(category);
 
-        String? lName = _findFreeName(name, category);
-        if (lName != null) {
-          clone["name"] = lName;
-          presetsData.insert(i + 1, clone);
-          return _savePresets();
+    if (cat != null) {
+      List presets = cat["presets"];
+
+      for (int i = 0; i < presets.length; i++) {
+        if (presets[i]["name"] == name) {
+          var clone = json.decode(json.encode(presets[i]));
+
+          String? lName = _findFreeName(name, category);
+          if (lName != null) {
+            clone["name"] = lName;
+            cat["presets"].insert(i + 1, clone);
+            return _savePresets();
+          }
         }
       }
     }
@@ -165,105 +217,142 @@ class PresetsStorage extends ChangeNotifier {
   }
 
   Future renamePreset(String category, String name, String newName) {
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category &&
-          presetsData[i]["name"] == name) {
-        presetsData[i]["name"] = newName;
-        return _savePresets();
-      }
+    var p = findPreset(name, category);
+    if (p != null) {
+      p["name"] = newName;
+      return _savePresets();
     }
+
     return Future.error("Preset not found");
   }
 
+  void reorderCategories(int oldListIndex, int newListIndex) {
+    var movedList = presetsData.removeAt(oldListIndex);
+    presetsData.insert(newListIndex, movedList);
+    _savePresets();
+  }
+
+  bool reorderPresets(
+      int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+    var preset = presetsData[oldListIndex]["presets"][oldItemIndex];
+    var newCatName = presetsData[newListIndex];
+
+    //if preset with the same name exists, avoid reordering
+    if (oldListIndex != newListIndex &&
+        findPresetInCategory(preset["name"], newCatName) != null) {
+      return false;
+    }
+
+    var movedItem = presetsData[oldListIndex]["presets"].removeAt(oldItemIndex);
+    presetsData[newListIndex]["presets"].insert(newItemIndex, movedItem);
+    return true;
+  }
+
   clearNewFlag(String category, String name) {
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category &&
-          presetsData[i]["name"] == name) {
-        if (presetsData[i].containsKey("new")) {
-          presetsData[i].remove("new");
-          _savePresets();
-        }
+    var p = findPreset(name, category);
+    if (p != null) {
+      if (p.containsKey("new")) {
+        p.remove("new");
+        _savePresets();
       }
     }
   }
 
   Future changeChannel(String category, String name, int channel) {
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category &&
-          presetsData[i]["name"] == name) {
-        presetsData[i]["channel"] = channel;
-        return _savePresets();
-      }
+    var p = findPreset(name, category);
+    if (p != null) {
+      p["channel"] = channel;
+      return _savePresets();
     }
+
     return Future.error("Preset not found");
   }
 
   Future changePresetCategory(
       String category, String name, String newCategory) {
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category &&
-          presetsData[i]["name"] == name) {
-        presetsData[i]["category"] = newCategory;
+    var cat1 = _findCategory(category);
+    var cat2 = _findCategory(newCategory);
+    if (cat1 != null && cat2 != null) {
+      var p = findPresetInCategory(name, cat1);
+      if (p != null) {
+        (cat1["presets"] as List).remove(p);
+        (cat2["presets"] as List).add(p);
         return _savePresets();
       }
     }
+
     return Future.error("Preset not found");
   }
 
   Future<List<String>> deleteCategory(String category) async {
     bool modified = false;
-    List<String> uuids = [];
-    for (int i = presetsData.length - 1; i >= 0; i--) {
-      if (presetsData[i]["category"] == category) {
-        uuids.add(presetsData[i]["uuid"]);
-        presetsData.removeAt(i);
-        modified = true;
+
+    var cat = _findCategory(category);
+
+    if (cat != null) {
+      List<String> uuids = [];
+      List presets = cat["presets"];
+
+      for (var p in presets) {
+        uuids.add(p["uuid"]);
       }
-    }
-    if (modified) {
+      presetsData.remove(cat);
       await _savePresets();
       return uuids;
     }
+
     return Future.error("Category not found");
   }
 
   Future renameCategory(String category, String newName) {
-    bool modified = false;
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category) {
-        presetsData[i]["category"] = newName;
-        modified = true;
-      }
+    var cat = _findCategory(category);
+
+    if (cat != null) {
+      cat["name"] = newName;
+      return _savePresets();
     }
-    if (modified) return _savePresets();
+
     return Future.error("Category not found");
   }
 
   String? presetToJson(String category, String name) {
     var finalData = <String, dynamic>{};
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category &&
-          presetsData[i]["name"] == name) {
-        //add some info
-        finalData["type"] = presetsSingle;
-        finalData["data"] = presetsData[i];
-        return json.encode(finalData);
-      }
+
+    var p = findPreset(name, category);
+
+    if (p != null) {
+      var copy = json.decode(json.encode(p));
+      finalData["type"] = presetsSingle;
+
+      copy["category"] = category;
+      finalData["data"] = copy;
+      return json.encode(finalData);
     }
+
     return null;
   }
 
   //converts a category to json
   //if parameter left empty, then the full preset list is converted
   String? presetsToJson([String? category]) {
-    var presets = <dynamic>[];
-    for (int i = 0; i < presetsData.length; i++) {
-      if (presetsData[i]["category"] == category ||
-          category == null ||
-          category == "") {
-        presets.add(presetsData[i]);
+    //TODO: These presets don't have the category key
+    List presets = [];
+    if (category == null || category.isEmpty) {
+      for (var cat in presetsData) {
+        for (var p in cat["presets"]) {
+          var copy = json.decode(json.encode(p));
+          copy["category"] = cat["name"];
+          presets.add(copy);
+        }
+      }
+    } else {
+      for (var p in _findCategory(category)?["presets"]) {
+        var copy = json.decode(json.encode(p));
+        copy["category"] = category;
+        presets.add(copy);
       }
     }
+
     if (presets.isNotEmpty) {
       var finalData = <String, dynamic>{};
       finalData["type"] = presetsMultiple;
@@ -296,15 +385,13 @@ class PresetsStorage extends ChangeNotifier {
 
   _presetFromJson(
       String category, String name, Map<String, dynamic> presetData) async {
-    int? p = findPreset(name, category);
+    var p = findPreset(name, category);
 
     presetData = fixPresetCompatibility(presetData);
     String? _name = name;
     //check if exists
     if (p != null) {
-      Map<String, dynamic> _p = presetsData[p];
-
-      if (_presetsEquality(presetData, _p)) return;
+      if (_presetsEquivalent(presetData, p)) return;
 
       //difference - find free name and save as that
       _name = _findFreeName(name, category);
@@ -312,6 +399,8 @@ class PresetsStorage extends ChangeNotifier {
 
     //highlight that the preset is new
     presetData["new"] = true;
+
+    presetData.remove("category");
     //save preset
     if (_name != null) savePreset(presetData, _name, category);
   }
@@ -325,13 +414,13 @@ class PresetsStorage extends ChangeNotifier {
     return null;
   }
 
-  bool _presetsEquality(Map<String, dynamic> p1, Map<String, dynamic> p2) {
+  bool _presetsEquivalent(Map<String, dynamic> p1, Map<String, dynamic> p2) {
     for (String k in p1.keys) {
       if (!p2.containsKey(k)) return false;
 
       //check sub-maps
       if (p1[k] is Map && p2[k] is Map) {
-        bool equal = _presetsEquality(p1[k], p2[k]);
+        bool equal = _presetsEquivalent(p1[k], p2[k]);
         if (equal == false) return false;
         continue;
       }
@@ -350,6 +439,50 @@ class PresetsStorage extends ChangeNotifier {
       _addUuid(presetData);
     }
     return presetData;
+  }
+
+  List<dynamic> _getPresetsInCategoryOldFormat(
+      List<dynamic> oldPresets, String category) {
+    List<dynamic> presets = [];
+    for (int i = 0; i < oldPresets.length; i++) {
+      if (oldPresets[i]["category"] == category) presets.add(oldPresets[i]);
+    }
+    return presets;
+  }
+
+  Map<String, dynamic> _convertOldToNewFormat(List<dynamic> oldFormat) {
+    _buildCategoryCache();
+    var old = json.encode(presetsData);
+    print(old);
+
+    //build categories list
+    List<String> categoriesList = [];
+    for (var element in oldFormat) {
+      if (!categoriesList.contains(element["category"])) {
+        categoriesList.add(element["category"]);
+      }
+    }
+
+    List<Map<String, dynamic>> categories = [];
+
+    for (var cat in categoriesList) {
+      Map<String, dynamic> category = {};
+      category["name"] = cat;
+      var presets = _getPresetsInCategoryOldFormat(oldFormat, cat);
+
+      for (Map preset in presets) {
+        preset.remove("category");
+      }
+      category["presets"] = presets;
+      categories.add(category);
+    }
+
+    Map<String, dynamic> file = {
+      "Version": presetsVersion,
+      "Categories": categories
+    };
+
+    return file;
   }
 
   void _addUuid(Map<String, dynamic> preset) {

@@ -151,6 +151,19 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  @override
+  void sendReset() {
+    var data = createSysExMessagePro(
+        SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_SPEC_CMD,
+        SyxDir.kSYXDIR_SET,
+        [SysCtrlState.syscmd_resetall]);
+
+    _readyPresetsCount = 0;
+    _readyIRsCount = 0;
+    device.deviceControl.sendBLEData(data);
+  }
+
   void _sendSlotData(int slot, bool enabled, int effectIndex) {
     var preset = device.getPreset(device.selectedChannel);
     var swIndex = preset
@@ -375,8 +388,7 @@ class PlugProCommunication extends DeviceCommunication {
     //sometimes MPPro sends several data pieces in one payload.
     //Let's split it here
     do {
-      pos = data.firstWhere((element) => element == SysexPrivacy.kSYSEX_PRIVATE,
-          orElse: () => -1);
+      pos = data.indexOf(SysexPrivacy.kSYSEX_PRIVATE);
 
       if (pos > 0) {
         var sublist = data.sublist(0, pos - 1);

@@ -37,74 +37,96 @@ class AppDrawer extends StatefulWidget {
 class _AppDrawerState extends State<AppDrawer> {
   bool isExpanded = false;
   bool isBottomDrawerOpen = false;
+  bool expandChildren = false;
+
+  void _onExpandChange(bool expand) {
+    isExpanded = expand;
+    if (isExpanded == false) expandChildren = false;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      width: isExpanded ? 230 : 56,
-      child: SafeArea(
-        child: Column(
-          children: [
-            NuxAppBar(
-              elevation: 0,
-              expanded: isExpanded,
-              showExpandButton: true,
-              onExpandStateChanged: (val) {
-                isExpanded = val;
-                setState(() {});
-              },
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _DrawerTile(
-                      tileIndex: 0,
-                      onSwitchPageIndex: widget.onSwitchPageIndex,
-                      currentIndex: widget.currentIndex,
-                      expanded: isExpanded,
-                    ),
-                    _DrawerTile(
-                      tileIndex: 1,
-                      onSwitchPageIndex: widget.onSwitchPageIndex,
-                      currentIndex: widget.currentIndex,
-                      expanded: isExpanded,
-                    ),
-                    _DrawerTile(
-                      tileIndex: 2,
-                      onSwitchPageIndex: widget.onSwitchPageIndex,
-                      currentIndex: widget.currentIndex,
-                      expanded: isExpanded,
-                    ),
-                    _DrawerTile(
-                      tileIndex: 3,
-                      onSwitchPageIndex: widget.onSwitchPageIndex,
-                      currentIndex: widget.currentIndex,
-                      expanded: isExpanded,
-                    ),
-                    _DrawerTile(
-                      tileIndex: 4,
-                      onSwitchPageIndex: widget.onSwitchPageIndex,
-                      currentIndex: widget.currentIndex,
-                      expanded: isExpanded,
-                    ),
-                  ],
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        if (details.delta.dx > 5) {
+          //open
+          _onExpandChange(true);
+        } else if (details.delta.dx < -5) {
+          //close
+          _onExpandChange(false);
+        }
+      },
+      child: AnimatedContainer(
+        onEnd: () {
+          if (isExpanded) expandChildren = true;
+          setState(() {});
+        },
+        duration: const Duration(milliseconds: 200),
+        width: isExpanded ? 230 : 56,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              NuxAppBar(
+                elevation: 0,
+                expanded: expandChildren,
+                showExpandButton: true,
+                onExpandStateChanged: _onExpandChange,
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _DrawerTile(
+                        tileIndex: 0,
+                        onSwitchPageIndex: widget.onSwitchPageIndex,
+                        currentIndex: widget.currentIndex,
+                        expanded: expandChildren,
+                      ),
+                      _DrawerTile(
+                        tileIndex: 1,
+                        onSwitchPageIndex: widget.onSwitchPageIndex,
+                        currentIndex: widget.currentIndex,
+                        expanded: expandChildren,
+                      ),
+                      _DrawerTile(
+                        tileIndex: 2,
+                        onSwitchPageIndex: widget.onSwitchPageIndex,
+                        currentIndex: widget.currentIndex,
+                        expanded: expandChildren,
+                      ),
+                      _DrawerTile(
+                        tileIndex: 3,
+                        onSwitchPageIndex: widget.onSwitchPageIndex,
+                        currentIndex: widget.currentIndex,
+                        expanded: expandChildren,
+                      ),
+                      _DrawerTile(
+                        tileIndex: 4,
+                        onSwitchPageIndex: widget.onSwitchPageIndex,
+                        currentIndex: widget.currentIndex,
+                        expanded: expandChildren,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            if (isExpanded)
-              BottomDrawer(
-                isBottomDrawerOpen: isBottomDrawerOpen,
-                onExpandChange: (val) => setState(() {
-                  isBottomDrawerOpen = val;
-                }),
-                child: VolumeSlider(
-                  currentVolume: widget.currentVolume,
-                  onVolumeChanged: widget.onVolumeChanged,
-                  onVolumeDragEnd: widget.onVolumeDragEnd,
+              if (isExpanded)
+                BottomDrawer(
+                  isBottomDrawerOpen: isBottomDrawerOpen,
+                  onExpandChange: (val) => setState(() {
+                    isBottomDrawerOpen = val;
+                  }),
+                  child: VolumeSlider(
+                    currentVolume: widget.currentVolume,
+                    onVolumeChanged: widget.onVolumeChanged,
+                    onVolumeDragEnd: widget.onVolumeDragEnd,
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -132,9 +154,9 @@ class _DrawerTile extends StatelessWidget {
         tileIndex == currentIndex ? colorScheme.primary : colorScheme.secondary;
     if (expanded) {
       return ListTile(
+        selected: tileIndex == currentIndex,
         title: Text(
           _tiles.elementAt(tileIndex).title,
-          style: TextStyle(color: color),
           // textAlign: TextAlign.right,
         ),
         leading: Icon(

@@ -330,11 +330,6 @@ class NuxMightyPlugPro extends NuxDevice {
   };
 
   NuxMightyPlugPro(NuxDeviceControl devControl) : super(devControl) {
-    //get channel names
-    for (var element in PlugProChannel.values) {
-      channelNames.add(element.toString().split('.')[1]);
-    }
-
     //clean
     presets.add(PlugProPreset(
         device: this, channel: PlugProChannel.Clean.index, channelName: "1"));
@@ -369,6 +364,7 @@ class NuxMightyPlugPro extends NuxDevice {
 
     for (var preset in presets) {
       (preset as PlugProPreset).setFirmwareVersion(version.index);
+      channelNames.add("Channel ${preset.channelName}");
     }
   }
 

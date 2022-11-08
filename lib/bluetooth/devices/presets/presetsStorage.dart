@@ -149,6 +149,15 @@ class PresetsStorage extends ChangeNotifier {
     return null;
   }
 
+  Map<String, dynamic>? findCategoryOfPreset(Map<String, dynamic> preset) {
+    for (var cat in presetsData) {
+      for (var pr in cat["presets"]) {
+        if (pr["uuid"] == preset["uuid"]) return cat;
+      }
+    }
+    return null;
+  }
+
   Map<String, dynamic> _findOrCreateCategory(String name) {
     var category = _findCategory(name);
 
@@ -180,15 +189,12 @@ class PresetsStorage extends ChangeNotifier {
     _savePresets();
   }
 
-  Future deletePreset(String category, String name) {
-    var cat = _findCategory(category);
+  Future deletePreset(Map<String, dynamic> preset) {
+    var cat = findCategoryOfPreset(preset);
 
     if (cat != null) {
-      var p = findPresetInCategory(name, cat);
-      if (p != null) {
-        (cat["presets"] as List).remove(p);
-        return _savePresets();
-      }
+      (cat["presets"] as List).remove(preset);
+      return _savePresets();
     }
 
     return Future.error("Preset not found");
@@ -204,6 +210,10 @@ class PresetsStorage extends ChangeNotifier {
         if (presets[i]["name"] == name) {
           var clone = json.decode(json.encode(presets[i]));
 
+          //get new uuid
+
+          _addUuid(clone);
+
           String? lName = _findFreeName(name, category);
           if (lName != null) {
             clone["name"] = lName;
@@ -216,14 +226,9 @@ class PresetsStorage extends ChangeNotifier {
     return Future.error("Can't clone preset");
   }
 
-  Future renamePreset(String category, String name, String newName) {
-    var p = findPreset(name, category);
-    if (p != null) {
-      p["name"] = newName;
-      return _savePresets();
-    }
-
-    return Future.error("Preset not found");
+  Future renamePreset(Map<String, dynamic> preset, String newName) {
+    preset["name"] = newName;
+    return _savePresets();
   }
 
   void reorderCategories(int oldListIndex, int newListIndex) {
@@ -248,24 +253,16 @@ class PresetsStorage extends ChangeNotifier {
     return true;
   }
 
-  clearNewFlag(String category, String name) {
-    var p = findPreset(name, category);
-    if (p != null) {
-      if (p.containsKey("new")) {
-        p.remove("new");
-        _savePresets();
-      }
+  clearNewFlag(Map<String, dynamic> preset) {
+    if (preset.containsKey("new")) {
+      preset.remove("new");
+      _savePresets();
     }
   }
 
-  Future changeChannel(String category, String name, int channel) {
-    var p = findPreset(name, category);
-    if (p != null) {
-      p["channel"] = channel;
-      return _savePresets();
-    }
-
-    return Future.error("Preset not found");
+  Future changeChannel(Map<String, dynamic> preset, int channel) {
+    preset["channel"] = channel;
+    return _savePresets();
   }
 
   Future changePresetCategory(
@@ -490,8 +487,10 @@ class PresetsStorage extends ChangeNotifier {
     do {
       String id = uuid.v4();
       // check unique
-      for (var element in presetsData) {
-        if (element["uuid"] == id) unique = false;
+      for (var cat in presetsData) {
+        for (var p in cat["presets"]) {
+          if (p["uuid"] == id) unique = false;
+        }
       }
       preset["uuid"] = id;
     } while (unique == false);

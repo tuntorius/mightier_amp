@@ -37,6 +37,12 @@ class LiteCommunication extends DeviceCommunication {
   }
 
   @override
+  void sendReset() {
+    var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7f);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  @override
   void sendDrumsEnabled(bool enabled) {}
   @override
   void sendDrumsStyle(int style) {}

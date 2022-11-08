@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:qr_utils/qr_utils.dart';
 
@@ -172,6 +173,7 @@ abstract class NuxDevice extends ChangeNotifier {
   //TODO: these should not be here
   String presetName = "";
   String presetCategory = "";
+  String presetUUID = "";
 
   //general settings
 
@@ -279,6 +281,7 @@ abstract class NuxDevice extends ChangeNotifier {
       deviceControl.changeDevicePreset(0);
       setSelectedChannelNuxIndex(0, true);
     }
+    deviceControl.onPresetsReady();
     nuxPresetsReceived = true;
   }
 
@@ -406,7 +409,7 @@ abstract class NuxDevice extends ChangeNotifier {
     return const SizedBox.shrink();
   }
 
-  String? jsonToQR(dynamic jsonPreset) {
+  String? jsonToQR(Map<String, dynamic> jsonPreset) {
     var preset = presetFromJson(jsonPreset, null, qrOnly: true);
     if (preset != null) {
       var data = preset.createNuxDataFromPreset();
@@ -422,15 +425,17 @@ abstract class NuxDevice extends ChangeNotifier {
 
   bool checkQRVersionValid(int ver);
 
-  Preset? presetFromJson(dynamic preset, double? overrideLevel,
+  Preset? presetFromJson(Map<String, dynamic> preset, double? overrideLevel,
       {bool qrOnly = false}) {
     var pVersion = preset["version"] ?? 0;
 
-    presetName = preset["name"];
-    presetCategory = preset["category"];
     var nuxChannel = preset["channel"];
 
     if (!qrOnly) {
+      presetName = preset["name"];
+      var category = PresetsStorage().findCategoryOfPreset(preset);
+      presetCategory = category!["name"];
+      presetUUID = preset["uuid"];
       setSelectedChannelNuxIndex(nuxChannel, false);
       deviceControl.changeDevicePreset(nuxChannel);
     }
@@ -543,21 +548,21 @@ abstract class NuxDevice extends ChangeNotifier {
 
     //parse all effects
     for (int i = 0; i < effectsChainLength; i++) {
-      var dev = <String, dynamic>{};
-      dev["fx_type"] = p.getSelectedEffectForSlot(i);
-      dev["enabled"] = p.slotEnabled(i);
+      var fxData = <String, dynamic>{};
+      fxData["fx_type"] = p.getSelectedEffectForSlot(i);
+      fxData["enabled"] = p.slotEnabled(i);
 
       Processor fx;
 
       fx = p.getEffectsForSlot(i)[p.getSelectedEffectForSlot(i)];
 
       for (int f = 0; f < fx.parameters.length; f++) {
-        dev[fx.parameters[f].handle] = fx.parameters[f].value;
+        fxData[fx.parameters[f].handle] = fx.parameters[f].value;
       }
 
       var proc = p.getProcessorAtSlot(i);
       var effect = processorListNuxIndex(proc);
-      mainJson[effect!.keyName] = dev;
+      mainJson[effect!.keyName] = fxData;
     }
     return mainJson;
   }

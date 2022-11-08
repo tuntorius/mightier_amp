@@ -166,11 +166,6 @@ class NuxMightyPlug extends NuxDevice {
   ];
 
   NuxMightyPlug(NuxDeviceControl devControl) : super(devControl) {
-    //get channel names
-    for (var element in PlugAirChannel.values) {
-      channelNames.add(element.toString().split('.')[1]);
-    }
-
     //clean
     guitarPresets.add(PlugAirPreset(
         device: this, channel: PlugAirChannel.Clean.index, channelName: "1"));
@@ -206,8 +201,10 @@ class NuxMightyPlug extends NuxDevice {
     presets.addAll(guitarPresets);
     presets.addAll(bassPresets);
 
+    //get channel names
     for (var preset in presets) {
       (preset as PlugAirPreset).setFirmwareVersion(version.index);
+      channelNames.add("Channel ${preset.channelName}");
     }
   }
 

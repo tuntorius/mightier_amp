@@ -82,6 +82,14 @@ class PlugAirCommunication extends DeviceCommunication {
   }
 
   @override
+  void sendReset() {
+    var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7f);
+    device.deviceControl.sendBLEData(data);
+
+    _readyPresetsCount = 0;
+  }
+
+  @override
   List<int> setChannel(int channel) {
     return createCCMessage(device.channelChangeCC, channel);
   }

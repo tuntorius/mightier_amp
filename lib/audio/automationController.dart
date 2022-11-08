@@ -142,7 +142,7 @@ class AutomationController {
             executeEvent(automation.events[_nextEvent]);
             //increment expected event
             _nextEvent++;
-            if (kDebugMode) print("FKT next event $_nextEvent");
+            if (kDebugMode) print("next event $_nextEvent");
           }
           break;
         case AutomationEventType.loop:
@@ -155,7 +155,7 @@ class AutomationController {
             }
             //increment expected event
             _nextEvent++;
-            if (kDebugMode) print("FKT next event $_nextEvent");
+            if (kDebugMode) print("next event $_nextEvent");
           }
           break;
       }
@@ -167,7 +167,7 @@ class AutomationController {
 
     switch (event.type) {
       case AutomationEventType.preset:
-        if (kDebugMode) print("FKT Changing preset ${event.name}");
+        if (kDebugMode) print("Changing preset ${event.name}");
         var preset = event.getPreset();
         if (preset != null && preset["product_id"] == device.productStringId) {
           device.presetFromJson(
@@ -178,7 +178,7 @@ class AutomationController {
         }
         break;
       case AutomationEventType.loop:
-        if (kDebugMode) print("FKT loop");
+        if (kDebugMode) print("loop");
         //find previous loop point
         for (int i = _nextEvent - 1; i >= 0; i--) {
           if (events[i].type == AutomationEventType.loop) {
@@ -264,7 +264,7 @@ class AutomationController {
       }
     }
 
-    if (kDebugMode) print("FKT next event $_nextEvent");
+    if (kDebugMode) print("next event $_nextEvent");
 
     //find previous preset event
     int prevEvent = -1;

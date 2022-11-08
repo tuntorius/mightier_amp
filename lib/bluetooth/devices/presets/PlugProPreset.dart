@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:convert/convert.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
@@ -121,15 +122,15 @@ class PlugProPreset extends Preset {
     ]);
 
     amplifierList.addAll([
-      Unknown0(),
+      if (kDebugMode) Unknown0(),
       JazzClean(),
       DeluxeRvb(),
       BassMate(),
       Tweedy(),
-      Unknown5(),
+      if (kDebugMode) Unknown5(),
       HiWire(),
       CaliCrunch(),
-      Unknown8(),
+      if (kDebugMode) Unknown8(),
       ClassA30(),
       Plexi100(),
       Plexi45(),
@@ -139,19 +140,19 @@ class PlugProPreset extends Preset {
       FiremanHBE(),
       DualRect(),
       DIEVH4(),
-      Unknown18(),
-      Unknown19(),
+      if (kDebugMode) Unknown18(),
+      if (kDebugMode) Unknown19(),
       MrZ38(),
       SuperRvb(),
-      Unknown22(),
-      Unknown23(),
-      Unknown24(),
-      Unknown25(),
+      if (kDebugMode) Unknown22(),
+      if (kDebugMode) Unknown23(),
+      if (kDebugMode) Unknown24(),
+      if (kDebugMode) Unknown25(),
       AGL(),
       MLD(),
       OptimaAir(),
       Stageman(),
-      Unknown30()
+      if (kDebugMode) Unknown30()
     ]);
 
     eqList.addAll([EQSixBand(), EQTenBand()]);

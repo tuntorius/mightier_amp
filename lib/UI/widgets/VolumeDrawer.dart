@@ -25,10 +25,10 @@ class BottomDrawer extends StatelessWidget {
         onExpandChange(!isBottomDrawerOpen);
       },
       onVerticalDragUpdate: (details) {
-        if (details.delta.dy < 0) {
+        if (details.delta.dy < -5) {
           //open
           onExpandChange(true);
-        } else {
+        } else if (details.delta.dy > 5) {
           //close
           onExpandChange(false);
         }

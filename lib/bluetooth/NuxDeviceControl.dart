@@ -313,13 +313,17 @@ class NuxDeviceControl extends ChangeNotifier {
     }
   }
 
+  bool isConnectionComplete() {
+    return device.communication.isConnectionReady();
+  }
+
   void onPresetsReady() {
     connectStatus.add(DeviceConnectionState.presetsLoaded);
   }
 
   //for some reason we should not ask for presets immediately
-  void requestPresetDelayed() async {
-    await Future.delayed(const Duration(milliseconds: 400));
+  void requestPresetDelayed(int? delay) async {
+    await Future.delayed(Duration(milliseconds: delay ?? 400));
     requestPreset(0);
   }
 
@@ -442,15 +446,15 @@ class NuxDeviceControl extends ChangeNotifier {
     requestPreset(device.selectedChannel);
   }
 
-  void resetNuxPresets() {
+  void resetNuxPresets() async {
     if (!isConnected) return;
-    var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7f);
-    _midiHandler.sendData(data);
+    device.communication.sendReset();
 
     //show loading popup
     if (device.presetSaveSupport) {
+      await Future.delayed(const Duration(seconds: 3));
       connectStatus.add(DeviceConnectionState.connectionBegin);
-      requestPresetDelayed();
+      requestPresetDelayed(3000);
     }
   }
 

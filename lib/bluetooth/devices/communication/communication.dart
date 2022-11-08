@@ -34,6 +34,7 @@ abstract class DeviceCommunication {
 
   @protected
   void connectionStepReady() {
+    if (isConnectionReady()) return;
     currentConnectionStep++;
     device.deviceControl.onConnectionStepReady();
   }
@@ -65,6 +66,7 @@ abstract class DeviceCommunication {
 
   void sendActiveChannels(List<bool> channels) {}
   void sendSlotOrder() {}
+  void sendReset();
 
   void sendDrumsEnabled(bool enabled);
   void sendDrumsStyle(int style);

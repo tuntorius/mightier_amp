@@ -103,17 +103,17 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
           setState(() {});
         },
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0),
-            child: Tooltip(
-              message: "Invert one audio channel.",
+          const Tooltip(
+            message: "Invert one audio channel.",
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: Icon(Icons.mic_off),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Tooltip(
-              message: "Mute Bluetooth audio.",
+          Tooltip(
+            message: "Mute Bluetooth audio.",
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Icon(device.config.bluetoothEQMute
                   ? Icons.volume_off
                   : Icons.volume_up),

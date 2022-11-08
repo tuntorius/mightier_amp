@@ -136,12 +136,12 @@ abstract class PopupMenuEntry<T> extends StatefulWidget {
 ///  * [PopupMenuDivider], which is the equivalent but for popup menus.
 ///  * [ListTile.divideTiles], another approach to dividing widgets in a list.
 ///  * <https://material.io/design/components/dividers.html>
-class Divider extends StatelessWidget {
+class LabeledDivider extends StatelessWidget {
   /// Creates a material design divider.
   ///
   /// The [height], [thickness], [indent], and [endIndent] must be null or
   /// non-negative.
-  const Divider(
+  const LabeledDivider(
       {Key? key,
       this.height,
       this.thickness,
@@ -280,7 +280,7 @@ class PopupMenuDivider extends PopupMenuEntry<Null> {
 
 class _PopupMenuDividerState extends State<PopupMenuDivider> {
   @override
-  Widget build(BuildContext context) => Divider(
+  Widget build(BuildContext context) => LabeledDivider(
         color: widget.color,
         height: widget.height,
         text: widget.text,
@@ -599,11 +599,12 @@ class _PopupMenu<T> extends StatelessWidget {
     Key? key,
     required this.route,
     this.semanticLabel = "",
+    this.controller,
   }) : super(key: key);
 
   final _PopupMenuRoute<T> route;
   final String semanticLabel;
-
+  final ScrollController? controller;
   @override
   Widget build(BuildContext context) {
     final double unit = 1.0 /
@@ -651,6 +652,7 @@ class _PopupMenu<T> extends StatelessWidget {
           explicitChildNodes: true,
           label: semanticLabel,
           child: SingleChildScrollView(
+            controller: controller,
             padding:
                 const EdgeInsets.symmetric(vertical: _kMenuVerticalPadding),
             child: ListBody(children: children),
@@ -718,13 +720,10 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
 
     // Find the ideal vertical position.
     double y;
-    if (selectedItemOffset == null) {
-      y = position.top;
-    } else {
-      y = position.top +
-          (size.height - position.top - position.bottom) / 2.0 -
-          selectedItemOffset;
-    }
+
+    y = position.top +
+        (size.height - position.top - position.bottom) / 2.0 -
+        selectedItemOffset;
 
     // Find the ideal horizontal position.
     double x;
@@ -806,22 +805,30 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
   @override
   final String barrierLabel;
 
+  ScrollController? scrollController;
+
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation) {
     double selectedItemOffset = 0;
+    double scrollItemOffset = 0;
     if (initialValue != null) {
       double y = _kMenuVerticalPadding;
       for (PopupMenuEntry<T> entry in items) {
         if (entry.represents(initialValue)) {
           selectedItemOffset = y + entry.height / 2.0;
+          scrollItemOffset = y - entry.height / 2.0;
           break;
         }
         y += entry.height;
       }
     }
 
-    Widget menu = _PopupMenu<T>(route: this, semanticLabel: semanticLabel);
+    scrollController = ScrollController(initialScrollOffset: scrollItemOffset);
+    Widget menu = _PopupMenu<T>(
+        route: this,
+        semanticLabel: semanticLabel,
+        controller: scrollController);
     menu = Theme(data: theme, child: menu);
 
     return SafeArea(
@@ -1002,7 +1009,7 @@ typedef PopupMenuItemBuilder<T> = List<PopupMenuEntry<T>> Function(
 ///  * [PopupMenuDivider], a popup menu entry that is just a horizontal line.
 ///  * [CheckedPopupMenuItem], a popup menu item with a checkmark.
 ///  * [showMenu], a method to dynamically show a popup menu at a given location.
-class PopupMenuButton<T> extends StatefulWidget {
+class PopupMenuButton<T> extends StatelessWidget {
   /// Creates a button that shows a popup menu.
   ///
   /// The [itemBuilder] argument must not be null.
@@ -1083,39 +1090,37 @@ class PopupMenuButton<T> extends StatefulWidget {
   /// but doesn't currently have anything to show in the menu.
   final bool enabled;
 
-  @override
-  _PopupMenuButtonState<T> createState() => _PopupMenuButtonState<T>();
-}
+  // @override
+  // _PopupMenuButtonState<T> createState() => _PopupMenuButtonState<T>();
 
-class _PopupMenuButtonState<T> extends State<PopupMenuButton<T>> {
-  void showButtonMenu() {
+  void showButtonMenu(BuildContext context) {
     final RenderBox button = context.findRenderObject() as RenderBox;
     final RenderBox overlay =
         Overlay.of(context)!.context.findRenderObject() as RenderBox;
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(
-        button.localToGlobal(widget.offset, ancestor: overlay),
+        button.localToGlobal(offset, ancestor: overlay),
         button.localToGlobal(button.size.bottomRight(Offset.zero),
             ancestor: overlay),
       ),
       Offset.zero & overlay.size,
     );
-    final List<PopupMenuEntry<T>> items = widget.itemBuilder(context);
+    final List<PopupMenuEntry<T>> items = itemBuilder(context);
     // Only show the menu if there is something to show
     if (items.isNotEmpty) {
       showMenu<T>(
         context: context,
-        elevation: widget.elevation,
+        elevation: elevation,
         items: items,
-        initialValue: widget.initialValue,
+        initialValue: initialValue,
         position: position,
       ).then<void>((T? newValue) {
-        if (!mounted) return null;
+        //if (!mounted) return null;
         if (newValue == null) {
-          widget.onCanceled?.call();
+          onCanceled?.call();
           return null;
         }
-        widget.onSelected?.call(newValue);
+        onSelected?.call(newValue);
       });
     }
   }
@@ -1135,17 +1140,21 @@ class _PopupMenuButtonState<T> extends State<PopupMenuButton<T>> {
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterialLocalizations(context));
-    return widget.child != null
+    return child != null
         ? InkWell(
-            onTap: widget.enabled ? showButtonMenu : null,
-            child: widget.child,
+            onTap: enabled ? () => showButtonMenu(context) : null,
+            child: child,
           )
         : IconButton(
-            icon: widget.icon ?? _getIcon(Theme.of(context).platform),
-            padding: widget.padding,
-            tooltip: widget.tooltip ??
-                MaterialLocalizations.of(context).showMenuTooltip,
-            onPressed: widget.enabled ? showButtonMenu : null,
+            icon: icon ?? _getIcon(Theme.of(context).platform),
+            padding: padding,
+            tooltip:
+                tooltip ?? MaterialLocalizations.of(context).showMenuTooltip,
+            onPressed: enabled ? () => showButtonMenu(context) : null,
           );
   }
 }
+
+// class _PopupMenuButtonState<T> extends State<PopupMenuButton<T>> {
+  
+// }

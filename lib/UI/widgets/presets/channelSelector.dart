@@ -73,7 +73,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     super.initState();
   }
 
-  List<Widget> getButtons(double _width) {
+  List<Widget> _createButtons(double _width) {
     var disabledColor = Theme.of(context).disabledColor;
     List<Widget> buttons = <Widget>[];
 
@@ -90,22 +90,25 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
       Widget buttonBody;
       if (widget.device.longChannelNames) {
-        buttonBody = Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              widget.device.getChannelActive(i)
-                  ? Icons.circle
-                  : Icons.circle_outlined,
-              color: col,
-              size: 32,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6.0),
-              child: FittedBox(
-                  fit: BoxFit.fill, child: Text(_presets[i].channelName)),
-            ),
-          ],
+        buttonBody = Semantics(
+          selected: widget.device.getChannelActive(i),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                widget.device.getChannelActive(i)
+                    ? Icons.circle
+                    : Icons.circle_outlined,
+                color: col,
+                size: 32,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: FittedBox(
+                    fit: BoxFit.fill, child: Text(_presets[i].channelName)),
+              ),
+            ],
+          ),
         );
       } else {
         buttonBody = Stack(
@@ -130,10 +133,13 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         width: width,
         height:
             AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),
-        child: InkWell(
+        child: GestureDetector(
             onTap: () {
               widget.device.selectedChannelNormalized = i;
               widget.device.resetToNuxPreset();
+            },
+            onDoubleTap: () {
+              widget.device.toggleChannelActive(i);
             },
             child: buttonBody),
       );
@@ -212,7 +218,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8),
           child: Container(
             decoration: BoxDecoration(
                 color: Colors.grey[800],
@@ -247,30 +253,34 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                         return Wrap(
                           alignment: WrapAlignment.center,
                           runAlignment: WrapAlignment.center,
-                          children: getButtons(constraints.maxWidth),
+                          children: _createButtons(constraints.maxWidth),
                         );
                       },
                     ),
                   ),
                 ),
-                InkWell(
-                  onTap: () {
-                    widget.device
-                        .toggleChannelActive(widget.device.selectedChannel);
-                  },
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Icon(
-                          widget.device.getChannelActive(
-                                  widget.device.selectedChannel)
-                              ? Icons.check_circle
-                              : Icons.circle_outlined,
-                          size: 30,
-                        ),
-                        const Text("Active")
-                      ],
+                Semantics(
+                  checked: widget.device
+                      .getChannelActive(widget.device.selectedChannel),
+                  child: InkWell(
+                    onTap: () {
+                      widget.device
+                          .toggleChannelActive(widget.device.selectedChannel);
+                    },
+                    child: SizedBox(
+                      width: 60,
+                      child: Column(
+                        children: [
+                          Icon(
+                            widget.device.getChannelActive(
+                                    widget.device.selectedChannel)
+                                ? Icons.check_circle
+                                : Icons.circle_outlined,
+                            size: 30,
+                          ),
+                          const Text("Active")
+                        ],
+                      ),
                     ),
                   ),
                 )

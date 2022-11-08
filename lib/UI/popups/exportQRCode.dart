@@ -20,71 +20,74 @@ class QRExportDialog {
         insetPadding: EdgeInsets.zero,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Screenshot(
-              controller: screenshotController,
-              child: ColoredBox(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        device.getProductNameVersion(device.productVersion),
-                        style: const TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      qrImage,
-                      Text(presetName,
+        content: FittedBox(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Screenshot(
+                controller: screenshotController,
+                child: ColoredBox(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          device.getProductNameVersion(device.productVersion),
                           style: const TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold))
-                    ],
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                        qrImage,
+                        Text(presetName,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold))
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                    onPressed: () async {
-                      //var path = '$directory';
-                      //fileSave
-                      var data = await screenshotController.capture();
-                      if (data != null) {
-                        saveFile("image/png", presetName, data);
-                      }
-                    },
-                    icon: const Icon(Icons.save_alt),
-                    label: const Text("Save")),
-                const SizedBox(
-                  width: 10,
-                ),
-                ElevatedButton.icon(
-                    onPressed: () async {
-                      final storageDirectory =
-                          await getExternalStorageDirectory();
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                      onPressed: () async {
+                        //var path = '$directory';
+                        //fileSave
+                        var data = await screenshotController.capture();
+                        if (data != null) {
+                          saveFile("image/png", presetName, data);
+                        }
+                      },
+                      icon: const Icon(Icons.save_alt),
+                      label: const Text("Save")),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ElevatedButton.icon(
+                      onPressed: () async {
+                        final storageDirectory =
+                            await getExternalStorageDirectory();
 
-                      var tracksPath =
-                          path.join(storageDirectory?.path ?? "", "");
+                        var tracksPath =
+                            path.join(storageDirectory?.path ?? "", "");
 
-                      //var path = '$directory';
+                        //var path = '$directory';
 
-                      await screenshotController.captureAndSave(tracksPath,
-                          fileName: "preset.png");
+                        await screenshotController.captureAndSave(tracksPath,
+                            fileName: "preset.png");
 
-                      Share.shareFiles(['$tracksPath/preset.png'],
-                          text: 'QR Code');
-                    },
-                    icon: const Icon(Icons.share),
-                    label: const Text("Share"))
-              ],
-            ),
-          ],
+                        Share.shareFiles(['$tracksPath/preset.png'],
+                            text: 'QR Code');
+                      },
+                      icon: const Icon(Icons.share),
+                      label: const Text("Share"))
+                ],
+              ),
+            ],
+          ),
         ));
   }
 }

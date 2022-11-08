@@ -186,18 +186,30 @@ class _EffectSelectorState extends State<EffectSelector> {
                 NuxDeviceControl.instance().undoStackChanged();
               });
             },
+            onDoubleTap: (int i) {
+              if (_preset.slotSwitchable(i)) {
+                bool state = _preset.slotEnabled(i);
+                _setSlotEnabledState(i, !state);
+              }
+            },
             onReorder: (from, to) {
               var old = from + to * 100;
               setState(() {
                 NuxDeviceControl.instance().changes.add(Change<int>(old, () {
+                      //get type of old slot
+                      var selectedType =
+                          _preset.getProcessorAtSlot(_selectedSlot);
                       _preset.swapProcessorSlots(from, to, true);
-                      _selectedSlot = to;
+                      _selectSlotByType(selectedType);
                     }, (oldVal) {
+                      //get type of old slot
+                      var selectedType =
+                          _preset.getProcessorAtSlot(_selectedSlot);
                       int from = oldVal % 100;
                       int to = (oldVal / 100).floor();
                       //positions are swapped on undo
                       _preset.swapProcessorSlots(to, from, true);
-                      _selectedSlot = from;
+                      _selectSlotByType(selectedType);
                     }));
                 NuxDeviceControl.instance().undoStackChanged();
               });
@@ -214,6 +226,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                 itemBuilder: (context) => _effectItems,
                 onSelected: setSelectedEffect,
                 child: effectSelectButton,
+                initialValue: _preset.getSelectedEffectForSlot(_selectedSlot),
               )
             else
               effectSelectButton,
@@ -224,6 +237,7 @@ class _EffectSelectorState extends State<EffectSelector> {
               children: [
                 if (_selectedSlot != 0 && _effectItems.length > 1)
                   IconButton(
+                    tooltip: "Previous effect",
                     onPressed: () {
                       var effect =
                           _preset.getSelectedEffectForSlot(_selectedSlot) - 1;
@@ -238,6 +252,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                   ),
                 if (_selectedSlot != 0 && _effectItems.length > 1)
                   IconButton(
+                    tooltip: "Next effect",
                     onPressed: () {
                       var effect =
                           _preset.getSelectedEffectForSlot(_selectedSlot) + 1;
@@ -249,22 +264,17 @@ class _EffectSelectorState extends State<EffectSelector> {
                     iconSize: 30,
                   ),
                 if (_preset.slotSwitchable(_selectedSlot))
-                  Switch(
-                    value: _preset.slotEnabled(_selectedSlot),
-                    onChanged: (val) {
-                      setState(() {
-                        NuxDeviceControl.instance().changes.add(Change<bool>(
-                            !val,
-                            () => _preset.setSlotEnabled(
-                                _selectedSlot, val, true),
-                            (oldVal) => _preset.setSlotEnabled(
-                                _selectedSlot, oldVal, true)));
-                        NuxDeviceControl.instance().undoStackChanged();
-                      });
-                    },
-                    activeColor: TinyColor(_effectColor).brighten(20).color,
-                    inactiveThumbColor: Colors.grey,
-                    inactiveTrackColor: Colors.grey[700],
+                  Tooltip(
+                    message: "Enable effect",
+                    child: Switch(
+                      value: _preset.slotEnabled(_selectedSlot),
+                      onChanged: (val) {
+                        _setSlotEnabledState(_selectedSlot, val);
+                      },
+                      activeColor: TinyColor(_effectColor).brighten(20).color,
+                      inactiveThumbColor: Colors.grey,
+                      inactiveTrackColor: Colors.grey[700],
+                    ),
                   ),
               ],
             ),
@@ -283,5 +293,21 @@ class _EffectSelectorState extends State<EffectSelector> {
           )
       ],
     );
+  }
+
+  void _setSlotEnabledState(int slot, bool value) {
+    setState(() {
+      NuxDeviceControl.instance().changes.add(Change<bool>(
+          !value,
+          () => _preset.setSlotEnabled(slot, value, true),
+          (oldVal) => _preset.setSlotEnabled(slot, oldVal, true)));
+      NuxDeviceControl.instance().undoStackChanged();
+    });
+  }
+
+  void _selectSlotByType(int type) {
+    for (int i = 0; i < widget.device.effectsChainLength; i++) {
+      if (_preset.getProcessorAtSlot(i) == type) _selectedSlot = i;
+    }
   }
 }

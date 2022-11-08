@@ -217,6 +217,9 @@ class DragAndDropLists extends StatefulWidget {
   /// A widget that will be displayed whenever a list contains no items.
   final Widget? contentsWhenEmpty;
 
+  /// A widget that will be displayed on top, as a header
+  final Widget? headerWidget;
+
   /// The width of each individual list. This must be set to a finite value when
   /// [axis] is set to Axis.horizontal.
   final double listWidth;
@@ -314,6 +317,7 @@ class DragAndDropLists extends StatefulWidget {
     this.listDividerOnLastChild = true,
     this.listPadding,
     this.contentsWhenEmpty,
+    this.headerWidget,
     this.listWidth = double.infinity,
     this.lastItemTargetHeight = 20,
     this.addLastItemTargetHeightToTop = false,
@@ -440,14 +444,15 @@ class DragAndDropListsState extends State<DragAndDropLists> {
       // }
       return outerListHolder;
     } else {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            widget.contentsWhenEmpty ?? const Text('Empty'),
-            dragAndDropListTarget,
-          ],
-        ),
+      return Column(
+        children: [
+          if (widget.headerWidget != null) widget.headerWidget!,
+          Expanded(
+            child: Center(
+              child: widget.contentsWhenEmpty ?? const Text('Empty'),
+            ),
+          ),
+        ],
       );
     }
   }
@@ -486,7 +491,6 @@ class DragAndDropListsState extends State<DragAndDropLists> {
     Widget listView = ListView(
       scrollDirection: widget.axis,
       controller: _scrollController,
-      shrinkWrap: true,
       children: _buildOuterList(dragAndDropListTarget, parameters),
     );
 
@@ -504,10 +508,13 @@ class DragAndDropListsState extends State<DragAndDropLists> {
     bool includeSeparators = widget.listDivider != null;
     int childrenCount = _calculateChildrenCount(includeSeparators);
 
-    return List.generate(childrenCount, (index) {
+    var list = List.generate(childrenCount, (index) {
       return _buildInnerList(index, childrenCount, dragAndDropListTarget,
           includeSeparators, parameters);
     });
+
+    if (widget.headerWidget != null) list.insert(0, widget.headerWidget!);
+    return list;
   }
 
   int _calculateChildrenCount(bool includeSeparators) {

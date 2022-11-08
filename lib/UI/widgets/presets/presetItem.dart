@@ -222,8 +222,7 @@ class PresetItem extends StatelessWidget {
       enabled = item["product_id"] == customProductId;
     }
 
-    bool selected = item["category"] == device.presetCategory &&
-        item["name"] == device.presetName;
+    bool selected = item["uuid"] == device.presetUUID;
 
     Color color = Preset.channelColors[item["channel"]];
     if (!enabled) color = TinyColor(color).desaturate(90).color;

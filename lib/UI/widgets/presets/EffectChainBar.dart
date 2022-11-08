@@ -15,6 +15,7 @@ class EffectChainBar extends StatelessWidget {
   final Preset preset;
   final bool reorderable;
   final void Function(int) onTap;
+  final void Function(int) onDoubleTap;
   final ReorderCallback onReorder;
 
   const EffectChainBar(
@@ -23,6 +24,7 @@ class EffectChainBar extends StatelessWidget {
       required this.device,
       required this.preset,
       required this.onTap,
+      required this.onDoubleTap,
       required this.onReorder,
       required this.reorderable})
       : super(key: key);
@@ -31,14 +33,16 @@ class EffectChainBar extends StatelessWidget {
     var proc = preset.getProcessorAtSlot(index);
     var effect = device.processorListNuxIndex(proc);
     bool selected = index == device.selectedSlot;
+
     return EffectChainButton(
-      effectInfo: effect!,
-      color: preset.effectColor(index),
-      enabled: preset.slotEnabled(index),
-      selected: selected,
-      key: Key(index.toString()),
-      onTap: () => onTap(index),
-    );
+        index: index,
+        effectInfo: effect!,
+        color: preset.effectColor(index),
+        enabled: preset.slotEnabled(index),
+        selected: selected,
+        key: Key(index.toString()),
+        onTap: () => onTap(index),
+        onDoubleTap: () => onDoubleTap(index));
   }
 
   @override
@@ -53,7 +57,7 @@ class EffectChainBar extends StatelessWidget {
 
     Widget list;
     if (reorderable) {
-      list = ReorderableListView.builder(
+      list = ReorderableList(
         padding: const EdgeInsets.symmetric(horizontal: effectsChainPadding),
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,

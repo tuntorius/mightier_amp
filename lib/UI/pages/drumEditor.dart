@@ -64,35 +64,38 @@ class _DrumEditorState extends State<DrumEditor> {
         ),
       );
     } else if (_layout == DrumEditorLayout.PlugPro) {
-      return ListTile(
-        enabled: device.drumsEnabled,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-            side: BorderSide(
-                width: 1,
-                color: device.drumsEnabled ? Colors.white : Colors.grey)),
-        title: Text(
-          _getComplexListStyle(_drumStyles),
-          style: const TextStyle(fontSize: 20),
+      return Semantics(
+        label: "Drum style",
+        child: ListTile(
+          enabled: device.drumsEnabled,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+              side: BorderSide(
+                  width: 1,
+                  color: device.drumsEnabled ? Colors.white : Colors.grey)),
+          title: Text(
+            _getComplexListStyle(_drumStyles),
+            style: const TextStyle(fontSize: 20),
+          ),
+          trailing: const Icon(Icons.keyboard_arrow_right),
+          onTap: !device.drumsEnabled
+              ? null
+              : () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return DrumStyleBottomSheet(
+                          styleMap: _drumStyles,
+                          selected: _selectedDrumPattern,
+                          onChange: (value) {
+                            _onScrollPickerChangedFinal(value, true, device);
+                          },
+                        );
+                      }).whenComplete(() {
+                    setState(() {});
+                  });
+                },
         ),
-        trailing: const Icon(Icons.keyboard_arrow_right),
-        onTap: !device.drumsEnabled
-            ? null
-            : () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return DrumStyleBottomSheet(
-                        styleMap: _drumStyles,
-                        selected: _selectedDrumPattern,
-                        onChange: (value) {
-                          _onScrollPickerChangedFinal(value, true, device);
-                        },
-                      );
-                    }).whenComplete(() {
-                  setState(() {});
-                });
-              },
       );
     }
     return const SizedBox();
@@ -203,10 +206,17 @@ class _DrumEditorState extends State<DrumEditor> {
         children: [
           Expanded(
             flex: 5,
-            child: MaterialButton(
+            child: ElevatedButton(
               onPressed: device.drumsEnabled ? _onTapTempo : null,
-              color: Colors.blue,
-              splashColor: Colors.lightBlue[100],
+              style: ButtonStyle(
+                overlayColor: MaterialStateProperty.resolveWith(
+                  (states) {
+                    return states.contains(MaterialState.pressed)
+                        ? Colors.lightBlue[100]
+                        : null;
+                  },
+                ),
+              ),
               child: const Text(
                 "Tap Tempo",
                 style: TextStyle(fontSize: 20),
@@ -230,8 +240,7 @@ class _DrumEditorState extends State<DrumEditor> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 4),
-                    child: MaterialButton(
-                      color: Colors.blue,
+                    child: ElevatedButton(
                       onPressed:
                           device.drumsEnabled ? () => _modifyTempo(-5) : null,
                       child: const Text("-5"),
@@ -241,8 +250,7 @@ class _DrumEditorState extends State<DrumEditor> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: MaterialButton(
-                      color: Colors.blue,
+                    child: ElevatedButton(
                       onPressed:
                           device.drumsEnabled ? () => _modifyTempo(-1) : null,
                       child: const Text("-1"),
@@ -252,8 +260,7 @@ class _DrumEditorState extends State<DrumEditor> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: MaterialButton(
-                      color: Colors.blue,
+                    child: ElevatedButton(
                       onPressed:
                           device.drumsEnabled ? () => _modifyTempo(1) : null,
                       child: const Text("+1"),
@@ -263,8 +270,7 @@ class _DrumEditorState extends State<DrumEditor> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 4),
-                    child: MaterialButton(
-                      color: Colors.blue,
+                    child: ElevatedButton(
                       onPressed:
                           device.drumsEnabled ? () => _modifyTempo(5) : null,
                       child: const Text("+5"),

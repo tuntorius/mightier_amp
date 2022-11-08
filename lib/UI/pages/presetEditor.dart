@@ -8,6 +8,7 @@ import '../popups/savePreset.dart';
 import '../utils.dart';
 import '../widgets/presets/channelSelector.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
+import '../widgets/rounded_icon_button.dart';
 
 class PresetEditor extends StatefulWidget {
   const PresetEditor();
@@ -79,111 +80,125 @@ class _PresetEditorState extends State<PresetEditor> {
       child: wrapContainer(
         layout == EditorLayoutMode.expand,
         [
-          ButtonTheme(
-            minWidth: 45,
-            height: 45,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    MaterialButton(
-                      onPressed: NuxDeviceControl.instance().changes.canUndo
-                          ? () {
-                              var changes = NuxDeviceControl.instance().changes;
-                              if (changes.canUndo) changes.undo();
-                              setState(() {});
-                            }
-                          : null,
-                      color: Colors.blue,
-                      child: const Icon(Icons.undo),
-                      //padding: EdgeInsets.zero,
-                    ),
-                    MaterialButton(
-                      onPressed: NuxDeviceControl.instance().changes.canRedo
-                          ? () {
-                              var changes = NuxDeviceControl.instance().changes;
-                              if (changes.canRedo) changes.redo();
-                              setState(() {});
-                            }
-                          : null,
-                      color: Colors.blue,
-                      child: const Icon(Icons.redo),
-                      //padding: EdgeInsets.zero,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    ToggleButtons(
-                      constraints: const BoxConstraints(
-                          minWidth: 55,
-                          maxWidth: 55,
-                          minHeight: 45,
-                          maxHeight: 45),
-                      isSelected: [
-                        !NuxDeviceControl.instance().changes.canUndo
-                      ],
-                      selectedBorderColor: Colors.transparent,
-                      borderColor: Colors.blue,
-                      borderRadius: BorderRadius.circular(3),
-                      color: Colors.white,
-                      fillColor: Colors.blue,
-                      disabledColor: Colors.grey,
-                      onPressed: NuxDeviceControl.instance().changes.canUndo ||
-                              NuxDeviceControl.instance().changes.canRedo
-                          ? (val) {
-                              var changes = NuxDeviceControl.instance().changes;
-                              if (changes.canUndo) {
-                                //we can go back (that's bad though)
-                                while (changes.canUndo) {
-                                  changes.undo();
-                                }
-                              } else {
-                                while (changes.canRedo) {
-                                  changes.redo();
-                                }
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ButtonTheme(
+              minWidth: 55,
+              height: 45,
+              buttonColor: Colors.blue,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      RoundedIconButton(
+                        onPressed: NuxDeviceControl.instance().changes.canUndo
+                            ? () {
+                                var changes =
+                                    NuxDeviceControl.instance().changes;
+                                if (changes.canUndo) changes.undo();
+                                setState(() {});
                               }
-                              setState(() {});
-                            }
-                          : null,
-                      children: const [Icon(Icons.compare)],
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        MaterialButton(
-                          color: Colors.blue,
-                          onPressed:
-                              !uploadPresetEnabled ? null : savePresetToDevice,
-                          child: const Icon(Icons.save_alt),
-                        ),
-                        const SizedBox(
-                          width: 2,
-                        ),
-                        MaterialButton(
-                          color: Colors.blue,
-                          child: const Icon(Icons.playlist_add),
-                          onPressed: () {
-                            var saveDialog = SavePresetDialog(
-                                device: device,
-                                confirmColor: Theme.of(context).hintColor);
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  saveDialog.buildDialog(device, context),
-                            );
-                          },
-                        )
-                      ],
-                    ),
-                  ],
-                )
-              ],
+                            : null,
+                        tooltip: "Undo",
+                        icon: const Icon(Icons.undo),
+                      ),
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      RoundedIconButton(
+                        onPressed: NuxDeviceControl.instance().changes.canRedo
+                            ? () {
+                                var changes =
+                                    NuxDeviceControl.instance().changes;
+                                if (changes.canRedo) changes.redo();
+                                setState(() {});
+                              }
+                            : null,
+                        icon: const Icon(Icons.redo),
+                        tooltip: "Redo",
+                        //padding: EdgeInsets.zero,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      ToggleButtons(
+                        constraints: const BoxConstraints(
+                            minWidth: 55,
+                            maxWidth: 55,
+                            minHeight: 45,
+                            maxHeight: 45),
+                        isSelected: [
+                          !NuxDeviceControl.instance().changes.canUndo
+                        ],
+                        selectedBorderColor: Colors.transparent,
+                        borderColor: Colors.blue,
+                        borderRadius: BorderRadius.circular(3),
+                        color: Colors.white,
+                        fillColor: Colors.blue,
+                        disabledColor: Colors.grey,
+                        onPressed:
+                            NuxDeviceControl.instance().changes.canUndo ||
+                                    NuxDeviceControl.instance().changes.canRedo
+                                ? (val) {
+                                    var changes =
+                                        NuxDeviceControl.instance().changes;
+                                    if (changes.canUndo) {
+                                      //we can go back (that's bad though)
+                                      while (changes.canUndo) {
+                                        changes.undo();
+                                      }
+                                    } else {
+                                      while (changes.canRedo) {
+                                        changes.redo();
+                                      }
+                                    }
+                                    setState(() {});
+                                  }
+                                : null,
+                        children: const [
+                          Tooltip(
+                              message: "Compare before/after",
+                              child: Icon(Icons.compare))
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          RoundedIconButton(
+                            tooltip: "Save to device",
+                            onPressed: !uploadPresetEnabled
+                                ? null
+                                : savePresetToDevice,
+                            icon: const Icon(Icons.save_alt),
+                          ),
+                          const SizedBox(
+                            width: 2,
+                          ),
+                          RoundedIconButton(
+                            icon: const Icon(Icons.playlist_add),
+                            onPressed: () {
+                              var saveDialog = SavePresetDialog(
+                                  device: device,
+                                  confirmColor: Theme.of(context).hintColor);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    saveDialog.buildDialog(device, context),
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
           if (layout == EditorLayoutMode.expand)

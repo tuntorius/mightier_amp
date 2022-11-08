@@ -113,7 +113,12 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
 
     //enumerate all the slots in the signal chain
     for (int i = 0; i < dev.processorList.length; i++) {
-      var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(i);
+      var prc = 0;
+      for (var x = 0; x < dev.processorList.length; x++) {
+        if (dev.getPreset(dev.selectedChannel).getProcessorAtSlot(x) ==
+            dev.processorList[i].nuxOrderIndex) prc = x;
+      }
+      var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(prc);
       int maxParams = 0;
       for (int p = 0; p < effects.length; p++) {
         if (effects[p].parameters.length > maxParams) {
@@ -139,7 +144,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
         }
 
         if (effects.length == 1 || params.length == 1) {
-          title = "$name ${effects[0].parameters[p].name}";
+          title = "$name ${params[0]}";
         } else {
           title = "$name parameter ${p + 1}";
           showInfo = true;

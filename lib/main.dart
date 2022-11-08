@@ -28,6 +28,7 @@ import 'UI/widgets/presets/presetList.dart';
 import 'UI/widgets/VolumeDrawer.dart';
 import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
+
 //recreate this file with your own api keys
 import 'configKeys.dart';
 
@@ -113,6 +114,7 @@ class _AppState extends State<App> {
       title: 'Mightier Amp',
       theme: getTheme(),
       home: MainTabs(),
+      //showSemanticsDebugger: true,
       navigatorKey: navigatorKey,
     );
   }
@@ -272,6 +274,13 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
         break;
       case DeviceConnectionState.presetsLoaded:
+        //if the device is connected in this step, then it's
+        //just a reset, not connect
+        if (NuxDeviceControl.instance().isConnectionComplete()) {
+          dialogSetState = null;
+          _timeout.cancel();
+          Navigator.pop(context);
+        }
         debugPrint("presets loaded");
         break;
       case DeviceConnectionState.connectionComplete:

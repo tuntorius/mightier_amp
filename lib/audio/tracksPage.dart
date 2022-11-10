@@ -288,12 +288,13 @@ class _TracksPageState extends State<TracksPage>
             ? "${libSong.artist} - ${libSong.title}"
             : libSong.title;
 
-        TrackData().addTrack(libSong.uri, name);
+        TrackData().addTrack(libSong.uri, name, false);
       }
       //clear filter and scroll to bottom
       searchCtrl.text = "";
       setState(() {});
     }
+    TrackData().saveTracks();
     _scollToNewSongs();
   }
 
@@ -306,8 +307,9 @@ class _TracksPageState extends State<TracksPage>
           var name = value[i].artist != "<unknown>"
               ? "${value[i].artist} - ${value[i].title}"
               : value[i].title;
-          TrackData().addTrack(value[i].uri, name);
+          TrackData().addTrack(value[i].uri, name, false);
         }
+        TrackData().saveTracks();
         //clear filter and scroll to bottom
         searchCtrl.text = "";
         setState(() {});
@@ -323,8 +325,9 @@ class _TracksPageState extends State<TracksPage>
       if (value is List<OnlineTrack>) {
         for (int i = 0; i < value.length; i++) {
           var name = "${value[i].artist} - ${value[i].title}";
-          TrackData().addTrack(value[i].url, name);
+          TrackData().addTrack(value[i].url, name, false);
         }
+        TrackData().saveTracks();
         //clear filter and scroll to bottom
         searchCtrl.text = "";
         setState(() {});
@@ -341,8 +344,9 @@ class _TracksPageState extends State<TracksPage>
       if (value is List<OnlineTrack>) {
         for (int i = 0; i < value.length; i++) {
           var name = "${value[i].artist} - ${value[i].title}";
-          TrackData().addTrack(value[i].url, name);
+          TrackData().addTrack(value[i].url, name, false);
         }
+        TrackData().saveTracks();
         //clear filter and scroll to bottom
         searchCtrl.text = "";
         setState(() {});

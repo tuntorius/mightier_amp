@@ -10,6 +10,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/automationController.dart';
+import 'package:mighty_plug_manager/audio/online_sources/sourceResolver.dart';
 import 'package:mighty_plug_manager/audio/widgets/presetsPanel.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
@@ -74,7 +75,7 @@ class _AudioEditorState extends State<AudioEditor> {
 
     device = NuxDeviceControl.instance().device;
 
-    decodeAudio();
+    decodeAudio(widget.track.path);
     automation.setAudioFile(widget.track.path, 100);
 
     automation.positionStream.listen(playPositionUpdate);
@@ -101,8 +102,9 @@ class _AudioEditorState extends State<AudioEditor> {
     });
   }
 
-  Future decodeAudio() async {
-    await decoder.open(widget.track.path);
+  Future decodeAudio(String path) async {
+    path = await SourceResolver.getSourceUrl(path);
+    await decoder.open(path);
 
     decoder.decode(() {
       wfData = WaveformData(maxValue: 1, data: decoder.samples);

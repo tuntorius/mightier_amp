@@ -59,7 +59,7 @@ class GuitarBackingTracksSource extends OnlineSource {
   }
 
   @override
-  Future<String> getTrackUrl(OnlineTrack track) async {
+  Future<String> getTrackUri(OnlineTrack track) async {
     var result = await http.get(Uri.parse(track.detailsUrl));
     if (result.statusCode == 200) {
       var doc = html.parse(result.body);
@@ -69,5 +69,10 @@ class GuitarBackingTracksSource extends OnlineSource {
       }
     }
     return "";
+  }
+
+  @override
+  Future<String> getPreviewUrl(OnlineTrack track) async {
+    return getTrackUri(track);
   }
 }

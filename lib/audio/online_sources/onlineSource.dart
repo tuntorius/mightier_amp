@@ -8,5 +8,6 @@ abstract class OnlineSource {
 
   Future<List<OnlineTrack>> getSearchResults(String query);
 
-  Future<String> getTrackUrl(OnlineTrack track);
+  Future<String> getTrackUri(OnlineTrack track);
+  Future<String> getPreviewUrl(OnlineTrack track);
 }

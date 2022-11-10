@@ -47,7 +47,12 @@ class BackingTracksCoSource extends OnlineSource {
   }
 
   @override
-  Future<String> getTrackUrl(OnlineTrack track) async {
+  Future<String> getTrackUri(OnlineTrack track) async {
+    return track.url;
+  }
+
+  @override
+  Future<String> getPreviewUrl(OnlineTrack track) async {
     return track.url;
   }
 }

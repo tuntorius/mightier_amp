@@ -97,7 +97,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
     await player?.dispose();
 
     if (tracks[index].url == "") {
-      tracks[index].url = await widget.source.getTrackUrl(tracks[index]);
+      tracks[index].url = await widget.source.getPreviewUrl(tracks[index]);
     }
 
     var as = ProgressiveAudioSource(Uri.parse(tracks[index].url));
@@ -175,10 +175,9 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                                 return;
                               }
                               //return list of 1 track
-
                               if (tracks[index].url == "") {
                                 tracks[index].url = await widget.source
-                                    .getTrackUrl(tracks[index]);
+                                    .getTrackUri(tracks[index]);
                               }
                               closeTrack();
                               Navigator.of(context).pop([tracks[index]]);
@@ -232,7 +231,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                     if (selected[index] == true) {
                       if (tracks[index].url == "") {
                         tracks[index].url =
-                            await widget.source.getTrackUrl(tracks[index]);
+                            await widget.source.getTrackUri(tracks[index]);
                       }
                       sel.add(tracks[index]);
                     }

@@ -103,13 +103,13 @@ class TrackData {
     }
   }
 
-  addTrack(String file, String name) {
+  addTrack(String file, String name, bool save) {
     _tracksData.add(JamTrack(
       name: name,
       path: file,
       uuid: _generateUuid(),
     ));
-    saveTracks();
+    if (save) saveTracks();
   }
 
   JamTrack? findByUuid(String uuid) {

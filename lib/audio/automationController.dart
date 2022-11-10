@@ -7,6 +7,7 @@ import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'models/jamTrack.dart';
+import 'online_sources/sourceResolver.dart';
 
 class AutomationController {
   final TrackAutomation automation;
@@ -76,7 +77,7 @@ class AutomationController {
   AutomationEvent? selectedEvent;
 
   Future setAudioFile(String path, int positionResolution) async {
-    //await player.setFilePath(path);
+    path = await SourceResolver.getSourceUrl(path);
     var source = ProgressiveAudioSource(Uri.parse(path));
     await player.setAudioSource(source);
 

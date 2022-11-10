@@ -26,6 +26,7 @@ import 'UI/widgets/nestedWillPopScope.dart';
 import 'UI/widgets/NuxAppBar.dart';
 import 'UI/widgets/presets/presetList.dart';
 import 'UI/widgets/VolumeDrawer.dart';
+import 'audio/trackdata/trackData.dart';
 import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
 
@@ -107,6 +108,7 @@ class _AppState extends State<App> {
   NuxDeviceControl device = NuxDeviceControl.instance();
   SharedPrefs prefs = SharedPrefs();
   PresetsStorage storage = PresetsStorage();
+  TrackData trackData = TrackData();
 
   @override
   Widget build(BuildContext context) {

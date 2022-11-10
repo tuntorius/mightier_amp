@@ -241,13 +241,15 @@ abstract class NuxDevice extends ChangeNotifier {
 
   //used for master volume control
   void sendAmpLevel() {
-    //amps are at slot 1
-    var preset = getPreset(selectedChannel);
-    var amp = preset.getEffectsForSlot(amplifierSlotIndex)[
-        preset.getSelectedEffectForSlot(amplifierSlotIndex)];
-    for (int i = 0; i < amp.parameters.length; i++) {
-      if (amp.parameters[i].masterVolume) {
-        deviceControl.sendParameter(amp.parameters[i], false);
+    if (fakeMasterVolume) {
+      //amps are at slot 1
+      var preset = getPreset(selectedChannel);
+      var amp = preset.getEffectsForSlot(amplifierSlotIndex)[
+          preset.getSelectedEffectForSlot(amplifierSlotIndex)];
+      for (int i = 0; i < amp.parameters.length; i++) {
+        if (amp.parameters[i].masterVolume) {
+          deviceControl.sendParameter(amp.parameters[i], false);
+        }
       }
     }
   }
@@ -409,6 +411,17 @@ abstract class NuxDevice extends ChangeNotifier {
     return const SizedBox.shrink();
   }
 
+  PresetQRError setupFromQRData(String qrData) {
+    var result = presets[selectedChannel].setupPresetFromQRData(qrData);
+
+    if (result == PresetQRError.Ok) {
+      presetName = "";
+      presetCategory = "";
+      presetUUID = "";
+    }
+    return result;
+  }
+
   String? jsonToQR(Map<String, dynamic> jsonPreset) {
     var preset = presetFromJson(jsonPreset, null, qrOnly: true);
     if (preset != null) {
@@ -427,6 +440,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
   Preset? presetFromJson(Map<String, dynamic> preset, double? overrideLevel,
       {bool qrOnly = false}) {
+    debugPrint(json.encode(preset));
     var pVersion = preset["version"] ?? 0;
 
     var nuxChannel = preset["channel"];

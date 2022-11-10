@@ -151,9 +151,9 @@ class SavePresetDialog {
     device.presetCategory = categoryCtrl.value.text;
     Navigator.of(context).pop();
 
-    PresetsStorage()
+    String uuid = PresetsStorage()
         .savePreset(preset, device.presetName, device.presetCategory);
 
-    device.presetUUID = preset["uuid"];
+    device.presetUUID = uuid;
   }
 }

@@ -169,9 +169,10 @@ class PresetsStorage extends ChangeNotifier {
     return category;
   }
 
-  savePreset(
-      Map<String, dynamic> preset, String name, String categoryName) async {
+  String savePreset(
+      Map<String, dynamic> preset, String name, String categoryName) {
     preset["name"] = name;
+    String uuid;
 
     var category = _findOrCreateCategory(categoryName);
 
@@ -181,12 +182,15 @@ class PresetsStorage extends ChangeNotifier {
       for (var key in preset.keys) {
         if (key != "uuid") data[key] = preset[key];
       }
+      uuid = data["uuid"];
     } else {
       _addUuid(preset);
       category["presets"].add(preset);
+      uuid = preset["uuid"];
     }
 
     _savePresets();
+    return uuid;
   }
 
   Future deletePreset(Map<String, dynamic> preset) {

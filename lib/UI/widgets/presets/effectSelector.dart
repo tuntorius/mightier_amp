@@ -221,12 +221,12 @@ class _EffectSelectorState extends State<EffectSelector> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_selectedSlot != 0 && _effectItems.length > 1)
+            if (_effectItems.length > 1)
               custom.PopupMenuButton(
                 itemBuilder: (context) => _effectItems,
                 onSelected: setSelectedEffect,
-                child: effectSelectButton,
                 initialValue: _preset.getSelectedEffectForSlot(_selectedSlot),
+                child: effectSelectButton,
               )
             else
               effectSelectButton,
@@ -235,7 +235,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                 height: 48), //used to even out sizes when switch is not visible
             Row(
               children: [
-                if (_selectedSlot != 0 && _effectItems.length > 1)
+                if (_effectItems.length > 1)
                   IconButton(
                     tooltip: "Previous effect",
                     onPressed: () {
@@ -250,7 +250,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                             color: TinyColor(_effectColor).brighten(20).color)),
                     iconSize: 30,
                   ),
-                if (_selectedSlot != 0 && _effectItems.length > 1)
+                if (_effectItems.length > 1)
                   IconButton(
                     tooltip: "Next effect",
                     onPressed: () {

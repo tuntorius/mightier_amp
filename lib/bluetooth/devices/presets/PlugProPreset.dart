@@ -63,6 +63,7 @@ class PlugProPreset extends Preset {
   //presets stored in nux indexing (unused Wah is 0)
   List<int> processorAtSlot = [];
 
+  bool wahEnabled = true;
   bool noiseGateEnabled = true;
   bool compressorEnabled = true;
   bool efxEnabled = true;
@@ -237,6 +238,8 @@ class PlugProPreset extends Preset {
 
   bool _slotEnabledNuxIndex(int proc) {
     switch (proc) {
+      case PresetDataIndexPlugPro.Head_iWAH:
+        return wahEnabled;
       case PresetDataIndexPlugPro.Head_iNG:
         return noiseGateEnabled;
       case PresetDataIndexPlugPro.Head_iCMP:
@@ -270,6 +273,9 @@ class PlugProPreset extends Preset {
 
   void _setNuxSlotEnabled(int index, bool value) {
     switch (index) {
+      case PresetDataIndexPlugPro.Head_iWAH:
+        wahEnabled = value;
+        break;
       case PresetDataIndexPlugPro.Head_iNG:
         noiseGateEnabled = value;
         break;
@@ -305,6 +311,12 @@ class PlugProPreset extends Preset {
   @override
   int getProcessorAtSlot(int slot) {
     return processorAtSlot[slot];
+  }
+
+  int? getSlotIndexFromNuxIndex(int nuxIndex) {
+    for (int i = 0; i < processorAtSlot.length; i++)
+      if (processorAtSlot[i] == nuxIndex) return i;
+    return null;
   }
 
   @override
@@ -374,8 +386,6 @@ class PlugProPreset extends Preset {
 
   int _getSelectedEffectForNuxSlot(int slot) {
     switch (slot) {
-      case PresetDataIndexPlugPro.Head_iWAH:
-        return 0;
       case PresetDataIndexPlugPro.Head_iCMP:
         return selectedComp;
       case PresetDataIndexPlugPro.Head_iEFX:
@@ -448,8 +458,6 @@ class PlugProPreset extends Preset {
 
   void _setSelectedEffectForNuxSlot(int slot, int index) {
     switch (slot) {
-      case PresetDataIndexPlugPro.Head_iWAH:
-        break;
       case PresetDataIndexPlugPro.Head_iCMP:
         selectedComp = index;
         break;
@@ -515,10 +523,13 @@ class PlugProPreset extends Preset {
     }
 
     //effects chain arrangement
-    //fix for QR
     int start = PresetDataIndexPlugPro.LINK1;
+
+    //fix for QR
     for (int i = 0; i < 3; i++) {
-      if (nuxData[start] == 0) start++;
+      if (!PresetDataIndexPlugPro.effectTypesIndex.contains(nuxData[start])) {
+        start++;
+      }
     }
 
     for (int i = 0; i < device.effectsChainLength; i++) {

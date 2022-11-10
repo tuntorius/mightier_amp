@@ -22,7 +22,7 @@ class SavePresetDialog {
 
   Widget buildDialog(NuxDevice device, BuildContext context) {
     List<String> categories = PresetsStorage().getCategories();
-    var preset = device.presetToJson();
+
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     final height = MediaQuery.of(context).size.height * 0.25;
@@ -120,10 +120,14 @@ class SavePresetDialog {
                         cancelButton: "Cancel",
                         confirmButton: "Overwrite",
                         confirmColor: Colors.red, onConfirm: (overwrite) {
-                      if (overwrite) savePreset(preset, context);
+                      if (overwrite) {
+                        savePreset(context);
+                        Navigator.of(context).pop();
+                      }
                     });
                   } else {
-                    savePreset(preset, context);
+                    savePreset(context);
+                    Navigator.of(context).pop();
                   }
                 }
               },
@@ -146,10 +150,10 @@ class SavePresetDialog {
     );
   }
 
-  savePreset(preset, context) {
+  savePreset(context) {
+    var preset = device.presetToJson();
     device.presetName = nameCtrl.value.text;
     device.presetCategory = categoryCtrl.value.text;
-    Navigator.of(context).pop();
 
     String uuid = PresetsStorage()
         .savePreset(preset, device.presetName, device.presetCategory);

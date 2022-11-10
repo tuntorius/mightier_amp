@@ -17,6 +17,9 @@ class PresetsStorage extends ChangeNotifier {
   static const presetsSingle = "preset-single";
   static const presetsMultiple = "preset-multiple";
 
+  //Preset JSON keys
+  static const inactiveEffectsKey = "inactiveEffects";
+  static const uuidKey = "uuid";
   final Uuid uuid = const Uuid();
 
   factory PresetsStorage() {
@@ -143,7 +146,7 @@ class PresetsStorage extends ChangeNotifier {
   dynamic findPresetByUuid(String uuid) {
     for (var cat in presetsData) {
       for (var preset in cat["presets"]) {
-        if (preset["uuid"] == uuid) return preset;
+        if (preset[uuidKey] == uuid) return preset;
       }
     }
     return null;
@@ -152,7 +155,7 @@ class PresetsStorage extends ChangeNotifier {
   Map<String, dynamic>? findCategoryOfPreset(Map<String, dynamic> preset) {
     for (var cat in presetsData) {
       for (var pr in cat["presets"]) {
-        if (pr["uuid"] == preset["uuid"]) return cat;
+        if (pr[uuidKey] == preset[uuidKey]) return cat;
       }
     }
     return null;
@@ -180,13 +183,13 @@ class PresetsStorage extends ChangeNotifier {
     if (data != null) {
       //overwrite preset
       for (var key in preset.keys) {
-        if (key != "uuid") data[key] = preset[key];
+        if (key != uuidKey) data[key] = preset[key];
       }
-      uuid = data["uuid"];
+      uuid = data[uuidKey];
     } else {
       _addUuid(preset);
       category["presets"].add(preset);
-      uuid = preset["uuid"];
+      uuid = preset[uuidKey];
     }
 
     _savePresets();
@@ -295,7 +298,7 @@ class PresetsStorage extends ChangeNotifier {
       List presets = cat["presets"];
 
       for (var p in presets) {
-        uuids.add(p["uuid"]);
+        uuids.add(p[uuidKey]);
       }
       presetsData.remove(cat);
       await _savePresets();
@@ -436,7 +439,7 @@ class PresetsStorage extends ChangeNotifier {
     if (!presetData.containsKey("product_id")) {
       presetData["product_id"] = NuxMightyPlug.defaultNuxId;
     }
-    if (!presetData.containsKey("uuid")) {
+    if (!presetData.containsKey(uuidKey)) {
       _addUuid(presetData);
     }
     return presetData;
@@ -493,10 +496,10 @@ class PresetsStorage extends ChangeNotifier {
       // check unique
       for (var cat in presetsData) {
         for (var p in cat["presets"]) {
-          if (p["uuid"] == id) unique = false;
+          if (p[uuidKey] == id) unique = false;
         }
       }
-      preset["uuid"] = id;
+      preset[uuidKey] = id;
     } while (unique == false);
   }
 }

@@ -123,6 +123,14 @@ abstract class NuxDevice extends ChangeNotifier {
     return null;
   }
 
+  int? getChainIndexByEffectKeyName(String key) {
+    var pi = getProcessorInfoByKey(key);
+    if (pi != null) {
+      return pi.nuxOrderIndex;
+    }
+    return null;
+  }
+
   ProcessorInfo? processorListNuxIndex(int index) {
     return processorList[index];
   }
@@ -438,6 +446,75 @@ abstract class NuxDevice extends ChangeNotifier {
 
   bool checkQRVersionValid(int ver);
 
+  void parseEffect(
+      Map<String, dynamic> effect,
+      int slotIndex,
+      Preset devicePreset,
+      int presetVersion,
+      bool unselected,
+      double? overrideLevel) {
+    int fxType = effect["fx_type"];
+    bool enabled = unselected ? false : effect["enabled"];
+
+    //check if preset conversion is needed
+    if (presetVersion != productVersion) {
+      //temporarily switch the preset to the other version
+      //to get equivalent from this one
+      devicePreset.setFirmwareVersion(presetVersion);
+      //2 things - either switch the version or convert the preset
+      int? newfxType = devicePreset
+          .getEffectsForSlot(slotIndex)[fxType]
+          .getEquivalentEffect(productVersion);
+
+      if (newfxType != null) {
+        fxType = newfxType;
+      } else {
+        //if we don't know equivalent then disable it
+        fxType = 0; //set to 0 to avoid null references
+        enabled = false;
+      }
+
+      //revert the preset back
+      devicePreset.setFirmwareVersion(productVersion);
+    }
+
+    if (!unselected) {
+      devicePreset.setSelectedEffectForSlot(slotIndex, fxType, false);
+
+      devicePreset.setSlotEnabled(slotIndex, enabled, false);
+    }
+    Processor? fx;
+    if (unselected) {
+      var fxList = devicePreset.getEffectsForSlot(slotIndex);
+      for (var searchFx in fxList) {
+        if (searchFx.nuxIndex == fxType) fx = searchFx;
+      }
+    } else {
+      fx = devicePreset.getEffectsForSlot(
+          slotIndex)[devicePreset.getSelectedEffectForSlot(slotIndex)];
+    }
+    if (fx == null) return;
+    for (int f = 0; f < fx.parameters.length; f++) {
+      //this is only for cabs override level
+      if (overrideLevel != null &&
+          cabinetSupport &&
+          slotIndex == cabinetSlotIndex &&
+          fx.parameters[f].handle == "level") {
+        fx.parameters[f].value = overrideLevel;
+      } else {
+        if (presetVersion == productVersion) {
+          fx.parameters[f].value = effect[fx.parameters[f].handle];
+        } else {
+          //ask the effect for the proper handle
+          var handle = fx.parameters[f].handle;
+          if (effect.containsKey(handle)) {
+            fx.parameters[f].value = effect[handle];
+          }
+        }
+      }
+    }
+  }
+
   Preset? presetFromJson(Map<String, dynamic> preset, double? overrideLevel,
       {bool qrOnly = false}) {
     debugPrint(json.encode(preset));
@@ -462,9 +539,8 @@ abstract class NuxDevice extends ChangeNotifier {
       p = getCustomPreset(nuxChannel);
     }
 
-    int index = 0;
-
     if (reorderableFXChain) {
+      int index = 0;
       for (String key in preset.keys) {
         var pInfo = getProcessorInfoByKey(key);
         if (pInfo != null) {
@@ -475,72 +551,31 @@ abstract class NuxDevice extends ChangeNotifier {
       if (!qrOnly) communication.sendSlotOrder();
     }
 
-    index = 0;
-
+    //parse selected effects
     for (String key in preset.keys) {
-      var pInfo = getProcessorInfoByKey(key);
-      if (pInfo != null) {
+      int? index = getChainIndexByEffectKeyName(key);
+      if (index != null) {
         //get effect
         Map<String, dynamic> effect = preset[key];
 
-        int fxType = effect["fx_type"];
-        bool enabled = effect["enabled"];
-
-        //check if preset conversion is needed
-        if (pVersion != productVersion) {
-          //temporarily switch the preset to the other version
-          //to get equivalent from this one
-          p.setFirmwareVersion(pVersion);
-          //2 things - either switch the version or convert the preset
-          int? newfxType = p
-              .getEffectsForSlot(index)[fxType]
-              .getEquivalentEffect(productVersion);
-
-          if (newfxType != null) {
-            fxType = newfxType;
-          } else {
-            //if we don't know equivalent then disable it
-            fxType = 0; //set to 0 to avoid null references
-            enabled = false;
-          }
-
-          //revert the preset back
-          p.setFirmwareVersion(productVersion);
-        }
-
-        p.setSelectedEffectForSlot(index, fxType, false);
-
-        p.setSlotEnabled(index, enabled, false);
-
-        Processor fx;
-        fx = p.getEffectsForSlot(index)[p.getSelectedEffectForSlot(index)];
-
-        for (int f = 0; f < fx.parameters.length; f++) {
-          //this is only for cabs override level
-          if (overrideLevel != null &&
-              cabinetSupport &&
-              index == cabinetSlotIndex &&
-              fx.parameters[f].handle == "level") {
-            fx.parameters[f].value = overrideLevel;
-          } else {
-            if (pVersion == productVersion) {
-              fx.parameters[f].value = effect[fx.parameters[f].handle];
-            } else {
-              //ask the effect for the proper handle
-              var handle = fx.parameters[f].handle;
-              if (effect.containsKey(handle)) {
-                fx.parameters[f].value = effect[handle];
-              }
-            }
-          }
-        }
-
+        parseEffect(effect, index, p, pVersion, false, overrideLevel);
         if (!qrOnly) deviceControl.sendFullEffectSettings(index, false);
-
-        index++;
       }
     }
 
+    //parse unselected effects
+    if (!qrOnly && preset.containsKey(PresetsStorage.inactiveEffectsKey)) {
+      var inactives = preset[PresetsStorage.inactiveEffectsKey];
+      for (String effectKey in inactives.keys) {
+        int? index = getChainIndexByEffectKeyName(effectKey);
+        if (index != null) {
+          //get effect
+          for (var effect in inactives[effectKey]) {
+            parseEffect(effect, index, p, pVersion, true, null);
+          }
+        }
+      }
+    }
     //update widgets
     if (!qrOnly) {
       notifyListeners();
@@ -578,6 +613,40 @@ abstract class NuxDevice extends ChangeNotifier {
       var effect = processorListNuxIndex(proc);
       mainJson[effect!.keyName] = fxData;
     }
+
+    // Save settings for not selected effects
+    var inactiveFX = <String, dynamic>{};
+
+    for (int i = 0; i < effectsChainLength; i++) {
+      List fxSlotList = [];
+
+      List<Processor> effectsForslot = p.getEffectsForSlot(i);
+      for (int j = 0; j < effectsForslot.length; j++) {
+        if (j == cabinetSlotIndex) break;
+        if (j == p.getSelectedEffectForSlot(i)) continue;
+
+        var fxData = <String, dynamic>{};
+        fxData["fx_type"] = effectsForslot[j].nuxIndex;
+
+        // Generic processing of not selected effects
+        Processor fx;
+        fx = effectsForslot[j];
+
+        for (int f = 0; f < fx.parameters.length; f++) {
+          fxData[fx.parameters[f].handle] = fx.parameters[f].value;
+        }
+
+        fxSlotList.add(fxData);
+      }
+
+      if (fxSlotList.isNotEmpty) {
+        var proc = p.getProcessorAtSlot(i);
+        var effect = processorListNuxIndex(proc);
+        inactiveFX[effect!.keyName] = fxSlotList;
+      }
+    }
+
+    mainJson[PresetsStorage.inactiveEffectsKey] = inactiveFX;
     return mainJson;
   }
 }

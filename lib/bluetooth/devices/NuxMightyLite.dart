@@ -85,24 +85,28 @@ class NuxMightyLite extends NuxDevice {
         shortName: "Gate",
         longName: "Noise Gate",
         keyName: "gate",
+        nuxOrderIndex: 0,
         color: Colors.green,
         icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
+        nuxOrderIndex: 1,
         color: Colors.green,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",
         keyName: "mod",
+        nuxOrderIndex: 2,
         color: Colors.cyan[300]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "Ambience",
         longName: "Ambience",
         keyName: "ambience",
+        nuxOrderIndex: 3,
         color: Colors.orange,
         icon: Icons.blur_on),
   ];

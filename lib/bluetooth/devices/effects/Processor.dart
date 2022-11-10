@@ -46,14 +46,14 @@ class ProcessorInfo {
   String shortName;
   String longName;
   String keyName;
-  int nuxOrderIndex = -1;
+  int nuxOrderIndex;
   Color color;
   IconData icon;
   ProcessorInfo(
       {required this.shortName,
       required this.longName,
       required this.keyName,
-      this.nuxOrderIndex = -1,
+      required this.nuxOrderIndex,
       required this.color,
       required this.icon});
 }

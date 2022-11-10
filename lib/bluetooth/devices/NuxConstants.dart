@@ -1,6 +1,8 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
+
 class AppConstants {
   static const patcherUrl =
       "https://github.com/tuntorius/nux-ir-patcher#nux-ir-patcher";
@@ -195,7 +197,8 @@ class PresetDataIndexLite {
 
 class PresetDataIndexPlugPro {
   static const effectTypesIndex = [
-    //Head_iWAH, //not used but there must be a value here
+    if (NuxMightyPlugPro.enableWahExperimental)
+      Head_iWAH, //not used but there must be a value here
     Head_iCMP,
     Head_iEFX,
     Head_iAMP,
@@ -209,6 +212,7 @@ class PresetDataIndexPlugPro {
   ];
 
   static const defaultEffects = [
+    if (NuxMightyPlugPro.enableWahExperimental) Head_iWAH,
     Head_iNG,
     Head_iCMP,
     Head_iMOD,

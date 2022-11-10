@@ -47,6 +47,9 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
 }
 
 class NuxMightyPlugPro extends NuxDevice {
+  //NUX's own app source has info about wah, but is it really available?
+  static const enableWahExperimental = false;
+
   @override
   int get productVID => 48;
   late final PlugProCommunication _communication =
@@ -76,7 +79,7 @@ class NuxMightyPlugPro extends NuxDevice {
   @override
   int get channelsCount => 7;
   @override
-  int get effectsChainLength => 9;
+  int get effectsChainLength => enableWahExperimental ? 10 : 9;
   int get groupsCount => 1;
   @override
   int get amplifierSlotIndex {
@@ -144,14 +147,26 @@ class NuxMightyPlugPro extends NuxDevice {
     return null;
   }
 
+  @override
+  int? getChainIndexByEffectKeyName(String key) {
+    var pi = getProcessorInfoByKey(key);
+    if (pi != null) {
+      PlugProPreset p = getPreset(selectedChannel) as PlugProPreset;
+      var index = p.getSlotIndexFromNuxIndex(pi.nuxOrderIndex);
+      if (index != null) return index;
+    }
+    return null;
+  }
+
   final List<ProcessorInfo> _processorList = [
-    /*ProcessorInfo(
-        shortName: "WAH",
-        longName: "wah",
-        keyName: "wah",
-        nuxOrderIndex: 0,
-        color: Colors.green,
-        icon: Icons.water),*/
+    if (enableWahExperimental)
+      ProcessorInfo(
+          shortName: "WAH",
+          longName: "Wah",
+          keyName: "wah",
+          nuxOrderIndex: PresetDataIndexPlugPro.Head_iWAH,
+          color: Colors.green,
+          icon: Icons.water),
     ProcessorInfo(
         shortName: "COMP",
         longName: "Comp",

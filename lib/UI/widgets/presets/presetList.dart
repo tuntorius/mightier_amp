@@ -216,6 +216,7 @@ class _PresetListState extends State<PresetList>
     Map category = _lists[outerIndex];
     List presets = category["presets"];
     return DragAndDropListExpansion(
+      canDrag: !widget.simplified,
       title: Text(category["name"]),
       titleColor: Colors.grey[700],
       titleColorExpanded: Colors.grey[600],
@@ -294,6 +295,7 @@ class _PresetListState extends State<PresetList>
 
   _buildPresetItem(Map<String, dynamic> item) {
     return DragAndDropItem(
+      canDrag: !widget.simplified,
       feedbackWidget: ListTile(
         tileColor: const Color.fromARGB(127, 127, 127, 127),
         title: Text(item["name"]),

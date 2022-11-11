@@ -14,6 +14,7 @@ import '../NuxDeviceControl.dart';
 import "NuxConstants.dart";
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
+import 'value_formatters/ValueFormatter.dart';
 
 class NuxDeviceConfiguration {
   bool ecoMode = false;
@@ -67,6 +68,7 @@ abstract class NuxDevice extends ChangeNotifier {
   bool get reorderableFXChain;
   bool get batterySupport;
   bool get nativeActiveChannelsSupport;
+  ValueFormatter? get decibelFormatter => null;
 
   int get deviceQRId;
   int get deviceQRVersion;
@@ -178,7 +180,6 @@ abstract class NuxDevice extends ChangeNotifier {
   //UI Stuff
   int selectedSlot = 0;
 
-  //TODO: these should not be here
   String presetName = "";
   String presetCategory = "";
   String presetUUID = "";
@@ -198,11 +199,18 @@ abstract class NuxDevice extends ChangeNotifier {
   void onConnect() {
     nuxPresetsReceived = false;
 
+    clearPresetData();
     //reset nux data
     for (int i = 0; i < presets.length; i++) {
       presets[i].resetNuxData();
     }
     resetDrumSettings();
+  }
+
+  void clearPresetData() {
+    presetName = "";
+    presetCategory = "";
+    presetUUID = "";
   }
 
   void onDisconnect() {
@@ -423,10 +431,9 @@ abstract class NuxDevice extends ChangeNotifier {
     var result = presets[selectedChannel].setupPresetFromQRData(qrData);
 
     if (result == PresetQRError.Ok) {
-      presetName = "";
-      presetCategory = "";
-      presetUUID = "";
+      clearPresetData();
     }
+
     return result;
   }
 
@@ -453,9 +460,11 @@ abstract class NuxDevice extends ChangeNotifier {
       int presetVersion,
       bool unselected,
       double? overrideLevel) {
-    int fxType = effect["fx_type"];
+    int fxTypeNuxIndex = effect["fx_type"];
     bool enabled = unselected ? false : effect["enabled"];
-
+    int nuxSlotIndex = devicePreset.getProcessorAtSlot(slotIndex);
+    int fxIndex = devicePreset.getEffectArrayIndexFromNuxIndex(
+        nuxSlotIndex, fxTypeNuxIndex);
     //check if preset conversion is needed
     if (presetVersion != productVersion) {
       //temporarily switch the preset to the other version
@@ -463,14 +472,15 @@ abstract class NuxDevice extends ChangeNotifier {
       devicePreset.setFirmwareVersion(presetVersion);
       //2 things - either switch the version or convert the preset
       int? newfxType = devicePreset
-          .getEffectsForSlot(slotIndex)[fxType]
+          .getEffectsForSlot(slotIndex)[fxIndex]
           .getEquivalentEffect(productVersion);
 
       if (newfxType != null) {
-        fxType = newfxType;
+        fxTypeNuxIndex = newfxType;
       } else {
         //if we don't know equivalent then disable it
-        fxType = 0; //set to 0 to avoid null references
+        fxTypeNuxIndex = 0; //set to 0 to avoid null references
+        fxIndex = 0;
         enabled = false;
       }
 
@@ -479,21 +489,23 @@ abstract class NuxDevice extends ChangeNotifier {
     }
 
     if (!unselected) {
-      devicePreset.setSelectedEffectForSlot(slotIndex, fxType, false);
+      devicePreset.setSelectedEffectForSlot(slotIndex, fxIndex, false);
 
       devicePreset.setSlotEnabled(slotIndex, enabled, false);
     }
+
     Processor? fx;
     if (unselected) {
       var fxList = devicePreset.getEffectsForSlot(slotIndex);
       for (var searchFx in fxList) {
-        if (searchFx.nuxIndex == fxType) fx = searchFx;
+        if (searchFx.nuxIndex == fxTypeNuxIndex) fx = searchFx;
       }
     } else {
       fx = devicePreset.getEffectsForSlot(
           slotIndex)[devicePreset.getSelectedEffectForSlot(slotIndex)];
     }
     if (fx == null) return;
+
     for (int f = 0; f < fx.parameters.length; f++) {
       //this is only for cabs override level
       if (overrideLevel != null &&
@@ -539,6 +551,7 @@ abstract class NuxDevice extends ChangeNotifier {
       p = getCustomPreset(nuxChannel);
     }
 
+    //set the chain order first, if the device supports it
     if (reorderableFXChain) {
       int index = 0;
       for (String key in preset.keys) {
@@ -551,7 +564,7 @@ abstract class NuxDevice extends ChangeNotifier {
       if (!qrOnly) communication.sendSlotOrder();
     }
 
-    //parse selected effects
+    //parse selected effects and apply them
     for (String key in preset.keys) {
       int? index = getChainIndexByEffectKeyName(key);
       if (index != null) {
@@ -597,13 +610,13 @@ abstract class NuxDevice extends ChangeNotifier {
 
     //parse all effects
     for (int i = 0; i < effectsChainLength; i++) {
-      var fxData = <String, dynamic>{};
-      fxData["fx_type"] = p.getSelectedEffectForSlot(i);
-      fxData["enabled"] = p.slotEnabled(i);
-
       Processor fx;
 
       fx = p.getEffectsForSlot(i)[p.getSelectedEffectForSlot(i)];
+
+      var fxData = <String, dynamic>{};
+      fxData["fx_type"] = fx.nuxIndex;
+      fxData["enabled"] = p.slotEnabled(i);
 
       for (int f = 0; f < fx.parameters.length; f++) {
         fxData[fx.parameters[f].handle] = fx.parameters[f].value;
@@ -620,9 +633,12 @@ abstract class NuxDevice extends ChangeNotifier {
     for (int i = 0; i < effectsChainLength; i++) {
       List fxSlotList = [];
 
+      //skip cab block, because it makes the preset huge
+      //while not being very useful
+      if (i == cabinetSlotIndex) continue;
+
       List<Processor> effectsForslot = p.getEffectsForSlot(i);
       for (int j = 0; j < effectsForslot.length; j++) {
-        if (j == cabinetSlotIndex) break;
         if (j == p.getSelectedEffectForSlot(i)) continue;
 
         var fxData = <String, dynamic>{};

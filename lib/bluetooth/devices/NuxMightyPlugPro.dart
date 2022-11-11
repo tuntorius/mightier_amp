@@ -14,6 +14,7 @@ import 'effects/Processor.dart';
 import 'effects/plug_pro/EQ.dart';
 import 'presets/PlugProPreset.dart';
 import 'presets/Preset.dart';
+import 'value_formatters/ValueFormatter.dart';
 
 enum PlugProChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
 
@@ -126,6 +127,8 @@ class NuxMightyPlugPro extends NuxDevice {
   bool get nativeActiveChannelsSupport => true;
   @override
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
+  @override
+  ValueFormatter? get decibelFormatter => ValueFormatters.decibelMPPro;
 
   @override
   int get deviceQRId => 15;

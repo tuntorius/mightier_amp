@@ -13,6 +13,7 @@ import 'NuxDevice.dart';
 import 'effects/Processor.dart';
 import 'presets/PlugAirPreset.dart';
 import 'presets/Preset.dart';
+import 'value_formatters/ValueFormatter.dart';
 
 enum PlugAirChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
 
@@ -91,6 +92,9 @@ class NuxMightyPlug extends NuxDevice {
   bool get batterySupport => true;
   @override
   bool get nativeActiveChannelsSupport => false;
+  @override
+  ValueFormatter? get decibelFormatter => ValueFormatters.decibelMP2;
+
   @override
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
   @override

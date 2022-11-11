@@ -13,10 +13,13 @@ class EventEditor {
   List<Widget> createPresetTiles(
       context, dynamic preset, StateSetter setState) {
     var tiles = <Widget>[];
+
     Color color =
         preset != null ? Preset.channelColors[preset["channel"]] : Colors.white;
-    var name =
-        preset != null ? "${preset['category']}/${preset['name']}" : "None";
+    String category = preset != null
+        ? PresetsStorage().findCategoryOfPreset(preset)!["name"]
+        : "";
+    String name = preset != null ? "$category/${preset['name']}" : "None";
     var tile = ListTile(
       title: Text(
         name,
@@ -104,8 +107,8 @@ class EventEditor {
                           child: ThickSlider(
                             enabled: event.cabinetLevelOverrideEnable,
                             activeColor: Colors.blue,
-                            min: -6,
-                            max: 6,
+                            min: device.decibelFormatter?.min.toDouble() ?? -6,
+                            max: device.decibelFormatter?.min.toDouble() ?? 6,
                             value: event.cabinetLevelOverride,
                             onChanged: (value, skip) {
                               event.cabinetLevelOverride = value;

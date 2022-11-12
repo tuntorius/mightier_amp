@@ -36,6 +36,7 @@ class _EffectEditorState extends State<EffectEditor> {
       case EffectEditorUI.EQ:
         return EqualizerEditor(
           eqEffect: prc[_selected],
+          enabled: widget.preset.slotEnabled(widget.slot),
           onChanged: (parameter, value, skip) {
             setState(() {
               widget.preset.setParameterValue(parameter, value, notify: !skip);

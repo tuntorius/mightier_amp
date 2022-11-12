@@ -194,6 +194,7 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
                       }
                       return EqualizerEditor(
                         eqEffect: btEQ,
+                        enabled: true,
                         onChanged: _changeEQValue,
                         onChangedFinal: (parameter, value, oldValue) =>
                             _changeEQValue(parameter, value, false),

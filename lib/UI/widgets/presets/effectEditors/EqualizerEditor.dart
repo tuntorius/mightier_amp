@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/verticalThickSlider.dart';
+import 'package:tinycolor2/tinycolor2.dart';
 import '../../../../bluetooth/devices/effects/Processor.dart';
 
 class EqualizerEditor extends StatefulWidget {
   final Processor eqEffect;
+  final bool enabled;
   final Function(Parameter, double value, bool skip)? onChanged;
   final Function(Parameter, double, double)? onChangedFinal;
   const EqualizerEditor(
       {required this.eqEffect,
+      required this.enabled,
       required this.onChanged,
       required this.onChangedFinal,
       Key? key})
@@ -33,7 +36,9 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
       List<Widget> sliders = [];
       for (int i = 0; i < params.length; i++) {
         var param = params[i];
-        var color = (i == 0 && params.length > 6) ? Colors.blue : Colors.grey;
+        Color color =
+            (i == 0 && params.length > 6) ? Colors.amber : Colors.blue;
+        if (!widget.enabled) color = TinyColor(color).desaturate(80).color;
         var slider = VerticalThickSlider(
           min: param.formatter.min.toDouble(),
           max: param.formatter.max.toDouble(),

@@ -192,8 +192,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
   }
 
   void setupFromQRData(String qrData) {
-    var result =
-        _presets[widget.device.selectedChannel].setupPresetFromQRData(qrData);
+    var result = widget.device.setupFromQRData(qrData);
     bool success = result == PresetQRError.Ok;
     NuxDeviceControl.instance().clearUndoStack();
 

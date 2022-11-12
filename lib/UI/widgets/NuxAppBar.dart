@@ -32,7 +32,6 @@ class NuxAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _NuxAppBarState extends State<NuxAppBar> {
   static const batteryKey = "batteryValue";
-  static const expandedState = "expandedState";
 
   int? batteryValue;
 

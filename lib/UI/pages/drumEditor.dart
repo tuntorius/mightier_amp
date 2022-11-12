@@ -432,10 +432,11 @@ class _DrumEditorState extends State<DrumEditor> {
       int value, bool userGenerated, NuxDevice? device) {
     if (userGenerated) {
       _selectedDrumPattern = value;
-      //setState(() {
       device?.setDrumsStyle(value);
-      device?.setDrumsTempo(device.drumsTempo, true);
-      //});
+
+      //workaround for a bug in Mighty Plug
+      device?.setDrumsTempo(device.drumsTempo + 1, true);
+      device?.setDrumsTempo(device.drumsTempo - 1, true);
     }
   }
 

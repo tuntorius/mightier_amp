@@ -332,7 +332,7 @@ class _DrumEditorState extends State<DrumEditor> {
         return SafeArea(
             child: Column(
           children: [
-            _activeSwitch(),
+            Card(child: _activeSwitch()),
             Expanded(
               child: Row(
                 children: [
@@ -370,7 +370,7 @@ class _DrumEditorState extends State<DrumEditor> {
         return SafeArea(
             child: Column(
           children: [
-            _activeSwitch(),
+            Card(child: _activeSwitch()),
             Expanded(
               child: Row(
                 mainAxisSize: MainAxisSize.min,

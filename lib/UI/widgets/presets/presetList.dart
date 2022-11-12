@@ -172,6 +172,7 @@ class _PresetListState extends State<PresetList>
           key: const PageStorageKey<String>("presets"),
           children: list,
           headerWidget: header,
+          lastListTargetSize: 60,
           contentsWhenEmpty: const SizedBox(
             height: 50,
             child: Center(

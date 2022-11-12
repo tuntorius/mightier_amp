@@ -5,6 +5,7 @@ import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/communication/liteCommunication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_pro/EmptyEffects.dart';
 
@@ -84,6 +85,8 @@ class PlugProPreset extends Preset {
   int selectedReverb = 0;
 
   PlugProVersion version = PlugProVersion.PlugPro1;
+
+  double _volume = 0;
 
   PlugProPreset(
       {required this.device, required this.channel, required this.channelName})
@@ -522,6 +525,9 @@ class PlugProPreset extends Preset {
       _getEffectsForNuxSlot(nuxSlot)[effectIndex].setupFromNuxPayload(nuxData);
     }
 
+    _volume = device.decibelFormatter!
+        .midi7BitToValue(nuxData[PresetDataIndexPlugPro.MASTER]);
+
     //effects chain arrangement
     int start = PresetDataIndexPlugPro.LINK1;
 
@@ -545,6 +551,9 @@ class PlugProPreset extends Preset {
     qrData.add(device.deviceQRId);
     qrData.add(device.deviceQRVersion);
 
+    data[PresetDataIndexPlugPro.MASTER] =
+        device.decibelFormatter!.valueToMidi7Bit(_volume);
+
     for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
       var slot = PresetDataIndexPlugPro.effectTypesIndex[i];
       _getEffectsForNuxSlot(slot)[_getSelectedEffectForNuxSlot(slot)]
@@ -561,5 +570,31 @@ class PlugProPreset extends Preset {
 
     qrData.addAll(data);
     return qrData;
+  }
+
+  @override
+  double get volume => _volume;
+
+  @override
+  set volume(double vol) {
+    setVolume(vol, true);
+  }
+
+  @override
+  void setVolume(double vol, bool btTransmit) {
+    _volume = vol;
+    if (btTransmit) {
+      sendVolume();
+    }
+  }
+
+  @override
+  void sendVolume() {
+    (device.communication as PlugProCommunication)
+        .sendChannelVolume(device.decibelFormatter!.valueToMidi7Bit(_volume));
+  }
+
+  void setVolumeRaw(int vol) {
+    _volume = device.decibelFormatter!.midi7BitToValue(vol);
   }
 }

@@ -31,6 +31,7 @@ import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
 
 //recreate this file with your own api keys
+import 'bluetooth/devices/value_formatters/ValueFormatter.dart';
 import 'configKeys.dart';
 
 //able to create snackbars/messages everywhere
@@ -320,7 +321,15 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final layoutMode = getLayoutMode(mediaQuery);
-    final currentVolume = NuxDeviceControl.instance().masterVolume;
+
+    final device = NuxDeviceControl.instance().device;
+
+    final currentVolume = device.fakeMasterVolume
+        ? NuxDeviceControl.instance().masterVolume
+        : device.presets[device.selectedChannel].volume;
+    final ValueFormatter volFormatter = device.fakeMasterVolume
+        ? ValueFormatters.percentage
+        : device.decibelFormatter!;
 
     //WARNING: Workaround for a flutter bug - if the app is started with screen off,
     //one of the widgets throwns an exception and the app scaffold is empty
@@ -339,6 +348,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         child: NestedWillPopScope(
           onWillPop: _willPopCallback,
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: layoutMode != LayoutMode.navBar ? null : const NuxAppBar(),
             body: Stack(
               alignment: Alignment.bottomCenter,
@@ -353,6 +363,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                         currentVolume: currentVolume,
                         onVolumeChanged: _onVolumeChanged,
                         onVolumeDragEnd: _onVolumeDragEnd,
+                        volumeFormatter: volFormatter,
                       ),
                     Expanded(
                       child: layoutMode == LayoutMode.navBar
@@ -375,6 +386,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                       currentVolume: currentVolume,
                       onVolumeChanged: _onVolumeChanged,
                       onVolumeDragEnd: _onVolumeDragEnd,
+                      volumeFormatter: volFormatter,
                     ),
                   ),
               ],
@@ -395,16 +407,23 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   }
 
   void _onVolumeDragEnd(_) {
-    SharedPrefs().setValue(
-      SettingsKeys.masterVolume,
-      NuxDeviceControl.instance().masterVolume,
-    );
+    if (NuxDeviceControl.instance().device.fakeMasterVolume) {
+      SharedPrefs().setValue(
+        SettingsKeys.masterVolume,
+        NuxDeviceControl.instance().masterVolume,
+      );
+    }
   }
 
   void _onVolumeChanged(value, bool skip) {
-    setState(() {
+    final device = NuxDeviceControl.instance().device;
+    if (device.fakeMasterVolume) {
       NuxDeviceControl.instance().masterVolume = value;
-    });
+    } else {
+      device.presets[device.selectedChannel].volume = value;
+    }
+
+    setState(() {});
   }
 
   void _onBottomBarSwipe(DragUpdateDetails details) {

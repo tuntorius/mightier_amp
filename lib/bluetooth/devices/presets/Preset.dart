@@ -140,4 +140,16 @@ abstract class Preset {
     }
     return PresetQRError.UnsupportedFormat;
   }
+
+  String getAmpNameByIndex(int index, int version) {
+    return amplifierList[index].name;
+  }
+
+  double get volume => 0;
+
+  set volume(double vol) => {};
+
+  void setVolume(double vol, bool btTransmit) {}
+
+  void sendVolume() {}
 }

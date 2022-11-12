@@ -136,7 +136,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         child: GestureDetector(
             onTap: () {
               widget.device.selectedChannelNormalized = i;
-              widget.device.resetToNuxPreset();
+              NuxDeviceControl.instance().sendFullPresetSettings();
             },
             onDoubleTap: () {
               widget.device.toggleChannelActive(i);

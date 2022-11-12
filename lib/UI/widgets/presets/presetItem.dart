@@ -139,12 +139,14 @@ class PresetItem extends StatelessWidget {
     //int presetVersion = preset["version"] ?? 0;
 
     if (dev != null) {
+      var pVersion = item["version"] ?? 0;
       for (int i = 0; i < dev.processorList.length; i++) {
         ProcessorInfo pi = dev.processorList[i];
         if (preset.containsKey(pi.keyName)) {
           //special case for amp
           if (pi.keyName == "amp") {
-            var name = dev.getAmpNameByIndex(preset[pi.keyName]["fx_type"]);
+            var name =
+                dev.getAmpNameByIndex(preset[pi.keyName]["fx_type"], pVersion);
             widgets.insert(
                 0,
                 Padding(
@@ -246,7 +248,7 @@ class PresetItem extends StatelessWidget {
                   size: 30,
                   color: color,
                 ),
-                if (pVersion != devVersion)
+                if (enabled && pVersion != devVersion)
                   Transform(
                     transform: Matrix4.translationValues(10, 10, 0),
                     child: const Icon(

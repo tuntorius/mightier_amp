@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueFormatter.dart';
 
 import 'thickSlider.dart';
 
@@ -68,13 +69,14 @@ class VolumeSlider extends StatelessWidget {
   final Function(double value, bool skip) onVolumeChanged;
   final ValueChanged<double> onVolumeDragEnd;
   final double currentVolume;
-
-  const VolumeSlider({
-    Key? key,
-    required this.onVolumeChanged,
-    required this.currentVolume,
-    required this.onVolumeDragEnd,
-  }) : super(key: key);
+  final ValueFormatter volumeFormatter;
+  const VolumeSlider(
+      {Key? key,
+      required this.onVolumeChanged,
+      required this.currentVolume,
+      required this.onVolumeDragEnd,
+      required this.volumeFormatter})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +85,9 @@ class VolumeSlider extends StatelessWidget {
       value: currentVolume,
       skipEmitting: 3,
       label: "Volume",
-      labelFormatter: (value) {
-        return value.round().toString();
-      },
-      min: 0,
-      max: 100,
+      labelFormatter: volumeFormatter.toLabel,
+      min: volumeFormatter.min.toDouble(),
+      max: volumeFormatter.max.toDouble(),
       handleVerticalDrag: false,
       onChanged: onVolumeChanged,
       onDragEnd: onVolumeDragEnd,

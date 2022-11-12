@@ -184,8 +184,6 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   NuxDeviceControl._() {
-    masterVolume = SharedPrefs().getValue(SettingsKeys.masterVolume, 100.0);
-
     _midiHandler.setAmpDeviceIdProvider(deviceBLEName);
     _midiHandler.status.listen(_statusListener);
 
@@ -207,6 +205,10 @@ class NuxDeviceControl extends ChangeNotifier {
     _device.setFirmwareVersionByIndex(ver);
 
     updateDiagnosticsData(connected: false);
+
+    if (device.fakeMasterVolume) {
+      masterVolume = SharedPrefs().getValue(SettingsKeys.masterVolume, 100.0);
+    }
 
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
@@ -401,12 +403,16 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void sendFullPresetSettings() {
     if (!isConnected) return;
+
+    if (!device.fakeMasterVolume) {
+      device.presets[device.selectedChannel].sendVolume();
+    }
+
     for (var i = 0; i < device.processorList.length; i++) {
       sendFullEffectSettings(i, false);
     }
 
     device.communication.sendSlotOrder();
-    //TODO: send some other stuff - volume etc
   }
 
   void resetToChannelDefaults() {

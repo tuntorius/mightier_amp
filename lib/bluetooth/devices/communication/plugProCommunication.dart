@@ -59,6 +59,8 @@ class PlugProCommunication extends DeviceCommunication {
   void performNextConnectionStep() {
     switch (currentConnectionStep) {
       case 0: //presets
+        _readyPresetsCount = 0;
+        _readyIRsCount = 0;
         device.deviceControl.sendBLEData(requestPresetByIndex(0));
         break;
       case 1: //IR names
@@ -220,6 +222,12 @@ class PlugProCommunication extends DeviceCommunication {
     }
     var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_MODULELINK, SyxDir.kSYXDIR_SET, nuxOrder);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void sendChannelVolume(int value) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.MASTER, value);
     device.deviceControl.sendBLEData(data);
   }
 
@@ -538,6 +546,11 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.forceNotifyListeners();
   }
 
+  void _handleVolumeData(int vol) {
+    (device.presets[device.selectedChannel] as PlugProPreset).setVolumeRaw(vol);
+    device.deviceControl.forceNotifyListeners();
+  }
+
   //Info: in plugProDataObject.js in the beginning there are few const enums
   // O, G, z, etc... they are the indexes of some SysEx data
   //just reduce with 1
@@ -654,6 +667,8 @@ const z = {
             case MidiCCValuesPro.PRESETRANGE:
               _handleActiveChannelsData(data[4]);
               return;
+            case MidiCCValuesPro.MASTER:
+              _handleVolumeData(data[4]);
           }
           bool consumed = false;
           consumed = _handleDrumCCData(data[3], data[4]);

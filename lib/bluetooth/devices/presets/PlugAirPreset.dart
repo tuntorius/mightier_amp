@@ -355,4 +355,19 @@ class PlugAirPreset extends Preset {
           .setupFromNuxPayload(nuxData);
     }
   }
+
+  @override
+  String getAmpNameByIndex(int index, int version) {
+    try {
+      var ver = PlugAirVersion.values[version];
+      switch (ver) {
+        case PlugAirVersion.PlugAir15:
+          return amplifierListv1[index].name;
+        case PlugAirVersion.PlugAir21:
+          return amplifierListv2[index].name;
+      }
+    } catch (e) {
+      throw ("Unknown Mighty Plug/Air version: $version");
+    }
+  }
 }

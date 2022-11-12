@@ -140,7 +140,6 @@ abstract class NuxDevice extends ChangeNotifier {
   set selectedChannelNormalized(int chan) {
     selectedChannelP = chan;
     presetChangedNotifier.value = selectedChannelP;
-    //presetChangedNotifier.notifyListeners();
     if (deviceControl.isConnected) sendAmpLevel();
   }
 
@@ -149,7 +148,7 @@ abstract class NuxDevice extends ChangeNotifier {
     presetChangedNotifier.value = selectedChannelP;
     //notify ui for change
     if (notify) {
-      resetToNuxPreset();
+      deviceControl.sendFullPresetSettings();
       notifyListeners();
     }
   }
@@ -277,8 +276,8 @@ abstract class NuxDevice extends ChangeNotifier {
   //used for QR stuff, probably will be removed
   Preset getCustomPreset(int channel);
 
-  String getAmpNameByIndex(int index) {
-    return presets[0].amplifierList[index].name;
+  String getAmpNameByIndex(int index, int version) {
+    return presets[0].getAmpNameByIndex(index, version);
   }
 
   void renameCabinet(int cabIndex, String name) {
@@ -289,10 +288,6 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   List<Preset> getPresetsList();
-
-  void resetToNuxPreset() {
-    getPreset(selectedChannel).setupPresetFromNuxData();
-  }
 
   void onPresetsReady() {
     if (!activeChannelRetrieval) {
@@ -551,6 +546,8 @@ abstract class NuxDevice extends ChangeNotifier {
       p = getCustomPreset(nuxChannel);
     }
 
+    if (preset.containsKey("volume")) p.setVolume(preset["volume"], !qrOnly);
+
     //set the chain order first, if the device supports it
     if (reorderableFXChain) {
       int index = 0;
@@ -608,6 +605,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
     Preset p = getPreset(selectedChannel);
 
+    if (!fakeMasterVolume) mainJson["volume"] = p.volume;
     //parse all effects
     for (int i = 0; i < effectsChainLength; i++) {
       Processor fx;

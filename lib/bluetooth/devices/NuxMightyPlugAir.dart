@@ -98,7 +98,11 @@ class NuxMightyPlug extends NuxDevice {
   @override
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
   @override
-  int get deviceQRId => 6;
+  int get deviceQRId => 11;
+
+  //alternative id for Mighty Air
+  int get deviceQRIdAlt => 6;
+
   @override
   int get deviceQRVersion => version == PlugAirVersion.PlugAir21 ? 2 : 0;
 
@@ -305,7 +309,8 @@ class NuxMightyPlug extends NuxDevice {
   }
 
   @override
-  bool checkQRVersionValid(int ver) {
+  bool checkQRValid(int deviceId, int ver) {
+    if (deviceId != deviceQRId && deviceId != deviceQRIdAlt) return false;
     if (version == PlugAirVersion.PlugAir15 && ver == 0) {
       return true;
     } else if (version == PlugAirVersion.PlugAir21 && ver > 0) {

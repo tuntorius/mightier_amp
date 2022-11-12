@@ -453,8 +453,8 @@ class NuxMightyPlugPro extends NuxDevice {
   }
 
   @override
-  bool checkQRVersionValid(int ver) {
-    return ver == 1;
+  bool checkQRValid(int deviceId, int ver) {
+    return deviceId == deviceQRId && ver == 1;
   }
 
   void setDrumsTone(double value, DrumsToneControl control, bool send) {

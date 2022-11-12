@@ -177,7 +177,7 @@ class NuxMighty8BT extends NuxDevice {
   }
 
   @override
-  bool checkQRVersionValid(int ver) {
-    return true;
+  bool checkQRValid(int deviceId, int ver) {
+    return deviceId == deviceQRId;
   }
 }

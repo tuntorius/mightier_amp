@@ -130,7 +130,7 @@ abstract class Preset {
     if (qrData.contains(QrUtils.nuxQRPrefix)) {
       var b64Data = qrData.substring(QrUtils.nuxQRPrefix.length);
       var data = base64Decode(b64Data);
-      if (data[0] == device.deviceQRId && device.checkQRVersionValid(data[1])) {
+      if (device.checkQRValid(data[0], data[1])) {
         setupPresetFromNuxDataArray(data.sublist(2));
         device.deviceControl.sendFullPresetSettings();
         return PresetQRError.Ok;

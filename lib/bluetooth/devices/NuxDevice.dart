@@ -446,7 +446,7 @@ abstract class NuxDevice extends ChangeNotifier {
     return "${QrUtils.nuxQRPrefix}${base64Encode(data)}";
   }
 
-  bool checkQRVersionValid(int ver);
+  bool checkQRValid(int deviceId, int ver);
 
   void parseEffect(
       Map<String, dynamic> effect,

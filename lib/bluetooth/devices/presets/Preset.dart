@@ -115,7 +115,7 @@ abstract class Preset {
     }
 
     qrData.addAll(data);
-    return data;
+    return qrData;
   }
 
   void setupPresetFromNuxData() {

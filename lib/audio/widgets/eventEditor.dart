@@ -108,7 +108,7 @@ class EventEditor {
                             enabled: event.cabinetLevelOverrideEnable,
                             activeColor: Colors.blue,
                             min: device.decibelFormatter?.min.toDouble() ?? -6,
-                            max: device.decibelFormatter?.min.toDouble() ?? 6,
+                            max: device.decibelFormatter?.max.toDouble() ?? 6,
                             value: event.cabinetLevelOverride,
                             onChanged: (value, skip) {
                               event.cabinetLevelOverride = value;
@@ -128,6 +128,8 @@ class EventEditor {
                                   if (preset != null) {
                                     event.cabinetLevelOverride =
                                         preset["cabinet"]["level"];
+                                  } else {
+                                    event.cabinetLevelOverride = 0;
                                   }
                                   setState(() {});
                                 },

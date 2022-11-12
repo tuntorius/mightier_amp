@@ -221,7 +221,6 @@ class _AudioEditorState extends State<AudioEditor> {
           ]);
         }
 
-        NuxDeviceControl.instance().resetToChannelDefaults();
         return true;
       },
       child: Scaffold(

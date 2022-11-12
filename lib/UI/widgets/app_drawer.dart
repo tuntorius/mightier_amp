@@ -3,6 +3,8 @@ import 'package:mighty_plug_manager/UI/mightierIcons.dart';
 import 'package:mighty_plug_manager/UI/widgets/NuxAppBar.dart';
 import 'package:mighty_plug_manager/UI/widgets/VolumeDrawer.dart';
 
+import '../../bluetooth/devices/value_formatters/ValueFormatter.dart';
+
 final _tiles = <TileModel>[
   const TileModel(0, 'Editor', MightierIcons.sliders),
   const TileModel(1, 'Presets', Icons.list),
@@ -19,6 +21,7 @@ class AppDrawer extends StatefulWidget {
   final Function(double value, bool skip) onVolumeChanged;
   final ValueChanged<double> onVolumeDragEnd;
   final double currentVolume;
+  final ValueFormatter volumeFormatter;
 
   const AppDrawer({
     required this.onSwitchPageIndex,
@@ -27,6 +30,7 @@ class AppDrawer extends StatefulWidget {
     required this.onVolumeChanged,
     required this.onVolumeDragEnd,
     required this.currentVolume,
+    required this.volumeFormatter,
     Key? key,
   }) : super(key: key);
 
@@ -35,12 +39,25 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
+  static const expandedState = "expandedState";
+
   bool isExpanded = false;
   bool isBottomDrawerOpen = false;
   bool expandChildren = false;
 
+  @override
+  void initState() {
+    super.initState();
+    isExpanded = PageStorage.of(context)
+            ?.readState(context, identifier: expandedState) as bool? ??
+        false;
+    expandChildren = isExpanded;
+  }
+
   void _onExpandChange(bool expand) {
     isExpanded = expand;
+    PageStorage.of(context)
+        ?.writeState(context, isExpanded, identifier: expandedState);
     if (isExpanded == false) expandChildren = false;
     setState(() {});
   }
@@ -120,6 +137,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     isBottomDrawerOpen = val;
                   }),
                   child: VolumeSlider(
+                    volumeFormatter: widget.volumeFormatter,
                     currentVolume: widget.currentVolume,
                     onVolumeChanged: widget.onVolumeChanged,
                     onVolumeDragEnd: widget.onVolumeDragEnd,

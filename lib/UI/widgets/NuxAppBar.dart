@@ -9,7 +9,7 @@ import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 
 import 'blinkWidget.dart';
 
-class NuxAppBar extends StatelessWidget implements PreferredSizeWidget {
+class NuxAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double? elevation;
   final bool showExpandButton;
   final bool expanded;
@@ -24,42 +24,65 @@ class NuxAppBar extends StatelessWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  State<NuxAppBar> createState() => _NuxAppBarState();
+}
+
+class _NuxAppBarState extends State<NuxAppBar> {
+  static const batteryKey = "batteryValue";
+  static const expandedState = "expandedState";
+
+  int? batteryValue;
+
+  @override
+  void initState() {
+    super.initState();
+    batteryValue = PageStorage.of(context)
+        ?.readState(context, identifier: batteryKey) as int?;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (showExpandButton)
+        if (widget.showExpandButton)
           Container(
             height: kToolbarHeight,
             width: kToolbarHeight,
             color: Theme.of(context).primaryColor,
             child: IconButton(
               icon: Icon(
-                expanded ? Icons.arrow_left : Icons.arrow_right,
+                widget.expanded ? Icons.arrow_left : Icons.arrow_right,
                 size: 32,
               ),
               onPressed: () {
-                onExpandStateChanged?.call(!expanded);
+                widget.onExpandStateChanged?.call(!widget.expanded);
               },
             ),
           ),
-        if (expanded)
+        if (widget.expanded)
           Expanded(
             child: AppBar(
-              elevation: elevation,
+              elevation: widget.elevation,
               title: const Text("Mightier Amp"),
-              titleSpacing: showExpandButton ? 0 : null,
-              centerTitle: showExpandButton ? false : null,
+              titleSpacing: widget.showExpandButton ? 0 : null,
+              centerTitle: widget.showExpandButton ? false : null,
               actions: [
                 //battery percentage
                 StreamBuilder<int>(
                   stream: NuxDeviceControl.instance().batteryPercentage.stream,
                   builder: (context, batteryPercentage) {
                     if (NuxDeviceControl.instance().isConnected &&
-                        batteryPercentage.connectionState ==
-                            ConnectionState.active &&
-                        batteryPercentage.data != 0 &&
+                        (batteryPercentage.data != 0 || batteryValue != null) &&
                         NuxDeviceControl.instance().device.batterySupport) {
+                      if (batteryPercentage.hasData) {
+                        batteryValue = batteryPercentage.data;
+                      }
+                      PageStorage.of(context)?.writeState(context, batteryValue,
+                          identifier: batteryKey);
                       return Stack(
                         alignment: Alignment.center,
                         children: [
@@ -70,7 +93,7 @@ class NuxAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 size: 40,
                               )),
                           Text(
-                            "${batteryPercentage.data}%",
+                            "$batteryValue%",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
@@ -118,6 +141,7 @@ class NuxAppBar extends StatelessWidget implements PreferredSizeWidget {
                       case MidiSetupStatus.deviceConnected:
                         icon = Icons.bluetooth_connected;
                         color = Colors.white;
+                        batteryValue = null;
                         break;
                       case MidiSetupStatus.deviceDisconnected:
                         icon = Icons.bluetooth;
@@ -138,7 +162,4 @@ class NuxAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

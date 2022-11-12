@@ -47,7 +47,7 @@ class EffectChainButton extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 1),
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
-                          color: selected ? _color : Colors.grey[900],
+                          color: selected ? _color : null,
                           border: Border.all(
                             color: _color,
                           ),
@@ -62,7 +62,11 @@ class EffectChainButton extends StatelessWidget {
                     ExcludeSemantics(
                       child: Text(
                         effectInfo.shortName,
-                        style: const TextStyle(fontSize: 10),
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: enabled
+                                ? null
+                                : Theme.of(context).textTheme.caption!.color),
                       ),
                     ),
                   ],

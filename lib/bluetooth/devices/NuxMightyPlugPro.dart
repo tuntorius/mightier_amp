@@ -210,7 +210,7 @@ class NuxMightyPlugPro extends NuxDevice {
         longName: "Modulation",
         keyName: "mod",
         nuxOrderIndex: PresetDataIndexPlugPro.Head_iMOD,
-        color: Colors.indigo[400]!,
+        color: Colors.indigo[300]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "DLY",
@@ -224,7 +224,7 @@ class NuxMightyPlugPro extends NuxDevice {
         longName: "Reverb",
         keyName: "reverb",
         nuxOrderIndex: PresetDataIndexPlugPro.Head_iRVB,
-        color: Colors.deepPurple,
+        color: Colors.purple[300]!,
         icon: Icons.blur_on),
     ProcessorInfo(
         shortName: "IR",

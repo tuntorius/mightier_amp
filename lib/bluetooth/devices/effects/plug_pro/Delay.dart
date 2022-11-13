@@ -42,14 +42,14 @@ class AnalogDelay extends Delay {
         name: "Echo",
         handle: "echo",
         value: 45,
-        formatter: ValueFormatters.percentageMPPro,
+        formatter: ValueFormatters.tempoProAnalog,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
         midiCC: MidiCCValuesPro.DLY_Para2),
     Parameter(
         name: "Intensity",
         handle: "intensity",
         value: 52,
-        formatter: ValueFormatters.tempo,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
   ];
@@ -81,7 +81,7 @@ class DigitalDelay extends Delay {
         name: "Time",
         handle: "time",
         value: 48,
-        formatter: ValueFormatters.tempo,
+        formatter: ValueFormatters.tempoPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
         midiCC: MidiCCValuesPro.DLY_Para3),
   ];
@@ -99,7 +99,7 @@ class ModDelay extends Delay {
         name: "Time",
         handle: "time",
         value: 49,
-        formatter: ValueFormatters.percentageMPPro,
+        formatter: ValueFormatters.tempoProMod,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
     Parameter(
@@ -120,7 +120,7 @@ class ModDelay extends Delay {
         name: "Repeat",
         handle: "repeat",
         value: 48,
-        formatter: ValueFormatters.tempo,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para4,
         midiCC: MidiCCValuesPro.DLY_Para4),
   ];
@@ -152,7 +152,7 @@ class TapeEcho extends Delay {
         name: "Time",
         handle: "time",
         value: 61,
-        formatter: ValueFormatters.tempo,
+        formatter: ValueFormatters.tempoProTapeEcho,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
   ];
@@ -184,7 +184,7 @@ class PanDelay extends Delay {
         name: "Time",
         handle: "time",
         value: 50,
-        formatter: ValueFormatters.tempo,
+        formatter: ValueFormatters.tempoPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
         midiCC: MidiCCValuesPro.DLY_Para1),
   ];

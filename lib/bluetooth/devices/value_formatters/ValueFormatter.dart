@@ -14,6 +14,11 @@ class ValueFormatters {
   static DecibelFormatterMPPro decibelMPPro = DecibelFormatterMPPro();
   static DecibelFormatterEQ decibelEQ = DecibelFormatterEQ();
   static TempoFormatter tempo = TempoFormatter();
+  static TempoFormatterPro tempoPro = TempoFormatterPro();
+  static TempoFormatterProMod tempoProMod = TempoFormatterProMod();
+  static TempoFormatterProAnalog tempoProAnalog = TempoFormatterProAnalog();
+  static TempoFormatterProTapeEcho tempoProTapeEcho =
+      TempoFormatterProTapeEcho();
   static BrightModeFormatter brightMode = BrightModeFormatter();
   static BrightModeFormatterMPPro brightModePro = BrightModeFormatterMPPro();
   static BoostModeFormatter boostMode = BoostModeFormatter();

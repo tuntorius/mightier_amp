@@ -217,68 +217,73 @@ class _EffectSelectorState extends State<EffectSelector> {
         const SizedBox(
           height: 8,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (_effectItems.length > 1)
-              custom.PopupMenuButton(
-                itemBuilder: (context) => _effectItems,
-                onSelected: setSelectedEffect,
-                initialValue: _preset.getSelectedEffectForSlot(_selectedSlot),
-                child: effectSelectButton,
-              )
-            else
-              effectSelectButton,
-            const SizedBox(
-                width: 1,
-                height: 48), //used to even out sizes when switch is not visible
-            Row(
-              children: [
-                if (_effectItems.length > 1)
-                  IconButton(
-                    tooltip: "Previous effect",
-                    onPressed: () {
-                      var effect =
-                          _preset.getSelectedEffectForSlot(_selectedSlot) - 1;
-                      if (effect < 0) effect = effects.length - 1;
-                      setSelectedEffect(effect);
-                    },
-                    icon: Transform.rotate(
-                        angle: pi,
-                        child: Icon(Icons.play_arrow,
-                            color: TinyColor(_effectColor).brighten(20).color)),
-                    iconSize: 30,
-                  ),
-                if (_effectItems.length > 1)
-                  IconButton(
-                    tooltip: "Next effect",
-                    onPressed: () {
-                      var effect =
-                          _preset.getSelectedEffectForSlot(_selectedSlot) + 1;
-                      if (effect > effects.length - 1) effect = 0;
-                      setSelectedEffect(effect);
-                    },
-                    icon: Icon(Icons.play_arrow,
-                        color: TinyColor(_effectColor).brighten(20).color),
-                    iconSize: 30,
-                  ),
-                if (_preset.slotSwitchable(_selectedSlot))
-                  Tooltip(
-                    message: "Enable effect",
-                    child: Switch(
-                      value: _preset.slotEnabled(_selectedSlot),
-                      onChanged: (val) {
-                        _setSlotEnabledState(_selectedSlot, val);
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (_effectItems.length > 1)
+                custom.PopupMenuButton(
+                  itemBuilder: (context) => _effectItems,
+                  onSelected: setSelectedEffect,
+                  initialValue: _preset.getSelectedEffectForSlot(_selectedSlot),
+                  child: effectSelectButton,
+                )
+              else
+                effectSelectButton,
+              const SizedBox(
+                  width: 1,
+                  height:
+                      48), //used to even out sizes when switch is not visible
+              Row(
+                children: [
+                  if (_effectItems.length > 1)
+                    IconButton(
+                      tooltip: "Previous effect",
+                      onPressed: () {
+                        var effect =
+                            _preset.getSelectedEffectForSlot(_selectedSlot) - 1;
+                        if (effect < 0) effect = effects.length - 1;
+                        setSelectedEffect(effect);
                       },
-                      activeColor: TinyColor(_effectColor).brighten(20).color,
-                      inactiveThumbColor: Colors.grey,
-                      inactiveTrackColor: Colors.grey[700],
+                      icon: Transform.rotate(
+                          angle: pi,
+                          child: Icon(Icons.play_arrow,
+                              color:
+                                  TinyColor(_effectColor).brighten(20).color)),
+                      iconSize: 30,
                     ),
-                  ),
-              ],
-            ),
-          ],
+                  if (_effectItems.length > 1)
+                    IconButton(
+                      tooltip: "Next effect",
+                      onPressed: () {
+                        var effect =
+                            _preset.getSelectedEffectForSlot(_selectedSlot) + 1;
+                        if (effect > effects.length - 1) effect = 0;
+                        setSelectedEffect(effect);
+                      },
+                      icon: Icon(Icons.play_arrow,
+                          color: TinyColor(_effectColor).brighten(20).color),
+                      iconSize: 30,
+                    ),
+                  if (_preset.slotSwitchable(_selectedSlot))
+                    Tooltip(
+                      message: "Enable effect",
+                      child: Switch(
+                        value: _preset.slotEnabled(_selectedSlot),
+                        onChanged: (val) {
+                          _setSlotEnabledState(_selectedSlot, val);
+                        },
+                        activeColor: TinyColor(_effectColor).brighten(20).color,
+                        inactiveThumbColor: Colors.grey,
+                        inactiveTrackColor: Colors.grey[700],
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
         if (layout == EditorLayoutMode.expand)
           Expanded(

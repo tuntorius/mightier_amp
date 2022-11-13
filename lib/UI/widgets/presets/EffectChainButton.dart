@@ -37,7 +37,11 @@ class EffectChainButton extends StatelessWidget {
             button: true,
             child: GestureDetector(
               onTap: onTap,
-              onDoubleTap: onDoubleTap,
+              //onDoubleTap: onDoubleTap,
+              onLongPress: () {},
+              onVerticalDragStart: (details) {
+                onDoubleTap?.call();
+              },
               child: Transform.translate(
                 offset: Offset(0, selected ? -5 : 0),
                 child: Column(
@@ -47,7 +51,9 @@ class EffectChainButton extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 1),
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
-                          color: selected ? _color : null,
+                          color: selected
+                              ? _color
+                              : Theme.of(context).scaffoldBackgroundColor,
                           border: Border.all(
                             color: _color,
                           ),

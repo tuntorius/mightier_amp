@@ -18,7 +18,7 @@ class RoundedIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
+    return Container(
       decoration: ShapeDecoration(
         color: onPressed != null ? Colors.blue : Colors.grey[800],
         shape: RoundedRectangleBorder(

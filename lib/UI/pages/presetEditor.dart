@@ -159,7 +159,7 @@ class _PresetEditorState extends State<PresetEditor> {
                                 : null,
                         children: const [
                           Tooltip(
-                              message: "Compare before/after",
+                              message: "Switch before/after",
                               child: Icon(Icons.compare))
                         ],
                       )
@@ -181,6 +181,7 @@ class _PresetEditorState extends State<PresetEditor> {
                             width: 2,
                           ),
                           RoundedIconButton(
+                            tooltip: "Save as preset",
                             icon: const Icon(Icons.playlist_add),
                             onPressed: () {
                               var saveDialog = SavePresetDialog(

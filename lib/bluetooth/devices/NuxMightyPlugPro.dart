@@ -210,28 +210,28 @@ class NuxMightyPlugPro extends NuxDevice {
         longName: "Modulation",
         keyName: "mod",
         nuxOrderIndex: PresetDataIndexPlugPro.Head_iMOD,
-        color: Colors.indigo[300]!,
+        color: Colors.deepPurple[400]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "DLY",
         longName: "Delay",
         keyName: "delay",
         nuxOrderIndex: PresetDataIndexPlugPro.Head_iDLY,
-        color: Colors.cyan,
+        color: Colors.cyan[300]!,
         icon: Icons.blur_linear),
     ProcessorInfo(
         shortName: "RVB",
         longName: "Reverb",
         keyName: "reverb",
         nuxOrderIndex: PresetDataIndexPlugPro.Head_iRVB,
-        color: Colors.purple[300]!,
+        color: Colors.purple[200]!,
         icon: Icons.blur_on),
     ProcessorInfo(
         shortName: "IR",
         longName: "Cabinet",
         keyName: "cabinet",
         nuxOrderIndex: PresetDataIndexPlugPro.Head_iCAB,
-        color: Colors.lightBlue,
+        color: Colors.lightBlue[400]!,
         icon: MightierIcons.cabinet),
   ];
 

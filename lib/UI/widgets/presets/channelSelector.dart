@@ -138,7 +138,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
               widget.device.selectedChannelNormalized = i;
               NuxDeviceControl.instance().sendFullPresetSettings();
             },
-            onDoubleTap: () {
+            onLongPress: () {
               widget.device.toggleChannelActive(i);
             },
             child: buttonBody),

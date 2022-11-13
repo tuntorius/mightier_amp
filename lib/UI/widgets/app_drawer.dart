@@ -75,6 +75,7 @@ class _AppDrawerState extends State<AppDrawer> {
         }
       },
       child: AnimatedContainer(
+        color: Colors.grey[850],
         onEnd: () {
           if (isExpanded) expandChildren = true;
           setState(() {});

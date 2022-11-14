@@ -32,19 +32,19 @@ class RoseComp extends Compressor {
   @override
   List<Parameter> parameters = [
     Parameter(
-        name: "Sustain",
-        handle: "sustain",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
-        midiCC: MidiCCValuesPro.CMP_Para1),
-    Parameter(
         name: "Level",
         handle: "level",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
+    Parameter(
+        name: "Sustain",
+        handle: "sustain",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
+        midiCC: MidiCCValuesPro.CMP_Para1),
   ];
 }
 
@@ -58,19 +58,19 @@ class KComp extends Compressor {
   @override
   List<Parameter> parameters = [
     Parameter(
-        name: "Sustain",
-        handle: "sustain",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
-        midiCC: MidiCCValuesPro.CMP_Para1),
-    Parameter(
         name: "Level",
         handle: "level",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
+    Parameter(
+        name: "Sustain",
+        handle: "sustain",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.CMP_Para1,
+        midiCC: MidiCCValuesPro.CMP_Para1),
     Parameter(
         name: "Clipping",
         handle: "clipping",
@@ -91,6 +91,13 @@ class StudioComp extends Compressor {
   @override
   List<Parameter> parameters = [
     Parameter(
+        name: "Gain",
+        handle: "gain",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.CMP_Para3,
+        midiCC: MidiCCValuesPro.CMP_Para3),
+    Parameter(
         name: "Threshold",
         handle: "threshold",
         value: 50,
@@ -104,13 +111,6 @@ class StudioComp extends Compressor {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.CMP_Para2,
         midiCC: MidiCCValuesPro.CMP_Para2),
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.CMP_Para3,
-        midiCC: MidiCCValuesPro.CMP_Para3),
     Parameter(
         name: "Release",
         handle: "release",

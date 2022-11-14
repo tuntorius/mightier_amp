@@ -32,12 +32,12 @@ class ModCE1 extends Modulation {
   @override
   List<Parameter> parameters = [
     Parameter(
-        name: "Intensity",
-        handle: "intensity",
-        value: 32,
+        name: "Rate",
+        handle: "rate",
+        value: 39,
         formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
+        midiCC: MidiCCValuesPro.MOD_Para3),
     Parameter(
         name: "Depth",
         handle: "depth",
@@ -46,12 +46,13 @@ class ModCE1 extends Modulation {
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
         midiCC: MidiCCValuesPro.MOD_Para2),
     Parameter(
-        name: "Rate",
-        handle: "rate",
-        value: 39,
+        name: "Intensity",
+        handle: "intensity",
+        value: 32,
         formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
+        midiCC: MidiCCValuesPro.MOD_Para1),
+
   ];
 }
 
@@ -89,12 +90,12 @@ class STChorus extends Modulation {
   @override
   List<Parameter> parameters = [
     Parameter(
-        name: "Intensity",
-        handle: "intensity",
-        value: 74,
+        name: "Rate",
+        handle: "rate",
+        value: 60,
         formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
+        midiCC: MidiCCValuesPro.MOD_Para3),
     Parameter(
         name: "Width",
         handle: "width",
@@ -103,12 +104,12 @@ class STChorus extends Modulation {
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
         midiCC: MidiCCValuesPro.MOD_Para2),
     Parameter(
-        name: "Rate",
-        handle: "rate",
-        value: 60,
+        name: "Intensity",
+        handle: "intensity",
+        value: 74,
         formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3)
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
+        midiCC: MidiCCValuesPro.MOD_Para1),
   ];
 }
 
@@ -153,19 +154,19 @@ class Detune extends Modulation {
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
         midiCC: MidiCCValuesPro.MOD_Para1),
     Parameter(
-        name: "Mix",
-        handle: "mix",
-        value: 80,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
-    Parameter(
         name: "Shift-R",
         handle: "shift_r",
         value: 0,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
         midiCC: MidiCCValuesPro.MOD_Para3),
+    Parameter(
+        name: "Mix",
+        handle: "mix",
+        value: 80,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
+        midiCC: MidiCCValuesPro.MOD_Para2),
   ];
 }
 
@@ -177,13 +178,6 @@ class Flanger extends Modulation {
   int get nuxIndex => 6;
   @override
   List<Parameter> parameters = [
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 59,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
     Parameter(
         name: "Rate",
         handle: "rate",
@@ -198,6 +192,13 @@ class Flanger extends Modulation {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
         midiCC: MidiCCValuesPro.MOD_Para3),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 59,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
+        midiCC: MidiCCValuesPro.MOD_Para1),
     Parameter(
         name: "Feedback",
         handle: "feedback",
@@ -235,19 +236,19 @@ class Phase100 extends Modulation {
   @override
   List<Parameter> parameters = [
     Parameter(
-        name: "Intensity",
-        handle: "intensity",
-        value: 60,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
-    Parameter(
         name: "Speed",
         handle: "speed",
         value: 39,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
         midiCC: MidiCCValuesPro.MOD_Para2),
+    Parameter(
+        name: "Intensity",
+        handle: "intensity",
+        value: 60,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
+        midiCC: MidiCCValuesPro.MOD_Para1),
   ];
 }
 
@@ -259,13 +260,6 @@ class SCF extends Modulation {
   int get nuxIndex => 9;
   @override
   List<Parameter> parameters = [
-    Parameter(
-        name: "Mode",
-        handle: "mix",
-        value: 1,
-        formatter: ValueFormatters.scfMode,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
     Parameter(
         name: "Speed",
         handle: "speed",
@@ -287,6 +281,13 @@ class SCF extends Modulation {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para4,
         midiCC: MidiCCValuesPro.MOD_Para4),
+    Parameter(
+        name: "Mode",
+        handle: "mode",
+        value: 1,
+        formatter: ValueFormatters.scfMode,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
+        midiCC: MidiCCValuesPro.MOD_Para3),
   ];
 }
 
@@ -298,13 +299,6 @@ class Vibe extends Modulation {
   int get nuxIndex => 10;
   @override
   List<Parameter> parameters = [
-    Parameter(
-        name: "Mode",
-        handle: "mode",
-        value: 0,
-        formatter: ValueFormatters.vibeModePro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para4,
-        midiCC: MidiCCValuesPro.MOD_Para4),
     Parameter(
         name: "Speed",
         handle: "speed",
@@ -326,6 +320,13 @@ class Vibe extends Modulation {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
         midiCC: MidiCCValuesPro.MOD_Para3),
+    Parameter(
+        name: "Mode",
+        handle: "mode",
+        value: 0,
+        formatter: ValueFormatters.vibeModePro,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para4,
+        midiCC: MidiCCValuesPro.MOD_Para4),
   ];
 }
 
@@ -363,19 +364,19 @@ class Rotary extends Modulation {
   @override
   List<Parameter> parameters = [
     Parameter(
-        name: "Balance",
-        handle: "balance",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
-    Parameter(
         name: "Speed",
         handle: "speed",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
         midiCC: MidiCCValuesPro.MOD_Para2),
+    Parameter(
+        name: "Balance",
+        handle: "balance",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
+        midiCC: MidiCCValuesPro.MOD_Para1),
   ];
 }
 

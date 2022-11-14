@@ -31,6 +31,13 @@ class RoomReverb extends Reverb {
   @override
   List<Parameter> parameters = [
     Parameter(
+        name: "Level",
+        handle: "level",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.RVB_Para3,
+        midiCC: MidiCCValuesPro.RVB_Para3),
+    Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
@@ -44,13 +51,6 @@ class RoomReverb extends Reverb {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
         midiCC: MidiCCValuesPro.RVB_Para2),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.RVB_Para3,
-        midiCC: MidiCCValuesPro.RVB_Para3)
   ];
 }
 
@@ -62,6 +62,13 @@ class HallReverb extends Reverb {
   int get nuxIndex => 2;
   @override
   List<Parameter> parameters = [
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.RVB_Para4,
+        midiCC: MidiCCValuesPro.RVB_Para4),
     Parameter(
         name: "Decay",
         handle: "decay",
@@ -83,13 +90,6 @@ class HallReverb extends Reverb {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para3,
         midiCC: MidiCCValuesPro.RVB_Para3),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.RVB_Para4,
-        midiCC: MidiCCValuesPro.RVB_Para4)
   ];
 }
 
@@ -102,19 +102,19 @@ class PlateReverb extends Reverb {
   @override
   List<Parameter> parameters = [
     Parameter(
+        name: "Level",
+        handle: "level",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
+        midiCC: MidiCCValuesPro.RVB_Para2),
+    Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para1,
         midiCC: MidiCCValuesPro.RVB_Para1),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
-        midiCC: MidiCCValuesPro.RVB_Para2)
   ];
 }
 
@@ -127,19 +127,19 @@ class SpringReverb extends Reverb {
   @override
   List<Parameter> parameters = [
     Parameter(
+        name: "Level",
+        handle: "level",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
+        midiCC: MidiCCValuesPro.RVB_Para2),
+    Parameter(
         name: "Decay",
         handle: "decay",
         value: 32,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para1,
         midiCC: MidiCCValuesPro.RVB_Para1),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
-        midiCC: MidiCCValuesPro.RVB_Para2)
   ];
 }
 

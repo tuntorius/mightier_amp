@@ -38,7 +38,7 @@ class JazzClean extends PlugProAmplifier {
   @override
   bool isSeparator = true;
   @override
-  String category = "Clean";
+  String category = "Guitar";
 
   @override
   List<Parameter> parameters = [
@@ -148,6 +148,11 @@ class BassMate extends PlugProAmplifier {
   int get nuxIndex => 3;
 
   @override
+  bool isSeparator = true;
+  @override
+  String category = "Bass";
+
+  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -207,7 +212,7 @@ class Tweedy extends PlugProAmplifier {
   @override
   bool isSeparator = true;
   @override
-  String category = "Clean";
+  String category = "Guitar";
 
   @override
   List<Parameter> parameters = [
@@ -360,11 +365,6 @@ class ClassA30 extends PlugProAmplifier {
   int get defaultCab => A212Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Drive";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -465,11 +465,6 @@ class Plexi100 extends PlugProAmplifier {
 class Plexi45 extends PlugProAmplifier {
   @override
   final name = "Plexi 45";
-
-  @override
-  bool isSeparator = true;
-  @override
-  String category = "Overdrive";
 
   @override
   int get nuxIndex => 11;
@@ -933,11 +928,6 @@ class SuperRvb extends PlugProAmplifier {
   int get defaultCab => SUPERVERB410.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -988,6 +978,11 @@ class SuperRvb extends PlugProAmplifier {
 class AGL extends PlugProAmplifier {
   @override
   final name = "AGL";
+
+  @override
+  bool isSeparator = true;
+  @override
+  String category = "Bass";
 
   @override
   int get nuxIndex => 26;
@@ -1045,11 +1040,6 @@ class AGL extends PlugProAmplifier {
 class MLD extends PlugProAmplifier {
   @override
   final name = "MLD";
-
-  @override
-  bool isSeparator = true;
-  @override
-  String category = "Bass";
 
   @override
   int get nuxIndex => 27;
@@ -1262,10 +1252,10 @@ class Unknown0 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1281,11 +1271,6 @@ class Unknown5 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1324,10 +1309,10 @@ class Unknown5 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1343,11 +1328,6 @@ class Unknown8 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1386,10 +1366,10 @@ class Unknown8 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1405,11 +1385,6 @@ class Unknown18 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1448,10 +1423,10 @@ class Unknown18 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1467,11 +1442,6 @@ class Unknown19 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1510,10 +1480,10 @@ class Unknown19 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1529,11 +1499,6 @@ class Unknown22 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1572,10 +1537,10 @@ class Unknown22 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1591,11 +1556,6 @@ class Unknown23 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1634,10 +1594,10 @@ class Unknown23 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1653,11 +1613,6 @@ class Unknown24 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1696,10 +1651,10 @@ class Unknown24 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1715,11 +1670,6 @@ class Unknown25 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1758,10 +1708,10 @@ class Unknown25 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];
@@ -1777,11 +1727,6 @@ class Unknown30 extends PlugProAmplifier {
   int get defaultCab => JZ120Pro.cabIndex;
 
   @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
   List<Parameter> parameters = [
     Parameter(
         name: "Gain",
@@ -1820,10 +1765,10 @@ class Unknown30 extends PlugProAmplifier {
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
         midiCC: MidiCCValuesPro.AMP_Para5),
     Parameter(
-        name: "Bright",
-        handle: "bright",
+        name: "Presence",
+        handle: "presence",
         value: 50,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6),
   ];

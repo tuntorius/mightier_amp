@@ -63,12 +63,15 @@ class _EffectSelectorState extends State<EffectSelector> {
           //get the cabinet for this amp and set it
           Processor amp = _preset.getEffectsForSlot(_selectedSlot)[index];
           if (amp is Amplifier) {
+            var proc = _preset.getProcessorAtSlot(device.cabinetSlotIndex);
+            var cabIndex =
+                _preset.getEffectArrayIndexFromNuxIndex(proc, amp.defaultCab);
             var oldEffect =
                 _preset.getSelectedEffectForSlot(device.cabinetSlotIndex);
             totalChanges.add(Change<int>(
                 oldEffect,
                 () => _preset.setSelectedEffectForSlot(
-                    device.cabinetSlotIndex, amp.defaultCab, true),
+                    device.cabinetSlotIndex, cabIndex, true),
                 (oldVal) => _preset.setSelectedEffectForSlot(
                     device.cabinetSlotIndex, oldVal, true)));
           }

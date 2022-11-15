@@ -27,15 +27,15 @@ class WahDummyPro extends Processor {
   @override
   List<Parameter> parameters = [
     Parameter(
-        name: "Sensitivity",
-        handle: "sensitivity",
+        name: "Param1",
+        handle: "param1",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.WAH_Para1,
         midiCC: MidiCCValuesPro.WAH_Para1),
     Parameter(
-        name: "Decay",
-        handle: "decay",
+        name: "Param2",
+        handle: "param2",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.WAH_Para2,

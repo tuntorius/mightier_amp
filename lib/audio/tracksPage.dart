@@ -9,6 +9,7 @@ import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/UI/widgets/searchTextField.dart';
 import 'package:mighty_plug_manager/audio/widgets/media_library/media_browse.dart';
 import 'package:path/path.dart';
+import '../platform/simpleSharedPrefs.dart';
 import 'audioEditor.dart';
 import 'models/jamTrack.dart';
 import 'online_sources/YoutubeSource.dart';
@@ -23,7 +24,11 @@ class TracksPage extends StatefulWidget {
   final Function(bool, Map<int, bool>)? multiSelectState;
 
   const TracksPage(
-      {this.selectorOnly = false, this.onSelectedTrack, this.multiSelectState});
+      {Key? key,
+      this.selectorOnly = false,
+      this.onSelectedTrack,
+      this.multiSelectState})
+      : super(key: key);
 
   @override
   State createState() => _TracksPageState();
@@ -35,6 +40,7 @@ class _TracksPageState extends State<TracksPage>
   String filter = "";
   final TextEditingController searchCtrl = TextEditingController(text: "");
   final scrollController = ScrollController();
+  bool _showHiddenSources = false;
 
   //multiselection stuff
   bool _multiselectMode = false;
@@ -153,6 +159,8 @@ class _TracksPageState extends State<TracksPage>
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
+    _showHiddenSources =
+        SharedPrefs().getInt(SettingsKeys.hiddenSources, 0) != 0;
     querySongs();
   }
 
@@ -459,7 +467,7 @@ class _TracksPageState extends State<TracksPage>
   List<Bubble> _bubbles(BuildContext context) {
     return [
       // Floating action menu item
-      if (kDebugMode)
+      if (_showHiddenSources)
         Bubble(
             title: "Youtube",
             iconColor: Colors.white,
@@ -470,7 +478,7 @@ class _TracksPageState extends State<TracksPage>
               _animationController.reverse();
               addFromYoutubeSource(context);
             }),
-      if (kDebugMode)
+      if (_showHiddenSources)
         Bubble(
           title: "Online Source",
           iconColor: Colors.white,

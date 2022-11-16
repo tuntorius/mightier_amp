@@ -16,6 +16,8 @@ class SettingsKeys {
   static const String deviceVersion = "deviceVersion";
   static const String masterVolume = "volume";
   static const String customCabinets = "customCabinets";
+  static const String hiddenAmps = "hiddenAmps";
+  static const String hiddenSources = "hiddenSources";
 }
 
 class SharedPrefs {

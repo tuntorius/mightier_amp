@@ -21,8 +21,8 @@ enum PlugAirVersion { PlugAir15, PlugAir21 }
 
 class NuxMightyPlugConfiguration extends NuxDeviceConfiguration {
   int usbMode = 0;
-  int inputVol = 0;
-  int outputVol = 0;
+  int inputVol = 50;
+  int outputVol = 50;
   int btEq = 0;
 }
 

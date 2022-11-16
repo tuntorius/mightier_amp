@@ -1199,68 +1199,6 @@ class Stageman extends PlugProAmplifier {
   ];
 }
 
-class Unknown0 extends PlugProAmplifier {
-  @override
-  final name = "Unknown 0";
-
-  @override
-  int get nuxIndex => 0;
-  @override
-  int get defaultCab => JZ120Pro.cabIndex;
-
-  @override
-  bool isSeparator = true;
-  @override
-  String category = "Clean";
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
-    Parameter(
-        name: "Master",
-        handle: "master",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
-    Parameter(
-        name: "Middle",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
-    Parameter(
-        name: "Treble",
-        handle: "treble",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
-    Parameter(
-        name: "Presence",
-        handle: "presence",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
-  ];
-}
-
 class Unknown5 extends PlugProAmplifier {
   @override
   final name = "Unknown 5";

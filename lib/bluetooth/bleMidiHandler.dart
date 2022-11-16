@@ -43,6 +43,9 @@ class BLEMidiHandler {
       StreamController.broadcast();
   Stream<MidiSetupStatus> get status => _status.stream;
 
+  MidiSetupStatus _currentStatus = MidiSetupStatus.unknown;
+  MidiSetupStatus get currentStatus => _currentStatus;
+
   final StreamController<bool> _scanStatus = StreamController.broadcast();
   Stream<bool> get scanStatus => _scanStatus.stream;
 
@@ -149,12 +152,12 @@ class BLEMidiHandler {
         case BluetoothState.unavailable:
         case BluetoothState.unauthorized:
           _isOn = false;
-          _status.add(MidiSetupStatus.bluetoothOff);
+          _setMidiSetupStatus(MidiSetupStatus.bluetoothOff);
           break;
         case BluetoothState.turningOn:
         case BluetoothState.on:
           _isOn = true;
-          _status.add(MidiSetupStatus.deviceSearching);
+          _setMidiSetupStatus(MidiSetupStatus.deviceSearching);
           startScanning(false);
           break;
         case BluetoothState.turningOff:
@@ -162,7 +165,7 @@ class BLEMidiHandler {
           break;
         case BluetoothState.off:
           _isOn = false;
-          _status.add(MidiSetupStatus.bluetoothOff);
+          _setMidiSetupStatus(MidiSetupStatus.bluetoothOff);
           _device = null;
           _connectInProgress = false;
           break;
@@ -205,7 +208,7 @@ class BLEMidiHandler {
         }
       }
 
-      _status.add(MidiSetupStatus.deviceFound);
+      _setMidiSetupStatus(MidiSetupStatus.deviceFound);
       for (ScanResult r in results) {
         debugPrint('${r.device.name} found! rssi: ${r.rssi}');
       }
@@ -219,7 +222,7 @@ class BLEMidiHandler {
   void startScanning(bool manual) {
     if (!_granted) return;
     manualScan = manual;
-    _status.add(MidiSetupStatus.deviceSearching);
+    _setMidiSetupStatus(MidiSetupStatus.deviceSearching);
     if (bluetoothState != BluetoothState.on) return;
     flutterBlue
         .startScan(
@@ -228,7 +231,7 @@ class BLEMidiHandler {
     )
         .then((result) {
       //if device is not connected after the search - set to idle
-      if (_device == null) _status.add(MidiSetupStatus.deviceIdle);
+      if (_device == null) _setMidiSetupStatus(MidiSetupStatus.deviceIdle);
     });
   }
 
@@ -253,7 +256,7 @@ class BLEMidiHandler {
 
     _connectInProgress = true;
     stopScanning();
-    _status.add(MidiSetupStatus.deviceConnecting);
+    _setMidiSetupStatus(MidiSetupStatus.deviceConnecting);
     try {
       await device.connect(
           autoConnect: false, timeout: const Duration(seconds: 5));
@@ -297,14 +300,14 @@ class BLEMidiHandler {
     queueFree = true;
     _connectInProgress = false;
 
-    _status.add(MidiSetupStatus.deviceConnected);
+    _setMidiSetupStatus(MidiSetupStatus.deviceConnected);
     _deviceStreamSubscription = device.state.listen((event) {
       if (event == BluetoothDeviceState.disconnected) {
         _deviceStreamSubscription?.cancel();
         _device = null;
         _connectInProgress = false;
         queueFree = true;
-        _status.add(MidiSetupStatus.deviceDisconnected);
+        _setMidiSetupStatus(MidiSetupStatus.deviceDisconnected);
       }
     });
   }
@@ -320,7 +323,7 @@ class BLEMidiHandler {
 
     _connectInProgress = true;
     stopScanning();
-    _status.add(MidiSetupStatus.deviceConnecting);
+    _setMidiSetupStatus(MidiSetupStatus.deviceConnecting);
     try {
       await device.connect(
           autoConnect: false, timeout: const Duration(seconds: 5));
@@ -370,13 +373,18 @@ class BLEMidiHandler {
 
   ListQueue<List<int>> dataQueue = ListQueue<List<int>>();
 
+  void _setMidiSetupStatus(MidiSetupStatus status) {
+    _currentStatus = status;
+    _status.add(status);
+  }
+
   void sendData(List<int> data) {
     if (!_granted) return;
     dataQueue.addLast(data);
-    if (queueFree) queueSender();
+    if (queueFree) _queueSender();
   }
 
-  void queueSender() async {
+  void _queueSender() async {
     queueFree = false;
     Stopwatch stopwatch = Stopwatch()..start();
     //List<int> currentData = List<int>();
@@ -400,8 +408,9 @@ class BLEMidiHandler {
       }
     }
     queueFree = true;
-    //if (kDebugMode)
-    Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
+    if (kDebugMode) {
+      Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
+    }
   }
 
   void dispose() {

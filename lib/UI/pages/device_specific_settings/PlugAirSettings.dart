@@ -36,18 +36,18 @@ class _PlugAirSettingsState extends State<PlugAirSettings> {
         ListTile(
           enabled: widget.device.deviceControl.isConnected,
           title: const Text("USB Audio Settings"),
+          leading: const Icon(Icons.volume_up),
           trailing: const Icon(Icons.keyboard_arrow_right),
           onTap: () {
-            //if (midiHandler.connectedDevice != null) {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => PlugAirUsbSettings()));
-            //}
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const PlugAirUsbSettings()));
           },
         ),
         ListTile(
           enabled: widget.device.deviceControl.isConnected,
           title: const Text("Bluetooth Audio EQ"),
           subtitle: Text(_eqOptions[widget.plugAirDevice.btEq]),
+          leading: const Icon(Icons.bluetooth_audio),
           trailing: const Icon(Icons.keyboard_arrow_right),
           onTap: () {
             var dialog = AlertDialogs.showOptionDialog(context,
@@ -71,6 +71,7 @@ class _PlugAirSettingsState extends State<PlugAirSettings> {
         ),
         ListTile(
           enabled: widget.device.deviceControl.isConnected,
+          leading: const Icon(Icons.restart_alt),
           title: const Text("Reset Device Presets"),
           onTap: () {
             if (BLEMidiHandler.instance().connectedDevice != null) {
@@ -86,6 +87,7 @@ class _PlugAirSettingsState extends State<PlugAirSettings> {
           },
         ),
         SwitchListTile(
+            secondary: const Icon(Icons.eco),
             title: const Text("Eco Mode"),
             value: widget.device.ecoMode,
             onChanged: widget.device.deviceControl.isConnected

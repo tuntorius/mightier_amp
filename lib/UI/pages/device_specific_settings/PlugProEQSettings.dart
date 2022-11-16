@@ -105,7 +105,7 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
         },
         children: [
           const Tooltip(
-            message: "Invert phase of BT Audio.",
+            message: "Invert the phase of Bluetooth Audio.",
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Icon(MightierIcons.sinewave, size: 40),

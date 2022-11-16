@@ -222,7 +222,7 @@ class _ThickSliderState extends State<ThickSlider> {
                 Container(
                   height: height * 0.75,
                   color: widget.enabled
-                      ? TinyColor(widget.activeColor).darken(15).color
+                      ? TinyColor.fromColor(widget.activeColor).darken(15).color
                       : Colors.grey[800],
                   width: max(factor * width, 0),
                 ),

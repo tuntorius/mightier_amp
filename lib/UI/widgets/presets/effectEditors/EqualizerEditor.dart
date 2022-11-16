@@ -38,7 +38,9 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
         var param = params[i];
         Color color =
             (i == 0 && params.length > 6) ? Colors.amber : Colors.blue;
-        if (!widget.enabled) color = TinyColor(color).desaturate(80).color;
+        if (!widget.enabled) {
+          color = TinyColor.fromColor(color).desaturate(80).color;
+        }
         var slider = VerticalThickSlider(
           min: param.formatter.min.toDouble(),
           max: param.formatter.max.toDouble(),

@@ -227,7 +227,7 @@ class PresetItem extends StatelessWidget {
     bool selected = item["uuid"] == device.presetUUID;
 
     Color color = Preset.channelColors[item["channel"]];
-    if (!enabled) color = TinyColor(color).desaturate(90).color;
+    if (!enabled) color = TinyColor.fromColor(color).desaturate(90).color;
 
     int alpha = selected && !simplified ? 105 : 0;
 
@@ -236,17 +236,23 @@ class PresetItem extends StatelessWidget {
       child: ListTile(
           enabled: enabled,
           minLeadingWidth: 0,
-          leading: SizedBox(
-            height: double.infinity, //strange hack to center icon vertically
+          contentPadding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
+          leading: Container(
+            margin: const EdgeInsets.only(left: 4),
+            decoration: BoxDecoration(
+                border: Border.all(color: color, width: 1.5),
+                borderRadius: const BorderRadius.all(Radius.circular(5))),
+            width: 45,
+            height: 45,
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Icon(
+                Text(
                   NuxDeviceControl.instance()
                       .getDeviceFromId(item["product_id"])!
-                      .productIcon,
-                  size: 30,
-                  color: color,
+                      .productIconLabel,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: color),
                 ),
                 if (enabled && pVersion != devVersion)
                   Transform(

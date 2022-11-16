@@ -44,7 +44,7 @@ class NuxMighty2040BT extends NuxDevice {
   @override
   int get productVersion => 0;
   @override
-  IconData get productIcon => MightierIcons.amp_20bt;
+  String get productIconLabel => "20/40\nBT";
   @override
   List<String> get productBLENames =>
       ["NUX MIGHTY20BT MIDI", "NUX MIGHTY40BT MIDI"];

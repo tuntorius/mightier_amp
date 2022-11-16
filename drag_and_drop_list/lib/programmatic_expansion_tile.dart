@@ -221,6 +221,7 @@ class ProgrammaticExpansionTileState extends State<ProgrammaticExpansionTile>
                       turns: _iconTurns,
                       child: const Icon(Icons.expand_more),
                     ),
+                minLeadingWidth: 0,
                 title: widget.title,
                 subtitle: widget.subtitle,
                 isThreeLine: widget.isThreeLine,

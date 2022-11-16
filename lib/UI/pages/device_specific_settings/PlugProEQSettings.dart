@@ -10,6 +10,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommu
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
 import '../../../bluetooth/devices/effects/plug_pro/EQ.dart';
+import '../../mightierIcons.dart';
 
 class PlugProEQSettings extends StatefulWidget {
   const PlugProEQSettings({Key? key}) : super(key: key);
@@ -104,10 +105,10 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
         },
         children: [
           const Tooltip(
-            message: "Invert one audio channel.",
+            message: "Invert phase of BT Audio.",
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: Icon(Icons.mic_off),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
+              child: Icon(MightierIcons.sinewave, size: 40),
             ),
           ),
           Tooltip(

@@ -73,7 +73,7 @@ class NuxMightyPlugPro extends NuxDevice {
   @override
   int get productVersion => version.index;
   @override
-  IconData get productIcon => MightierIcons.amp_plugair;
+  String get productIconLabel => "PLUG\nPRO";
   @override
   List<String> get productBLENames => ["MIGHTY PLUG PRO"];
 
@@ -176,7 +176,7 @@ class NuxMightyPlugPro extends NuxDevice {
         keyName: "comp",
         nuxOrderIndex: PresetDataIndexPlugPro.Head_iCMP,
         color: Colors.lime,
-        icon: Icons.stacked_line_chart),
+        icon: MightierIcons.compressor),
     ProcessorInfo(
         shortName: "EFX",
         longName: "EFX",

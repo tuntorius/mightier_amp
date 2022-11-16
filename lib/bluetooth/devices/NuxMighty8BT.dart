@@ -30,7 +30,8 @@ class NuxMighty8BT extends NuxDevice {
   @override
   String get productNameShort => "Mighty 8 BT";
   @override
-  IconData get productIcon => MightierIcons.amp_8bt;
+  String get productIconLabel => "8 BT";
+  
   @override
   String get productStringId => "mighty_8bt";
   @override

@@ -35,8 +35,9 @@ class _DragAndDropItemTarget extends State<DragAndDropItemTarget>
             _hoveredDraggable != null
                 ? Opacity(
                     opacity: widget.parameters.itemGhostOpacity,
-                    child:
-                        widget.parameters.itemGhost ?? _hoveredDraggable!.child,
+                    child: widget.parameters.itemGhost != null
+                        ? widget.parameters.itemGhost!(_hoveredDraggable!.child)
+                        : _hoveredDraggable!.child,
                   )
                 : Container(),
             widget.child,

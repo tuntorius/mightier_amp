@@ -37,7 +37,7 @@ class DragAndDropBuilderParameters {
   final double? listDraggingWidth;
   final bool dragOnLongPress;
   final int itemSizeAnimationDuration;
-  final Widget? itemGhost;
+  final Function(Widget)? itemGhost;
   final double itemGhostOpacity;
   final Widget? itemDivider;
   final double? itemDraggingWidth;
@@ -54,6 +54,7 @@ class DragAndDropBuilderParameters {
   final bool addLastItemTargetHeightToTop;
   final DragHandle? listDragHandle;
   final DragHandle? itemDragHandle;
+  final Offset? itemDragOffset;
   final bool constrainDraggingAxis;
   final bool disableScrolling;
 
@@ -92,6 +93,7 @@ class DragAndDropBuilderParameters {
     this.addLastItemTargetHeightToTop = false,
     this.listDragHandle,
     this.itemDragHandle,
+    this.itemDragOffset,
     this.constrainDraggingAxis = true,
     this.disableScrolling = false,
   });

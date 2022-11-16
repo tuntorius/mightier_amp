@@ -145,8 +145,8 @@ class PresetItem extends StatelessWidget {
         if (preset.containsKey(pi.keyName)) {
           //special case for amp
           if (pi.keyName == "amp") {
-            var name =
-                dev.getAmpNameByIndex(preset[pi.keyName]["fx_type"], pVersion);
+            var name = dev.getAmpNameByNuxIndex(
+                preset[pi.keyName]["fx_type"], pVersion);
             widgets.insert(
                 0,
                 Padding(

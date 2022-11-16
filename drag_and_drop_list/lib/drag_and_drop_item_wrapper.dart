@@ -2,8 +2,6 @@ import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:drag_and_drop_lists/measure_size.dart';
 import 'package:flutter/material.dart';
 
-import 'drag_and_drop_list_interface.dart';
-
 class DragAndDropItemWrapper extends StatefulWidget {
   final DragAndDropItem child;
   final DragAndDropBuilderParameters? parameters;
@@ -124,7 +122,7 @@ class _DragAndDropItemWrapper extends State<DragAndDropItemWrapper>
                 : null,
             feedback: Transform.translate(
               //Tuntori - item offset
-              offset: const Offset(10, 0),
+              offset: widget.parameters!.itemDragOffset ?? Offset(0, 0),
               child: SizedBox(
                 width: widget.parameters!.itemDraggingWidth ??
                     _containerSize.width,
@@ -192,8 +190,10 @@ class _DragAndDropItemWrapper extends State<DragAndDropItemWrapper>
             _hoveredDraggable != null
                 ? Opacity(
                     opacity: widget.parameters!.itemGhostOpacity,
-                    child: widget.parameters!.itemGhost ??
-                        _hoveredDraggable!.child,
+                    child: widget.parameters!.itemGhost != null
+                        ? widget
+                            .parameters!.itemGhost!(_hoveredDraggable!.child)
+                        : _hoveredDraggable!.child,
                   )
                 : Container(),
             Listener(

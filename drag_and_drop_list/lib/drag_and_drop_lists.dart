@@ -162,7 +162,7 @@ class DragAndDropLists extends StatefulWidget {
 
   /// The widget that will be displayed at a potential drop position in a list
   /// when an item is being dragged.
-  final Widget? itemGhost;
+  final Function(Widget)? itemGhost;
 
   /// The opacity of the [itemGhost]. This must be between 0 and 1.
   final double itemGhostOpacity;
@@ -272,6 +272,9 @@ class DragAndDropLists extends StatefulWidget {
   /// or short presses
   final DragHandle? itemDragHandle;
 
+  /// Offset to shift the dragged item preview
+  final Offset? itemDragOffset;
+
   /// Constrain the dragging axis in a vertical list to only allow dragging on
   /// the vertical axis. By default this is set to true. This may be useful to
   /// disable when setting customDragTargets
@@ -330,6 +333,7 @@ class DragAndDropLists extends StatefulWidget {
     this.disableScrolling = false,
     this.listDragHandle,
     this.itemDragHandle,
+    this.itemDragOffset,
     this.constrainDraggingAxis = true,
     this.removeTopPadding = false,
     Key? key,
@@ -411,6 +415,7 @@ class DragAndDropListsState extends State<DragAndDropLists> {
       addLastItemTargetHeightToTop: widget.addLastItemTargetHeightToTop,
       listDragHandle: widget.listDragHandle,
       itemDragHandle: widget.itemDragHandle,
+      itemDragOffset: widget.itemDragOffset,
       constrainDraggingAxis: widget.constrainDraggingAxis,
       disableScrolling: widget.disableScrolling,
     );

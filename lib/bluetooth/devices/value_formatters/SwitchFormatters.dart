@@ -105,7 +105,7 @@ class ContourModeFormatter extends SwitchFormatter {
 
 class SCFModeFormatter extends SwitchFormatter {
   @override
-  String get labelTitle => "SCF";
+  String get labelTitle => "Mode:";
 
   @override
   List<String> get labelValues => ["Chorus", "P.M.", "Flanger"];

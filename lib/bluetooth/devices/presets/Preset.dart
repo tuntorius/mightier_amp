@@ -141,7 +141,9 @@ abstract class Preset {
     return PresetQRError.UnsupportedFormat;
   }
 
-  String getAmpNameByIndex(int index, int version) {
+  String getAmpNameByNuxIndex(int index, int version) {
+    var ampIndex = device.amplifierSlotIndex;
+    getEffectArrayIndexFromNuxIndex(ampIndex, ampIndex);
     return amplifierList[index].name;
   }
 

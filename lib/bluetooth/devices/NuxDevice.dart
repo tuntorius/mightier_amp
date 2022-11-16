@@ -276,8 +276,8 @@ abstract class NuxDevice extends ChangeNotifier {
   //used for QR stuff, probably will be removed
   Preset getCustomPreset(int channel);
 
-  String getAmpNameByIndex(int index, int version) {
-    return presets[0].getAmpNameByIndex(index, version);
+  String getAmpNameByNuxIndex(int index, int version) {
+    return presets[0].getAmpNameByNuxIndex(index, version);
   }
 
   void renameCabinet(int cabIndex, String name) {
@@ -510,7 +510,12 @@ abstract class NuxDevice extends ChangeNotifier {
         fx.parameters[f].value = overrideLevel;
       } else {
         if (presetVersion == productVersion) {
-          fx.parameters[f].value = effect[fx.parameters[f].handle];
+          if (effect.containsKey(fx.parameters[f].handle)) {
+            fx.parameters[f].value = effect[fx.parameters[f].handle];
+          } else {
+            debugPrint(
+                "Warning: No key ${fx.parameters[f].handle} for effect $fxTypeNuxIndex in slot $fxTypeNuxIndex");
+          }
         } else {
           //ask the effect for the proper handle
           var handle = fx.parameters[f].handle;

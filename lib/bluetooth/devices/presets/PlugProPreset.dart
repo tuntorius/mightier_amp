@@ -8,6 +8,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/liteCommunication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_pro/EmptyEffects.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 
 import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
@@ -125,16 +126,16 @@ class PlugProPreset extends Preset {
       STSinger(),
     ]);
 
+    bool showHiddenAmps = SharedPrefs().getInt(SettingsKeys.hiddenAmps, 0) != 0;
     amplifierList.addAll([
-      if (kDebugMode) Unknown0(),
       JazzClean(),
       DeluxeRvb(),
       BassMate(),
       Tweedy(),
-      if (kDebugMode) Unknown5(),
+      if (showHiddenAmps) Unknown5(),
       HiWire(),
       CaliCrunch(),
-      if (kDebugMode) Unknown8(),
+      if (showHiddenAmps) Unknown8(),
       ClassA30(),
       Plexi100(),
       Plexi45(),
@@ -144,19 +145,19 @@ class PlugProPreset extends Preset {
       FiremanHBE(),
       DualRect(),
       DIEVH4(),
-      if (kDebugMode) Unknown18(),
-      if (kDebugMode) Unknown19(),
+      if (showHiddenAmps) Unknown18(),
+      if (showHiddenAmps) Unknown19(),
       MrZ38(),
       SuperRvb(),
-      if (kDebugMode) Unknown22(),
-      if (kDebugMode) Unknown23(),
-      if (kDebugMode) Unknown24(),
-      if (kDebugMode) Unknown25(),
+      if (showHiddenAmps) Unknown22(),
+      if (showHiddenAmps) Unknown23(),
+      if (showHiddenAmps) Unknown24(),
+      if (showHiddenAmps) Unknown25(),
       AGL(),
       MLD(),
       OptimaAir(),
       Stageman(),
-      if (kDebugMode) Unknown30()
+      if (showHiddenAmps) Unknown30()
     ]);
 
     eqList.addAll([EQSixBand(), EQTenBand()]);
@@ -486,6 +487,13 @@ class PlugProPreset extends Preset {
         selectedReverb = index;
         break;
     }
+  }
+
+  @override
+  String getAmpNameByNuxIndex(int index, int version) {
+    index = getEffectArrayIndexFromNuxIndex(
+        PresetDataIndexPlugPro.Head_iAMP, index);
+    return amplifierList[index].name;
   }
 
   @override

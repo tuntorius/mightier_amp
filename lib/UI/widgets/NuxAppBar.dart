@@ -80,8 +80,11 @@ class _NuxAppBarState extends State<NuxAppBar> {
                       if (batteryPercentage.hasData) {
                         batteryValue = batteryPercentage.data;
                       }
-                      PageStorage.of(context)?.writeState(context, batteryValue,
-                          identifier: batteryKey);
+                      if (batteryValue != null) {
+                        PageStorage.of(context)?.writeState(
+                            context, batteryValue,
+                            identifier: batteryKey);
+                      }
                       return Stack(
                         alignment: Alignment.center,
                         children: [
@@ -110,9 +113,8 @@ class _NuxAppBarState extends State<NuxAppBar> {
                   builder: (context, snapshot) {
                     IconData icon = Icons.bluetooth_disabled;
                     Color color = Colors.grey;
-                    switch (snapshot.data) {
-                      case null:
-                        break;
+                    var status = BLEMidiHandler.instance().currentStatus;
+                    switch (status) {
                       case MidiSetupStatus.bluetoothOff:
                         icon = Icons.bluetooth_disabled;
                         break;

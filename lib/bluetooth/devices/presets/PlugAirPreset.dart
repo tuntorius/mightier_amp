@@ -357,7 +357,7 @@ class PlugAirPreset extends Preset {
   }
 
   @override
-  String getAmpNameByIndex(int index, int version) {
+  String getAmpNameByNuxIndex(int index, int version) {
     try {
       var ver = PlugAirVersion.values[version];
       switch (ver) {

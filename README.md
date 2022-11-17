@@ -11,12 +11,12 @@ This app aims to cover all the functionality of the original app plus many enhan
 ## Supported Amps
 
 1.Mighty Plug/Mighty Air  
-2.Mighty Plug Pro
+2.Mighty Plug Pro  
 3.Mighty 8 BT*  
 4.Mighty 20 BT*/Mighty 40 BT*  
 5.Mighty BT Lite*/AirBorne Go*/GUO AN*  
 
-\* - these amps are not tested and might not work.
+\* these amps are not tested and might not work.
 
 ## iOS Support
 I'm working on it and most of the features are ready. However I don't have any apple devices and therefore can't publish it in the App Store. If somebody is interested in helping, there is an issue about iOS [here](https://github.com/tuntorius/mightier_amp/issues/16).

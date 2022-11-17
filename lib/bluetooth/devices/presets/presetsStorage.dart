@@ -392,6 +392,8 @@ class PresetsStorage extends ChangeNotifier {
     var p = findPreset(name, category);
 
     presetData = fixPresetCompatibility(presetData);
+    presetData.remove("category");
+
     String? _name = name;
     //check if exists
     if (p != null) {
@@ -404,7 +406,6 @@ class PresetsStorage extends ChangeNotifier {
     //highlight that the preset is new
     presetData["new"] = true;
 
-    presetData.remove("category");
     //save preset
     if (_name != null) savePreset(presetData, _name, category);
   }
@@ -420,6 +421,7 @@ class PresetsStorage extends ChangeNotifier {
 
   bool _presetsEquivalent(Map<String, dynamic> p1, Map<String, dynamic> p2) {
     for (String k in p1.keys) {
+      if (k == "uuid") continue;
       if (!p2.containsKey(k)) return false;
 
       //check sub-maps

@@ -472,6 +472,8 @@ abstract class NuxDevice extends ChangeNotifier {
 
       if (newfxType != null) {
         fxTypeNuxIndex = newfxType;
+        fxIndex = devicePreset.getEffectArrayIndexFromNuxIndex(
+            nuxSlotIndex, fxTypeNuxIndex);
       } else {
         //if we don't know equivalent then disable it
         fxTypeNuxIndex = 0; //set to 0 to avoid null references

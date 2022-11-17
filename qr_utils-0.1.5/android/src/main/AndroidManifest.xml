@@ -3,6 +3,15 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!--
+    IMPORTANT PART:
+    Include all the "features" under the camera permission,
+    and mark them all as optional.
+    -->
+<uses-feature
+    android:name="android.hardware.camera"
+    android:required="false" />
+
     <application>
         <activity
             android:name=".activity.QRScannerActivity"

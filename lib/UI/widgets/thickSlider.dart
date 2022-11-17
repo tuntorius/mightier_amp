@@ -22,6 +22,7 @@ class ThickSlider extends StatefulWidget {
   final bool enabled;
   final bool handleVerticalDrag;
   final Parameter? parameter;
+  final double? maxHeight;
 
   const ThickSlider(
       {Key? key,
@@ -37,7 +38,8 @@ class ThickSlider extends StatefulWidget {
       required this.labelFormatter,
       this.skipEmitting = 3,
       this.enabled = true,
-      this.parameter})
+      this.parameter,
+      this.maxHeight})
       : super(key: key);
 
   @override
@@ -183,7 +185,7 @@ class _ThickSliderState extends State<ThickSlider> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 50),
+      constraints: BoxConstraints(maxHeight: widget.maxHeight ?? 50),
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         width = constraints.maxWidth - 1;

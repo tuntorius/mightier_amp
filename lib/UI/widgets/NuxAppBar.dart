@@ -24,7 +24,7 @@ class NuxAppBar extends StatefulWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(46);
 
   @override
   State<NuxAppBar> createState() => _NuxAppBarState();

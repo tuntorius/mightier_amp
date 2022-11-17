@@ -116,11 +116,12 @@ class _DrumEditorState extends State<DrumEditor> {
     );
   }
 
-  List<Widget> _sliders() {
+  List<Widget> _sliders(bool small) {
     return [
       ThickSlider(
         min: 0,
         max: 100,
+        maxHeight: small ? 40 : null,
         enabled: device.drumsEnabled,
         activeColor: Colors.blue,
         label: "Volume",
@@ -136,6 +137,7 @@ class _DrumEditorState extends State<DrumEditor> {
         min: device.drumsMinTempo,
         max: device.drumsMaxTempo,
         enabled: device.drumsEnabled,
+        maxHeight: small ? 40 : null,
         skipEmitting: 5,
         activeColor: Colors.blue,
         label: "Tempo",
@@ -150,12 +152,13 @@ class _DrumEditorState extends State<DrumEditor> {
     ];
   }
 
-  List<Widget> _toneSliders() {
+  List<Widget> _toneSliders(bool small) {
     var dev = device as NuxMightyPlugPro;
     return [
       ThickSlider(
         min: 0,
         max: 100,
+        maxHeight: small ? 40 : null,
         enabled: device.drumsEnabled,
         skipEmitting: 5,
         activeColor: Colors.blue,
@@ -170,6 +173,7 @@ class _DrumEditorState extends State<DrumEditor> {
       ThickSlider(
         min: 0,
         max: 100,
+        maxHeight: small ? 40 : null,
         enabled: device.drumsEnabled,
         skipEmitting: 5,
         activeColor: Colors.blue,
@@ -184,6 +188,7 @@ class _DrumEditorState extends State<DrumEditor> {
       ThickSlider(
         min: 0,
         max: 100,
+        maxHeight: small ? 40 : null,
         enabled: device.drumsEnabled,
         skipEmitting: 5,
         activeColor: Colors.blue,
@@ -200,7 +205,7 @@ class _DrumEditorState extends State<DrumEditor> {
 
   Widget _tapButton() {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 120),
+      constraints: const BoxConstraints(maxHeight: 110),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -289,6 +294,7 @@ class _DrumEditorState extends State<DrumEditor> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final bool portrait = mediaQuery.orientation == Orientation.portrait;
+    final bool smallSliders = mediaQuery.size.height < 640;
 
     _layout = _drumStyles is List<String>
         ? DrumEditorLayout.Standard
@@ -316,9 +322,10 @@ class _DrumEditorState extends State<DrumEditor> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ..._sliders(),
-                    if (_layout == DrumEditorLayout.PlugPro) ..._toneSliders(),
-                    const SizedBox(height: 10),
+                    ..._sliders(smallSliders),
+                    if (_layout == DrumEditorLayout.PlugPro)
+                      ..._toneSliders(smallSliders),
+                    const SizedBox(height: 6),
                     _tapButton()
                   ],
                 ),
@@ -341,7 +348,7 @@ class _DrumEditorState extends State<DrumEditor> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          ..._sliders(),
+                          ..._sliders(false),
                           const SizedBox(height: 10),
                           _tapButton()
                         ]),
@@ -380,7 +387,7 @@ class _DrumEditorState extends State<DrumEditor> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            ..._sliders(),
+                            ..._sliders(false),
                             const SizedBox(height: 10),
                             _tapButton(),
                           ])),
@@ -394,7 +401,7 @@ class _DrumEditorState extends State<DrumEditor> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _createScrollPicker(),
-                          ..._toneSliders(),
+                          ..._toneSliders(false),
                           // Container(
                           //   height: 120,
                           //   color: Colors.orange,

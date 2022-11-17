@@ -256,7 +256,7 @@ class PresetItem extends StatelessWidget {
                 ),
                 if (enabled && pVersion != devVersion)
                   Transform(
-                    transform: Matrix4.translationValues(10, 10, 0),
+                    transform: Matrix4.translationValues(18, 15, 0),
                     child: const Icon(
                       Icons.warning,
                       color: Colors.amber,

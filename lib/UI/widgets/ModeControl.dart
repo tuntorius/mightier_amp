@@ -59,13 +59,13 @@ class ModeControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 50),
+        constraints: const BoxConstraints(maxHeight: 45),
         child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
           //width = constraints.maxWidth - 1;
           var color = enabled
               ? effectColor
-              : TinyColor(effectColor).desaturate(80).color;
+              : TinyColor.fromColor(effectColor).desaturate(80).color;
           var height = constraints.maxHeight;
 
           var elements = getElementsCount();

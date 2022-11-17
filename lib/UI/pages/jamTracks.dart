@@ -42,11 +42,6 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
     cntrl.dispose();
   }
 
-  void checkPermission() async {
-    var status = await Permission.camera.status;
-    debugPrint("Camera $status");
-  }
-
   //try to get best version of tags (mp3 only)
   //if not - use filename but strip the extension
   String getProperTags(Map? tags, String filename) {

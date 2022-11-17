@@ -6,7 +6,7 @@ enum EditorLayoutMode { scroll, expand }
 
 LayoutMode getLayoutMode(MediaQueryData mediaQuery) {
   final screenWidth = mediaQuery.size.width;
-  if (screenWidth >= 700) return LayoutMode.drawer;
+  if (screenWidth >= 500) return LayoutMode.drawer;
   return LayoutMode.navBar;
 }
 

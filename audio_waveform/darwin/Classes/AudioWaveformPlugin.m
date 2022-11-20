@@ -1,8 +1,11 @@
 #import "AudioWaveformPlugin.h"
 
 @implementation AudioWaveformPlugin {
+    AudioStreamBasicDescription fileFormat;
     FlutterMethodChannel *_channel;
-    ExtAudioFileRef audioFileRef = NULL;
+    ExtAudioFileRef audioFileRef;
+    SInt64 expectedSampleCount;
+    OSStatus status;
     int mSampleRate;
     int mDuration;
 }
@@ -29,7 +32,7 @@
         NSString *audioInPath = (NSString *)request[@"path"];
         //open and prepare the audio here
         //store duration and sample rate
-        OSStatus status;
+        
         UInt32 size;
         CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (CFStringRef)audioInPath, kCFURLPOSIXPathStyle, false);
         status = ExtAudioFileOpenURL(url, &audioFileRef);
@@ -41,7 +44,6 @@
             return;
         }
 
-        AudioStreamBasicDescription fileFormat;
         size = sizeof(fileFormat);
         status = ExtAudioFileGetProperty(audioFileRef, kExtAudioFileProperty_FileDataFormat, &size, &fileFormat);
         if (status != noErr) {
@@ -52,7 +54,7 @@
             return;
         }
 
-        SInt64 expectedSampleCount = 0;
+        expectedSampleCount = 0;
         size = sizeof(expectedSampleCount);
         status = ExtAudioFileGetProperty(audioFileRef, kExtAudioFileProperty_FileLengthFrames, &size, &expectedSampleCount);
         if (status != noErr) {
@@ -75,10 +77,10 @@
         
     }
     else if ([@"duration" isEqualToString:call.method]) {
-        result();
+        result([NSNumber numberWithInteger:mDuration]);
     }
     else if ([@"sampleRate" isEqualToString:call.method]) {
-        result(mSampleRate);
+        result([NSNumber numberWithInteger:mSampleRate]);
     }
 
     if ([@"extract" isEqualToString:call.method]) {
@@ -152,7 +154,7 @@
             clientFormat.mFramesPerPacket = 1;
             clientFormat.mBytesPerPacket = clientFormat.mFramesPerPacket * clientFormat.mBytesPerFrame;
 
-            status = ExtAudioFileSetProperty(audioFileRef, kExtAudioFileProperty_ClientDataFormat, sizeof(AudioStreamBasicDescription), &clientFormat);
+            status = ExtAudioFileSetProperty(self->audioFileRef, kExtAudioFileProperty_ClientDataFormat, sizeof(AudioStreamBasicDescription), &clientFormat);
             if (status != noErr) {
                 NSLog(@"ExtAudioFileSetProperty error: %i", status);
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -184,7 +186,7 @@
             int progress = 0;
 
             while (frameCount > 0) {
-                status = ExtAudioFileRead(audioFileRef, &frameCount, &convertedData);
+                status = ExtAudioFileRead(self->audioFileRef, &frameCount, &convertedData);
                 if (status != noErr) {
                     NSLog(@"ExtAudioFileRead error: %i", status);
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -221,7 +223,7 @@
                                     //each single value separately
                                     //NSLog(@"Progress: %d percent", progress);
                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                        [_channel invokeMethod:@"onProgress" arguments:@(progress)];
+                                        [self->_channel invokeMethod:@"onProgress" arguments:@(progress)];
                                     });
                                 }
                                 //NSLog(@"pixel[%d] %d: %d\t%d", scaledSampleIdx - 2, sampleIdx, minSample, maxSample);
@@ -246,7 +248,7 @@
             [waveData writeToFile:waveOutPath atomically:NO];
             //NSLog(@"Total scaled samples: %d", scaledSampleIdx);
 
-            status = ExtAudioFileDispose(audioFileRef);
+            status = ExtAudioFileDispose(self->audioFileRef);
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 result(nil);

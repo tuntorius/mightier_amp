@@ -296,7 +296,7 @@ public class SwiftFlutterMidiCommandPlugin: NSObject, CBCentralManagerDelegate, 
 //            print("src \(source) \(SwiftFlutterMidiCommandPlugin.getMIDIProperty(kMIDIPropertyName, fromObject: source))")
             
             var entity : MIDIEntityRef = 0
-            var status = MIDIEndpointGetEntity(source, &entity)
+	            var status = MIDIEndpointGetEntity(source, &entity)
             let entityName = SwiftFlutterMidiCommandPlugin.getMIDIProperty(kMIDIPropertyName, fromObject: entity)
 //            print("entity \(entity) status \(status) \(entityName)")
             

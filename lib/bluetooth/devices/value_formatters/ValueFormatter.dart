@@ -2,7 +2,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/Frequency
 import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/SwitchFormatters.dart';
 
 import 'TempoFormatter.dart';
-import 'decibelFormatter.dart';
+import 'DecibelFormatter.dart';
 import 'PercentageFormatter.dart';
 
 enum InputType { SliderInput, SwitchInput }

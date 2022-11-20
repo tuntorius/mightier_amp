@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -190,10 +191,12 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     {
       switch (error) {
         case BluetoothError.unavailable:
-          AlertDialogs.showInfoDialog(context,
-              title: "Warning!",
-              description: "Your device does not support bluetooth!",
-              confirmButton: "OK");
+          if (!Platform.isIOS) {
+            AlertDialogs.showInfoDialog(context,
+                title: "Warning!",
+                description: "Your device does not support bluetooth!",
+                confirmButton: "OK");
+          }
           break;
         case BluetoothError.permissionDenied:
           AlertDialogs.showLocationPrompt(context, false, null);

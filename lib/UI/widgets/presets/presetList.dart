@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drag_and_drop_lists/drag_and_drop_list_interface.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
@@ -96,19 +98,20 @@ class _PresetListState extends State<PresetList>
         ],
       ),
     ),
-    PopupMenuItem(
-      value: CategoryMenuActions.Export,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.save_alt,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Export Category"),
-        ],
-      ),
-    )
+    if (!Platform.isIOS)
+      PopupMenuItem(
+        value: CategoryMenuActions.Export,
+        child: Row(
+          children: <Widget>[
+            Icon(
+              Icons.save_alt,
+              color: AppThemeConfig.contextMenuIconColor,
+            ),
+            const SizedBox(width: 5),
+            const Text("Export Category"),
+          ],
+        ),
+      )
   ];
 
   NuxDevice get device => NuxDeviceControl.instance().device;
@@ -152,19 +155,21 @@ class _PresetListState extends State<PresetList>
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             contentPadding: const EdgeInsets.only(left: 16, right: 12),
             title: const Text("Presets"),
-            trailing: PopupMenuButton(
-              child: const Padding(
-                padding:
-                    EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
-                child: Icon(Icons.more_vert, color: Colors.grey),
-              ),
-              itemBuilder: (context) {
-                return presetsMenu;
-              },
-              onSelected: (pos) {
-                mainMenuActions(pos);
-              },
-            ),
+            trailing: Platform.isIOS
+                ? null
+                : PopupMenuButton(
+                    child: const Padding(
+                      padding: EdgeInsets.only(
+                          left: 12.0, right: 4, bottom: 10, top: 10),
+                      child: Icon(Icons.more_vert, color: Colors.grey),
+                    ),
+                    itemBuilder: (context) {
+                      return presetsMenu;
+                    },
+                    onSelected: (pos) {
+                      mainMenuActions(pos);
+                    },
+                  ),
           );
 
     return SafeArea(

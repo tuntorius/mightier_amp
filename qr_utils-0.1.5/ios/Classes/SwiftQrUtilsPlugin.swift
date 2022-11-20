@@ -3,9 +3,8 @@ import UIKit
 import AVFoundation
 import MobileCoreServices
 
-public class SwiftQrUtilsPlugin: NSObject, FlutterPlugin {
+public class SwiftQrUtilsPlugin: NSObject, FlutterPlugin, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 fileprivate var result:FlutterResult?
-fileprivate var currentVideoPath = ""
 fileprivate var qrcodeImage: CIImage!
     
   fileprivate  var captureSession = AVCaptureSession()
@@ -26,15 +25,26 @@ fileprivate var qrcodeImage: CIImage!
                                       AVMetadataObject.ObjectType.dataMatrix,
                                       AVMetadataObject.ObjectType.interleaved2of5,
                                       AVMetadataObject.ObjectType.qr]
+
+    var controller: FlutterViewController!
+
+    init(cont: FlutterViewController, messenger: FlutterBinaryMessenger) {
+          self.controller = cont;
+          super.init();
+      }
     
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "com.aeologic.adhoc.qr_utils", binaryMessenger: registrar.messenger())
-    let instance = SwiftQrUtilsPlugin()
+
+    let app =  UIApplication.shared
+    let controller : FlutterViewController = app.delegate!.window!!.rootViewController as! 	FlutterViewController;
+      
+      let instance = SwiftQrUtilsPlugin.init(cont: controller, messenger: registrar.messenger())
+      
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    //result("iOS " + UIDevice.current.systemVersion)
     
     self.result = result
             if (call.method == "scanQR") {
@@ -43,18 +53,53 @@ fileprivate var qrcodeImage: CIImage!
                         self.openQRCamera()
                     }
             }
+            else if (call.method == "scanImage") {
+                self.openImagePicker()
+            }
             else if (call.method == "generateQR") {
-                print("generateQR")
                 let tempDataDict = call.arguments as? Dictionary<String, Any>
                 let content = tempDataDict!["content"] as! String
-                print(content)
                 self.generateQR(text: content)
-                //self.generateQR(text: call.argument["content"] as! String)
-                //print("captureImage")
-    
             }
   }
 
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as? UIImage else { return }
+
+        controller!.dismiss(animated: true)
+        
+        if let features = detectQRCode(image), !features.isEmpty{
+            for case let row as CIQRCodeFeature in features{
+                print(row.messageString ?? "scan error")
+                self.result!(row.messageString ?? "")
+                return
+            }
+        }
+        self.result!(nil)
+    }
+    
+    func detectQRCode(_ image: UIImage?) -> [CIFeature]? {
+        if let image = image, let ciImage = CIImage.init(image: image){
+            var options: [String: Any]
+            let context = CIContext()
+            options = [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+            let qrDetector = CIDetector(ofType: CIDetectorTypeQRCode, context: context, options: options)
+            if ciImage.properties.keys.contains((kCGImagePropertyOrientation as String)){
+                options = [CIDetectorImageOrientation: ciImage.properties[(kCGImagePropertyOrientation as String)] ?? 1]
+            } else {
+                options = [CIDetectorImageOrientation: 1]
+            }
+            let features = qrDetector?.features(in: ciImage, options: options)
+            return features
+
+        }
+        return nil
+    }
+
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
 }
 
 extension SwiftQrUtilsPlugin {
@@ -79,7 +124,6 @@ extension SwiftQrUtilsPlugin {
                 captureSession.addInput(input)
             
             // Set the input device on the capture session.
-            
             
             // Initialize a AVCaptureMetadataOutput object and set it as the output device to the capture session.
             let captureMetadataOutput = AVCaptureMetadataOutput()
@@ -118,7 +162,15 @@ extension SwiftQrUtilsPlugin {
     
     }
     
-    
+    func openImagePicker() {
+        let pickerController = UIImagePickerController()
+        pickerController.delegate = self
+        pickerController.allowsEditing = false
+        pickerController.mediaTypes = ["public.image"]
+        pickerController.sourceType = .photoLibrary
+        controller!.present(pickerController, animated: true)
+    }
+
     func generateQR(text:String){
         if qrcodeImage == nil {
             if text == "" {
@@ -152,8 +204,6 @@ extension SwiftQrUtilsPlugin {
         let image:UIImage = UIImage.init(cgImage: cgImage)
         return image
     }
-    
-    
 }
 
 extension SwiftQrUtilsPlugin: AVCaptureMetadataOutputObjectsDelegate {
@@ -177,13 +227,7 @@ extension SwiftQrUtilsPlugin: AVCaptureMetadataOutputObjectsDelegate {
                 videoPreviewLayer?.removeFromSuperlayer()
                 captureSession = AVCaptureSession()
                 self.captureSession.stopRunning()
-                
-              
             }
         }
     }
-    
 }
-
-
-

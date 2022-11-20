@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 
@@ -102,23 +104,24 @@ class PresetItem extends StatelessWidget {
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          const Text("Export QR Code"),
+          const Text("Share as QR Code"),
         ],
       ),
     ),
-    PopupMenuItem(
-      value: PresetItemActions.Export,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.save_alt,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Export Preset"),
-        ],
-      ),
-    )
+    if (!Platform.isIOS)
+      PopupMenuItem(
+        value: PresetItemActions.Export,
+        child: Row(
+          children: <Widget>[
+            Icon(
+              Icons.save_alt,
+              color: AppThemeConfig.contextMenuIconColor,
+            ),
+            const SizedBox(width: 5),
+            const Text("Export Preset"),
+          ],
+        ),
+      )
   ];
 
   const PresetItem(

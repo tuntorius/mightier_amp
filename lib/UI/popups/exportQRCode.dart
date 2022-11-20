@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/platform/fileSaver.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,7 +19,7 @@ class QRExportDialog {
   Widget buildDialog(BuildContext context) {
     ScreenshotController screenshotController = ScreenshotController();
     return AlertDialog(
-        title: const Text("Export QR Code"),
+        title: const Text("Share QR Code"),
         insetPadding: EdgeInsets.zero,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
@@ -68,9 +71,14 @@ class QRExportDialog {
                   ),
                   ElevatedButton.icon(
                       onPressed: () async {
-                        final storageDirectory =
-                            await getExternalStorageDirectory();
-
+                        Directory? storageDirectory;
+                        if (Platform.isAndroid) {
+                          storageDirectory =
+                              await getExternalStorageDirectory();
+                        } else if (Platform.isIOS) {
+                          storageDirectory =
+                              await getApplicationDocumentsDirectory();
+                        }
                         var tracksPath =
                             path.join(storageDirectory?.path ?? "", "");
 

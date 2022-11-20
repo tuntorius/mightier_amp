@@ -23,9 +23,14 @@ class QrUtils {
     return qrContent;
   }
 
-  static Future<String?> scanImage(List<int> data) async {
+  static Future<String?> scanImageFromData(List<int> data) async {
     final String? qrContent =
         await _channel.invokeMethod('scanImage', {"data": data});
+    return qrContent;
+  }
+
+  static Future<String?> scanImage() async {
+    final String? qrContent = await _channel.invokeMethod('scanImage');
     return qrContent;
   }
 

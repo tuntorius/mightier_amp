@@ -2,6 +2,8 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 //
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/popups/exportQRCode.dart';
@@ -159,13 +161,22 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         }
         break;
       case 2:
-        openFile("image/*").then((value) async {
-          final content = await QrUtils.scanImage(value);
+        if (Platform.isAndroid) {
+          openFile("image/*").then((value) async {
+            final content = await QrUtils.scanImageFromData(value);
+            if (content != null) {
+              setupFromQRData(content);
+              setState(() {});
+            }
+          });
+        } else if (Platform.isIOS) {
+          final content = await QrUtils.scanImage();
+          print(content);
           if (content != null) {
             setupFromQRData(content);
             setState(() {});
           }
-        });
+        }
         break;
       case 3:
         var qr = widget.device.channelToQR(widget.device.selectedChannel);

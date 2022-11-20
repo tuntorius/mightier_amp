@@ -24,50 +24,17 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if(call.method == "pick_audio"){
-            if (_flutterResult != nil){
-                // Return an error
-                result(nil)
-            }
             
             _flutterResult = result
             openAudioPicker(multiple:false)
         }
         if(call.method == "pick_audio_multiple") {
-            if (_flutterResult != nil){
-                // Return an error
-                result(nil)
-            }
 
             _flutterResult = result
             openAudioPicker(multiple:true)
         }
     }
-    
-    func export(_ assetURL: URL, completionHandler: @escaping (_ fileURL: URL?, _ error: Error?) -> ()) {
-        let asset = AVURLAsset(url: assetURL)
-        
-        guard let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetAppleM4A) else {
-            completionHandler(nil, ExportError.unableToCreateExporter)
-            return
-        }
-        
-        let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent(NSUUID().uuidString)
-            .appendingPathExtension("m4a")
-        
-        exporter.outputURL = fileURL
-        exporter.outputFileType = AVFileType(rawValue: "com.apple.m4a-audio")
-        
-        exporter.exportAsynchronously {
-            if exporter.status == .completed {
-                completionHandler(fileURL, nil)
-            } else {
-                completionHandler(nil, exporter.error)
-            }
-        }
-        
-    }
-    
+
     enum ExportError: Error {
         case unableToCreateExporter
     }
@@ -76,35 +43,19 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
         mediaPicker.dismiss(animated: true, completion: nil)
 
         let count = mediaItemCollection.count;
-
         if (count == 1) {
             let mediaItem = mediaItemCollection.items.first
-                    
             if (mediaItem?.assetURL != nil) {
-                if let assetURL = mediaItem?.assetURL {
-                    export(assetURL) { fileURL, error in
-                        guard let fileURL = fileURL, error == nil else {
-                            print("export failed: \(String(describing: error))")
-                            return
-                        }
-                                            
-                        if let result = self._flutterResult {
-                            print("\(fileURL.path)")
-                            result(fileURL.path)
-                        } else {
-                            // Return an error
-                            self._flutterResult?(nil)
-                        }
-                        
-                    }
-                }
-            } else {
-                // Return an error
-                self._flutterResult?(nil)
+                self._flutterResult?(mediaItem?.assetURL?.absoluteString)
             }
         }
         else {
-            //TODO
+            var pathList:[String] = []
+
+            for (index, item) in mediaItemCollection.items.enumerated() {
+                pathList.append(mediaItemCollection.items[index].assetURL?.absoluteString ?? "")
+            }
+            self._flutterResult?(pathList)
         }
         
     }

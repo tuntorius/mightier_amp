@@ -17,6 +17,7 @@ import 'online_sources/onlineTrack.dart';
 import 'trackdata/trackData.dart';
 import 'widgets/online_source/online_source.dart';
 import 'widgets/online_source/search_screen.dart';
+import 'dart:io';
 
 class TracksPage extends StatefulWidget {
   final bool selectorOnly;
@@ -269,7 +270,8 @@ class _TracksPageState extends State<TracksPage>
     for (int i = 0; i < path.length; i++) {
       SongInfo? libSong;
 
-      if (path[i].contains("com.android.providers.media")) {
+      if (Platform.isAndroid &&
+          path[i].contains("com.android.providers.media")) {
         var spl = path[i].split("%3A");
         if (spl.length < 2) continue;
         var id = path[i].split("%3A")[1];
@@ -292,18 +294,22 @@ class _TracksPageState extends State<TracksPage>
       }
 
       if (libSong != null) {
-        var name = libSong.artist != "<unknown>"
-            ? "${libSong.artist} - ${libSong.title}"
-            : libSong.title;
+        String name =
+            libSong.artist != "<unknown>" || libSong.artist.trim().isEmpty
+                ? "${libSong.artist} - ${libSong.title}"
+                : libSong.title;
 
         TrackData().addTrack(libSong.uri, name, false);
       }
+
       //clear filter and scroll to bottom
       searchCtrl.text = "";
       setState(() {});
     }
-    TrackData().saveTracks();
-    _scollToNewSongs();
+    if (path.isNotEmpty) {
+      TrackData().saveTracks();
+      _scollToNewSongs();
+    }
   }
 
   void addFromMediaLibrary(BuildContext context) {
@@ -498,21 +504,26 @@ class _TracksPageState extends State<TracksPage>
         titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
         onPress: () {
           _animationController.reverse();
-          addFromMediaLibrary(context);
+          if (Platform.isIOS) {
+            addFromFile();
+          } else {
+            addFromMediaLibrary(context);
+          }
         },
       ),
       //Floating action menu item
-      Bubble(
-        title: "File Browser",
-        iconColor: Colors.white,
-        bubbleColor: Colors.blue,
-        icon: Icons.folder,
-        titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-        onPress: () {
-          _animationController.reverse();
-          addFromFile();
-        },
-      ),
+      if (!Platform.isIOS)
+        Bubble(
+          title: "File Browser",
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          icon: Icons.folder,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          onPress: () {
+            _animationController.reverse();
+            addFromFile();
+          },
+        ),
     ];
   }
 }

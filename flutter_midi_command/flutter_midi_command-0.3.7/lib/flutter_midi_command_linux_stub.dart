@@ -1,0 +1,3 @@
+import 'package:flutter_midi_command_platform_interface/flutter_midi_command_platform_interface.dart';
+
+class FlutterMidiCommandLinux extends MidiCommandPlatform {}

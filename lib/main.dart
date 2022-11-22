@@ -2,7 +2,6 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,8 +31,10 @@ import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
 
 //recreate this file with your own api keys
+import 'bluetooth/ble_controllers/BLEController.dart';
 import 'bluetooth/devices/value_formatters/ValueFormatter.dart';
 import 'configKeys.dart';
+import 'platform/platformUtils.dart';
 
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -50,8 +51,7 @@ void main() {
       DebugConsole.print("Flutter error: ${details.toString()}");
 
       //update diagnostics with json preset
-      NuxDeviceControl.instance()
-          .updateDiagnosticsData(includeJsonPreset: true);
+      NuxDeviceControl.instance().updateDiagnosticsData(includeJsonPreset: true);
 
       // Send report
       Sentry.captureException(
@@ -80,8 +80,7 @@ void main() {
       DebugConsole.print(stackTrace);
 
       //update diagnostics with json preset
-      NuxDeviceControl.instance()
-          .updateDiagnosticsData(includeJsonPreset: true);
+      NuxDeviceControl.instance().updateDiagnosticsData(includeJsonPreset: true);
 
       await Sentry.captureException(
         error,
@@ -148,8 +147,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   @override
   void initState() {
     if (!AppThemeConfig.allowRotation) {
-      SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     } else {
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
@@ -178,34 +176,28 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       });
     });
 
-    NuxDeviceControl.instance()
-        .connectStatus
-        .stream
-        .listen(connectionStateListener);
+    NuxDeviceControl.instance().connectStatus.stream.listen(connectionStateListener);
     NuxDeviceControl.instance().addListener(onDeviceChanged);
 
     BLEMidiHandler.instance().initBle(bleErrorHandler);
   }
 
-  void bleErrorHandler(BluetoothError error, dynamic data) {
+  void bleErrorHandler(BleError error, dynamic data) {
     {
       switch (error) {
-        case BluetoothError.unavailable:
-          if (!Platform.isIOS) {
+        case BleError.unavailable:
+          if (!PlatformUtils.isIOS) {
             AlertDialogs.showInfoDialog(context,
-                title: "Warning!",
-                description: "Your device does not support bluetooth!",
-                confirmButton: "OK");
+                title: "Warning!", description: "Your device does not support bluetooth!", confirmButton: "OK");
           }
           break;
-        case BluetoothError.permissionDenied:
+        case BleError.permissionDenied:
           AlertDialogs.showLocationPrompt(context, false, null);
           break;
-        case BluetoothError.locationServiceOff:
+        case BleError.locationServiceOff:
           AlertDialogs.showInfoDialog(context,
               title: "Location service is disabled!",
-              description:
-                  "Please, enable location service. It is required for Bluetooth connection to work.",
+              description: "Please, enable location service. It is required for Bluetooth connection to work.",
               confirmButton: "OK");
           break;
       }
@@ -252,8 +244,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (!connectionFailed)
-                            const CircularProgressIndicator(),
+                          if (!connectionFailed) const CircularProgressIndicator(),
                           if (connectionFailed)
                             const Icon(
                               Icons.error,
@@ -262,9 +253,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                           const SizedBox(
                             width: 8,
                           ),
-                          Text(connectionFailed
-                              ? "Connection Failed!"
-                              : "Connecting"),
+                          Text(connectionFailed ? "Connection Failed!" : "Connecting"),
                         ],
                       ),
                     ),
@@ -330,20 +319,17 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     final currentVolume = device.fakeMasterVolume
         ? NuxDeviceControl.instance().masterVolume
         : device.presets[device.selectedChannel].volume;
-    final ValueFormatter volFormatter = device.fakeMasterVolume
-        ? ValueFormatters.percentage
-        : device.decibelFormatter!;
+    final ValueFormatter volFormatter = device.fakeMasterVolume ? ValueFormatters.percentage : device.decibelFormatter!;
 
     //WARNING: Workaround for a flutter bug - if the app is started with screen off,
-    //one of the widgets throwns an exception and the app scaffold is empty
+    //one of the widgets throws an exception and the app scaffold is empty
     if (screenWidth < 10) return const SizedBox();
     return PageStorage(
       bucket: bucketGlobal,
       child: FocusScope(
         autofocus: true,
         onKey: (node, event) {
-          if (event.runtimeType.toString() == 'RawKeyDownEvent' &&
-              event.logicalKey.keyId != 0x100001005) {
+          if (event.runtimeType.toString() == 'RawKeyDownEvent' && event.logicalKey.keyId != 0x100001005) {
             MidiControllerManager().onHIDData(event);
           }
           return KeyEventResult.skipRemainingHandlers;

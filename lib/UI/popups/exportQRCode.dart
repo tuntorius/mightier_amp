@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/platform/fileSaver.dart';
@@ -9,6 +8,7 @@ import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 
 import '../../bluetooth/devices/NuxDevice.dart';
+import '../../platform/platformUtils.dart';
 
 class QRExportDialog {
   final Image qrImage;
@@ -21,8 +21,7 @@ class QRExportDialog {
     return AlertDialog(
         title: const Text("Share QR Code"),
         insetPadding: EdgeInsets.zero,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         content: FittedBox(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -38,14 +37,10 @@ class QRExportDialog {
                       children: [
                         Text(
                           device.getProductNameVersion(device.productVersion),
-                          style: const TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                         qrImage,
-                        Text(presetName,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold))
+                        Text(presetName, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold))
                       ],
                     ),
                   ),
@@ -72,23 +67,18 @@ class QRExportDialog {
                   ElevatedButton.icon(
                       onPressed: () async {
                         Directory? storageDirectory;
-                        if (Platform.isAndroid) {
-                          storageDirectory =
-                              await getExternalStorageDirectory();
-                        } else if (Platform.isIOS) {
-                          storageDirectory =
-                              await getApplicationDocumentsDirectory();
+                        if (PlatformUtils.isAndroid) {
+                          storageDirectory = await getExternalStorageDirectory();
+                        } else if (PlatformUtils.isIOS) {
+                          storageDirectory = await getApplicationDocumentsDirectory();
                         }
-                        var tracksPath =
-                            path.join(storageDirectory?.path ?? "", "");
+                        var tracksPath = path.join(storageDirectory?.path ?? "", "");
 
                         //var path = '$directory';
 
-                        await screenshotController.captureAndSave(tracksPath,
-                            fileName: "preset.png");
+                        await screenshotController.captureAndSave(tracksPath, fileName: "preset.png");
 
-                        Share.shareFiles(['$tracksPath/preset.png'],
-                            text: 'QR Code');
+                        Share.shareFiles(['$tracksPath/preset.png'], text: 'QR Code');
                       },
                       icon: const Icon(Icons.share),
                       label: const Text("Share"))

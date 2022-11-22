@@ -10,6 +10,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
+import '../../platform/platformUtils.dart';
+
 class TrackData {
   static final TrackData _storage = TrackData._();
   static const tracksFile = "tracks.json";
@@ -48,11 +50,7 @@ class TrackData {
   }
 
   _getDirectory() async {
-    if (Platform.isAndroid) {
-      storageDirectory = await getExternalStorageDirectory();
-    } else if (Platform.isIOS) {
-      storageDirectory = await getApplicationDocumentsDirectory();
-    }
+    storageDirectory = await PlatformUtils.getAppDataDirectory();
     tracksPath = path.join(storageDirectory?.path ?? "", tracksFile);
     setlistsPath = path.join(storageDirectory?.path ?? "", setlistsFile);
     _tracksFile = File(tracksPath);

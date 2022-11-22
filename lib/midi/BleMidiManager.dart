@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 
+import '../bluetooth/ble_controllers/BLEController.dart';
 import 'MidiControllerManager.dart';
 import 'controllers/BleMidiController.dart';
 
@@ -36,8 +37,7 @@ class BleMidiManager extends ChangeNotifier {
       if (!controllers[i].connected) controllers.removeAt(i);
     }
 
-    _bleScanSub =
-        BLEMidiHandler.instance().scanStatus.listen(_scanStatusListener);
+    _bleScanSub = BLEMidiHandler.instance().isScanningStream.listen(_scanStatusListener);
     BLEMidiHandler.instance().startScanning(true);
   }
 

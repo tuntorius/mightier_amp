@@ -2,20 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import 'package:mighty_plug_manager/midi/UsbMidiManager.dart';
 import 'package:mighty_plug_manager/midi/controllers/BleMidiController.dart';
 import 'package:mighty_plug_manager/midi/controllers/HidController.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
+import '../bluetooth/ble_controllers/BLEController.dart';
+import '../platform/platformUtils.dart';
 import 'BleMidiManager.dart';
 import 'ControllerConstants.dart';
 import 'controllers/MidiController.dart';
 
-typedef MidiDataOverride = void Function(
-    int code, int? sliderValue, String name);
+typedef MidiDataOverride = void Function(int code, int? sliderValue, String name);
 
 class MidiControllerManager extends ChangeNotifier {
   static final MidiControllerManager _controller = MidiControllerManager._();
@@ -52,12 +51,10 @@ class MidiControllerManager extends ChangeNotifier {
     switch (statusValue) {
       case MidiSetupStatus.deviceFound:
         // check if this is valid nux device
-        for (var dev in BLEMidiHandler.instance().nuxDevices) {
-          if (dev.device.type != BluetoothDeviceType.classic) {
-            //don't autoconnect on manual scan
-            if (!BLEMidiHandler.instance().manualScan) {
-              //_midiHandler.connectToDevice(dev.device);
-            }
+        for (var dev in BLEMidiHandler.instance().controllerDevices) {
+          //don't autoconnect on manual scan
+          if (!BLEMidiHandler.instance().manualScan) {
+            //_midiHandler.connectToDevice(dev.device);
           }
         }
         break;
@@ -144,8 +141,7 @@ class MidiControllerManager extends ChangeNotifier {
             if (data.length - i < 3) break;
             code = data[i] << 16 | data[i + 1] << 8 | data[i + 2];
             value = data[i + 2];
-            name =
-                "CC ${data[i + 1].toRadixString(16)} ${data[i + 2].toRadixString(16)}";
+            name = "CC ${data[i + 1].toRadixString(16)} ${data[i + 2].toRadixString(16)}";
             consumed = true;
             break;
           case MidiConstants.ProgramChange:
@@ -179,12 +175,10 @@ class MidiControllerManager extends ChangeNotifier {
   }
 
   onHIDData(RawKeyEvent event) {
-    _onControlMessage(_hidController, event.physicalKey.usbHidUsage, null,
-        event.logicalKey.keyLabel);
+    _onControlMessage(_hidController, event.physicalKey.usbHidUsage, null, event.logicalKey.keyLabel);
   }
 
-  _onControlMessage(
-      MidiController ctrl, int code, int? sliderValue, String name) {
+  _onControlMessage(MidiController ctrl, int code, int? sliderValue, String name) {
     //do whatever you do
     if (dataOverride != null) {
       dataOverride!.call(code, sliderValue, name);
@@ -233,11 +227,7 @@ class MidiControllerManager extends ChangeNotifier {
   }
 
   _getDirectory() async {
-    if (Platform.isAndroid) {
-      storageDirectory = await getExternalStorageDirectory();
-    } else if (Platform.isIOS) {
-      storageDirectory = await getApplicationDocumentsDirectory();
-    }
+    storageDirectory = await PlatformUtils.getAppDataDirectory();
     filePath = path.join(storageDirectory?.path ?? "", controllersFile);
     _controllersFile = File(filePath);
   }

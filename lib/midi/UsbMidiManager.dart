@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/midi/controllers/UsbMidiController.dart';
 
+import '../platform/platformUtils.dart';
 import 'controllers/MidiController.dart';
 
 class UsbMidiManager {
@@ -25,11 +24,11 @@ class UsbMidiManager {
   }
 
   _init() async {
-    if (Platform.isAndroid) {
+    if (PlatformUtils.isAndroid) {
       var deviceInfoPlugin = DeviceInfoPlugin();
       final androidInfo = await deviceInfoPlugin.androidInfo;
       usbMidiSupported = (androidInfo.version.sdkInt ?? 0) >= 23;
-    } else if (Platform.isIOS) {
+    } else if (PlatformUtils.isIOS) {
       //TODO: Check if all ios versions support midi
       usbMidiSupported = true;
     }

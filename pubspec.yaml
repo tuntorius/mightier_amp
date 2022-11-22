@@ -75,6 +75,7 @@ dependencies:
   screenshot: ^1.2.3
   share_plus: ^4.0.4
   convert: ^3.0.1
+  flutter_web_bluetooth: ^0.0.9
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

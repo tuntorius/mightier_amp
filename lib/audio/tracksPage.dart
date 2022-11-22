@@ -9,6 +9,7 @@ import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/UI/widgets/searchTextField.dart';
 import 'package:mighty_plug_manager/audio/widgets/media_library/media_browse.dart';
 import 'package:path/path.dart';
+import '../platform/platformUtils.dart';
 import '../platform/simpleSharedPrefs.dart';
 import 'audioEditor.dart';
 import 'models/jamTrack.dart';
@@ -17,7 +18,6 @@ import 'online_sources/onlineTrack.dart';
 import 'trackdata/trackData.dart';
 import 'widgets/online_source/online_source.dart';
 import 'widgets/online_source/search_screen.dart';
-import 'dart:io';
 
 class TracksPage extends StatefulWidget {
   final bool selectorOnly;
@@ -270,7 +270,7 @@ class _TracksPageState extends State<TracksPage>
     for (int i = 0; i < path.length; i++) {
       SongInfo? libSong;
 
-      if (Platform.isAndroid &&
+      if (PlatformUtils.isAndroid &&
           path[i].contains("com.android.providers.media")) {
         var spl = path[i].split("%3A");
         if (spl.length < 2) continue;
@@ -504,7 +504,7 @@ class _TracksPageState extends State<TracksPage>
         titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
         onPress: () {
           _animationController.reverse();
-          if (Platform.isIOS) {
+          if (PlatformUtils.isIOS) {
             addFromFile();
           } else {
             addFromMediaLibrary(context);
@@ -512,7 +512,7 @@ class _TracksPageState extends State<TracksPage>
         },
       ),
       //Floating action menu item
-      if (!Platform.isIOS)
+      if (!PlatformUtils.isIOS)
         Bubble(
           title: "File Browser",
           iconColor: Colors.white,

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:drag_and_drop_lists/drag_and_drop_list_interface.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +8,7 @@ import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../../bluetooth/devices/presets/presetsStorage.dart';
 import '../../../platform/fileSaver.dart';
+import '../../../platform/platformUtils.dart';
 import '../../popups/alertDialogs.dart';
 import '../../popups/changeCategory.dart';
 import '../../popups/exportQRCode.dart';
@@ -98,7 +97,7 @@ class _PresetListState extends State<PresetList>
         ],
       ),
     ),
-    if (!Platform.isIOS)
+    if (!PlatformUtils.isIOS)
       PopupMenuItem(
         value: CategoryMenuActions.Export,
         child: Row(
@@ -155,7 +154,7 @@ class _PresetListState extends State<PresetList>
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             contentPadding: const EdgeInsets.only(left: 16, right: 12),
             title: const Text("Presets"),
-            trailing: Platform.isIOS
+            trailing: PlatformUtils.isIOS
                 ? null
                 : PopupMenuButton(
                     child: const Padding(

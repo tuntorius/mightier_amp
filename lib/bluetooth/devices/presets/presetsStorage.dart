@@ -9,6 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
+import '../../../platform/platformUtils.dart';
+
 class PresetsStorage extends ChangeNotifier {
   static final PresetsStorage _storage = PresetsStorage._();
   static const presetsFile = "presets.json";
@@ -45,11 +47,7 @@ class PresetsStorage extends ChangeNotifier {
   }
 
   _getDirectory() async {
-    if (Platform.isAndroid) {
-      storageDirectory = await getExternalStorageDirectory();
-    } else if (Platform.isIOS) {
-      storageDirectory = await getApplicationDocumentsDirectory();
-    }
+    storageDirectory = await PlatformUtils.getAppDataDirectory();
 
     if (storageDirectory != null) {
       presetsPath = path.join(storageDirectory!.path, presetsFile);

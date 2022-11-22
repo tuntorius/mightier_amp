@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 
@@ -70,6 +71,8 @@ abstract class BLEController {
   bool _isScanning = false;
   bool get isScanning => _isScanning;
 
+  ListQueue<List<int>> dataQueue = ListQueue<List<int>>();
+
   @protected
   late List<String> Function() deviceListProvider;
 
@@ -98,9 +101,40 @@ abstract class BLEController {
   void disconnectDevice();
 
   StreamSubscription<List<int>> registerDataListener(Function(List<int>) listener);
-  void sendData(List<int> data);
+
+  void sendData(List<int> data) {
+    var queueLength = dataQueue.length;
+    dataQueue.addLast(data);
+    if (queueLength == 0) _queueSender();
+  }
 
   void dispose();
+
+  void _queueSender() async {
+    //Stopwatch stopwatch = Stopwatch()..start();
+    //List<int> currentData = List<int>();
+
+    while (dataQueue.isNotEmpty) {
+      if (connectedDevice == null) {
+        dataQueue.clear();
+        break;
+      }
+      try {
+        if (isWriteReady) {
+          var data = dataQueue.first;
+          await writeToCharacteristic(data);
+          dataQueue.removeFirst();
+        } else {
+          dataQueue.clear();
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+    // if (kDebugMode) {
+    //   Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
+    // }
+  }
 
   @protected
   void setMidiSetupStatus(MidiSetupStatus status) {
@@ -113,4 +147,7 @@ abstract class BLEController {
     _isScanning = scanning;
     _scanStatus.add(scanning);
   }
+
+  bool get isWriteReady;
+  Future writeToCharacteristic(List<int> data);
 }

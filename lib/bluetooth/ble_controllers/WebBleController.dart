@@ -56,7 +56,7 @@ class WebBleController extends BLEController {
   @override
   BLEDevice? get connectedDevice => _device;
 
-  BluetoothCharacteristic? characteristic;
+  BluetoothCharacteristic? _characteristic;
   bool? lastBleState;
 
   @override
@@ -82,8 +82,8 @@ class WebBleController extends BLEController {
     final services = await device.discoverServices();
     final service = services.firstWhere((service) => service.uuid == BLEController.midiServiceGuid);
     // Now get the characteristic
-    characteristic = await service.getCharacteristic(BLEController.midiCharacteristicGuid);
-    await characteristic?.startNotifications();
+    _characteristic = await service.getCharacteristic(BLEController.midiCharacteristicGuid);
+    await _characteristic?.startNotifications();
     _device = dev;
     setMidiSetupStatus(MidiSetupStatus.deviceConnected);
 
@@ -102,6 +102,7 @@ class WebBleController extends BLEController {
     // TODO: implement disconnectDevice
     _device?.device.disconnect();
     _device = null;
+    _characteristic = null;
   }
 
   @override
@@ -126,7 +127,7 @@ class WebBleController extends BLEController {
   @override
   StreamSubscription<List<int>> registerDataListener(Function(List<int> data) listener) {
     StreamController<List<int>> streamCtrl = StreamController();
-    characteristic?.value.listen((data) {
+    _characteristic?.value.listen((data) {
       var listData = data.buffer.asUint8List().toList(growable: false);
       streamCtrl.add(listData);
     });
@@ -135,10 +136,12 @@ class WebBleController extends BLEController {
   }
 
   @override
-  void sendData(List<int> data) {
+  bool get isWriteReady => _characteristic != null;
+
+  @override
+  Future writeToCharacteristic(List<int> data) async {
     Uint8List byteData = Uint8List.fromList(data);
-    //todo: make it in a queue
-    characteristic?.writeValueWithoutResponse(byteData);
+    return _characteristic!.writeValueWithoutResponse(byteData);
   }
 
   @override

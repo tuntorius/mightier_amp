@@ -70,9 +70,6 @@ class FlutterBluePlusController extends BLEController {
   StreamSubscription<BluetoothState>? _bluetoothStateSubscription;
   StreamSubscription<List<ScanResult>>? _scanSubscription;
 
-  ListQueue<List<int>> dataQueue = ListQueue<List<int>>();
-  bool _queueFree = true;
-
   FlutterBluePlusController(List<String> forcedDevices) : super(forcedDevices);
 
   @override
@@ -165,7 +162,6 @@ class FlutterBluePlusController extends BLEController {
 
     _midiCharacteristic?.setNotifyValue(true);
 
-    _queueFree = true;
     _connectInProgress = false;
 
     setMidiSetupStatus(MidiSetupStatus.deviceConnected);
@@ -174,7 +170,6 @@ class FlutterBluePlusController extends BLEController {
         _deviceStreamSubscription?.cancel();
         _device = null;
         _connectInProgress = false;
-        _queueFree = true;
         setMidiSetupStatus(MidiSetupStatus.deviceDisconnected);
       }
     });
@@ -194,17 +189,11 @@ class FlutterBluePlusController extends BLEController {
   }
 
   @override
-  void sendData(List<int> data) {
-    dataQueue.addLast(data);
-    if (_queueFree) _queueSender();
-  }
-
-  @override
   void disconnectDevice() async {
     if (_device != null) {
       _connectInProgress = false;
       await _device?.device.disconnect();
-      _queueFree = true;
+      _midiCharacteristic = null;
       _device = null;
     }
   }
@@ -294,32 +283,11 @@ class FlutterBluePlusController extends BLEController {
     });
   }
 
-  void _queueSender() async {
-    _queueFree = false;
-    //Stopwatch stopwatch = Stopwatch()..start();
-    //List<int> currentData = List<int>();
+  @override
+  bool get isWriteReady => _midiCharacteristic != null;
 
-    while (dataQueue.isNotEmpty) {
-      if (_device == null) {
-        dataQueue.clear();
-        break;
-      }
-      try {
-        if (_midiCharacteristic != null) {
-          var data = dataQueue.first;
-          await _midiCharacteristic!.write(data, withoutResponse: true);
-
-          dataQueue.removeFirst();
-        } else {
-          dataQueue.clear();
-        }
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-    }
-    _queueFree = true;
-    // if (kDebugMode) {
-    //   Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
-    // }
+  @override
+  Future writeToCharacteristic(List<int> data) async {
+    return _midiCharacteristic!.write(data, withoutResponse: true);
   }
 }

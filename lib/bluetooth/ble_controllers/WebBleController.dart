@@ -68,8 +68,8 @@ class WebBleController extends BLEController {
   @override
   Future<bool> isAvailable() async {
     // The bluetooth api exists in this user agent.
-    final supported = FlutterWebBluetooth
-        .instance.isBluetoothApiSupported; // A stream that says if a bluetooth adapter is available to the browser.
+    final supported = FlutterWebBluetooth.instance
+        .isBluetoothApiSupported; // A stream that says if a bluetooth adapter is available to the browser.
     return supported;
   }
 
@@ -80,9 +80,11 @@ class WebBleController extends BLEController {
     setMidiSetupStatus(MidiSetupStatus.deviceConnecting);
     await device.connect();
     final services = await device.discoverServices();
-    final service = services.firstWhere((service) => service.uuid == BLEController.midiServiceGuid);
+    final service = services
+        .firstWhere((service) => service.uuid == BLEController.midiServiceGuid);
     // Now get the characteristic
-    _characteristic = await service.getCharacteristic(BLEController.midiCharacteristicGuid);
+    _characteristic =
+        await service.getCharacteristic(BLEController.midiCharacteristicGuid);
     await _characteristic?.startNotifications();
     _device = dev;
     setMidiSetupStatus(MidiSetupStatus.deviceConnected);
@@ -107,10 +109,12 @@ class WebBleController extends BLEController {
 
   @override
   void startScanning() async {
-    final requestOptions = RequestOptionsBuilder.acceptAllDevices(optionalServices: [BLEController.midiServiceGuid]);
+    final requestOptions = RequestOptionsBuilder.acceptAllDevices(
+        optionalServices: [BLEController.midiServiceGuid]);
 
     try {
-      final device = await FlutterWebBluetooth.instance.requestDevice(requestOptions);
+      final device =
+          await FlutterWebBluetooth.instance.requestDevice(requestOptions);
       final scanResult = WebBleScanResult(device);
       onScanResults([scanResult], []);
       setMidiSetupStatus(MidiSetupStatus.deviceFound);
@@ -125,12 +129,17 @@ class WebBleController extends BLEController {
   void stopScanning() {}
 
   @override
-  StreamSubscription<List<int>> registerDataListener(Function(List<int> data) listener) {
+  StreamSubscription<List<int>> registerDataListener(
+      Function(List<int> data) listener) {
     StreamController<List<int>> streamCtrl = StreamController();
-    _characteristic?.value.listen((data) {
+    var dataSubscr = _characteristic?.value.listen((data) {
       var listData = data.buffer.asUint8List().toList(growable: false);
       streamCtrl.add(listData);
     });
+
+    streamCtrl.onCancel = () {
+      dataSubscr?.cancel();
+    };
 
     return streamCtrl.stream.listen(listener);
   }
@@ -150,7 +159,8 @@ class WebBleController extends BLEController {
   }
 
   _subscribeBleState() {
-    _bluetoothStateSubscription = FlutterWebBluetooth.instance.isAvailable.listen((event) {
+    _bluetoothStateSubscription =
+        FlutterWebBluetooth.instance.isAvailable.listen((event) {
       if (lastBleState != null && lastBleState == event) return;
       debugPrint("Ble state ${event.toString()}");
       bleState = event ? BleState.on : BleState.off;

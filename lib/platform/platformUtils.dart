@@ -13,6 +13,8 @@ class PlatformUtils {
   static get isAndroid => !kIsWeb && io.Platform.isAndroid;
   static get isIOS => !kIsWeb && io.Platform.isIOS;
 
+  static get isWindows => !kIsWeb && io.Platform.isWindows;
+
   static Future<io.Directory?> getAppDataDirectory() async {
     if (PlatformUtils.isAndroid) {
       return getExternalStorageDirectory();

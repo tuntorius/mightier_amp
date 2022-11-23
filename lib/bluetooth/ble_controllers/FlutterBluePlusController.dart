@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -116,7 +115,8 @@ class FlutterBluePlusController extends BLEController {
     stopScanning();
     setMidiSetupStatus(MidiSetupStatus.deviceConnecting);
     try {
-      await ownDevice.connect(autoConnect: false, timeout: const Duration(seconds: 5));
+      await ownDevice.connect(
+          autoConnect: false, timeout: const Duration(seconds: 5));
     } on Exception {
       _connectInProgress = false;
       return null;
@@ -157,7 +157,8 @@ class FlutterBluePlusController extends BLEController {
     return null;
   }
 
-  void _connectAmpDevice(BluetoothDevice device, BluetoothCharacteristic characteristic) {
+  void _connectAmpDevice(
+      BluetoothDevice device, BluetoothCharacteristic characteristic) {
     _midiCharacteristic = characteristic;
 
     _midiCharacteristic?.setNotifyValue(true);
@@ -169,6 +170,7 @@ class FlutterBluePlusController extends BLEController {
       if (event == BluetoothDeviceState.disconnected) {
         _deviceStreamSubscription?.cancel();
         _device = null;
+        _midiCharacteristic = null;
         _connectInProgress = false;
         setMidiSetupStatus(MidiSetupStatus.deviceDisconnected);
       }
@@ -184,7 +186,8 @@ class FlutterBluePlusController extends BLEController {
   }
 
   @override
-  StreamSubscription<List<int>> registerDataListener(Function(List<int>) listener) {
+  StreamSubscription<List<int>> registerDataListener(
+      Function(List<int>) listener) {
     return _midiCharacteristic!.value.listen(listener);
   }
 
@@ -256,7 +259,9 @@ class FlutterBluePlusController extends BLEController {
           bool validDevice = false;
           //check if it advertises the MIDI service
           for (var uuid in result.advertisementData.serviceUuids) {
-            if (uuid.toLowerCase() == BLEController.midiServiceGuid) validDevice = true;
+            if (uuid.toLowerCase() == BLEController.midiServiceGuid) {
+              validDevice = true;
+            }
           }
 
           //check if it is in the special device list

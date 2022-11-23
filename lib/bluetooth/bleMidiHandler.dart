@@ -5,6 +5,8 @@
 //https://support.chefsteps.com/hc/en-us/articles/360009480814-I-have-an-Android-Why-am-I-being-asked-to-allow-location-access-
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:mighty_plug_manager/bluetooth/ble_controllers/WinBleController.dart';
+import 'ble_controllers/DummyBLEController.dart';
 import 'ble_controllers/FlutterBluePlusController.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../platform/platformUtils.dart';
@@ -21,15 +23,11 @@ class BLEMidiHandler {
 
   static final BLEMidiHandler _bleHandler = BLEMidiHandler._();
 
-  //TODO: this must be platform based
   late BLEController bleController;
 
   Stream<MidiSetupStatus> get status => bleController.status;
   Stream<bool> get isScanningStream => bleController.isScanningStream;
   MidiSetupStatus get currentStatus => bleController.currentStatus;
-
-  //amp device
-  BLEDevice? _device;
 
   bool _manualScan = false;
   bool _granted = false;
@@ -64,6 +62,10 @@ class BLEMidiHandler {
       bleController = FlutterBluePlusController(forcedDevices);
     } else if (PlatformUtils.isWeb) {
       bleController = WebBleController(forcedDevices);
+    } else if (PlatformUtils.isWindows) {
+      bleController = WinBleController(forcedDevices);
+    } else {
+      bleController = DummyBLEController(forcedDevices);
     }
   }
 
@@ -90,13 +92,9 @@ class BLEMidiHandler {
     _permanentlyDenied = false;
 
     var available = await bleController.isAvailable();
-    if (!available) {}
-    bleController.isAvailable().then((value) {
-      if (value == false) {
-        onError(BleError.unavailable, null);
-        return;
-      }
-    });
+    if (!available) {
+      onError(BleError.unavailable, null);
+    }
 
     if (PlatformUtils.isMobile) {
       ServiceStatus ss = await Permission.location.serviceStatus;
@@ -110,7 +108,8 @@ class BLEMidiHandler {
     bleController.init(_onScanResults);
   }
 
-  void _onScanResults(List<BLEScanResult> nuxResults, List<BLEScanResult> controllerResults) {
+  void _onScanResults(
+      List<BLEScanResult> nuxResults, List<BLEScanResult> controllerResults) {
     _nuxDevices = nuxResults;
     _controllerDevices = controllerResults;
   }
@@ -140,7 +139,8 @@ class BLEMidiHandler {
     bleController.disconnectDevice();
   }
 
-  StreamSubscription<List<int>> registerDataListener(Function(List<int>) listener) {
+  StreamSubscription<List<int>> registerDataListener(
+      Function(List<int>) listener) {
     return bleController.registerDataListener(listener);
   }
 

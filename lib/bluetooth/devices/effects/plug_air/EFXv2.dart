@@ -126,8 +126,8 @@ class RedDirt extends EFX {
         handle: "level",
         value: 40,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
+        midiCC: MidiCCValues.bCC_DistLevel),
   ];
 }
 

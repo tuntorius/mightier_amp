@@ -11,13 +11,12 @@ class DeviceList extends StatelessWidget {
 
   DeviceList({Key? key}) : super(key: key);
 
-  bool isConnected(DeviceIdentifier id) {
+  bool isConnected(String id) {
     //check with nux device first
-    if (midiHandler.connectedDevice != null &&
-        id == midiHandler.connectedDevice?.id) return true;
+    if (midiHandler.connectedDevice != null && id == midiHandler.connectedDevice?.id) return true;
 
     for (var controller in midiHandler.controllerDevices) {
-      if (controller.device.id == id) return true;
+      if (controller.id == id) return true;
     }
     return false;
   }
@@ -32,14 +31,12 @@ class DeviceList extends StatelessWidget {
       itemBuilder: (context, index) {
         final result = midiHandler.nuxDevices[index];
         return ListTile(
-          title: Text(result.device.name,
-              style: Theme.of(context).textTheme.headline6!.copyWith(
-                  color: isConnected(result.device.id)
-                      ? Colors.blue
-                      : Colors.white)),
-          trailing: result.device.type != BluetoothDeviceType.classic
-              ? const Icon(Icons.bluetooth, color: Colors.white)
-              : null,
+          title: Text(result.name,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .copyWith(color: isConnected(result.id) ? Colors.blue : Colors.white)),
+          trailing: const Icon(Icons.bluetooth, color: Colors.white),
           onTap: () {
             midiHandler.connectToDevice(result.device);
           },

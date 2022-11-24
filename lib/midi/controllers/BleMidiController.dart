@@ -1,26 +1,27 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
 
+import '../../bluetooth/ble_controllers/BLEController.dart';
+
 class BleMidiController extends MidiController {
-  ScanResult scanResult;
-  BluetoothCharacteristic? _characteristic;
+  final BLEScanResult _scanResult;
+  BLEConnection? _bleConnection;
   StreamSubscription? _characteristicSubscription;
   StreamSubscription? _deviceStatusSubscription;
 
   @override
   ControllerType get type => ControllerType.MidiBle;
 
-  BleMidiController(this.scanResult);
+  BleMidiController(this._scanResult);
 
   @override
-  String get id => scanResult.device.id.id;
+  String get id => _scanResult.id;
 
   @override
-  String get name => scanResult.device.name;
+  String get name => _scanResult.name;
 
   @override
   bool get connected => _connected;
@@ -28,30 +29,27 @@ class BleMidiController extends MidiController {
 
   @override
   Future<bool> connect() async {
-    _characteristic =
-        await BLEMidiHandler.instance().connectToController(scanResult.device);
+    _bleConnection = await BLEMidiHandler.instance().connectToDevice(_scanResult.device);
 
-    if (_characteristic != null) {
+    if (_bleConnection != null) {
       _onConnected();
     }
-    return _characteristic != null;
+    return _bleConnection != null;
   }
 
   _onConnected() {
-    _deviceStatusSubscription =
-        scanResult.device.state.listen(_deviceStateListener);
+    _deviceStatusSubscription = _scanResult.device.state.listen(_deviceStateListener);
     _connected = true;
 
-    _characteristicSubscription =
-        _characteristic!.value.listen(_onDataReceivedEvent);
+    _characteristicSubscription = _bleConnection!.data.listen(_onDataReceivedEvent);
   }
 
   _onDataReceivedEvent(List<int> data) {
     onDataReceived?.call(this, data);
   }
 
-  _deviceStateListener(event) {
-    if (event == BluetoothDeviceState.disconnected) {
+  _deviceStateListener(BleDeviceState event) {
+    if (event == BleDeviceState.disconnected) {
       //remove device from the list
       debugPrint("Midi controller disconnected");
       _connected = false;

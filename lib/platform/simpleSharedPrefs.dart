@@ -7,6 +7,8 @@ import 'package:wakelock/wakelock.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
+import 'platformUtils.dart';
+
 class SettingsKeys {
   static const String latency = "audioLatency";
   static const String screenAlwaysOn = "screenAlwaysOn";
@@ -48,11 +50,8 @@ class SharedPrefs {
   }
 
   _getDirectory() async {
-    if (Platform.isAndroid) {
-      storageDirectory = await getExternalStorageDirectory();
-    } else if (Platform.isIOS) {
-      storageDirectory = await getApplicationDocumentsDirectory();
-    }
+    storageDirectory = await PlatformUtils.getAppDataDirectory();
+
     if (storageDirectory != null) {
       prefsPath = path.join(storageDirectory!.path, prefsFile);
       _prefsFile = File(prefsPath);

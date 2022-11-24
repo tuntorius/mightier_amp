@@ -12,6 +12,7 @@ import 'package:mighty_plug_manager/platform/fileSaver.dart';
 import 'package:qr_utils/qr_utils.dart';
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
+import '../../../platform/platformUtils.dart';
 import '../../theme.dart';
 import '../../utils.dart';
 import 'effectSelector.dart';
@@ -161,7 +162,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         }
         break;
       case 2:
-        if (Platform.isAndroid) {
+        if (PlatformUtils.isAndroid) {
           openFile("image/*").then((value) async {
             final content = await QrUtils.scanImageFromData(value);
             if (content != null) {
@@ -169,7 +170,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
               setState(() {});
             }
           });
-        } else if (Platform.isIOS) {
+        } else if (PlatformUtils.isIOS) {
           final content = await QrUtils.scanImage();
           print(content);
           if (content != null) {

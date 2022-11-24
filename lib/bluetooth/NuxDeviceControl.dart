@@ -5,7 +5,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -13,6 +12,7 @@ import 'package:undo/undo.dart';
 
 import 'bleMidiHandler.dart';
 
+import 'ble_controllers/BLEController.dart';
 import 'devices/NuxConstants.dart';
 import 'devices/NuxDevice.dart';
 import 'devices/NuxMighty2040BT.dart';
@@ -21,11 +21,7 @@ import 'devices/NuxMightyPlugAir.dart';
 import 'devices/NuxMightyPlugPro.dart';
 import 'devices/effects/Processor.dart';
 
-enum DeviceConnectionState {
-  connectionBegin,
-  presetsLoaded,
-  connectionComplete
-}
+enum DeviceConnectionState { connectionBegin, presetsLoaded, connectionComplete }
 
 class NuxDiagnosticData {
   String device = "";
@@ -78,10 +74,8 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   //connect status control
-  final StreamController<DeviceConnectionState> connectStatus =
-      StreamController();
-  final StreamController<int> batteryPercentage =
-      StreamController<int>.broadcast();
+  final StreamController<DeviceConnectionState> connectStatus = StreamController();
+  final StreamController<int> batteryPercentage = StreamController<int>.broadcast();
 
   bool get isConnected => _midiHandler.connectedDevice != null;
 
@@ -195,13 +189,11 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMightyLite(this));
 
     //make it read from config
-    String dev = SharedPrefs()
-        .getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
+    String dev = SharedPrefs().getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
 
     _device = getDeviceFromId(dev) ?? _deviceInstances[0];
 
-    int ver = SharedPrefs().getValue(
-        SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
+    int ver = SharedPrefs().getValue(SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
     _device.setFirmwareVersionByIndex(ver);
 
     updateDiagnosticsData(connected: false);
@@ -226,11 +218,9 @@ class NuxDeviceControl extends ChangeNotifier {
         // check if this is valid nux device
         debugPrint("Devices found ${_midiHandler.nuxDevices}");
         for (var dev in _midiHandler.nuxDevices) {
-          if (dev.device.type != BluetoothDeviceType.classic) {
-            //don't autoconnect on manual scan
-            if (!_midiHandler.manualScan) {
-              _midiHandler.connectToDevice(dev.device);
-            }
+          //don't autoconnect on manual scan
+          if (!_midiHandler.manualScan) {
+            _midiHandler.connectToDevice(dev.device);
           }
         }
         break;
@@ -302,8 +292,7 @@ class NuxDeviceControl extends ChangeNotifier {
   void onConnectionStepReady() {
     if (device.communication.isConnectionReady()) {
       if (device.batterySupport) {
-        batteryTimer =
-            Timer.periodic(const Duration(seconds: 15), _onBatteryTimer);
+        batteryTimer = Timer.periodic(const Duration(seconds: 15), _onBatteryTimer);
         _onBatteryTimer(null);
       }
       device.sendAmpLevel();
@@ -373,8 +362,7 @@ class NuxDeviceControl extends ChangeNotifier {
     Processor effect;
     int index;
 
-    effect =
-        preset.getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)];
+    effect = preset.getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)];
     index = effect.nuxIndex;
 
     //check if preset switchable
@@ -478,16 +466,14 @@ class NuxDeviceControl extends ChangeNotifier {
     return msg;
   }
 
-  void updateDiagnosticsData(
-      {bool? connected, String? nuxPreset, bool includeJsonPreset = false}) {
+  void updateDiagnosticsData({bool? connected, String? nuxPreset, bool includeJsonPreset = false}) {
     if (nuxPreset != null) diagData.lastNuxPreset = nuxPreset;
 
     diagData.device = "${_device.productName} ${_device.productVersion}";
     if (connected != null) diagData.connected = connected;
 
     Sentry.configureScope((scope) {
-      scope.setTag(
-          "nuxDevice", "${_device.productName} ${_device.productVersion}");
+      scope.setTag("nuxDevice", "${_device.productName} ${_device.productVersion}");
       scope.setContexts('NUX', diagData.toMap(includeJsonPreset));
     });
   }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 
+import '../../bluetooth/ble_controllers/BLEController.dart';
 import 'blinkWidget.dart';
 
 class NuxAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -38,8 +39,7 @@ class _NuxAppBarState extends State<NuxAppBar> {
   @override
   void initState() {
     super.initState();
-    batteryValue = PageStorage.of(context)
-        ?.readState(context, identifier: batteryKey) as int?;
+    batteryValue = PageStorage.of(context)?.readState(context, identifier: batteryKey) as int?;
   }
 
   @override
@@ -81,9 +81,7 @@ class _NuxAppBarState extends State<NuxAppBar> {
                         batteryValue = batteryPercentage.data;
                       }
                       if (batteryValue != null) {
-                        PageStorage.of(context)?.writeState(
-                            context, batteryValue,
-                            identifier: batteryKey);
+                        PageStorage.of(context)?.writeState(context, batteryValue, identifier: batteryKey);
                       }
                       return Stack(
                         alignment: Alignment.center,
@@ -96,10 +94,7 @@ class _NuxAppBarState extends State<NuxAppBar> {
                               )),
                           Text(
                             "$batteryValue%",
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold),
+                            style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
                           )
                         ],
                       );
@@ -122,8 +117,7 @@ class _NuxAppBarState extends State<NuxAppBar> {
                       case MidiSetupStatus.deviceConnecting:
                         icon = Icons.bluetooth;
                         break;
-                      case MidiSetupStatus
-                          .deviceFound: //note device found is issued
+                      case MidiSetupStatus.deviceFound: //note device found is issued
                       //during search only, but here it means nothing
                       //so keep search status
                       case MidiSetupStatus.deviceSearching:

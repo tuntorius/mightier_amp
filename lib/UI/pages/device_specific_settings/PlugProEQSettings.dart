@@ -1,8 +1,6 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/presets/effectEditors/EqualizerEditor.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';

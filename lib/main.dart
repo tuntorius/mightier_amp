@@ -2,9 +2,9 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
@@ -32,8 +32,10 @@ import 'bluetooth/NuxDeviceControl.dart';
 import 'bluetooth/bleMidiHandler.dart';
 
 //recreate this file with your own api keys
+import 'bluetooth/ble_controllers/BLEController.dart';
 import 'bluetooth/devices/value_formatters/ValueFormatter.dart';
 import 'configKeys.dart';
+import 'platform/platformUtils.dart';
 
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -118,6 +120,14 @@ class _AppState extends State<App> {
       title: 'Mightier Amp',
       theme: getTheme(),
       home: MainTabs(),
+      scrollBehavior: MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown
+        },
+      ),
       //showSemanticsDebugger: true,
       navigatorKey: navigatorKey,
     );
@@ -187,21 +197,21 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     BLEMidiHandler.instance().initBle(bleErrorHandler);
   }
 
-  void bleErrorHandler(BluetoothError error, dynamic data) {
+  void bleErrorHandler(BleError error, dynamic data) {
     {
       switch (error) {
-        case BluetoothError.unavailable:
-          if (!Platform.isIOS) {
+        case BleError.unavailable:
+          if (!PlatformUtils.isIOS) {
             AlertDialogs.showInfoDialog(context,
                 title: "Warning!",
                 description: "Your device does not support bluetooth!",
                 confirmButton: "OK");
           }
           break;
-        case BluetoothError.permissionDenied:
+        case BleError.permissionDenied:
           AlertDialogs.showLocationPrompt(context, false, null);
           break;
-        case BluetoothError.locationServiceOff:
+        case BleError.locationServiceOff:
           AlertDialogs.showInfoDialog(context,
               title: "Location service is disabled!",
               description:
@@ -335,7 +345,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         : device.decibelFormatter!;
 
     //WARNING: Workaround for a flutter bug - if the app is started with screen off,
-    //one of the widgets throwns an exception and the app scaffold is empty
+    //one of the widgets throws an exception and the app scaffold is empty
     if (screenWidth < 10) return const SizedBox();
     return PageStorage(
       bucket: bucketGlobal,

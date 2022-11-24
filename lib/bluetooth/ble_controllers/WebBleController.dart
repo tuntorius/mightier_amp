@@ -1,3 +1,17 @@
+/*
+Controller that uses flutter_web_bluetooth plugin for adding BLE support for web
+https://pub.dev/packages/flutter_web_bluetooth
+
+Summary
+State: works somewhat
+
+The plugin works, but is not very reliable. Can't determine if the platform
+has bluetooth hardware or not. Connects half of the time, sometimes disconnects
+in 1-2 minutes of inactivity. This may be due to the very early staage of
+web bluetooth standard. 
+*/
+
+/*
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_web_bluetooth/flutter_web_bluetooth.dart';
@@ -60,8 +74,8 @@ class WebBleController extends BLEController {
   bool? lastBleState;
 
   @override
-  void init(ScanResultsCallback callback) {
-    super.init(callback);
+  Future init(ScanResultsCallback callback) async {
+    await super.init(callback);
     _subscribeBleState();
   }
 
@@ -176,3 +190,4 @@ class WebBleController extends BLEController {
     });
   }
 }
+*/

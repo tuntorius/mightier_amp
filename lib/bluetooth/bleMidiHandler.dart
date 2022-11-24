@@ -5,13 +5,11 @@
 //https://support.chefsteps.com/hc/en-us/articles/360009480814-I-have-an-Android-Why-am-I-being-asked-to-allow-location-access-
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:mighty_plug_manager/bluetooth/ble_controllers/WinBleController.dart';
 import 'ble_controllers/DummyBLEController.dart';
 import 'ble_controllers/FlutterBluePlusController.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../platform/platformUtils.dart';
 import 'ble_controllers/BLEController.dart';
-import 'ble_controllers/WebBleController.dart';
 
 typedef BluetoothErrorCallback = void Function(BleError, dynamic data);
 
@@ -61,9 +59,11 @@ class BLEMidiHandler {
     if (PlatformUtils.isMobile) {
       bleController = FlutterBluePlusController(forcedDevices);
     } else if (PlatformUtils.isWeb) {
-      bleController = WebBleController(forcedDevices);
+      bleController = DummyBLEController(forcedDevices);
     } else if (PlatformUtils.isWindows) {
-      bleController = WinBleController(forcedDevices);
+      bleController = DummyBLEController(forcedDevices);
+    } else if (PlatformUtils.isLinux) {
+      bleController = DummyBLEController(forcedDevices);
     } else {
       bleController = DummyBLEController(forcedDevices);
     }
@@ -91,6 +91,8 @@ class BLEMidiHandler {
     _granted = true;
     _permanentlyDenied = false;
 
+    await bleController.init(_onScanResults);
+
     var available = await bleController.isAvailable();
     if (!available) {
       onError(BleError.unavailable, null);
@@ -104,8 +106,6 @@ class BLEMidiHandler {
       }
     }
     debugPrint("BLEMidiHandler:Init()");
-
-    bleController.init(_onScanResults);
   }
 
   void _onScanResults(

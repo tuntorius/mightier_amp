@@ -1,3 +1,18 @@
+/*
+Controller that uses win_ble plugin for adding BLE support for Windows
+https://pub.dev/packages/win_ble
+
+Summary
+State: Unusable
+
+BLE support detection works 10% of the time
+Connection to the device works
+IF the peripheral device sends a packet that has a byte with value 0x40,
+maybe also 0x41, the packet is not received at all:
+https://github.com/rohitsangwan01/win_ble/issues/17
+*/
+
+/*
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -61,13 +76,16 @@ class WinBleController extends BLEController {
   BLEDevice? get connectedDevice => _device;
 
   @override
-  void init(ScanResultsCallback callback) {
-    super.init(callback);
+  Future init(ScanResultsCallback callback) async {
+    await super.init(callback);
 
     nuxDeviceNames = deviceListProvider.call();
-    ble.WinBle.initialize(enableLog: true);
     _subscribeBleState();
     _subscribeScanResults();
+
+    await ble.WinBle.initialize(enableLog: false);
+    print("WinBle controller init.");
+
     bleState = BleState.on;
   }
 
@@ -163,6 +181,7 @@ class WinBleController extends BLEController {
             //ble.WinBle.connectionStreamOf(_device.address)
             //return BLEConnection(characteristic.value);
           }
+          break;
         }
       }
     }
@@ -170,10 +189,10 @@ class WinBleController extends BLEController {
   }
 
   void _connectAmpDevice(
-      ble.BleDevice device, ble.BleCharacteristic characteristic) {
+      ble.BleDevice device, ble.BleCharacteristic characteristic) async {
     _midiCharacteristic = characteristic;
 
-    ble.WinBle.subscribeToCharacteristic(
+    await ble.WinBle.subscribeToCharacteristic(
         address: device.address,
         serviceId: BLEController.midiServiceGuid,
         characteristicId: characteristic.uuid);
@@ -199,8 +218,6 @@ class WinBleController extends BLEController {
     if (_device != null) {
       _connectInProgress = false;
       await ble.WinBle.disconnect(_device!.address);
-      _device = null;
-      _midiCharacteristic = null;
     }
   }
 
@@ -217,12 +234,15 @@ class WinBleController extends BLEController {
       Function(List<int> data) listener) {
     StreamController<List<int>> streamCtrl = StreamController();
 
+    // ble.WinBle.characteristicValueStream.listen((event) {
+    //   print(event);
+    // });
+
     var dataSubscr = ble.WinBle.characteristicValueStreamOf(
             address: _device!.address,
             serviceId: BLEController.midiServiceGuid,
             characteristicId: _midiCharacteristic!.uuid)
         .listen((data) {
-      print(data);
       streamCtrl.add(data.cast<int>());
     });
 
@@ -238,6 +258,7 @@ class WinBleController extends BLEController {
   @override
   Future writeToCharacteristic(List<int> data) {
     Uint8List byteData = Uint8List.fromList(data);
+    print("WinBle: Write $data");
     return ble.WinBle.write(
         address: _device!.address,
         service: BLEController.midiServiceGuid,
@@ -289,7 +310,6 @@ class WinBleController extends BLEController {
         scannedDevices.add(device);
       }
 
-      var diff = DateTime.now().difference(_scanStarted);
       if ((DateTime.now().difference(_scanStarted).inMilliseconds < 5000)) {
         return;
       }
@@ -309,3 +329,4 @@ class WinBleController extends BLEController {
     });
   }
 }
+*/

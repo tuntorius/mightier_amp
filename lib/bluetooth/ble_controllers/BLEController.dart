@@ -20,7 +20,8 @@ enum BleDeviceState { disconnected, connecting, connected, disconnecting }
 
 enum BleError { unavailable, permissionDenied, locationServiceOff }
 
-typedef ScanResultsCallback = void Function(List<BLEScanResult> nuxDevices, List<BLEScanResult> controllerDevices);
+typedef ScanResultsCallback = void Function(
+    List<BLEScanResult> nuxDevices, List<BLEScanResult> controllerDevices);
 
 abstract class BLEScanResult {
   String get id;
@@ -37,9 +38,13 @@ abstract class BLEDevice {
   String get name;
   String get id;
 
+  ///Returns a stream telling the connection state of a device
+  ///Used only for MIDI foot controllers and not for amps
   Stream<BleDeviceState> get state;
 }
 
+/// Ble connection class used for MIDI foot controllers only
+/// Not needed for amps
 class BLEConnection {
   final Stream<List<int>> _dataStream;
   Stream<List<int>> get data => _dataStream;
@@ -49,10 +54,12 @@ class BLEConnection {
 
 abstract class BLEController {
   static const String midiServiceGuid = "03b80e5a-ede8-4b33-a751-6ce34ec4c700";
-  static const String midiCharacteristicGuid = "7772e5db-3868-4112-a1a9-f2669d106bf3";
+  static const String midiCharacteristicGuid =
+      "7772e5db-3868-4112-a1a9-f2669d106bf3";
 
   MidiSetupStatus _currentStatus = MidiSetupStatus.unknown;
-  final StreamController<MidiSetupStatus> _status = StreamController.broadcast();
+  final StreamController<MidiSetupStatus> _status =
+      StreamController.broadcast();
   Stream<MidiSetupStatus> get status => _status.stream;
 
   BleState _bleState = BleState.off;
@@ -88,7 +95,7 @@ abstract class BLEController {
     deviceListProvider = provider;
   }
 
-  void init(ScanResultsCallback callback) {
+  Future init(ScanResultsCallback callback) async {
     onScanResults = callback;
   }
 
@@ -100,7 +107,8 @@ abstract class BLEController {
   Future<BLEConnection?> connectToDevice(BLEDevice device);
   void disconnectDevice();
 
-  StreamSubscription<List<int>> registerDataListener(Function(List<int>) listener);
+  StreamSubscription<List<int>> registerDataListener(
+      Function(List<int>) listener);
 
   void sendData(List<int> data) {
     var queueLength = dataQueue.length;

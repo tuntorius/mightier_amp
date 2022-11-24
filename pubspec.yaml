@@ -63,8 +63,7 @@ dependencies:
   sentry_flutter: ^6.14.0
 
   flutter_blue_plus: ^1.1.3
-  flutter_web_bluetooth: ^0.0.9
-  win_ble: ^0.0.5
+
   flutter_midi_command:
     path: ./flutter_midi_command/flutter_midi_command-0.3.7
   

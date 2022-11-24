@@ -291,13 +291,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.1"
-  flutter_web_bluetooth:
-    dependency: "direct main"
-    description:
-      name: flutter_web_bluetooth
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -394,13 +387,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  logging:
-    dependency: transitive
-    description:
-      name: logging
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   marquee_text:
     dependency: "direct main"
     description:
@@ -868,13 +854,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
-  win_ble:
-    dependency: "direct main"
-    description:
-      name: win_ble
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.5"
   xdg_directories:
     dependency: transitive
     description:

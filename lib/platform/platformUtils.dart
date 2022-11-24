@@ -14,6 +14,7 @@ class PlatformUtils {
   static get isIOS => !kIsWeb && io.Platform.isIOS;
 
   static get isWindows => !kIsWeb && io.Platform.isWindows;
+  static get isLinux => !kIsWeb && io.Platform.isLinux;
 
   static Future<io.Directory?> getAppDataDirectory() async {
     if (PlatformUtils.isAndroid) {

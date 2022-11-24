@@ -1,15 +1,17 @@
 /*
-The original plugin used in Mightier Amp. For Android and iOS
-https://pub.dev/packages/flutter_blue_plus
-
-This plugin works great. Unfortunately it's only for mobile platforms.
-MacOS is possible, due to almost 100% identical code to iOS
+Almost identical to flutte_blue_plus - comes from the same base, but added
+Windows and macOS support.
+However, doesn't work well on Windows. Not tested on macOS, nut flutter_blue_plus
+should be easy to port for macOS.
+Another problem is that it requires Android API level 21 - lollipop and too many
+people requested to keep KitKat compatibility
 */
 
+/*
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_blue_plugin/flutter_blue_plugin.dart';
 import 'package:mighty_plug_manager/bluetooth/ble_controllers/BLEController.dart';
 
 class FBPScanResult extends BLEScanResult {
@@ -63,8 +65,8 @@ class FBPBleDevice extends BLEDevice {
   }
 }
 
-class FlutterBluePlusController extends BLEController {
-  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+class FlutterBluePluginController extends BLEController {
+  FlutterBlue flutterBlue = FlutterBlue.instance;
 
   FBPBleDevice? _device;
   @override
@@ -77,19 +79,12 @@ class FlutterBluePlusController extends BLEController {
   StreamSubscription<BluetoothState>? _bluetoothStateSubscription;
   StreamSubscription<List<ScanResult>>? _scanSubscription;
 
-  FlutterBluePlusController(List<String> forcedDevices) : super(forcedDevices);
+  FlutterBluePluginController(List<String> forcedDevices)
+      : super(forcedDevices);
 
   @override
   Future<bool> isAvailable() {
     return flutterBlue.isAvailable;
-  }
-
-  @override
-  Future init(ScanResultsCallback callback) async {
-    await super.init(callback);
-    _subscribeBleState();
-    _subscribeScanningStatus();
-    _subscribeScanResults();
   }
 
   @override
@@ -101,10 +96,13 @@ class FlutterBluePlusController extends BLEController {
       timeout: const Duration(seconds: 8),
       //withServices: [Guid(midiService)]
     )
-        .then((result) {
-      //if device is not connected after the search - set to idle
-      if (_device == null) setMidiSetupStatus(MidiSetupStatus.deviceIdle);
+        .listen((event) {
+      print(event);
     });
+    // .then((result) {
+    //if device is not connected after the search - set to idle
+    //if (_device == null) setMidiSetupStatus(MidiSetupStatus.deviceIdle);
+    //});
   }
 
   @override
@@ -194,6 +192,14 @@ class FlutterBluePlusController extends BLEController {
   }
 
   @override
+  Future init(ScanResultsCallback callback) async {
+    await super.init(callback);
+    _subscribeBleState();
+    _subscribeScanningStatus();
+    _subscribeScanResults();
+  }
+
+  @override
   StreamSubscription<List<int>> registerDataListener(
       Function(List<int>) listener) {
     return _midiCharacteristic!.value.listen(listener);
@@ -203,7 +209,7 @@ class FlutterBluePlusController extends BLEController {
   void disconnectDevice() async {
     if (_device != null) {
       _connectInProgress = false;
-      await _device?.device.disconnect();
+      _device?.device.disconnect();
       _midiCharacteristic = null;
       _device = null;
     }
@@ -304,3 +310,4 @@ class FlutterBluePlusController extends BLEController {
     return _midiCharacteristic!.write(data, withoutResponse: true);
   }
 }
+*/

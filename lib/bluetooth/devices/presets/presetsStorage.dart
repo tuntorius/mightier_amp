@@ -457,7 +457,6 @@ class PresetsStorage extends ChangeNotifier {
   Map<String, dynamic> _convertOldToNewFormat(List<dynamic> oldFormat) {
     _buildCategoryCache();
     var old = json.encode(presetsData);
-    print(old);
 
     //build categories list
     List<String> categoriesList = [];

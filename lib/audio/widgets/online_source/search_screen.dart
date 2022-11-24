@@ -12,7 +12,7 @@ import 'package:mighty_plug_manager/audio/online_sources/onlineTrack.dart';
 class OnlineSearchScreen extends StatefulWidget {
   final OnlineSource source;
 
-  OnlineSearchScreen({Key? key, required this.source}) : super(key: key);
+  const OnlineSearchScreen({Key? key, required this.source}) : super(key: key);
 
   @override
   State createState() => _OnlineSearchScreenState();

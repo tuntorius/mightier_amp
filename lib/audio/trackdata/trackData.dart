@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:mighty_plug_manager/audio/models/jamTrack.dart';
 import 'package:mighty_plug_manager/audio/models/setlist.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 

@@ -9,6 +9,8 @@ import 'package:mighty_plug_manager/audio/online_sources/guitarBackingTracksSour
 import 'search_screen.dart';
 
 class OnlineSourceSearch extends StatefulWidget {
+  const OnlineSourceSearch({Key? key}) : super(key: key);
+
   @override
   _OnlineSourceSearchState createState() => _OnlineSourceSearchState();
 }

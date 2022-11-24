@@ -21,13 +21,10 @@ class ArtistAlbums extends StatelessWidget {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
-              // TODO: Handle this case.
               break;
             case ConnectionState.waiting:
-              // TODO: Handle this case.
               break;
             case ConnectionState.active:
-              // TODO: Handle this case.
               break;
             case ConnectionState.done:
               return ListView.builder(
@@ -43,8 +40,9 @@ class ArtistAlbums extends StatelessWidget {
                                         snapshot.data![index].title,
                                         snapshot.data![index].id,
                                         snapshot.data![index].artist)));
-                            if (result != null)
+                            if (result != null) {
                               Navigator.of(context).pop(result);
+                            }
                           },
                           title: Text(
                             snapshot.data![index].title,

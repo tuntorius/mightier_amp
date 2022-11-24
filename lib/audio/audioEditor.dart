@@ -29,7 +29,7 @@ enum EditorState { play, insert, duplicateInsert, insertLoop1, insertLoop2 }
 
 class AudioEditor extends StatefulWidget {
   final JamTrack track;
-  const AudioEditor(this.track);
+  const AudioEditor(this.track, {Key? key}) : super(key: key);
   @override
   State createState() => _AudioEditorState();
 }

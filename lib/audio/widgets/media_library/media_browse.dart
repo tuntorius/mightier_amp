@@ -35,7 +35,6 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
   Future<void> getArtists({bool refresh = true}) async {
     final FlutterAudioQuery audioQuery = FlutterAudioQuery();
     if (artists.isEmpty || refresh) artists = await audioQuery.getArtists();
-    print("Artists ready");
     _refreshController.add("");
   }
 

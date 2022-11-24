@@ -25,7 +25,7 @@ packages:
   audio_picker:
     dependency: "direct main"
     description:
-      path: audio_picker
+      path: "plugins/audio_picker"
       relative: true
     source: path
     version: "1.0.0"
@@ -39,7 +39,7 @@ packages:
   audio_waveform:
     dependency: "direct main"
     description:
-      path: audio_waveform
+      path: "plugins/audio_waveform"
       relative: true
     source: path
     version: "0.1.0"
@@ -144,7 +144,7 @@ packages:
   drag_and_drop_lists:
     dependency: "direct main"
     description:
-      path: drag_and_drop_list
+      path: "plugins/drag_and_drop_list"
       relative: true
     source: path
     version: "0.3.3"
@@ -184,7 +184,7 @@ packages:
   flutter_audio_query:
     dependency: "direct main"
     description:
-      path: flutter_audio_query
+      path: "plugins/flutter_audio_query"
       relative: true
     source: path
     version: "0.3.5+6"
@@ -254,21 +254,21 @@ packages:
   flutter_midi_command:
     dependency: "direct main"
     description:
-      path: "flutter_midi_command/flutter_midi_command-0.3.7"
+      path: "plugins/flutter_midi_command/flutter_midi_command-0.3.7"
       relative: true
     source: path
     version: "0.3.7"
   flutter_midi_command_linux:
     dependency: transitive
     description:
-      path: "flutter_midi_command/flutter_midi_command_linux-0.1.3"
+      path: "plugins/flutter_midi_command/flutter_midi_command_linux-0.1.3"
       relative: true
     source: path
     version: "0.1.3"
   flutter_midi_command_platform_interface:
     dependency: transitive
     description:
-      path: "flutter_midi_command/flutter_midi_command_platform_interface-0.3.3"
+      path: "plugins/flutter_midi_command/flutter_midi_command_platform_interface-0.3.3"
       relative: true
     source: path
     version: "0.3.3"
@@ -593,7 +593,7 @@ packages:
   qr_utils:
     dependency: "direct main"
     description:
-      path: "qr_utils-0.1.5"
+      path: "plugins/qr_utils-0.1.5"
       relative: true
     source: path
     version: "0.1.5"

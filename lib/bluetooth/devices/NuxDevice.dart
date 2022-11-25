@@ -299,7 +299,6 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void _handleChannelChange(int index) {
-    NuxDeviceControl.instance().clearUndoStack();
     var newIndex = index;
 
     if (!nativeActiveChannelsSupport) {

@@ -140,6 +140,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             onTap: () {
               widget.device.selectedChannelNormalized = i;
               NuxDeviceControl.instance().sendFullPresetSettings();
+              NuxDeviceControl.instance().forceNotifyListeners();
             },
             onLongPress: () {
               widget.device.toggleChannelActive(i);
@@ -206,7 +207,8 @@ class _ChannelSelectorState extends State<ChannelSelector> {
   void setupFromQRData(String qrData) {
     var result = widget.device.setupFromQRData(qrData);
     bool success = result == PresetQRError.Ok;
-    NuxDeviceControl.instance().clearUndoStack();
+    NuxDeviceControl.instance().changes.clearHistory();
+    setState(() {});
 
     var message = QrUtils.QRMessages[result.index];
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(

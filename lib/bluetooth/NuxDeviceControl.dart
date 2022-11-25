@@ -21,7 +21,11 @@ import 'devices/NuxMightyPlugAir.dart';
 import 'devices/NuxMightyPlugPro.dart';
 import 'devices/effects/Processor.dart';
 
-enum DeviceConnectionState { connectionBegin, presetsLoaded, connectionComplete }
+enum DeviceConnectionState {
+  connectionBegin,
+  presetsLoaded,
+  connectionComplete
+}
 
 class NuxDiagnosticData {
   String device = "";
@@ -60,7 +64,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   double _masterVolume = 100;
 
-  var changes = ChangeStack();
+  ChangeStack get changes => device.presets[device.selectedChannel].changes;
 
   bool developer = false;
   Function(List<int>)? onDataReceiveDebug;
@@ -74,8 +78,10 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   //connect status control
-  final StreamController<DeviceConnectionState> connectStatus = StreamController();
-  final StreamController<int> batteryPercentage = StreamController<int>.broadcast();
+  final StreamController<DeviceConnectionState> connectStatus =
+      StreamController();
+  final StreamController<int> batteryPercentage =
+      StreamController<int>.broadcast();
 
   bool get isConnected => _midiHandler.connectedDevice != null;
 
@@ -108,7 +114,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   set deviceIndex(int index) {
-    clearUndoStack();
+    _clearAllDevicesStack();
     _device = _deviceInstances[index];
 
     updateDiagnosticsData();
@@ -128,7 +134,7 @@ class NuxDeviceControl extends ChangeNotifier {
   int get deviceFirmwareVersion => device.productVersion;
 
   set deviceFirmwareVersion(int ver) {
-    clearUndoStack();
+    _clearDeviceStack();
     device.setFirmwareVersionByIndex(ver);
     SharedPrefs().setValue(SettingsKeys.deviceVersion, ver);
   }
@@ -160,9 +166,20 @@ class NuxDeviceControl extends ChangeNotifier {
     return null;
   }
 
-  clearUndoStack() {
-    changes.clearHistory();
-    notifyListeners();
+  _clearDeviceStack({NuxDevice? device}) {
+    bool notify = device == null;
+    device ??= _device;
+    for (int i = 0; i < device.channelsCount; i++) {
+      device.presets[i].changes.clearHistory();
+    }
+
+    if (notify) notifyListeners();
+  }
+
+  _clearAllDevicesStack() {
+    for (int i = 0; i < _deviceInstances.length; i++) {
+      _clearDeviceStack(device: _deviceInstances[i]);
+    }
   }
 
   undoStackChanged() {
@@ -189,11 +206,13 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMightyLite(this));
 
     //make it read from config
-    String dev = SharedPrefs().getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
+    String dev = SharedPrefs()
+        .getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
 
     _device = getDeviceFromId(dev) ?? _deviceInstances[0];
 
-    int ver = SharedPrefs().getValue(SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
+    int ver = SharedPrefs().getValue(
+        SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
     _device.setFirmwareVersionByIndex(ver);
 
     updateDiagnosticsData(connected: false);
@@ -225,7 +244,7 @@ class NuxDeviceControl extends ChangeNotifier {
         }
         break;
       case MidiSetupStatus.deviceConnected:
-        clearUndoStack();
+        _clearDeviceStack();
 
         //find which device connected
         if (isConnected) {
@@ -240,7 +259,7 @@ class NuxDeviceControl extends ChangeNotifier {
         }
         break;
       case MidiSetupStatus.deviceDisconnected:
-        clearUndoStack();
+        _clearDeviceStack();
         updateDiagnosticsData(connected: false);
         notifyListeners();
         _onDisconnect();
@@ -292,7 +311,8 @@ class NuxDeviceControl extends ChangeNotifier {
   void onConnectionStepReady() {
     if (device.communication.isConnectionReady()) {
       if (device.batterySupport) {
-        batteryTimer = Timer.periodic(const Duration(seconds: 15), _onBatteryTimer);
+        batteryTimer =
+            Timer.periodic(const Duration(seconds: 15), _onBatteryTimer);
         _onBatteryTimer(null);
       }
       device.sendAmpLevel();
@@ -333,13 +353,11 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void presetChangedListener() {
-    clearUndoStack();
     if (!isConnected) return;
     changeDevicePreset(device.presetChangedNotifier.value);
   }
 
   void changeDevicePreset(int preset) {
-    clearUndoStack();
     if (!isConnected) return;
     _midiHandler.sendData(device.communication.setChannel(preset));
   }
@@ -362,7 +380,8 @@ class NuxDeviceControl extends ChangeNotifier {
     Processor effect;
     int index;
 
-    effect = preset.getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)];
+    effect =
+        preset.getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)];
     index = effect.nuxIndex;
 
     //check if preset switchable
@@ -466,14 +485,16 @@ class NuxDeviceControl extends ChangeNotifier {
     return msg;
   }
 
-  void updateDiagnosticsData({bool? connected, String? nuxPreset, bool includeJsonPreset = false}) {
+  void updateDiagnosticsData(
+      {bool? connected, String? nuxPreset, bool includeJsonPreset = false}) {
     if (nuxPreset != null) diagData.lastNuxPreset = nuxPreset;
 
     diagData.device = "${_device.productName} ${_device.productVersion}";
     if (connected != null) diagData.connected = connected;
 
     Sentry.configureScope((scope) {
-      scope.setTag("nuxDevice", "${_device.productName} ${_device.productVersion}");
+      scope.setTag(
+          "nuxDevice", "${_device.productName} ${_device.productVersion}");
       scope.setContexts('NUX', diagData.toMap(includeJsonPreset));
     });
   }

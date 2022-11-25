@@ -53,7 +53,8 @@ class NuxMightyPlugPro extends NuxDevice {
 
   @override
   int get productVID => 48;
-  late final PlugProCommunication _communication = PlugProCommunication(this, config);
+  late final PlugProCommunication _communication =
+      PlugProCommunication(this, config);
   @override
   DeviceCommunication get communication => _communication;
 
@@ -171,7 +172,7 @@ class NuxMightyPlugPro extends NuxDevice {
           icon: Icons.water),
     ProcessorInfo(
         shortName: "COMP",
-        longName: "Comp",
+        longName: "Compressor",
         keyName: "comp",
         nuxOrderIndex: PresetDataIndexPlugPro.Head_iCMP,
         color: Colors.lime,
@@ -348,25 +349,36 @@ class NuxMightyPlugPro extends NuxDevice {
 
   NuxMightyPlugPro(NuxDeviceControl devControl) : super(devControl) {
     //clean
-    presets.add(PlugProPreset(device: this, channel: PlugProChannel.Clean.index, channelName: "1"));
+    presets.add(PlugProPreset(
+        device: this, channel: PlugProChannel.Clean.index, channelName: "1"));
 
     //OD
-    presets.add(PlugProPreset(device: this, channel: PlugProChannel.Overdrive.index, channelName: "2"));
+    presets.add(PlugProPreset(
+        device: this,
+        channel: PlugProChannel.Overdrive.index,
+        channelName: "2"));
 
     //Dist
-    presets.add(PlugProPreset(device: this, channel: PlugProChannel.Distortion.index, channelName: "3"));
+    presets.add(PlugProPreset(
+        device: this,
+        channel: PlugProChannel.Distortion.index,
+        channelName: "3"));
 
     //AGSim
-    presets.add(PlugProPreset(device: this, channel: PlugProChannel.AGSim.index, channelName: "4"));
+    presets.add(PlugProPreset(
+        device: this, channel: PlugProChannel.AGSim.index, channelName: "4"));
 
     //Pop Bass
-    presets.add(PlugProPreset(device: this, channel: PlugProChannel.Pop.index, channelName: "5"));
+    presets.add(PlugProPreset(
+        device: this, channel: PlugProChannel.Pop.index, channelName: "5"));
 
     //Rock Bass
-    presets.add(PlugProPreset(device: this, channel: PlugProChannel.Rock.index, channelName: "6"));
+    presets.add(PlugProPreset(
+        device: this, channel: PlugProChannel.Rock.index, channelName: "6"));
 
     //Funk Bass
-    presets.add(PlugProPreset(device: this, channel: PlugProChannel.Funk.index, channelName: "7"));
+    presets.add(PlugProPreset(
+        device: this, channel: PlugProChannel.Funk.index, channelName: "7"));
 
     for (var preset in presets) {
       (preset as PlugProPreset).setFirmwareVersion(version.index);

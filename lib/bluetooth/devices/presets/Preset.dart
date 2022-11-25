@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:qr_utils/qr_utils.dart';
+import 'package:undo/undo.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 
@@ -28,6 +29,10 @@ abstract class Preset {
   Color get channelColor => channelColors[channel];
   List<Color> get channelColorsList => channelColors;
   List<Amplifier> get amplifierList;
+
+  final _changeStack = ChangeStack();
+
+  ChangeStack get changes => _changeStack;
 
   List<List<int>> nuxDataPieces = [];
 

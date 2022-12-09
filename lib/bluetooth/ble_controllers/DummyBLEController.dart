@@ -11,7 +11,6 @@ class DummyBLEController extends BLEController {
   }
 
   @override
-  // TODO: implement connectedDevice
   BLEDevice? get connectedDevice => null;
 
   @override
@@ -26,7 +25,6 @@ class DummyBLEController extends BLEController {
   }
 
   @override
-  // TODO: implement isWriteReady
   bool get isWriteReady => false;
 
   @override

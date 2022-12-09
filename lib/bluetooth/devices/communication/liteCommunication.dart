@@ -61,18 +61,18 @@ class LiteCommunication extends DeviceCommunication {
   @override
   void setUsbOutputVolume(int vol) {}
   @override
-  void saveCurrentPreset() {}
+  void saveCurrentPreset(int index) {}
 
   @override
   void onDataReceive(List<int> data) {
+    if (data.length < 2) return;
     device.onDataReceived(data.sublist(2));
   }
 
   @override
   void performNextConnectionStep() {
     connectionStepReady();
-    device.selectedChannelNormalized = 0;
-    device.deviceControl.changeDevicePreset(0);
-    device.deviceControl.sendFullPresetSettings();
+    device.setSelectedChannelNuxIndex(0,
+        notifyBT: true, notifyUI: true, sendFullPreset: true);
   }
 }

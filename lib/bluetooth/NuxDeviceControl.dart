@@ -298,7 +298,7 @@ class NuxDeviceControl extends ChangeNotifier {
     await Future.delayed(const Duration(seconds: 1));
     var data = device.communication.createFirmwareMessage();
     if (data.isNotEmpty) {
-      _midiHandler.sendData(data);
+      sendBLEData(data);
     } else {
       onFirmwareVersionReady();
     }
@@ -339,7 +339,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void requestPreset(int index) {
-    _midiHandler.sendData(_device.communication.requestPresetByIndex(index));
+    sendBLEData(_device.communication.requestPresetByIndex(index));
   }
 
   void onBatteryPercentage(int val) {
@@ -359,7 +359,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void changeDevicePreset(int preset) {
     if (!isConnected) return;
-    _midiHandler.sendData(device.communication.setChannel(preset));
+    sendBLEData(device.communication.setChannel(preset));
   }
 
   void effectChangedListener(int slot) {
@@ -387,14 +387,19 @@ class NuxDeviceControl extends ChangeNotifier {
     //check if preset switchable
     bool switchable = preset.slotSwitchable(slot);
     bool enabled = preset.slotEnabled(slot);
-
+    bool distinctCCodes =
+        effect.midiCCSelectionValue != effect.midiCCEnableValue;
     //send parameters only if the effect is on OR is not switchable off
     bool send = !switchable || (switchable && enabled) || force;
     send = true; //still buggy, fix it first
 
     //send effect type
     if (slot != 0 && send && effect.midiCCSelectionValue >= 0) {
-      device.communication.sendSlotEffect(slot, index);
+      if (distinctCCodes) {
+        device.communication.sendSlotEffect(slot, index);
+      } else {
+        device.communication.sendSlotEnabledState(slot);
+      }
     }
 
     //send parameters
@@ -405,7 +410,9 @@ class NuxDeviceControl extends ChangeNotifier {
     }
 
     //send switched
-    if (switchable) device.communication.sendSlotEnabledState(slot);
+    if (switchable && distinctCCodes) {
+      device.communication.sendSlotEnabledState(slot);
+    }
   }
 
   void sendFullPresetSettings() {
@@ -438,7 +445,7 @@ class NuxDeviceControl extends ChangeNotifier {
       outVal = param.midiValue;
     }
     var data = createCCMessage(param.midiCC, outVal);
-    if (!returnOnly) _midiHandler.sendData(data);
+    if (!returnOnly) sendBLEData(data);
     return data;
   }
 
@@ -451,7 +458,7 @@ class NuxDeviceControl extends ChangeNotifier {
       if (vol < 100) masterVolume = 100;
     }
 
-    device.communication.saveCurrentPreset();
+    device.communication.saveCurrentPreset(device.selectedChannel);
 
     if (device.fakeMasterVolume) {
       masterVolume = vol;
@@ -472,6 +479,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void sendBLEData(List<int> data) {
+    print("OUT -> ${data.toString()}");
     _midiHandler.sendData(data);
   }
 

@@ -361,6 +361,7 @@ class MidiMessageValues {
 class SysexPrivacy {
   final int _value;
   const SysexPrivacy._internal(this._value);
+  @override
   toString() => '$_value';
   toInt() => _value;
 
@@ -374,6 +375,7 @@ class SysexPrivacy {
 class SyxMsg {
   final int _value;
   const SyxMsg._internal(this._value);
+  @override
   toString() => '$_value';
   toInt() => _value;
 

@@ -62,7 +62,7 @@ abstract class DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
-  void saveCurrentPreset();
+  void saveCurrentPreset(int index);
 
   void sendActiveChannels(List<bool> channels) {}
   void sendSlotOrder() {}

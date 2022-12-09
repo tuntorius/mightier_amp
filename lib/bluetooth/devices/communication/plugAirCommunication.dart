@@ -63,7 +63,7 @@ class PlugAirCommunication extends DeviceCommunication {
   }
 
   @override
-  void saveCurrentPreset() {
+  void saveCurrentPreset(int index) {
     var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
     device.deviceControl.sendBLEData(data);
   }
@@ -219,7 +219,8 @@ class PlugAirCommunication extends DeviceCommunication {
     //eco mode is 12
     if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
       //current preset is located here
-      device.setSelectedChannelNuxIndex(data[4], false);
+      device.setSelectedChannelNuxIndex(data[4],
+          notifyBT: false, notifyUI: false, sendFullPreset: false);
       config.btEq = data[10];
       config.ecoMode = data[12] != 0;
       connectionStepReady();

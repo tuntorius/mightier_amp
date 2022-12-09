@@ -253,8 +253,9 @@ class _EffectSelectorState extends State<EffectSelector> {
                       icon: Transform.rotate(
                           angle: pi,
                           child: Icon(Icons.play_arrow,
-                              color:
-                                  TinyColor(_effectColor).brighten(20).color)),
+                              color: TinyColor.fromColor(_effectColor)
+                                  .brighten(20)
+                                  .color)),
                       iconSize: 30,
                     ),
                   if (_effectItems.length > 1)
@@ -267,18 +268,22 @@ class _EffectSelectorState extends State<EffectSelector> {
                         setSelectedEffect(effect);
                       },
                       icon: Icon(Icons.play_arrow,
-                          color: TinyColor(_effectColor).brighten(20).color),
+                          color: TinyColor.fromColor(_effectColor)
+                              .brighten(20)
+                              .color),
                       iconSize: 30,
                     ),
                   if (_preset.slotSwitchable(_selectedSlot))
                     Tooltip(
-                      message: "Enable effect",
+                      message: "Toggle ${effectInfo.longName}",
                       child: Switch(
                         value: _preset.slotEnabled(_selectedSlot),
                         onChanged: (val) {
                           _setSlotEnabledState(_selectedSlot, val);
                         },
-                        activeColor: TinyColor(_effectColor).brighten(20).color,
+                        activeColor: TinyColor.fromColor(_effectColor)
+                            .brighten(20)
+                            .color,
                         inactiveThumbColor: Colors.grey,
                         inactiveTrackColor: Colors.grey[700],
                       ),

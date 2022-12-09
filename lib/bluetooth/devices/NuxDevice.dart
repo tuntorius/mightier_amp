@@ -143,14 +143,16 @@ abstract class NuxDevice extends ChangeNotifier {
     if (deviceControl.isConnected) sendAmpLevel();
   }
 
-  void setSelectedChannelNuxIndex(int chan, bool notify) {
+  void setSelectedChannelNuxIndex(int chan,
+      {required bool notifyBT,
+      required bool sendFullPreset,
+      required bool notifyUI}) {
     selectedChannelP = chan;
-    presetChangedNotifier.value = selectedChannelP;
-    //notify ui for change
-    if (notify) {
-      deviceControl.sendFullPresetSettings();
-      notifyListeners();
-    }
+    if (notifyBT) presetChangedNotifier.value = selectedChannelP;
+
+    if (sendFullPreset) deviceControl.sendFullPresetSettings();
+    if (notifyUI) notifyListeners();
+    if (deviceControl.isConnected) sendAmpLevel();
   }
 
   bool getChannelActive(int channel) {
@@ -291,8 +293,8 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void onPresetsReady() {
     if (!activeChannelRetrieval) {
-      deviceControl.changeDevicePreset(0);
-      setSelectedChannelNuxIndex(0, true);
+      setSelectedChannelNuxIndex(0,
+          notifyBT: true, notifyUI: true, sendFullPreset: true);
     }
     deviceControl.onPresetsReady();
     nuxPresetsReceived = true;
@@ -309,11 +311,13 @@ abstract class NuxDevice extends ChangeNotifier {
       }
     }
     if (newIndex == index) {
-      setSelectedChannelNuxIndex(index, true);
+      setSelectedChannelNuxIndex(index,
+          notifyBT: false, notifyUI: true, sendFullPreset: true);
     } else {
       //skipped - update ui
+      setSelectedChannelNuxIndex(newIndex,
+          notifyBT: true, sendFullPreset: true, notifyUI: true);
       selectedChannelNormalized = newIndex;
-      deviceControl.presetChangedListener();
     }
 
     //immediately set the amp level
@@ -321,6 +325,8 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   void _handleKnobReceiveData(List<int> data) {
+    if (data.length < 3) return;
+
     //scan through the effects to find which one is controlled
     var preset = getPreset(selectedChannel);
     for (int i = 0; i < effectsChainLength; i++) {
@@ -384,7 +390,7 @@ abstract class NuxDevice extends ChangeNotifier {
         }
         break;
       case MidiMessageValues.programChange:
-        _handleChannelChange(data[1]);
+        if (data[1] < channelsCount) _handleChannelChange(data[1]);
         break;
       case MidiMessageValues.controlChange:
         if (data[1] == channelChangeCC) {
@@ -540,8 +546,8 @@ abstract class NuxDevice extends ChangeNotifier {
       var category = PresetsStorage().findCategoryOfPreset(preset);
       presetCategory = category!["name"];
       presetUUID = preset["uuid"];
-      setSelectedChannelNuxIndex(nuxChannel, false);
-      deviceControl.changeDevicePreset(nuxChannel);
+      setSelectedChannelNuxIndex(nuxChannel,
+          notifyBT: true, notifyUI: true, sendFullPreset: false);
     }
 
     Preset p;

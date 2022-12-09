@@ -29,6 +29,11 @@ class PlugProCommunication extends DeviceCommunication {
   int _readyPresetsCount = 0;
   int _readyIRsCount = 0;
 
+  //use this, because when the app sends the order, the amp answers sends it back,
+  //however, it must be ignored in this case, but not in other cases.
+  //This DateTime is used for that
+  DateTime _lastEffectReorder = DateTime.now();
+
   @override
   NuxPlugProConfiguration get config => super.config as NuxPlugProConfiguration;
 
@@ -85,9 +90,12 @@ class PlugProCommunication extends DeviceCommunication {
   }
 
   @override
-  void saveCurrentPreset() {
-    var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
-        SyxMsg.kSYX_SPEC_CMD, SyxDir.kSYXDIR_SET, [SysCtrlState.syscmd_save]);
+  void saveCurrentPreset(int index) {
+    var data = createSysExMessagePro(
+        SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_SPEC_CMD,
+        SyxDir.kSYXDIR_SET,
+        [SysCtrlState.syscmd_save, index]);
 
     device.deviceControl.sendBLEData(data);
   }
@@ -223,6 +231,7 @@ class PlugProCommunication extends DeviceCommunication {
     var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_MODULELINK, SyxDir.kSYXDIR_SET, nuxOrder);
     device.deviceControl.sendBLEData(data);
+    _lastEffectReorder = DateTime.now();
   }
 
   void sendChannelVolume(int value) {
@@ -473,6 +482,11 @@ class PlugProCommunication extends DeviceCommunication {
   }
 
   bool _handleEffectsOrderData(List<int> data) {
+    var dt = DateTime.now();
+    if (dt.difference(_lastEffectReorder).inMilliseconds < 3000) {
+      return true;
+    }
+
     if (data[0] == SyxDir.kSYXDIR_REQ) {
       var len = data[1];
       var preset = device.getPreset(device.selectedChannel);
@@ -696,7 +710,8 @@ const z = {
                   //current preset is sent 3 times, check it's the 3rd time
                   //to proceed with connection
                   if (data[9] == 0x32) {
-                    device.setSelectedChannelNuxIndex(data[8], false);
+                    device.setSelectedChannelNuxIndex(data[8],
+                        notifyBT: false, notifyUI: true, sendFullPreset: false);
                     debugPrint("Current preset connection step ready");
                     connectionStepReady();
                   }

@@ -17,7 +17,7 @@ class HotkeysMainPage extends StatelessWidget {
         children: [
           ListTile(
             title: const Text("Channel Hotkeys"),
-            trailing: const Icon(Icons.arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => HotkeysSetup(
                       controller: controller,
@@ -26,7 +26,7 @@ class HotkeysMainPage extends StatelessWidget {
           ),
           ListTile(
             title: const Text("Effect On/Off Hotkeys"),
-            trailing: const Icon(Icons.arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => HotkeysSetup(
                       controller: controller,
@@ -35,7 +35,7 @@ class HotkeysMainPage extends StatelessWidget {
           ),
           ListTile(
               title: const Text("Parameter Hotkeys"),
-              trailing: const Icon(Icons.arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => HotkeysSetup(
                         controller: controller,

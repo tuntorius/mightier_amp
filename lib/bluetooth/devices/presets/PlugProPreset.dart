@@ -126,7 +126,8 @@ class PlugProPreset extends Preset {
       STSinger(),
     ]);
 
-    bool showHiddenAmps = SharedPrefs().getInt(SettingsKeys.hiddenAmps, 0) != 0;
+    bool showHiddenAmps =
+        SharedPrefs().getInt(SettingsKeys.hiddenAmps, 0) != 0 || kDebugMode;
     amplifierList.addAll([
       JazzClean(),
       DeluxeRvb(),
@@ -318,8 +319,9 @@ class PlugProPreset extends Preset {
   }
 
   int? getSlotIndexFromNuxIndex(int nuxIndex) {
-    for (int i = 0; i < processorAtSlot.length; i++)
+    for (int i = 0; i < processorAtSlot.length; i++) {
       if (processorAtSlot[i] == nuxIndex) return i;
+    }
     return null;
   }
 

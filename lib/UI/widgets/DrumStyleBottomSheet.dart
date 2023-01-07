@@ -45,8 +45,6 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
   void _onCategoryChanged(int value, bool userGenerated) {
     categoriesIndex = value;
 
-    //print("remote $remote, remoteChangeStyle $remoteChangeCategory");
-
     if (userGenerated) {
       var key = categoriesList[categoriesIndex];
       var firstKey = widget.styleMap[key]!.keys.first as String;
@@ -90,6 +88,7 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
               child: Text(
                 "Select Style",
                 textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20),
               ),
             ),
           ),

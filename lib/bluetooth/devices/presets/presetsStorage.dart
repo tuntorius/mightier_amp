@@ -255,6 +255,8 @@ class PresetsStorage extends ChangeNotifier {
 
     var movedItem = presetsData[oldListIndex]["presets"].removeAt(oldItemIndex);
     presetsData[newListIndex]["presets"].insert(newItemIndex, movedItem);
+
+    _savePresets();
     return true;
   }
 

@@ -161,7 +161,7 @@ class _TracksPageState extends State<TracksPage>
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
     _showHiddenSources =
-        SharedPrefs().getInt(SettingsKeys.hiddenSources, 0) != 0;
+        SharedPrefs().getInt(SettingsKeys.hiddenSources, 0) != 0 || kDebugMode;
     querySongs();
   }
 
@@ -334,7 +334,8 @@ class _TracksPageState extends State<TracksPage>
 
   void addFromOnlineSource(BuildContext context) {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => OnlineSourceSearch()))
+        .push(
+            MaterialPageRoute(builder: (context) => const OnlineSourceSearch()))
         .then((value) {
       if (value is List<OnlineTrack>) {
         for (int i = 0; i < value.length; i++) {

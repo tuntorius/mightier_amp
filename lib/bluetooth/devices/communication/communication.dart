@@ -99,7 +99,7 @@ abstract class DeviceCommunication {
   }
 
   List<int> createPCMessage(int programNumber) {
-    var msg = List<int>.filled(5, 0);
+    var msg = List<int>.filled(4, 0);
     msg[0] = 0x80;
     msg[1] = 0x80;
     msg[2] = MidiMessageValues.programChange;

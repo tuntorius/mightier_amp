@@ -75,7 +75,7 @@ class NuxMightyPlugPro extends NuxDevice {
   @override
   String get productIconLabel => "PLUG\nPRO";
   @override
-  List<String> get productBLENames => ["MIGHTY PLUG PRO"];
+  List<String> get productBLENames => ["MIGHTY PLUG PRO", "MIGHTY SPACE"];
 
   @override
   int get channelsCount => 7;
@@ -126,7 +126,7 @@ class NuxMightyPlugPro extends NuxDevice {
   @override
   bool get nativeActiveChannelsSupport => true;
   @override
-  int get channelChangeCC => MidiCCValues.bCC_CtrlType;
+  int get channelChangeCC => -1;
   @override
   ValueFormatter? get decibelFormatter => ValueFormatters.decibelMPPro;
 

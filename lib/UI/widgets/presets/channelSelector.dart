@@ -138,9 +138,8 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),
         child: GestureDetector(
             onTap: () {
-              widget.device.selectedChannelNormalized = i;
-              NuxDeviceControl.instance().sendFullPresetSettings();
-              NuxDeviceControl.instance().forceNotifyListeners();
+              widget.device.setSelectedChannel(i,
+                  notifyBT: true, sendFullPreset: true, notifyUI: true);
             },
             onLongPress: () {
               widget.device.toggleChannelActive(i);

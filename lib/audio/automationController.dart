@@ -48,6 +48,8 @@ class AutomationController {
 
   bool get loopEnable => _forceLoopDisable ? false : track.loopEnable;
 
+  StreamSubscription<Duration>? _positionSubscription;
+
   set loopEnable(val) {
     track.loopEnable = val;
     _currentLoop = 0;
@@ -76,7 +78,7 @@ class AutomationController {
   //editor use only. don't serialize
   AutomationEvent? selectedEvent;
 
-  Future setAudioFile(String path, int positionResolution) async {
+  Future setAudioFile(String path, int positionEventSkips) async {
     path = await SourceResolver.getSourceUrl(path);
     var source = ProgressiveAudioSource(Uri.parse(path));
     await player.setAudioSource(source);
@@ -90,15 +92,15 @@ class AutomationController {
     setSpeed(speed);
     setPitch(pitch);
 
-    //force 1ms precision. It's needed for accurate event switch
-    player
+    //force 10ms precision. It's needed for accurate event switch
+    _positionSubscription = player
         .createPositionStream(
-            steps: 99999999999,
-            minPeriod: const Duration(microseconds: 1),
-            maxPeriod: const Duration(milliseconds: 200))
+            steps: 1,
+            minPeriod: const Duration(milliseconds: 5),
+            maxPeriod: const Duration(milliseconds: 5))
         .listen(playPositionUpdate);
 
-    _positionResolution = max(1, positionResolution);
+    _positionResolution = max(1, positionEventSkips);
   }
 
   void setTrackCompleteEvent(Function onComplete) {
@@ -168,7 +170,7 @@ class AutomationController {
 
     switch (event.type) {
       case AutomationEventType.preset:
-        if (kDebugMode) print("Changing preset ${event.name}");
+        debugPrint("Changing preset ${event.name}");
         var preset = event.getPreset();
         if (preset != null && preset["product_id"] == device.productStringId) {
           device.presetFromJson(
@@ -345,6 +347,7 @@ class AutomationController {
   }
 
   Future dispose() async {
+    _positionSubscription?.cancel();
     await player.stop();
     await player.dispose();
     _positionController.close();

@@ -40,7 +40,12 @@ class DummyBLEController extends BLEController {
   void stopScanning() {}
 
   @override
-  Future writeToCharacteristic(List<int> data) {
+  Future writeToCharacteristic(List<int> data, bool noResponse) {
+    return Future.delayed(const Duration(milliseconds: 100));
+  }
+
+  @override
+  Future setNotificationEnabled(bool enabled) {
     return Future.delayed(const Duration(milliseconds: 100));
   }
 }

@@ -11,6 +11,7 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:qr_utils/qr_utils.dart';
 
 import '../NuxDeviceControl.dart';
+import '../bleMidiHandler.dart';
 import "NuxConstants.dart";
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
@@ -137,16 +138,16 @@ abstract class NuxDevice extends ChangeNotifier {
     return processorList[index];
   }
 
-  set selectedChannelNormalized(int chan) {
-    selectedChannelP = chan;
-    presetChangedNotifier.value = selectedChannelP;
-    if (deviceControl.isConnected) sendAmpLevel();
-  }
-
-  void setSelectedChannelNuxIndex(int chan,
+  void setSelectedChannel(int chan,
       {required bool notifyBT,
       required bool sendFullPreset,
       required bool notifyUI}) {
+    if (chan >= channelsCount) {
+      debugPrint(
+          "setSelectedChannel error: trying to set to invalid channel $chan");
+      chan = 0;
+    }
+
     selectedChannelP = chan;
     if (notifyBT) presetChangedNotifier.value = selectedChannelP;
 
@@ -293,7 +294,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void onPresetsReady() {
     if (!activeChannelRetrieval) {
-      setSelectedChannelNuxIndex(0,
+      setSelectedChannel(0,
           notifyBT: true, notifyUI: true, sendFullPreset: true);
     }
     deviceControl.onPresetsReady();
@@ -304,20 +305,22 @@ abstract class NuxDevice extends ChangeNotifier {
     var newIndex = index;
 
     if (!nativeActiveChannelsSupport) {
+      int attempts = 0;
       //channel skipping
       while (config.activeChannels[newIndex] == false) {
         newIndex++;
+        attempts++;
         if (newIndex == channelsCount) newIndex = 0;
+        if (attempts > 7) break;
       }
     }
     if (newIndex == index) {
-      setSelectedChannelNuxIndex(index,
+      setSelectedChannel(index,
           notifyBT: false, notifyUI: true, sendFullPreset: true);
     } else {
       //skipped - update ui
-      setSelectedChannelNuxIndex(newIndex,
+      setSelectedChannel(newIndex,
           notifyBT: true, sendFullPreset: true, notifyUI: true);
-      selectedChannelNormalized = newIndex;
     }
 
     //immediately set the amp level
@@ -542,11 +545,12 @@ abstract class NuxDevice extends ChangeNotifier {
     var nuxChannel = preset["channel"];
 
     if (!qrOnly) {
+      BLEMidiHandler.instance().clearDataQueue();
       presetName = preset["name"];
       var category = PresetsStorage().findCategoryOfPreset(preset);
       presetCategory = category!["name"];
       presetUUID = preset["uuid"];
-      setSelectedChannelNuxIndex(nuxChannel,
+      setSelectedChannel(nuxChannel,
           notifyBT: true, notifyUI: true, sendFullPreset: false);
     }
 
@@ -570,7 +574,6 @@ abstract class NuxDevice extends ChangeNotifier {
           index++;
         }
       }
-      if (!qrOnly) communication.sendSlotOrder();
     }
 
     //parse selected effects and apply them
@@ -598,6 +601,12 @@ abstract class NuxDevice extends ChangeNotifier {
         }
       }
     }
+
+    //send slot order last, because it's a message with a response
+    //and due to a bug in android ble stack causing a race condition
+    //it screws up the connection
+    if (!qrOnly) communication.sendSlotOrder();
+
     //update widgets
     if (!qrOnly) {
       notifyListeners();

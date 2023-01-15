@@ -7,11 +7,10 @@ State: works somewhat
 
 The plugin works, but is not very reliable. Can't determine if the platform
 has bluetooth hardware or not. Connects half of the time, sometimes disconnects
-in 1-2 minutes of inactivity. This may be due to the very early staage of
+in 1-2 minutes of inactivity. This may be due to the very early stage of
 web bluetooth standard. 
 */
 
-/*
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_web_bluetooth/flutter_web_bluetooth.dart';
@@ -162,9 +161,13 @@ class WebBleController extends BLEController {
   bool get isWriteReady => _characteristic != null;
 
   @override
-  Future writeToCharacteristic(List<int> data) async {
+  Future writeToCharacteristic(List<int> data, noResponse) async {
     Uint8List byteData = Uint8List.fromList(data);
-    return _characteristic!.writeValueWithoutResponse(byteData);
+    if (noResponse) {
+      return _characteristic!.writeValueWithoutResponse(byteData);
+    } else {
+      return _characteristic!.writeValueWithResponse(byteData);
+    }
   }
 
   @override
@@ -190,4 +193,3 @@ class WebBleController extends BLEController {
     });
   }
 }
-*/

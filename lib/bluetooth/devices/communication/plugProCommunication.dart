@@ -710,7 +710,7 @@ const z = {
                   //current preset is sent 3 times, check it's the 3rd time
                   //to proceed with connection
                   if (data[9] == 0x32) {
-                    device.setSelectedChannelNuxIndex(data[8],
+                    device.setSelectedChannel(data[8],
                         notifyBT: false, notifyUI: true, sendFullPreset: false);
                     debugPrint("Current preset connection step ready");
                     connectionStepReady();

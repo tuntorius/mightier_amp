@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+
+import '../devices/NuxConstants.dart';
 
 enum MidiSetupStatus {
   bluetoothOff,
@@ -116,12 +119,26 @@ abstract class BLEController {
     if (queueLength == 0) _queueSender();
   }
 
+  void clearDataQueue() {
+    dataQueue.clear();
+  }
+
+  VoidCallback? _onQueueEmpty;
+
+  void onDataQueueEmpty(VoidCallback onQueueEmpty) {
+    if (dataQueue.isEmpty)
+      onQueueEmpty.call();
+    else {
+      _onQueueEmpty = onQueueEmpty;
+    }
+  }
+
   void dispose();
 
   void _queueSender() async {
     //Stopwatch stopwatch = Stopwatch()..start();
     //List<int> currentData = List<int>();
-
+    bool noResponse = true;
     while (dataQueue.isNotEmpty) {
       if (connectedDevice == null) {
         dataQueue.clear();
@@ -130,15 +147,56 @@ abstract class BLEController {
       try {
         if (isWriteReady) {
           var data = dataQueue.first;
-          await writeToCharacteristic(data);
+
+          //try to combine CC messages in single running message
+          //default MTU 23 bytes per packet (maybe 20???)
+          /*int elementsCount = 0;
+          if ((data[2] == MidiMessageValues.controlChange ||
+                  data[2] == MidiMessageValues.programChange) &&
+              dataQueue.length > 1) {
+            for (var element in dataQueue) {
+              if (element[2] == MidiMessageValues.controlChange ||
+                  element[2] == MidiMessageValues.programChange) {
+                elementsCount++;
+                if (elementsCount == 2) break;
+              } else {
+                break;
+              }
+            }
+            List<int> dataPacket = [data[0], data[1], data[2]];
+            for (int i = 0; i < elementsCount; i++) {
+              var dataElement = dataQueue.elementAt(i);
+              dataPacket.add(dataElement[3]);
+              dataPacket.add(dataElement[4]);
+            }
+            await writeToCharacteristic(dataPacket);
+            print("Combined: ${dataPacket.toString()}");
+            for (int i = 0; i < elementsCount; i++) {
+              dataQueue.removeFirst();
+            }
+          } else {*/
+          //any other message
+          if (data[2] == MidiMessageValues.sysExStart &&
+              data[6] == SyxMsg.kSYX_MODULELINK) {
+            noResponse = false;
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
+          await writeToCharacteristic(data, noResponse);
+          //await Future.delayed(const Duration(milliseconds: 50));
+          noResponse = true;
           dataQueue.removeFirst();
+          //}
         } else {
           dataQueue.clear();
         }
       } catch (e) {
         debugPrint(e.toString());
+        //noResponse = false;
+        //await Future.delayed(const Duration(milliseconds: 50));
       }
     }
+    _onQueueEmpty?.call();
+    _onQueueEmpty = null;
     // if (kDebugMode) {
     //   Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
     // }
@@ -157,5 +215,5 @@ abstract class BLEController {
   }
 
   bool get isWriteReady;
-  Future writeToCharacteristic(List<int> data);
+  Future writeToCharacteristic(List<int> data, bool noResponse);
 }

@@ -219,7 +219,7 @@ class PlugAirCommunication extends DeviceCommunication {
     //eco mode is 12
     if (data[data.length - 1] == MidiMessageValues.sysExEnd) {
       //current preset is located here
-      device.setSelectedChannelNuxIndex(data[4],
+      device.setSelectedChannel(data[4],
           notifyBT: false, notifyUI: false, sendFullPreset: false);
       config.btEq = data[10];
       config.ecoMode = data[12] != 0;

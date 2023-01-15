@@ -418,6 +418,7 @@ class NuxDeviceControl extends ChangeNotifier {
   void sendFullPresetSettings() {
     if (!isConnected) return;
 
+    BLEMidiHandler.instance().clearDataQueue();
     if (!device.fakeMasterVolume) {
       device.presets[device.selectedChannel].sendVolume();
     }

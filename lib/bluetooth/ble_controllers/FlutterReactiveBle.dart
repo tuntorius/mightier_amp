@@ -1,34 +1,28 @@
+
 /*
-The original plugin used in Mightier Amp. For Android and iOS
-https://pub.dev/packages/flutter_blue_plus
-
-This plugin works great. Unfortunately it's only for mobile platforms.
-MacOS is possible, due to almost 100% identical code to iOS
-*/
-
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mighty_plug_manager/bluetooth/ble_controllers/BLEController.dart';
 
-class FBPScanResult extends BLEScanResult {
+class FRBScanResult extends BLEScanResult {
   @override
-  String get id => (device as FBPBleDevice).device.id.toString().toLowerCase();
+  String get id => (device as FRBleDevice).id.toString().toLowerCase();
 
   @override
-  String get name => (device as FBPBleDevice).device.name;
+  String get name => (device as FRBleDevice).name;
 
-  FBPScanResult(ScanResult sr) {
-    device = FBPBleDevice(sr.device);
+  FRBScanResult(DiscoveredDevice sr) {
+    device = FRBleDevice(sr);
   }
 }
 
-class FBPBleDevice extends BLEDevice {
-  final BluetoothDevice _device;
-  BluetoothDevice get device => _device;
+class FRBleDevice extends BLEDevice {
+  final DiscoveredDevice _device;
+  DiscoveredDevice get device => _device;
 
-  FBPBleDevice(this._device);
+  FRBleDevice(this._device);
 
   @override
   String get name => _device.name;
@@ -63,10 +57,10 @@ class FBPBleDevice extends BLEDevice {
   }
 }
 
-class FlutterBluePlusController extends BLEController {
-  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+class FlutterReactiveBleController extends BLEController {
+  FlutterReactiveBle flutterBlue = FlutterReactiveBle();
 
-  FBPBleDevice? _device;
+  FRBleDevice? _device;
   @override
   BLEDevice? get connectedDevice => _device;
   BluetoothCharacteristic? _midiCharacteristic;
@@ -77,11 +71,12 @@ class FlutterBluePlusController extends BLEController {
   StreamSubscription<BluetoothState>? _bluetoothStateSubscription;
   StreamSubscription<List<ScanResult>>? _scanSubscription;
 
-  FlutterBluePlusController(List<String> forcedDevices) : super(forcedDevices);
+  FlutterReactiveBleController(List<String> forcedDevices)
+      : super(forcedDevices);
 
   @override
-  Future<bool> isAvailable() {
-    return flutterBlue.isAvailable;
+  Future<bool> isAvailable() async {
+    return true;
   }
 
   @override
@@ -96,6 +91,11 @@ class FlutterBluePlusController extends BLEController {
   void startScanning() {
     if (bleState == BleState.off) return;
     setMidiSetupStatus(MidiSetupStatus.deviceSearching);
+
+    flutterBlue.scanForDevices(
+      withServices: [],
+    );
+
     flutterBlue
         .startScan(
       timeout: const Duration(seconds: 8),
@@ -219,23 +219,24 @@ class FlutterBluePlusController extends BLEController {
   }
 
   _subscribeBleState() {
-    _bluetoothStateSubscription = flutterBlue.state.listen((event) {
+    _bluetoothStateSubscription = flutterBlue.statusStream.listen((event) {
       debugPrint(event.toString());
       switch (event) {
-        case BluetoothState.unknown:
-        case BluetoothState.unavailable:
-        case BluetoothState.unauthorized:
+        case BleStatus.unknown:
+        case BleStatus.poweredOff:
+        case BleStatus.unauthorized:
+        case BleStatus.unsupported:
+        case BleStatus.locationServicesDisabled:
           bleState = BleState.off;
           setMidiSetupStatus(MidiSetupStatus.bluetoothOff);
           break;
-        case BluetoothState.turningOn:
-        case BluetoothState.on:
+        case BleStatus.ready:
           bleState = BleState.on;
           setMidiSetupStatus(MidiSetupStatus.deviceSearching);
           startScanning();
           break;
-        case BluetoothState.turningOff:
-          flutterBlue.stopScan();
+        case BleStatus.poweredOff:
+          //flutterBlue.
           break;
         case BluetoothState.off:
           bleState = BleState.off;
@@ -247,63 +248,50 @@ class FlutterBluePlusController extends BLEController {
     });
   }
 
-  _subscribeScanningStatus() {
-    _scanningStatusSubscription = flutterBlue.isScanning.listen((event) {
-      setScanningStatus(event);
-    });
-  }
+  _onScanResults(DiscoveredDevice result) {
+    List<DiscoveredDevice> nuxDevices = [];
+    List<DiscoveredDevice> controllerDevices = [];
+    //filter the scan results
+    var devNames = deviceListProvider.call();
 
-  _subscribeScanResults() {
-    _scanSubscription = flutterBlue.scanResults.listen((results) {
-      List<ScanResult> nuxDevices = <ScanResult>[];
-      List<ScanResult> controllerDevices = <ScanResult>[];
-      //filter the scan results
-      var devNames = deviceListProvider.call();
-
-      for (ScanResult result in results) {
-        if (devNames.contains(result.device.name)) {
-          nuxDevices.add(result);
-        } else {
-          bool validDevice = false;
-          //check if it advertises the MIDI service
-          for (var uuid in result.advertisementData.serviceUuids) {
-            if (uuid.toLowerCase() == BLEController.midiServiceGuid) {
-              validDevice = true;
-            }
-          }
-
-          //check if it is in the special device list
-          if (validDevice ||
-              forcedDevices.contains(result.advertisementData.localName) ||
-              forcedDevices.contains(result.device.name)) {
-            controllerDevices.add(result);
-          }
+    if (devNames.contains(result.name)) {
+      nuxDevices.add(result);
+    } else {
+      bool validDevice = false;
+      //check if it advertises the MIDI service
+      for (var uuid in result.serviceUuids) {
+        if (uuid.toString().toLowerCase() == BLEController.midiServiceGuid) {
+          validDevice = true;
         }
       }
-      //convert to blescanresult
-      List<BLEScanResult> nuxBle = [], ctrlBle = [];
-      for (var dev in nuxDevices) {
-        nuxBle.add(FBPScanResult(dev));
+
+      //check if it is in the special device list
+      if (validDevice || forcedDevices.contains(result.name)) {
+        controllerDevices.add(result);
       }
-      for (var dev in controllerDevices) {
-        ctrlBle.add(FBPScanResult(dev));
-      }
-      onScanResults(nuxBle, ctrlBle);
-      setMidiSetupStatus(MidiSetupStatus.deviceFound);
-      for (ScanResult r in results) {
-        debugPrint('${r.device.name} found! rssi: ${r.rssi}');
-      }
-    });
+    }
+
+    //convert to blescanresult
+    List<BLEScanResult> nuxBle = [], ctrlBle = [];
+    for (var dev in nuxDevices) {
+      nuxBle.add(FBPScanResult(dev));
+    }
+    for (var dev in controllerDevices) {
+      ctrlBle.add(FBPScanResult(dev));
+    }
+    onScanResults(nuxBle, ctrlBle);
+    setMidiSetupStatus(MidiSetupStatus.deviceFound);
+    for (ScanResult r in results) {
+      debugPrint('${r.device.name} found! rssi: ${r.rssi}');
+    }
   }
 
   @override
   bool get isWriteReady => _midiCharacteristic != null;
 
   @override
-  Future writeToCharacteristic(List<int> data, bool noResponse) async {
-    bool withoutResponse = noResponse;
-    //wait for response on sysex messages
-    //if (data[2] == 0xf0) withoutResponse = false;
-    return _midiCharacteristic!.write(data, withoutResponse: withoutResponse);
+  Future writeToCharacteristic(List<int> data) async {
+    return _midiCharacteristic!.write(data, withoutResponse: true);
   }
 }
+*/

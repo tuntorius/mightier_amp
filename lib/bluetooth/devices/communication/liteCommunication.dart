@@ -72,7 +72,7 @@ class LiteCommunication extends DeviceCommunication {
   @override
   void performNextConnectionStep() {
     connectionStepReady();
-    device.setSelectedChannelNuxIndex(0,
+    device.setSelectedChannel(0,
         notifyBT: true, notifyUI: true, sendFullPreset: true);
   }
 }

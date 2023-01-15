@@ -5,11 +5,15 @@
 //https://support.chefsteps.com/hc/en-us/articles/360009480814-I-have-an-Android-Why-am-I-being-asked-to-allow-location-access-
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:mighty_ble/mighty_ble.dart';
+import 'package:mighty_plug_manager/bluetooth/ble_controllers/MightyBle.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'ble_controllers/DummyBLEController.dart';
 import 'ble_controllers/FlutterBluePlusController.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../platform/platformUtils.dart';
 import 'ble_controllers/BLEController.dart';
+import 'ble_controllers/WebBleController.dart';
 
 typedef BluetoothErrorCallback = void Function(BleError, dynamic data);
 
@@ -56,10 +60,15 @@ class BLEMidiHandler {
   }
 
   BLEMidiHandler._() {
-    if (PlatformUtils.isMobile) {
+    //bleController = DummyBLEController(forcedDevices);
+    //return;
+
+    if (PlatformUtils.isAndroid) {
+      bleController = FlutterBluePlusController(forcedDevices);
+    } else if (PlatformUtils.isIOS) {
       bleController = FlutterBluePlusController(forcedDevices);
     } else if (PlatformUtils.isWeb) {
-      bleController = DummyBLEController(forcedDevices);
+      bleController = WebBleController(forcedDevices);
     } else if (PlatformUtils.isWindows) {
       bleController = DummyBLEController(forcedDevices);
     } else if (PlatformUtils.isLinux) {
@@ -70,22 +79,35 @@ class BLEMidiHandler {
   }
 
   initBle(BluetoothErrorCallback onError) async {
+    var deviceInfoPlugin = DeviceInfoPlugin();
+    bool noLocationNeeded = false;
+
+    //TODO: what happens with iOS?
+    if (PlatformUtils.isAndroid) {
+      final androidInfo = await deviceInfoPlugin.androidInfo;
+      noLocationNeeded = (androidInfo.version.sdkInt ?? 0) >= 31;
+    }
+
     if (PlatformUtils.isMobile) {
       PermissionStatus pStatus;
       bool askOneTime = false;
-      do {
-        pStatus = await Permission.location.status;
-        if (pStatus.isGranted) break;
-        if (!askOneTime) {
-          pStatus = await Permission.location.request();
-          if (pStatus.isPermanentlyDenied) _permanentlyDenied = true;
-          askOneTime = true;
-          if (!pStatus.isGranted) {
-            onError(BleError.permissionDenied, pStatus);
+      if (noLocationNeeded) {
+        pStatus = PermissionStatus.granted;
+      } else {
+        do {
+          pStatus = await Permission.location.status;
+          if (pStatus.isGranted) break;
+          if (!askOneTime) {
+            pStatus = await Permission.location.request();
+            if (pStatus.isPermanentlyDenied) _permanentlyDenied = true;
+            askOneTime = true;
+            if (!pStatus.isGranted) {
+              onError(BleError.permissionDenied, pStatus);
+            }
           }
-        }
-        Future.delayed(const Duration(milliseconds: 500));
-      } while (!pStatus.isGranted);
+          Future.delayed(const Duration(milliseconds: 500));
+        } while (!pStatus.isGranted);
+      }
     }
     debugPrint("Location permission granted!");
     _granted = true;
@@ -98,7 +120,7 @@ class BLEMidiHandler {
       onError(BleError.unavailable, null);
     }
 
-    if (PlatformUtils.isMobile) {
+    if (PlatformUtils.isMobile && !noLocationNeeded) {
       ServiceStatus ss = await Permission.location.serviceStatus;
 
       if (!ss.isEnabled) {
@@ -142,6 +164,14 @@ class BLEMidiHandler {
   StreamSubscription<List<int>> registerDataListener(
       Function(List<int>) listener) {
     return bleController.registerDataListener(listener);
+  }
+
+  void clearDataQueue() {
+    bleController.clearDataQueue();
+  }
+
+  void onDataQueueEmpty(VoidCallback onEmpty) {
+    bleController.onDataQueueEmpty(onEmpty);
   }
 
   void sendData(List<int> data) {

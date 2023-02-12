@@ -52,37 +52,49 @@ class ControllerHotkey {
         break;
       case HotkeyControl.EffectSlotEnable:
         var p = device.getPreset(device.selectedChannel);
-        p.setSlotEnabled(index, true, true);
-        NuxDeviceControl.instance().forceNotifyListeners();
+        var proc = p.getSlotIndexFromNuxIndex(index);
+        if (proc != null) {
+          p.setSlotEnabled(proc, true, true);
+          NuxDeviceControl.instance().forceNotifyListeners();
+        }
         break;
       case HotkeyControl.EffectSlotDisable:
         var p = device.getPreset(device.selectedChannel);
-        p.setSlotEnabled(index, false, true);
-        NuxDeviceControl.instance().forceNotifyListeners();
+        var proc = p.getSlotIndexFromNuxIndex(index);
+        if (proc != null) {
+          p.setSlotEnabled(proc, false, true);
+          NuxDeviceControl.instance().forceNotifyListeners();
+        }
         break;
       case HotkeyControl.EffectSlotToggle:
         var p = device.getPreset(device.selectedChannel);
-        p.setSlotEnabled(index, !p.slotEnabled(index), true);
-        NuxDeviceControl.instance().forceNotifyListeners();
+        var proc = p.getSlotIndexFromNuxIndex(index);
+        if (proc != null) {
+          p.setSlotEnabled(proc, !p.slotEnabled(proc), true);
+          NuxDeviceControl.instance().forceNotifyListeners();
+        }
         break;
       case HotkeyControl.ParameterSet:
         var p = device.getPreset(device.selectedChannel);
-        var effect =
-            p.getEffectsForSlot(index)[p.getSelectedEffectForSlot(index)];
+        var proc = p.getSlotIndexFromNuxIndex(index);
+        if (proc != null) {
+          var effect =
+              p.getEffectsForSlot(proc)[p.getSelectedEffectForSlot(proc)];
 
-        //warning: this might be more specific value - not to percentage
-        //or the value might be pitch bend which is 14 bit
-        double val = ((value ?? 0) / 127) * 100;
+          //warning: this might be more specific value - not to percentage
+          //or the value might be pitch bend which is 14 bit
+          double val = ((value ?? 0) / 127) * 100;
 
-        //Translate the 0-100 value into the range of the parameter
-        val = MathEx.map(
-            val,
-            0,
-            100,
-            effect.parameters[subIndex].formatter.min.toDouble(),
-            effect.parameters[subIndex].formatter.max.toDouble());
-        p.setParameterValue(effect.parameters[subIndex], val);
-        NuxDeviceControl.instance().forceNotifyListeners();
+          //Translate the 0-100 value into the range of the parameter
+          val = MathEx.map(
+              val,
+              0,
+              100,
+              effect.parameters[subIndex].formatter.min.toDouble(),
+              effect.parameters[subIndex].formatter.max.toDouble());
+          p.setParameterValue(effect.parameters[subIndex], val);
+          NuxDeviceControl.instance().forceNotifyListeners();
+        }
         break;
     }
   }

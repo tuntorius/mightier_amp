@@ -90,17 +90,21 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     List<Widget> widgets = [];
     var dev = NuxDeviceControl.instance().device;
     for (int i = 0; i < dev.processorList.length; i++) {
-      var switchable = dev.getPreset(dev.selectedChannel).slotSwitchable(i);
+      var index = dev.processorList[i].nuxOrderIndex;
+      var prc =
+          dev.getPreset(dev.selectedChannel).getSlotIndexFromNuxIndex(index)!;
+
+      var switchable = dev.getPreset(dev.selectedChannel).slotSwitchable(prc);
       if (switchable) {
         var name = dev.processorList[i].longName;
         var icon = dev.processorList[i].icon;
         var color = dev.processorList[i].color;
         widgets.add(buildWidget("Switch $name on", icon, color,
-            HotkeyControl.EffectSlotEnable, i, 0, false));
+            HotkeyControl.EffectSlotEnable, index, 0, false));
         widgets.add(buildWidget("Switch $name off", icon, color,
-            HotkeyControl.EffectSlotDisable, i, 0, false));
+            HotkeyControl.EffectSlotDisable, index, 0, false));
         widgets.add(buildWidget("Toggle $name", icon, color,
-            HotkeyControl.EffectSlotToggle, i, 0, false));
+            HotkeyControl.EffectSlotToggle, index, 0, false));
       }
     }
 
@@ -113,11 +117,9 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
 
     //enumerate all the slots in the signal chain
     for (int i = 0; i < dev.processorList.length; i++) {
-      var prc = 0;
-      for (var x = 0; x < dev.processorList.length; x++) {
-        if (dev.getPreset(dev.selectedChannel).getProcessorAtSlot(x) ==
-            dev.processorList[i].nuxOrderIndex) prc = x;
-      }
+      var index = dev.processorList[i].nuxOrderIndex;
+      var prc =
+          dev.getPreset(dev.selectedChannel).getSlotIndexFromNuxIndex(index)!;
       var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(prc);
       int maxParams = 0;
       for (int p = 0; p < effects.length; p++) {

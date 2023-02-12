@@ -48,6 +48,10 @@ abstract class Preset {
   //used for reorderable fx chain
   int getProcessorAtSlot(int slot);
 
+  int? getSlotIndexFromNuxIndex(int nuxIndex) {
+    return nuxIndex;
+  }
+
   void setupPresetFromNuxDataArray(List<int> nuxData);
 
   void setProcessorAtSlot(int slot, int processorId) {}

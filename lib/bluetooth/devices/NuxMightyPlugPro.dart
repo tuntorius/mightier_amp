@@ -65,9 +65,9 @@ class NuxMightyPlugPro extends NuxDevice {
   PlugProVersion version = PlugProVersion.PlugPro1;
 
   @override
-  String get productName => "NUX Mighty Plug Pro";
+  String get productName => "NUX Mighty Plug Pro/Mighty Space";
   @override
-  String get productNameShort => "Mighty Plug Pro";
+  String get productNameShort => "Mighty Plug Pro/Space";
   @override
   String get productStringId => "mighty_plug_pro";
   @override

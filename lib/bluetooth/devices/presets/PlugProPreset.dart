@@ -220,7 +220,8 @@ class PlugProPreset extends Preset {
       HallReverb(),
       PlateReverb(),
       SpringReverb(),
-      ShimmerReverb()
+      ShimmerReverb(),
+      DampReverb()
     ]);
 
     for (int i = 0; i < PresetDataIndexPlugPro.defaultEffects.length; i++) {
@@ -318,6 +319,7 @@ class PlugProPreset extends Preset {
     return processorAtSlot[slot];
   }
 
+  @override
   int? getSlotIndexFromNuxIndex(int nuxIndex) {
     for (int i = 0; i < processorAtSlot.length; i++) {
       if (processorAtSlot[i] == nuxIndex) return i;

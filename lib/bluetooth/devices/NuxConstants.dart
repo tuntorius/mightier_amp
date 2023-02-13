@@ -3,6 +3,8 @@
 
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 
+import 'NuxFXID.dart';
+
 class AppConstants {
   static const patcherUrl =
       "https://github.com/tuntorius/nux-ir-patcher#nux-ir-patcher";
@@ -212,16 +214,16 @@ class PresetDataIndexPlugPro {
   ];
 
   static const defaultEffects = [
-    if (NuxMightyPlugPro.enableWahExperimental) Head_iWAH,
-    Head_iNG,
-    Head_iCMP,
-    Head_iMOD,
-    Head_iEFX,
-    Head_iAMP,
-    Head_iCAB,
-    Head_iEQ,
-    Head_iRVB,
-    Head_iDLY
+    if (NuxMightyPlugPro.enableWahExperimental) PlugProFXID.wah,
+    PlugProFXID.gate,
+    PlugProFXID.comp,
+    PlugProFXID.mod,
+    PlugProFXID.efx,
+    PlugProFXID.amp,
+    PlugProFXID.cab,
+    PlugProFXID.eq,
+    PlugProFXID.reverb,
+    PlugProFXID.delay
   ];
 
   static const Head_iWAH = 0;

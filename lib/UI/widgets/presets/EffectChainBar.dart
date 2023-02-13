@@ -30,8 +30,8 @@ class EffectChainBar extends StatelessWidget {
       : super(key: key);
 
   EffectChainButton buildItem(context, index) {
-    var proc = preset.getProcessorAtSlot(index);
-    var effect = device.processorListNuxIndex(proc);
+    var proc = preset.getFXIDFromSlot(index);
+    var effect = device.getProcessorInfoByFXID(proc);
     bool selected = index == device.selectedSlot;
 
     return EffectChainButton(

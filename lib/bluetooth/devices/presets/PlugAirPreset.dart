@@ -243,11 +243,6 @@ class PlugAirPreset extends Preset {
     super.setSlotEnabled(index, value, notifyBT);
   }
 
-  @override
-  int getProcessorAtSlot(int slot) {
-    return slot;
-  }
-
   //returns list of effects for given slot
   @override
   List<Processor> getEffectsForSlot(int slot) {

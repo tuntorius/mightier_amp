@@ -7,6 +7,7 @@ import 'dart:ui';
 import 'package:qr_utils/qr_utils.dart';
 import 'package:undo/undo.dart';
 import '../NuxDevice.dart';
+import '../NuxFXID.dart';
 import '../effects/Processor.dart';
 
 abstract class Preset {
@@ -46,15 +47,17 @@ abstract class Preset {
   bool slotEnabled(int index);
 
   //used for reorderable fx chain
-  int getProcessorAtSlot(int slot);
+  NuxFXID getFXIDFromSlot(int slot) {
+    return NuxFXID.fromInt(slot);
+  }
 
-  int? getSlotIndexFromNuxIndex(int nuxIndex) {
-    return nuxIndex;
+  int? getSlotFromFXID(NuxFXID fxid) {
+    return fxid.toInt();
   }
 
   void setupPresetFromNuxDataArray(List<int> nuxData);
 
-  void setProcessorAtSlot(int slot, int processorId) {}
+  void setFXIDAtSlot(int slot, NuxFXID fxid) {}
   void swapProcessorSlots(int from, int to, bool notifyBT) {
     if (notifyBT) device.slotSwapped.add(to);
   }
@@ -85,7 +88,7 @@ abstract class Preset {
     }
   }
 
-  int getEffectArrayIndexFromNuxIndex(int nuxSlot, int nuxIndex) {
+  int getEffectArrayIndexFromNuxIndex(NuxFXID fxid, int nuxIndex) {
     return nuxIndex;
   }
 
@@ -151,7 +154,7 @@ abstract class Preset {
   }
 
   String getAmpNameByNuxIndex(int index, int version) {
-    var ampIndex = device.amplifierSlotIndex;
+    var ampIndex = NuxFXID.fromInt(device.amplifierSlotIndex);
     getEffectArrayIndexFromNuxIndex(ampIndex, ampIndex);
     return amplifierList[index].name;
   }

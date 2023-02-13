@@ -3,8 +3,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/device_specific_settings/PlugAirSettings.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/communication/plugAirCommunication.dart';
+import 'NuxFXID.dart';
+import 'communication/communication.dart';
+import 'communication/plugAirCommunication.dart';
 import '../../UI/mightierIcons.dart';
 
 import '../NuxDeviceControl.dart';
@@ -94,7 +95,6 @@ class NuxMightyPlug extends NuxDevice {
   bool get nativeActiveChannelsSupport => false;
   @override
   ValueFormatter? get decibelFormatter => ValueFormatters.decibelMP2;
-
   @override
   int get channelChangeCC => MidiCCValues.bCC_CtrlType;
   @override
@@ -114,49 +114,49 @@ class NuxMightyPlug extends NuxDevice {
         shortName: "Gate",
         longName: "Noise Gate",
         keyName: "gate",
-        nuxOrderIndex: 0,
+        nuxOrderIndex: PlugAirFXID.gate,
         color: Colors.green,
         icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "EFX",
         longName: "EFX",
         keyName: "efx",
-        nuxOrderIndex: 1,
+        nuxOrderIndex: PlugAirFXID.efx,
         color: Colors.deepPurpleAccent[100]!,
         icon: MightierIcons.pedal),
     ProcessorInfo(
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
-        nuxOrderIndex: 2,
+        nuxOrderIndex: PlugAirFXID.amp,
         color: Colors.green,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "IR",
         longName: "Cabinet",
         keyName: "cabinet",
-        nuxOrderIndex: 3,
+        nuxOrderIndex: PlugAirFXID.cab,
         color: Colors.blue,
         icon: MightierIcons.cabinet),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",
         keyName: "mod",
-        nuxOrderIndex: 4,
+        nuxOrderIndex: PlugAirFXID.mod,
         color: Colors.cyan[300]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "Delay",
         longName: "Delay",
         keyName: "delay",
-        nuxOrderIndex: 5,
+        nuxOrderIndex: PlugAirFXID.delay,
         color: Colors.blueAccent,
         icon: Icons.blur_linear),
     ProcessorInfo(
         shortName: "Reverb",
         longName: "Reverb",
         keyName: "reverb",
-        nuxOrderIndex: 6,
+        nuxOrderIndex: PlugAirFXID.reverb,
         color: Colors.orange,
         icon: Icons.blur_on),
   ];

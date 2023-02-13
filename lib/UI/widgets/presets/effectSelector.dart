@@ -9,6 +9,7 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:undo/undo.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
+import '../../../bluetooth/devices/NuxFXID.dart';
 import '../../utils.dart';
 import 'effectEditor.dart';
 import 'package:tinycolor2/tinycolor2.dart';
@@ -63,7 +64,7 @@ class _EffectSelectorState extends State<EffectSelector> {
           //get the cabinet for this amp and set it
           Processor amp = _preset.getEffectsForSlot(_selectedSlot)[index];
           if (amp is Amplifier) {
-            var proc = _preset.getProcessorAtSlot(device.cabinetSlotIndex);
+            var proc = _preset.getFXIDFromSlot(device.cabinetSlotIndex);
             var cabIndex =
                 _preset.getEffectArrayIndexFromNuxIndex(proc, amp.defaultCab);
             var oldEffect =
@@ -93,8 +94,8 @@ class _EffectSelectorState extends State<EffectSelector> {
 
     _effectColor = _preset.effectColor(_selectedSlot);
 
-    var proc = _preset.getProcessorAtSlot(_selectedSlot);
-    var effectInfo = widget.device.processorListNuxIndex(proc)!;
+    var proc = _preset.getFXIDFromSlot(_selectedSlot);
+    var effectInfo = widget.device.getProcessorInfoByFXID(proc)!;
 
     //create effect models dropdown list
     List<Processor> effects = _preset.getEffectsForSlot(_selectedSlot);
@@ -200,19 +201,17 @@ class _EffectSelectorState extends State<EffectSelector> {
               setState(() {
                 NuxDeviceControl.instance().changes.add(Change<int>(old, () {
                       //get type of old slot
-                      var selectedType =
-                          _preset.getProcessorAtSlot(_selectedSlot);
+                      var selectedType = _preset.getFXIDFromSlot(_selectedSlot);
                       _preset.swapProcessorSlots(from, to, true);
-                      _selectSlotByType(selectedType);
+                      _selectSlotByFXID(selectedType);
                     }, (oldVal) {
                       //get type of old slot
-                      var selectedType =
-                          _preset.getProcessorAtSlot(_selectedSlot);
+                      var selectedType = _preset.getFXIDFromSlot(_selectedSlot);
                       int from = oldVal % 100;
                       int to = (oldVal / 100).floor();
                       //positions are swapped on undo
                       _preset.swapProcessorSlots(to, from, true);
-                      _selectSlotByType(selectedType);
+                      _selectSlotByFXID(selectedType);
                     }));
                 NuxDeviceControl.instance().undoStackChanged();
               });
@@ -318,9 +317,9 @@ class _EffectSelectorState extends State<EffectSelector> {
     });
   }
 
-  void _selectSlotByType(int type) {
+  void _selectSlotByFXID(NuxFXID type) {
     for (int i = 0; i < widget.device.effectsChainLength; i++) {
-      if (_preset.getProcessorAtSlot(i) == type) _selectedSlot = i;
+      if (_preset.getFXIDFromSlot(i) == type) _selectedSlot = i;
     }
   }
 }

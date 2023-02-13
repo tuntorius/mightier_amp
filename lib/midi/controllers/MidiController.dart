@@ -37,8 +37,8 @@ abstract class MidiController {
 
     if (!_hotkeys.contains(hk)) {
       _hotkeys.add(hk);
-      _rebuildDictionary();
     }
+    _rebuildDictionary();
   }
 
   removeHotkey(ControllerHotkey? hk) {

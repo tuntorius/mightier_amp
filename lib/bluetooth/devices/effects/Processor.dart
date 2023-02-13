@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueFormatter.dart';
 
+import '../NuxFXID.dart';
 import '../utilities/MathEx.dart';
 import '../value_formatters/SwitchFormatters.dart';
 
@@ -46,7 +47,7 @@ class ProcessorInfo {
   String shortName;
   String longName;
   String keyName;
-  int nuxOrderIndex;
+  NuxFXID nuxOrderIndex;
   Color color;
   IconData icon;
   ProcessorInfo(

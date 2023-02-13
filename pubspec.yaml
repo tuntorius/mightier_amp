@@ -15,10 +15,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.9.5+24
+version: 0.9.6+25
 
 environment:
-  sdk: ">=2.12.2 <=3.0.0"
+  sdk: ">=2.17.0 <=3.0.0"
 
 dependencies:
   flutter:
@@ -38,6 +38,8 @@ dependencies:
   drag_and_drop_lists:
     path: ./plugins/drag_and_drop_list
 
+  sliding_up_panel2: ^3.2.2
+  
   #modified to include qr scanning from gallery (for android only)
   #and to make it null safe
   qr_utils:
@@ -63,6 +65,13 @@ dependencies:
   sentry_flutter: ^6.14.0
 
   flutter_blue_plus: ^1.1.3
+
+  flutter_web_bluetooth: ^0.1.0
+  
+  mighty_ble:
+    path: ./plugins/mighty_ble
+
+ # flutter_reactive_ble: ^5.0.3
 
   flutter_midi_command:
     path: ./plugins/flutter_midi_command/flutter_midi_command-0.3.7

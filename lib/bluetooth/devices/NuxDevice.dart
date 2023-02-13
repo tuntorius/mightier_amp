@@ -13,6 +13,7 @@ import 'package:qr_utils/qr_utils.dart';
 import '../NuxDeviceControl.dart';
 import '../bleMidiHandler.dart';
 import "NuxConstants.dart";
+import 'NuxFXID.dart';
 import 'effects/Processor.dart';
 import 'presets/Preset.dart';
 import 'value_formatters/ValueFormatter.dart';
@@ -126,16 +127,16 @@ abstract class NuxDevice extends ChangeNotifier {
     return null;
   }
 
-  int? getChainIndexByEffectKeyName(String key) {
+  int? getSlotByEffectKeyName(String key) {
     var pi = getProcessorInfoByKey(key);
     if (pi != null) {
-      return pi.nuxOrderIndex;
+      return pi.nuxOrderIndex.toInt();
     }
     return null;
   }
 
-  ProcessorInfo? processorListNuxIndex(int index) {
-    return processorList[index];
+  ProcessorInfo? getProcessorInfoByFXID(NuxFXID fxid) {
+    return processorList[fxid.toInt()];
   }
 
   void setSelectedChannel(int chan,
@@ -341,7 +342,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
       if (effect.midiCCEnableValue == effect.midiCCSelectionValue &&
           cmdCC == effect.midiCCEnableValue) {
-        var procIndex = preset.getProcessorAtSlot(i);
+        var procIndex = preset.getFXIDFromSlot(i);
         var nuxIndex =
             preset.getEffectArrayIndexFromNuxIndex(procIndex, effectIndex);
         preset.setSelectedEffectForSlot(i, nuxIndex, false);
@@ -353,7 +354,7 @@ abstract class NuxDevice extends ChangeNotifier {
         notifyListeners();
         return;
       } else if (cmdCC == effect.midiCCSelectionValue) {
-        var procIndex = preset.getProcessorAtSlot(i);
+        var procIndex = preset.getFXIDFromSlot(i);
         var nuxIndex =
             preset.getEffectArrayIndexFromNuxIndex(procIndex, effectIndex);
         preset.setSelectedEffectForSlot(i, nuxIndex, false);
@@ -465,7 +466,7 @@ abstract class NuxDevice extends ChangeNotifier {
       double? overrideLevel) {
     int fxTypeNuxIndex = effect["fx_type"];
     bool enabled = unselected ? false : effect["enabled"];
-    int nuxSlotIndex = devicePreset.getProcessorAtSlot(slotIndex);
+    NuxFXID nuxSlotIndex = devicePreset.getFXIDFromSlot(slotIndex);
     int fxIndex = devicePreset.getEffectArrayIndexFromNuxIndex(
         nuxSlotIndex, fxTypeNuxIndex);
     //check if preset conversion is needed
@@ -570,7 +571,7 @@ abstract class NuxDevice extends ChangeNotifier {
       for (String key in preset.keys) {
         var pInfo = getProcessorInfoByKey(key);
         if (pInfo != null) {
-          p.setProcessorAtSlot(index, pInfo.nuxOrderIndex);
+          p.setFXIDAtSlot(index, pInfo.nuxOrderIndex);
           index++;
         }
       }
@@ -578,7 +579,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
     //parse selected effects and apply them
     for (String key in preset.keys) {
-      int? index = getChainIndexByEffectKeyName(key);
+      int? index = getSlotByEffectKeyName(key);
       if (index != null) {
         //get effect
         Map<String, dynamic> effect = preset[key];
@@ -592,7 +593,7 @@ abstract class NuxDevice extends ChangeNotifier {
     if (!qrOnly && preset.containsKey(PresetsStorage.inactiveEffectsKey)) {
       var inactives = preset[PresetsStorage.inactiveEffectsKey];
       for (String effectKey in inactives.keys) {
-        int? index = getChainIndexByEffectKeyName(effectKey);
+        int? index = getSlotByEffectKeyName(effectKey);
         if (index != null) {
           //get effect
           for (var effect in inactives[effectKey]) {
@@ -641,8 +642,8 @@ abstract class NuxDevice extends ChangeNotifier {
         fxData[fx.parameters[f].handle] = fx.parameters[f].value;
       }
 
-      var proc = p.getProcessorAtSlot(i);
-      var effect = processorListNuxIndex(proc);
+      var proc = p.getFXIDFromSlot(i);
+      var effect = getProcessorInfoByFXID(proc);
       mainJson[effect!.keyName] = fxData;
     }
 
@@ -675,8 +676,8 @@ abstract class NuxDevice extends ChangeNotifier {
       }
 
       if (fxSlotList.isNotEmpty) {
-        var proc = p.getProcessorAtSlot(i);
-        var effect = processorListNuxIndex(proc);
+        var proc = p.getFXIDFromSlot(i);
+        var effect = getProcessorInfoByFXID(proc);
         inactiveFX[effect!.keyName] = fxSlotList;
       }
     }

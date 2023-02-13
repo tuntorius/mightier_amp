@@ -1,5 +1,6 @@
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 
+import '../../bluetooth/devices/NuxFXID.dart';
 import '../../bluetooth/devices/utilities/MathEx.dart';
 import '../ControllerConstants.dart';
 
@@ -52,7 +53,7 @@ class ControllerHotkey {
         break;
       case HotkeyControl.EffectSlotEnable:
         var p = device.getPreset(device.selectedChannel);
-        var proc = p.getSlotIndexFromNuxIndex(index);
+        var proc = p.getSlotFromFXID(NuxFXID.fromInt(index));
         if (proc != null) {
           p.setSlotEnabled(proc, true, true);
           NuxDeviceControl.instance().forceNotifyListeners();
@@ -60,7 +61,7 @@ class ControllerHotkey {
         break;
       case HotkeyControl.EffectSlotDisable:
         var p = device.getPreset(device.selectedChannel);
-        var proc = p.getSlotIndexFromNuxIndex(index);
+        var proc = p.getSlotFromFXID(NuxFXID.fromInt(index));
         if (proc != null) {
           p.setSlotEnabled(proc, false, true);
           NuxDeviceControl.instance().forceNotifyListeners();
@@ -68,7 +69,7 @@ class ControllerHotkey {
         break;
       case HotkeyControl.EffectSlotToggle:
         var p = device.getPreset(device.selectedChannel);
-        var proc = p.getSlotIndexFromNuxIndex(index);
+        var proc = p.getSlotFromFXID(NuxFXID.fromInt(index));
         if (proc != null) {
           p.setSlotEnabled(proc, !p.slotEnabled(proc), true);
           NuxDeviceControl.instance().forceNotifyListeners();
@@ -76,7 +77,7 @@ class ControllerHotkey {
         break;
       case HotkeyControl.ParameterSet:
         var p = device.getPreset(device.selectedChannel);
-        var proc = p.getSlotIndexFromNuxIndex(index);
+        var proc = p.getSlotFromFXID(NuxFXID.fromInt(index));
         if (proc != null) {
           var effect =
               p.getEffectsForSlot(proc)[p.getSelectedEffectForSlot(proc)];

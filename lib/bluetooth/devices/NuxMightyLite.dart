@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
 import 'NuxConstants.dart';
+import 'NuxFXID.dart';
 import 'communication/communication.dart';
 import 'communication/liteCommunication.dart';
 import 'presets/MightyLitePreset.dart';
@@ -85,28 +86,28 @@ class NuxMightyLite extends NuxDevice {
         shortName: "Gate",
         longName: "Noise Gate",
         keyName: "gate",
-        nuxOrderIndex: 0,
+        nuxOrderIndex: LiteFXID.gate,
         color: Colors.green,
         icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
-        nuxOrderIndex: 1,
+        nuxOrderIndex: LiteFXID.amp,
         color: Colors.green,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",
         keyName: "mod",
-        nuxOrderIndex: 2,
+        nuxOrderIndex: LiteFXID.mod,
         color: Colors.cyan[300]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "Ambience",
         longName: "Ambience",
         keyName: "ambience",
-        nuxOrderIndex: 3,
+        nuxOrderIndex: LiteFXID.ambience,
         color: Colors.orange,
         icon: Icons.blur_on),
   ];

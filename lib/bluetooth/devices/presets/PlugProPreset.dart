@@ -13,6 +13,7 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
+import '../NuxFXID.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
 import '../effects/plug_pro/Compressor.dart';
@@ -63,7 +64,7 @@ class PlugProPreset extends Preset {
   final List<EQ> eqList = <EQ>[];
 
   //presets stored in nux indexing (unused Wah is 0)
-  List<int> processorAtSlot = [];
+  List<NuxFXID> processorAtSlot = [];
 
   bool wahEnabled = true;
   bool noiseGateEnabled = true;
@@ -214,7 +215,6 @@ class PlugProPreset extends Preset {
     delayList.addAll(
         [AnalogDelay(), DigitalDelay(), ModDelay(), TapeEcho(), PanDelay()]);
 
-    //reverb is available in all presets
     reverbList.addAll([
       RoomReverb(),
       HallReverb(),
@@ -238,12 +238,12 @@ class PlugProPreset extends Preset {
   //returns whether the specific slot is on or off
   @override
   bool slotEnabled(int index) {
-    var proc = getProcessorAtSlot(index);
-    return _slotEnabledNuxIndex(proc);
+    var proc = getFXIDFromSlot(index);
+    return _FXIDEnabled(proc);
   }
 
-  bool _slotEnabledNuxIndex(int proc) {
-    switch (proc) {
+  bool _FXIDEnabled(NuxFXID fxid) {
+    switch (fxid.value) {
       case PresetDataIndexPlugPro.Head_iWAH:
         return wahEnabled;
       case PresetDataIndexPlugPro.Head_iNG:
@@ -272,13 +272,13 @@ class PlugProPreset extends Preset {
   //turns slot on or off
   @override
   void setSlotEnabled(int index, bool value, bool notifyBT) {
-    var proc = getProcessorAtSlot(index);
-    _setNuxSlotEnabled(proc, value);
+    var proc = getFXIDFromSlot(index);
+    _setFXIDEnabled(proc, value);
     super.setSlotEnabled(index, value, notifyBT);
   }
 
-  void _setNuxSlotEnabled(int index, bool value) {
-    switch (index) {
+  void _setFXIDEnabled(NuxFXID fxid, bool value) {
+    switch (fxid.value) {
       case PresetDataIndexPlugPro.Head_iWAH:
         wahEnabled = value;
         break;
@@ -315,21 +315,21 @@ class PlugProPreset extends Preset {
   }
 
   @override
-  int getProcessorAtSlot(int slot) {
+  NuxFXID getFXIDFromSlot(int slot) {
     return processorAtSlot[slot];
   }
 
   @override
-  int? getSlotIndexFromNuxIndex(int nuxIndex) {
+  int? getSlotFromFXID(NuxFXID fxid) {
     for (int i = 0; i < processorAtSlot.length; i++) {
-      if (processorAtSlot[i] == nuxIndex) return i;
+      if (processorAtSlot[i] == fxid) return i;
     }
     return null;
   }
 
   @override
-  void setProcessorAtSlot(int slot, int processorId) {
-    processorAtSlot[slot] = processorId;
+  void setFXIDAtSlot(int slot, NuxFXID fxid) {
+    processorAtSlot[slot] = fxid;
   }
 
   @override
@@ -355,12 +355,12 @@ class PlugProPreset extends Preset {
   //returns list of effects for given slot
   @override
   List<Processor> getEffectsForSlot(int slot) {
-    var proc = getProcessorAtSlot(slot);
-    return _getEffectsForNuxSlot(proc);
+    var proc = getFXIDFromSlot(slot);
+    return _getEffectsForFXID(proc);
   }
 
-  List<Processor> _getEffectsForNuxSlot(int slot) {
-    switch (slot) {
+  List<Processor> _getEffectsForFXID(NuxFXID fxid) {
+    switch (fxid.value) {
       case PresetDataIndexPlugPro.Head_iWAH:
         return [wahDummy];
       case PresetDataIndexPlugPro.Head_iNG:
@@ -388,12 +388,12 @@ class PlugProPreset extends Preset {
   //returns which of the effects is selected for a given slot
   @override
   int getSelectedEffectForSlot(int slot) {
-    var proc = getProcessorAtSlot(slot);
-    return _getSelectedEffectForNuxSlot(proc);
+    var fxid = getFXIDFromSlot(slot);
+    return _getSelectedEffectForFXID(fxid);
   }
 
-  int _getSelectedEffectForNuxSlot(int slot) {
-    switch (slot) {
+  int _getSelectedEffectForFXID(NuxFXID fxid) {
+    switch (fxid.value) {
       case PresetDataIndexPlugPro.Head_iCMP:
         return selectedComp;
       case PresetDataIndexPlugPro.Head_iEFX:
@@ -418,16 +418,45 @@ class PlugProPreset extends Preset {
   //sets the effect for the given slot
   @override
   void setSelectedEffectForSlot(int slot, int index, bool notifyBT) {
-    var proc = getProcessorAtSlot(slot);
-    _setSelectedEffectForNuxSlot(proc, index);
+    var proc = getFXIDFromSlot(slot);
+    _setSelectedEffectForFXID(proc, index);
 
     super.setSelectedEffectForSlot(slot, index, notifyBT);
   }
 
+  void _setSelectedEffectForFXID(NuxFXID fxid, int index) {
+    switch (fxid.value) {
+      case PresetDataIndexPlugPro.Head_iCMP:
+        selectedComp = index;
+        break;
+      case PresetDataIndexPlugPro.Head_iEFX:
+        selectedEfx = index;
+        break;
+      case PresetDataIndexPlugPro.Head_iAMP:
+        selectedAmp = index;
+        break;
+      case PresetDataIndexPlugPro.Head_iCAB:
+        selectedCabinet = index;
+        break;
+      case PresetDataIndexPlugPro.Head_iMOD:
+        selectedMod = index;
+        break;
+      case PresetDataIndexPlugPro.Head_iEQ:
+        selectedEQ = index;
+        break;
+      case PresetDataIndexPlugPro.Head_iDLY:
+        selectedDelay = index;
+        break;
+      case PresetDataIndexPlugPro.Head_iRVB:
+        selectedReverb = index;
+        break;
+    }
+  }
+
   @override
-  int getEffectArrayIndexFromNuxIndex(int nuxSlot, int nuxIndex) {
+  int getEffectArrayIndexFromNuxIndex(NuxFXID fxid, int nuxIndex) {
     List<Processor> list = [];
-    switch (nuxSlot) {
+    switch (fxid.value) {
       case PresetDataIndexPlugPro.Head_iWAH:
         return 0;
       case PresetDataIndexPlugPro.Head_iNG:
@@ -464,46 +493,16 @@ class PlugProPreset extends Preset {
     return 0;
   }
 
-  void _setSelectedEffectForNuxSlot(int slot, int index) {
-    switch (slot) {
-      case PresetDataIndexPlugPro.Head_iCMP:
-        selectedComp = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iEFX:
-        selectedEfx = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iAMP:
-        selectedAmp = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iCAB:
-        selectedCabinet = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iMOD:
-        selectedMod = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iEQ:
-        selectedEQ = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iDLY:
-        selectedDelay = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iRVB:
-        selectedReverb = index;
-        break;
-    }
-  }
-
   @override
   String getAmpNameByNuxIndex(int index, int version) {
-    index = getEffectArrayIndexFromNuxIndex(
-        PresetDataIndexPlugPro.Head_iAMP, index);
+    index = getEffectArrayIndexFromNuxIndex(PlugProFXID.amp, index);
     return amplifierList[index].name;
   }
 
   @override
   Color effectColor(int index) {
-    index = getProcessorAtSlot(index);
-    return device.processorListNuxIndex(index)?.color ?? Colors.grey;
+    var fxid = getFXIDFromSlot(index);
+    return device.getProcessorInfoByFXID(fxid)?.color ?? Colors.grey;
   }
 
   @override
@@ -522,19 +521,20 @@ class PlugProPreset extends Preset {
 
     for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
       int nuxSlot = PresetDataIndexPlugPro.effectTypesIndex[i];
+      NuxFXID fxid = NuxFXID.fromInt(nuxSlot);
       //set proper effect
       int effectParam = nuxData[nuxSlot];
       int effectIndex = effectParam & 0x3f;
       bool effectOn = (effectParam & 0x40) == 0;
 
-      effectIndex = getEffectArrayIndexFromNuxIndex(nuxSlot, effectIndex);
+      effectIndex = getEffectArrayIndexFromNuxIndex(fxid, effectIndex);
 
-      _setSelectedEffectForNuxSlot(nuxSlot, effectIndex);
+      _setSelectedEffectForFXID(fxid, effectIndex);
 
       //enable/disable effect
-      _setNuxSlotEnabled(nuxSlot, effectOn);
+      _setFXIDEnabled(fxid, effectOn);
 
-      _getEffectsForNuxSlot(nuxSlot)[effectIndex].setupFromNuxPayload(nuxData);
+      _getEffectsForFXID(fxid)[effectIndex].setupFromNuxPayload(nuxData);
     }
 
     _volume = device.decibelFormatter!
@@ -551,7 +551,7 @@ class PlugProPreset extends Preset {
     }
 
     for (int i = 0; i < device.effectsChainLength; i++) {
-      processorAtSlot[i] = nuxData[start + i];
+      processorAtSlot[i] = NuxFXID.fromInt(nuxData[start + i]);
     }
   }
 
@@ -568,8 +568,10 @@ class PlugProPreset extends Preset {
 
     for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
       var slot = PresetDataIndexPlugPro.effectTypesIndex[i];
-      _getEffectsForNuxSlot(slot)[_getSelectedEffectForNuxSlot(slot)]
-          .getNuxPayload(data, _slotEnabledNuxIndex(slot));
+      NuxFXID fxid = NuxFXID.fromInt(slot);
+
+      _getEffectsForFXID(fxid)[_getSelectedEffectForFXID(fxid)]
+          .getNuxPayload(data, _FXIDEnabled(fxid));
     }
 
     //fx chain order
@@ -577,7 +579,7 @@ class PlugProPreset extends Preset {
 
     //store fx chain
     for (int i = 0; i < device.effectsChainLength; i++) {
-      data[start + i] = processorAtSlot[i];
+      data[start + i] = processorAtSlot[i].toInt();
     }
 
     qrData.addAll(data);

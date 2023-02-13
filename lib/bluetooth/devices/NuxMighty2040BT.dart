@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../UI/mightierIcons.dart';
 import 'NuxConstants.dart';
+import 'NuxFXID.dart';
 import 'communication/communication.dart';
 import 'communication/liteCommunication.dart';
 import 'presets/MightyXXBTPreset.dart';
@@ -93,35 +94,35 @@ class NuxMighty2040BT extends NuxDevice {
         shortName: "Gate",
         longName: "Noise Gate",
         keyName: "gate",
-        nuxOrderIndex: 0,
+        nuxOrderIndex: PlugBTFXID.gate,
         color: Colors.green,
         icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "Amp",
         longName: "Amplifier",
         keyName: "amp",
-        nuxOrderIndex: 1,
+        nuxOrderIndex: PlugBTFXID.amp,
         color: Colors.green,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "Mod",
         longName: "Modulation",
         keyName: "mod",
-        nuxOrderIndex: 2,
+        nuxOrderIndex: PlugBTFXID.mod,
         color: Colors.cyan[300]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "Delay",
         longName: "Delay",
         keyName: "delay",
-        nuxOrderIndex: 3,
+        nuxOrderIndex: PlugBTFXID.delay,
         color: Colors.blueAccent,
         icon: Icons.blur_linear),
     ProcessorInfo(
         shortName: "Reverb",
         longName: "Reverb",
         keyName: "reverb",
-        nuxOrderIndex: 4,
+        nuxOrderIndex: PlugBTFXID.reverb,
         color: Colors.orange,
         icon: Icons.blur_on),
   ];

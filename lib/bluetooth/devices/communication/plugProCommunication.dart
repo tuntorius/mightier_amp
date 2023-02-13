@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../NuxDevice.dart';
+import '../NuxFXID.dart';
 import '../effects/plug_pro/Cabinet.dart';
 import '../presets/PlugProPreset.dart';
 
@@ -221,12 +222,12 @@ class PlugProCommunication extends DeviceCommunication {
   void sendSlotOrder() {
     if (!device.deviceControl.isConnected) return;
     var preset = device.getPreset(device.selectedChannel);
-    List<int> order = (preset as PlugProPreset).processorAtSlot;
+    List<NuxFXID> order = (preset as PlugProPreset).processorAtSlot;
 
     var nuxOrder = [order.length];
     for (var i = 0; i < order.length; i++) {
-      var p = device.processorListNuxIndex(order[i]);
-      if (p != null) nuxOrder.add(p.nuxOrderIndex);
+      var p = device.getProcessorInfoByFXID(order[i]);
+      if (p != null) nuxOrder.add(p.nuxOrderIndex.toInt());
     }
     var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_MODULELINK, SyxDir.kSYXDIR_SET, nuxOrder);
@@ -491,9 +492,11 @@ class PlugProCommunication extends DeviceCommunication {
       var len = data[1];
       var preset = device.getPreset(device.selectedChannel);
 
-      List<int> order = (preset as PlugProPreset).processorAtSlot;
+      List<NuxFXID> order = (preset as PlugProPreset).processorAtSlot;
       order.clear();
-      order.addAll(data.sublist(2, 2 + len));
+      data.sublist(2, 2 + len).forEach((element) {
+        order.add(NuxFXID.fromInt(element));
+      });
       device.deviceControl.forceNotifyListeners();
       return true;
     }

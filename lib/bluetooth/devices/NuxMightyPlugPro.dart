@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../UI/pages/device_specific_settings/PlugProSettings.dart';
+import 'NuxFXID.dart';
 import 'communication/communication.dart';
 import 'communication/plugProCommunication.dart';
 import '../../UI/mightierIcons.dart';
@@ -86,7 +87,7 @@ class NuxMightyPlugPro extends NuxDevice {
   int get amplifierSlotIndex {
     var preset = getPreset(selectedChannel);
     for (int i = 0; i < processorList.length; i++) {
-      if (preset.getProcessorAtSlot(i) == PresetDataIndexPlugPro.Head_iAMP) {
+      if (preset.getFXIDFromSlot(i) == PlugProFXID.amp) {
         return i;
       }
     }
@@ -109,7 +110,7 @@ class NuxMightyPlugPro extends NuxDevice {
   int get cabinetSlotIndex {
     var preset = getPreset(selectedChannel);
     for (int i = 0; i < processorList.length; i++) {
-      if (preset.getProcessorAtSlot(i) == PresetDataIndexPlugPro.Head_iCAB) {
+      if (preset.getFXIDFromSlot(i) == PlugProFXID.cab) {
         return i;
       }
     }
@@ -143,7 +144,7 @@ class NuxMightyPlugPro extends NuxDevice {
   List<ProcessorInfo> get processorList => _processorList;
 
   @override
-  ProcessorInfo? processorListNuxIndex(int index) {
+  ProcessorInfo? getProcessorInfoByFXID(NuxFXID index) {
     for (var proc in _processorList) {
       if (proc.nuxOrderIndex == index) return proc;
     }
@@ -151,11 +152,11 @@ class NuxMightyPlugPro extends NuxDevice {
   }
 
   @override
-  int? getChainIndexByEffectKeyName(String key) {
+  int? getSlotByEffectKeyName(String key) {
     var pi = getProcessorInfoByKey(key);
     if (pi != null) {
       PlugProPreset p = getPreset(selectedChannel) as PlugProPreset;
-      var index = p.getSlotIndexFromNuxIndex(pi.nuxOrderIndex);
+      var index = p.getSlotFromFXID(pi.nuxOrderIndex);
       if (index != null) return index;
     }
     return null;
@@ -167,70 +168,70 @@ class NuxMightyPlugPro extends NuxDevice {
           shortName: "WAH",
           longName: "Wah",
           keyName: "wah",
-          nuxOrderIndex: PresetDataIndexPlugPro.Head_iWAH,
+          nuxOrderIndex: PlugProFXID.wah,
           color: Colors.green,
           icon: Icons.water),
     ProcessorInfo(
         shortName: "COMP",
         longName: "Compressor",
         keyName: "comp",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iCMP,
+        nuxOrderIndex: PlugProFXID.comp,
         color: Colors.lime,
         icon: MightierIcons.compressor),
     ProcessorInfo(
         shortName: "EFX",
         longName: "EFX",
         keyName: "efx",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iEFX,
+        nuxOrderIndex: PlugProFXID.efx,
         color: Colors.orange,
         icon: MightierIcons.pedal),
     ProcessorInfo(
         shortName: "AMP",
         longName: "Amplifier",
         keyName: "amp",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iAMP,
+        nuxOrderIndex: PlugProFXID.amp,
         color: Colors.red,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "EQ",
         longName: "EQ",
         keyName: "eq",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iEQ,
+        nuxOrderIndex: PlugProFXID.eq,
         color: Colors.grey[300]!,
         icon: MightierIcons.sliders),
     ProcessorInfo(
         shortName: "GATE",
         longName: "Noise Gate",
         keyName: "gate",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iNG,
+        nuxOrderIndex: PlugProFXID.gate,
         color: Colors.green,
         icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "MOD",
         longName: "Modulation",
         keyName: "mod",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iMOD,
+        nuxOrderIndex: PlugProFXID.mod,
         color: Colors.deepPurple[400]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "DLY",
         longName: "Delay",
         keyName: "delay",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iDLY,
+        nuxOrderIndex: PlugProFXID.delay,
         color: Colors.cyan[300]!,
         icon: Icons.blur_linear),
     ProcessorInfo(
         shortName: "RVB",
         longName: "Reverb",
         keyName: "reverb",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iRVB,
+        nuxOrderIndex: PlugProFXID.reverb,
         color: Colors.purple[200]!,
         icon: Icons.blur_on),
     ProcessorInfo(
         shortName: "IR",
         longName: "Cabinet",
         keyName: "cabinet",
-        nuxOrderIndex: PresetDataIndexPlugPro.Head_iCAB,
+        nuxOrderIndex: PlugProFXID.cab,
         color: Colors.lightBlue[400]!,
         icon: MightierIcons.cabinet),
   ];

@@ -90,9 +90,9 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     List<Widget> widgets = [];
     var dev = NuxDeviceControl.instance().device;
     for (int i = 0; i < dev.processorList.length; i++) {
-      var index = dev.processorList[i].nuxOrderIndex;
-      var prc =
-          dev.getPreset(dev.selectedChannel).getSlotIndexFromNuxIndex(index)!;
+      var fxid = dev.processorList[i].nuxOrderIndex;
+      var prc = dev.getPreset(dev.selectedChannel).getSlotFromFXID(fxid)!;
+      var index = fxid.toInt();
 
       var switchable = dev.getPreset(dev.selectedChannel).slotSwitchable(prc);
       if (switchable) {
@@ -118,8 +118,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     //enumerate all the slots in the signal chain
     for (int i = 0; i < dev.processorList.length; i++) {
       var index = dev.processorList[i].nuxOrderIndex;
-      var prc =
-          dev.getPreset(dev.selectedChannel).getSlotIndexFromNuxIndex(index)!;
+      var prc = dev.getPreset(dev.selectedChannel).getSlotFromFXID(index)!;
       var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(prc);
       int maxParams = 0;
       for (int p = 0; p < effects.length; p++) {

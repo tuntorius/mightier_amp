@@ -227,7 +227,7 @@ class PlugProCommunication extends DeviceCommunication {
     var nuxOrder = [order.length];
     for (var i = 0; i < order.length; i++) {
       var p = device.getProcessorInfoByFXID(order[i]);
-      if (p != null) nuxOrder.add(p.nuxOrderIndex.toInt());
+      if (p != null) nuxOrder.add(p.nuxFXID.toInt());
     }
     var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_MODULELINK, SyxDir.kSYXDIR_SET, nuxOrder);

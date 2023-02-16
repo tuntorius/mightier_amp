@@ -85,7 +85,7 @@ class PlugAirPreset extends Preset {
     modulationListv1
         .addAll([Phaser(), Chorus(), STChorus(), Flanger(), Vibe(), Tremolo()]);
     modulationListv2
-        .addAll([PH100(), Chorus(), STChorus(), SCF(), Vibe(), Tremolo()]);
+        .addAll([PH100(), CE1(), STChorus(), SCF(), Vibe(), Tremolo()]);
 
     efxListv1.addAll([
       TouchWah(),
@@ -326,6 +326,16 @@ class PlugAirPreset extends Preset {
   @override
   setFirmwareVersion(int ver) {
     version = PlugAirVersion.values[ver];
+    //some special consideration for fx limit
+    if (version == PlugAirVersion.PlugAir15 &&
+        selectedEfx >= efxListv1.length) {
+      selectedEfx = efxListv1.length - 1;
+    }
+
+    if (version == PlugAirVersion.PlugAir21 &&
+        selectedReverb >= reverbListv2.length) {
+      selectedReverb = reverbListv2.length - 1;
+    }
   }
 
   @override

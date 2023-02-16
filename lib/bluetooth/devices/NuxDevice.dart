@@ -130,7 +130,7 @@ abstract class NuxDevice extends ChangeNotifier {
   int? getSlotByEffectKeyName(String key) {
     var pi = getProcessorInfoByKey(key);
     if (pi != null) {
-      return pi.nuxOrderIndex.toInt();
+      return pi.nuxFXID.toInt();
     }
     return null;
   }
@@ -571,7 +571,7 @@ abstract class NuxDevice extends ChangeNotifier {
       for (String key in preset.keys) {
         var pInfo = getProcessorInfoByKey(key);
         if (pInfo != null) {
-          p.setFXIDAtSlot(index, pInfo.nuxOrderIndex);
+          p.setFXIDAtSlot(index, pInfo.nuxFXID);
           index++;
         }
       }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/hotkeyInput.dart';
 import 'package:mighty_plug_manager/UI/popups/midiControlInfo.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/MidiControllerHandles.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:mighty_plug_manager/midi/ControllerConstants.dart';
 import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
@@ -35,9 +36,8 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
       trailing = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (enabled)
-            IconButton(
-                onPressed: infoButton, icon: const Icon(Icons.info_outline)),
+          IconButton(
+              onPressed: infoButton, icon: const Icon(Icons.info_outline)),
           Text(key)
         ],
       );
@@ -49,6 +49,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
           icon,
           color: color,
         ),
+        minLeadingWidth: 0,
         onTap: () {
           showDialog(
             context: context,
@@ -90,21 +91,62 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     List<Widget> widgets = [];
     var dev = NuxDeviceControl.instance().device;
     for (int i = 0; i < dev.processorList.length; i++) {
-      var fxid = dev.processorList[i].nuxOrderIndex;
-      var prc = dev.getPreset(dev.selectedChannel).getSlotFromFXID(fxid)!;
-      var index = fxid.toInt();
+      var fxid = dev.processorList[i].nuxFXID;
+      var slot = dev.getPreset(dev.selectedChannel).getSlotFromFXID(fxid)!;
+      //var count =
+      //    dev.getPreset(dev.selectedChannel).getEffectsForSlot(prc).length;
+      //var index = fxid.toInt();
 
-      var switchable = dev.getPreset(dev.selectedChannel).slotSwitchable(prc);
+      var name = dev.processorList[i].longName;
+      var icon = dev.processorList[i].icon;
+      var color = dev.processorList[i].color;
+
+      var switchable = dev.getPreset(dev.selectedChannel).slotSwitchable(slot);
+      var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(slot);
+      var fx = effects[0];
       if (switchable) {
-        var name = dev.processorList[i].longName;
-        var icon = dev.processorList[i].icon;
-        var color = dev.processorList[i].color;
-        widgets.add(buildWidget("Switch $name on", icon, color,
-            HotkeyControl.EffectSlotEnable, index, 0, false));
-        widgets.add(buildWidget("Switch $name off", icon, color,
-            HotkeyControl.EffectSlotDisable, index, 0, false));
-        widgets.add(buildWidget("Toggle $name", icon, color,
-            HotkeyControl.EffectSlotToggle, index, 0, false));
+        widgets.add(buildWidget(
+            "Switch $name on",
+            icon,
+            color,
+            HotkeyControl.EffectSlotEnable,
+            fx.midiControlOn!.id.index,
+            0,
+            false));
+        widgets.add(buildWidget(
+            "Switch $name off",
+            icon,
+            color,
+            HotkeyControl.EffectSlotDisable,
+            fx.midiControlOff!.id.index,
+            0,
+            false));
+        widgets.add(buildWidget(
+            "Toggle $name",
+            icon,
+            color,
+            HotkeyControl.EffectSlotToggle,
+            fx.midiControlToggle!.id.index,
+            0,
+            false));
+      }
+      if (effects.length > 1) {
+        widgets.add(buildWidget(
+            "Previous $name",
+            icon,
+            color,
+            HotkeyControl.EffectDecrement,
+            fx.midiControlPrev!.id.index,
+            0,
+            false));
+        widgets.add(buildWidget(
+            "Next $name",
+            icon,
+            color,
+            HotkeyControl.EffectIncrement,
+            fx.midiControlNext!.id.index,
+            0,
+            false));
       }
     }
 
@@ -115,57 +157,43 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     List<Widget> widgets = [];
     var dev = NuxDeviceControl.instance().device;
 
+    List<MidiControllerHandle> effectHandles = [];
     //enumerate all the slots in the signal chain
     for (int i = 0; i < dev.processorList.length; i++) {
-      var index = dev.processorList[i].nuxOrderIndex;
-      var prc = dev.getPreset(dev.selectedChannel).getSlotFromFXID(index)!;
+      effectHandles.clear();
+      var fxid = dev.processorList[i].nuxFXID;
+      var prc = dev.getPreset(dev.selectedChannel).getSlotFromFXID(fxid)!;
       var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(prc);
-      int maxParams = 0;
       for (int p = 0; p < effects.length; p++) {
-        if (effects[p].parameters.length > maxParams) {
-          maxParams = effects[p].parameters.length;
+        for (var param in effects[p].parameters) {
+          if (param.midiControllerHandle != null &&
+              !effectHandles.contains(param.midiControllerHandle)) {
+            effectHandles.add(param.midiControllerHandle!);
+          }
         }
       }
 
-      //enumerate each slot for available params
-      for (int p = 0; p < maxParams; p++) {
-        var name = dev.processorList[i].longName;
-        var icon = dev.processorList[i].icon;
-        var color = dev.processorList[i].color;
-        bool showInfo = false;
-        String title;
+      var name = dev.processorList[i].longName;
+      var icon = dev.processorList[i].icon;
+      var color = dev.processorList[i].color;
+      for (var handle in effectHandles) {
+        var title = "$name ${handle.label}";
 
-        //check if parameters repeat
-        List<String> params = [];
-        for (int pp = 0; pp < effects.length; pp++) {
-          if (effects[pp].parameters.length > p) {
-            var name = effects[pp].parameters[p].name;
-            if (!params.contains(name)) params.add(name);
-          }
-        }
-
-        if (effects.length == 1 || params.length == 1) {
-          title = "$name ${params[0]}";
-        } else {
-          title = "$name parameter ${p + 1}";
-          showInfo = true;
-        }
-
-        widgets.add(buildWidget(
-            title, icon, color, HotkeyControl.ParameterSet, i, p, true,
-            infoButton:
-                !showInfo ? null : () => _displayParameterInfo(effects, p)));
+        //TODO: this id should not be 0
+        widgets.add(buildWidget(title, icon, color, HotkeyControl.ParameterSet,
+            handle.id.index, 0, true,
+            infoButton: () => _displayParameterInfo(effects, handle.id)));
       }
     }
 
     return widgets;
   }
 
-  _displayParameterInfo(List<Processor> effects, int paramIndex) {
+  _displayParameterInfo(List<Processor> effects, ControllerHandleId handleId) {
     showDialog(
       context: context,
       builder: (BuildContext context) => MidiControlInfoDialog()
-          .buildDialog(context, effects: effects, paramIndex: paramIndex),
+          .buildDialog(context, effects: effects, handleId: handleId),
     );
   }
 
@@ -181,7 +209,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
         break;
       case HotkeyCategory.EffectSlots:
         widgetList = _buildEffectsWidgets();
-        title = "Effect On/Off Hotkeys";
+        title = "Effect Hotkeys";
         break;
       case HotkeyCategory.EffectParameters:
         widgetList = _buildParametersWidgets();

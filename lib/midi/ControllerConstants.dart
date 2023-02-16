@@ -15,7 +15,9 @@ enum HotkeyControl {
   EffectSlotEnable,
   EffectSlotDisable,
   EffectSlotToggle,
-  ParameterSet
+  ParameterSet,
+  EffectDecrement,
+  EffectIncrement,
 }
 
 enum HotkeyCategory { Channels, EffectSlots, EffectParameters }

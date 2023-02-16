@@ -4,9 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 
+import '../../bluetooth/devices/effects/MidiControllerHandles.dart';
+
 class MidiControlInfoDialog {
   Widget buildDialog(BuildContext context,
-      {required List<Processor> effects, required int paramIndex}) {
+      {required List<Processor> effects,
+      required ControllerHandleId handleId}) {
     return AlertDialog(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       title: Row(
@@ -30,8 +33,11 @@ class MidiControlInfoDialog {
         child: ListView.builder(
           itemBuilder: (context, index) {
             String paramName = "N/A";
-            if (effects[index].parameters.length > paramIndex) {
-              paramName = effects[index].parameters[paramIndex].name;
+            for (var param in effects[index].parameters) {
+              if (param.midiControllerHandle != null &&
+                  param.midiControllerHandle!.id == handleId) {
+                paramName = param.name;
+              }
             }
 
             return ListTile(

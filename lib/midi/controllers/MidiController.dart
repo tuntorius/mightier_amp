@@ -131,7 +131,10 @@ abstract class MidiController {
     if (json["hotkeys"] != null) {
       _hotkeys.clear();
       for (var hk in json["hotkeys"]) {
-        _hotkeys.add(ControllerHotkey.fromJson(hk));
+        try {
+          var hotkey = ControllerHotkey.fromJson(hk);
+          _hotkeys.add(hotkey);
+        } finally {}
       }
       _rebuildDictionary();
     }

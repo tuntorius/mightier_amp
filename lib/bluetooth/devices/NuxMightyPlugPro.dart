@@ -146,7 +146,7 @@ class NuxMightyPlugPro extends NuxDevice {
   @override
   ProcessorInfo? getProcessorInfoByFXID(NuxFXID index) {
     for (var proc in _processorList) {
-      if (proc.nuxOrderIndex == index) return proc;
+      if (proc.nuxFXID == index) return proc;
     }
     return null;
   }
@@ -156,7 +156,7 @@ class NuxMightyPlugPro extends NuxDevice {
     var pi = getProcessorInfoByKey(key);
     if (pi != null) {
       PlugProPreset p = getPreset(selectedChannel) as PlugProPreset;
-      var index = p.getSlotFromFXID(pi.nuxOrderIndex);
+      var index = p.getSlotFromFXID(pi.nuxFXID);
       if (index != null) return index;
     }
     return null;
@@ -168,70 +168,70 @@ class NuxMightyPlugPro extends NuxDevice {
           shortName: "WAH",
           longName: "Wah",
           keyName: "wah",
-          nuxOrderIndex: PlugProFXID.wah,
+          nuxFXID: PlugProFXID.wah,
           color: Colors.green,
           icon: Icons.water),
     ProcessorInfo(
         shortName: "COMP",
-        longName: "Compressor",
+        longName: "Comp",
         keyName: "comp",
-        nuxOrderIndex: PlugProFXID.comp,
+        nuxFXID: PlugProFXID.comp,
         color: Colors.lime,
         icon: MightierIcons.compressor),
     ProcessorInfo(
         shortName: "EFX",
         longName: "EFX",
         keyName: "efx",
-        nuxOrderIndex: PlugProFXID.efx,
+        nuxFXID: PlugProFXID.efx,
         color: Colors.orange,
         icon: MightierIcons.pedal),
     ProcessorInfo(
         shortName: "AMP",
         longName: "Amplifier",
         keyName: "amp",
-        nuxOrderIndex: PlugProFXID.amp,
+        nuxFXID: PlugProFXID.amp,
         color: Colors.red,
         icon: MightierIcons.amp),
     ProcessorInfo(
         shortName: "EQ",
         longName: "EQ",
         keyName: "eq",
-        nuxOrderIndex: PlugProFXID.eq,
+        nuxFXID: PlugProFXID.eq,
         color: Colors.grey[300]!,
         icon: MightierIcons.sliders),
     ProcessorInfo(
         shortName: "GATE",
         longName: "Noise Gate",
         keyName: "gate",
-        nuxOrderIndex: PlugProFXID.gate,
+        nuxFXID: PlugProFXID.gate,
         color: Colors.green,
         icon: MightierIcons.gate),
     ProcessorInfo(
         shortName: "MOD",
         longName: "Modulation",
         keyName: "mod",
-        nuxOrderIndex: PlugProFXID.mod,
+        nuxFXID: PlugProFXID.mod,
         color: Colors.deepPurple[400]!,
         icon: Icons.waves),
     ProcessorInfo(
         shortName: "DLY",
         longName: "Delay",
         keyName: "delay",
-        nuxOrderIndex: PlugProFXID.delay,
+        nuxFXID: PlugProFXID.delay,
         color: Colors.cyan[300]!,
         icon: Icons.blur_linear),
     ProcessorInfo(
         shortName: "RVB",
         longName: "Reverb",
         keyName: "reverb",
-        nuxOrderIndex: PlugProFXID.reverb,
+        nuxFXID: PlugProFXID.reverb,
         color: Colors.purple[200]!,
         icon: Icons.blur_on),
     ProcessorInfo(
         shortName: "IR",
-        longName: "Cabinet",
+        longName: "Cab",
         keyName: "cabinet",
-        nuxOrderIndex: PlugProFXID.cab,
+        nuxFXID: PlugProFXID.cab,
         color: Colors.lightBlue[400]!,
         icon: MightierIcons.cabinet),
   ];

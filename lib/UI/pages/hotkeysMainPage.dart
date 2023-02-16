@@ -25,7 +25,7 @@ class HotkeysMainPage extends StatelessWidget {
                     ))),
           ),
           ListTile(
-            title: const Text("Effect On/Off Hotkeys"),
+            title: const Text("Effect Hotkeys"),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => HotkeysSetup(

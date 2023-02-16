@@ -52,6 +52,7 @@ class _ThickSliderState extends State<ThickSlider> {
   int lastTapDown = 0;
   int emitCounter = 0;
   double scale = 1;
+  bool useAccessibility = false;
 
   Offset startDragPos = const Offset(0, 0);
   double width = 0;
@@ -161,6 +162,11 @@ class _ThickSliderState extends State<ThickSlider> {
           } else {
             min = widget.parameter!.formatter.toHumanInput(widget.min);
             max = widget.parameter!.formatter.toHumanInput(widget.max);
+            if (min > max) {
+              var tmp = max;
+              max = min;
+              min = tmp;
+            }
           }
 
           if (val < min || val > max) return false;
@@ -184,6 +190,28 @@ class _ThickSliderState extends State<ThickSlider> {
 
   @override
   Widget build(BuildContext context) {
+    useAccessibility = MediaQuery.of(context).accessibleNavigation;
+    if (useAccessibility) {
+      return ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: widget.maxHeight ?? 50),
+        child: Slider(
+          semanticFormatterCallback: (value) {
+            return "${widget.label}, ${widget.labelFormatter(value)}";
+          },
+          label: widget.labelFormatter(_lerp(factor)),
+          divisions: 100,
+          min: widget.min,
+          max: widget.max,
+          value: widget.value,
+          activeColor: widget.activeColor,
+          onChangeStart: widget.onDragStart,
+          onChanged: (value) {
+            widget.onChanged?.call(value, false);
+          },
+          onChangeEnd: widget.onDragEnd,
+        ),
+      );
+    }
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: widget.maxHeight ?? 50),
       child: LayoutBuilder(

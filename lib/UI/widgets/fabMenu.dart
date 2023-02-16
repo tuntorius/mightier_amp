@@ -148,48 +148,45 @@ class FloatingActionBubble extends AnimatedWidget {
         alignment: Alignment.bottomRight,
         children: [
           buildBackgroundWidget(),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Flexible(
-                  child: IgnorePointer(
-                    ignoring: _animation.value == 0,
-                    child: SingleChildScrollView(
-                        // physics: const NeverScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: buildItems(context),
-                        )),
-                  ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Flexible(
+                child: IgnorePointer(
+                  ignoring: _animation.value == 0,
+                  child: SingleChildScrollView(
+                      // physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: buildItems(context),
+                      )),
                 ),
-                Transform.rotate(
-                  angle: _animation.value * pi * 3 / 4,
-                  child: FloatingActionButton(
-                    heroTag: herotag ?? const _DefaultHeroTag(),
-                    backgroundColor: backGroundColor,
-                    onPressed: onPress,
-                    // iconData is mutually exclusive with animatedIconData
-                    // only 1 can be null at the time
-                    child: iconData == null
-                        ? AnimatedIcon(
-                            icon: animatedIconData!,
-                            progress: _animation,
-                            color: iconColor,
-                          )
-                        : Icon(
-                            iconData,
-                            color: iconColor,
-                          ),
-                  ),
+              ),
+              Transform.rotate(
+                angle: _animation.value * pi * 3 / 4,
+                child: FloatingActionButton(
+                  heroTag: herotag ?? const _DefaultHeroTag(),
+                  backgroundColor: backGroundColor,
+                  onPressed: onPress,
+                  // iconData is mutually exclusive with animatedIconData
+                  // only 1 can be null at the time
+                  child: iconData == null
+                      ? AnimatedIcon(
+                          icon: animatedIconData!,
+                          progress: _animation,
+                          color: iconColor,
+                        )
+                      : Icon(
+                          iconData,
+                          color: iconColor,
+                        ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),

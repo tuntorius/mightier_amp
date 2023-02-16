@@ -1,206 +1,234 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:marquee_text/marquee_text.dart';
-import '../setlistPage.dart';
+import '../../UI/widgets/VolumeDrawer.dart';
+import '../../bluetooth/NuxDeviceControl.dart';
+import '../../bluetooth/devices/value_formatters/ValueFormatter.dart';
+import '../setlist_player/setlistPlayerState.dart';
 import 'speedPanel.dart';
 
-class SetlistPlayer extends StatelessWidget {
-  final SetlistPlayerState state;
-  final bool expanded;
-  final Duration duration;
-  const SetlistPlayer(
-      {Key? key,
-      required this.state,
-      required this.expanded,
-      required this.duration})
-      : super(key: key);
+class SetlistPlayer extends StatefulWidget {
+  const SetlistPlayer({Key? key}) : super(key: key);
+
+  @override
+  State<SetlistPlayer> createState() => _SetlistPlayerState();
+}
+
+class _SetlistPlayerState extends State<SetlistPlayer> {
+  final animationDuration = const Duration(milliseconds: 200);
+  final SetlistPlayerState playerState = SetlistPlayerState.instance();
+  StreamSubscription? _positionSub;
+
+  final device = NuxDeviceControl.instance().device;
+  double get currentVolume => device.fakeMasterVolume
+      ? NuxDeviceControl.instance().masterVolume
+      : device.presets[device.selectedChannel].volume;
+  ValueFormatter get volFormatter => device.fakeMasterVolume
+      ? ValueFormatters.percentage
+      : device.decibelFormatter!;
+
+  @override
+  void initState() {
+    super.initState();
+    playerState.addListener(_onPlayerStateChange);
+    _positionSub = playerState.positionStream.listen(_opPlayerPosition);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    playerState.removeListener(_onPlayerStateChange);
+    _positionSub?.cancel();
+  }
+
+  void _opPlayerPosition(Duration position) {
+    setState(() {});
+  }
+
+  void _onPlayerStateChange() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    double height = 90;
-    if (expanded) height = 420;
-
-    return AnimatedContainer(
-        duration: duration,
-        height: height,
-        color: Colors.grey[800],
-        child: AnimatedSwitcher(
-          duration: duration,
-          child: createPlayerView(context, expanded),
-        ));
+    return createPlayerView(context);
   }
 
   Widget? createTitle() {
-    //if (state.state != PlayerState.idle)
     return MarqueeText(
       text: TextSpan(
-          text: state.setlist.items[state.currentTrack].trackReference?.name ??
-              "Untitled Track"),
+          text: playerState.setlist?.items[playerState.currentTrack]
+                  .trackReference?.name ??
+              "No Track"),
       speed: 20,
-      // blankSpace: 40.0,
-      // velocity: 30.0,
-      // pauseAfterRound: const Duration(seconds: 3),
-      // startAfter: const Duration(seconds: 3),
     );
-    //return null;
   }
 
-  Widget createPlayerView(BuildContext context, bool expanded) {
-    if (expanded) {
-      return ListView(
-        //crossAxisAlignment: CrossAxisAlignment.stretch,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          const Icon(Icons.keyboard_arrow_down),
-          SizedBox(height: 30, child: Center(child: createTitle())),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: createFullTrackControls(),
+  Widget createPlayerView(BuildContext context) {
+    return ListView(
+      //crossAxisAlignment: CrossAxisAlignment.stretch,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        ListTile(
+          leading: IconButton(
+            iconSize: 32,
+            onPressed: playerState.toggleExpanded,
+            icon: const Icon(Icons.keyboard_arrow_down),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              children: [
-                Text(state.getMMSS(state.currentPosition)),
-                Expanded(
-                    child: SliderTheme(
-                  data: SliderThemeData(
-                      trackShape: SliderRepeatTrackShape(state: state)),
-                  child: Slider(
-                    value: state.currentPosition.inMilliseconds.toDouble(),
-                    onChanged: (value) {
-                      state.setPosition(value.round());
-                    },
-                    max: state.getDuration().inMilliseconds.toDouble(),
-                    onChangeStart: (val) {
-                      //state.setPositionUpdateMode(true);
-                    },
-                    onChangeEnd: (val) {
-                      //state.currentPosition = Duration(milliseconds: val.round());
-                      //state.setPositionUpdateMode(false);
-                    },
-                  ),
-                )),
-                Text(state.getMMSS(state.getDuration()))
-              ],
-            ),
+          title: createTitle(),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: createFullTrackControls(),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Row(
+            children: [
+              Text(playerState.getMMSS(playerState.currentPosition)),
+              Expanded(
+                  child: SliderTheme(
+                data: SliderThemeData(
+                    trackShape: SliderRepeatTrackShape(state: playerState)),
+                child: Slider(
+                  value: playerState.currentPosition.inMilliseconds.toDouble(),
+                  onChanged: (value) {
+                    playerState.setPosition(value.round());
+                  },
+                  max: playerState.getDuration().inMilliseconds.toDouble(),
+                  onChangeStart: (val) {
+                    //state.setPositionUpdateMode(true);
+                  },
+                  onChangeEnd: (val) {
+                    //state.currentPosition = Duration(milliseconds: val.round());
+                    //state.setPositionUpdateMode(false);
+                  },
+                ),
+              )),
+              Text(playerState.getMMSS(playerState.getDuration()))
+            ],
           ),
-          /*ListTile(
+        ),
+        /*ListTile(
             title: Text("Current preset: aoufh"),
           ),*/
-          CheckboxListTile(
-              title: const Text("Auto Advance"),
-              value: state.autoAdvance,
-              onChanged: (value) {
-                state.autoAdvance = value ?? true;
-              }),
-          if (state.automation != null && state.automation!.loopEnable)
-            ListTile(
-              title: Text("Loop ${createLoopLabel()}"),
-              trailing: ElevatedButton(
-                child: const Text("Cancel Loop"),
-                onPressed: () {
-                  state.automation?.forceLoopDisable();
-                },
-              ),
+        CheckboxListTile(
+            title: const Text("Auto Advance"),
+            value: playerState.autoAdvance,
+            onChanged: (value) {
+              playerState.autoAdvance = value ?? true;
+              setState(() {});
+            }),
+        if (playerState.automation != null &&
+            playerState.automation!.loopEnable)
+          ListTile(
+            title: Text("Loop ${createLoopLabel()}"),
+            trailing: ElevatedButton(
+              child: const Text("Cancel Loop"),
+              onPressed: () {
+                playerState.automation?.forceLoopDisable();
+
+                setState(() {});
+              },
             ),
-          SpeedPanel(
-            onSemitonesChanged: (val) {
-              state.pitch = val;
-              state.automation?.setPitch(val);
-            },
-            onSpeedChanged: (speed) {
-              state.speed = speed;
-              state.automation?.setSpeed(speed);
-            },
-            semitones: state.pitch,
-            speed: state.speed,
-          )
-        ],
-      );
-    }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.keyboard_arrow_up),
-        ListTile(
-          title: createTitle(),
-          trailing: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: createMiniTrackControls()),
+          ),
+        SpeedPanel(
+          onSemitonesChanged: (val) {
+            playerState.pitch = val;
+            playerState.automation?.setPitch(val);
+            setState(() {});
+          },
+          onSpeedChanged: (speed) {
+            playerState.speed = speed;
+            playerState.automation?.setSpeed(speed);
+            setState(() {});
+          },
+          semitones: playerState.pitch,
+          speed: playerState.speed,
         ),
+        VolumeSlider(
+          label: "Amp Volume",
+          currentVolume: currentVolume,
+          onVolumeChanged: () {
+            setState(() {});
+          },
+          volumeFormatter: volFormatter,
+        )
       ],
     );
   }
 
   String createLoopLabel() {
-    if (state.automation!.loopTimes == 0) return "∞";
-    return "${state.automation!.currentLoop}/${state.automation!.loopTimes}";
+    if (playerState.automation!.loopTimes == 0) return "∞";
+    return "${playerState.automation!.currentLoop}/${playerState.automation!.loopTimes}";
   }
 
   List<Widget> createFullTrackControls() {
+    var totalIconSize = MediaQuery.of(context).size.width.floorToDouble() / 5;
+    var iconSize = totalIconSize - 14;
+    var padding = const EdgeInsets.all(7);
     return [
-      MaterialButton(
+      IconButton(
+        padding: padding,
         onPressed: () {
-          state.previous();
+          playerState.previous();
         },
-        minWidth: 0,
-        height: 80,
-        child: const Icon(
+        iconSize: iconSize,
+        icon: const Icon(
           Icons.skip_previous,
           color: Colors.white,
-          size: 70,
         ),
       ),
-      MaterialButton(
+      IconButton(
+        padding: padding,
         onPressed: () {
-          state.playPause();
+          playerState.setPosition(
+              (playerState.currentPosition + const Duration(seconds: -5))
+                  .inMilliseconds);
         },
-        minWidth: 0,
-        height: 80,
-        child: Icon(
-          state.state == PlayerState.play ? Icons.pause : Icons.play_arrow,
+        iconSize: iconSize,
+        icon: const Icon(
+          Icons.fast_rewind,
           color: Colors.white,
-          size: 80,
         ),
       ),
-      MaterialButton(
-        onPressed: state.next,
-        minWidth: 0,
-        height: 80,
-        child: const Icon(
+      IconButton(
+        padding: padding,
+        onPressed: () {
+          playerState.playPause();
+        },
+        iconSize: iconSize,
+        icon: Icon(
+          playerState.state == PlayerState.play
+              ? Icons.pause
+              : Icons.play_arrow,
+          color: Colors.white,
+        ),
+      ),
+      IconButton(
+        padding: padding,
+        onPressed: () {
+          playerState.setPosition(
+              (playerState.currentPosition + const Duration(seconds: 5))
+                  .inMilliseconds);
+        },
+        iconSize: iconSize,
+        icon: const Icon(
+          Icons.fast_forward,
+          color: Colors.white,
+        ),
+      ),
+      IconButton(
+        padding: padding,
+        onPressed: playerState.next,
+        iconSize: iconSize,
+        icon: const Icon(
           Icons.skip_next,
           color: Colors.white,
-          size: 70,
         ),
       ),
-    ];
-  }
-
-  List<Widget> createMiniTrackControls() {
-    return [
-      MaterialButton(
-        onPressed: () {
-          state.playPause();
-        },
-        height: 100,
-        minWidth: 0,
-        child: Icon(
-          state.state == PlayerState.play ? Icons.pause : Icons.play_arrow,
-          color: Colors.white,
-          size: 40,
-        ),
-      ),
-      MaterialButton(
-        onPressed: state.next,
-        //height: 70,
-        minWidth: 0,
-        child: const Icon(
-          Icons.skip_next,
-          color: Colors.white,
-          size: 40,
-        ),
-      )
     ];
   }
 }
@@ -284,5 +312,94 @@ class SliderRepeatTrackShape extends RoundedRectSliderTrackShape {
         enableAnimation: enableAnimation,
         textDirection: textDirection,
         thumbCenter: thumbCenter);
+  }
+}
+
+class SetlistMiniPlayer extends StatefulWidget {
+  const SetlistMiniPlayer({Key? key}) : super(key: key);
+
+  @override
+  State<SetlistMiniPlayer> createState() => SetlistMiniPlayerState();
+}
+
+class SetlistMiniPlayerState extends State<SetlistMiniPlayer> {
+  final SetlistPlayerState playerState = SetlistPlayerState.instance();
+  StreamSubscription? _positionSub;
+
+  @override
+  void initState() {
+    super.initState();
+    playerState.addListener(_onPlayerStateChange);
+    _positionSub = playerState.positionStream.listen(_opPlayerPosition);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    playerState.removeListener(_onPlayerStateChange);
+    _positionSub?.cancel();
+  }
+
+  void _opPlayerPosition(Duration position) {
+    setState(() {});
+  }
+
+  void _onPlayerStateChange() {
+    setState(() {});
+  }
+
+  Widget? createTitle() {
+    return MarqueeText(
+      text: TextSpan(
+          text: playerState.setlist?.items[playerState.currentTrack]
+                  .trackReference?.name ??
+              "No Track"),
+      speed: 20,
+    );
+  }
+
+  List<Widget> createMiniTrackControls() {
+    return [
+      IconButton(
+        onPressed: playerState.playPause,
+        icon: Icon(
+          playerState.state == PlayerState.play
+              ? Icons.pause
+              : Icons.play_arrow,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+      IconButton(
+        onPressed: playerState.next,
+        icon: const Icon(
+          Icons.skip_next,
+          color: Colors.white,
+          size: 30,
+        ),
+      )
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.grey[850],
+      //height: 60,
+      child: ListTile(
+        onTap: playerState.toggleExpanded,
+        leading: IconButton(
+          iconSize: 32,
+          onPressed: playerState.toggleExpanded,
+          icon: const Icon(Icons.keyboard_arrow_up),
+        ),
+        minLeadingWidth: 0,
+        title: createTitle(),
+        trailing: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: createMiniTrackControls()),
+      ),
+    );
   }
 }

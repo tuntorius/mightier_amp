@@ -215,6 +215,12 @@ class AutomationController {
     }
   }
 
+  Future stop() async {
+    if (playerState.playing) {
+      await player.stop();
+    }
+  }
+
   void setSpeed(double speed) {
     player.setSpeed(speed);
   }

@@ -3,12 +3,17 @@
 
 //import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/audio/setlistPage.dart';
 import 'package:mighty_plug_manager/audio/setlistsPage.dart';
 import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 import 'package:mighty_plug_manager/audio/tracksPage.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
-import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../audio/models/setlist.dart';
+import '../../audio/setlist_player/setlistPlayerState.dart';
+import '../../audio/widgets/jamtracksView.dart';
+import '../widgets/nestedWillPopScope.dart';
 
 class JamTracks extends StatefulWidget {
   const JamTracks({Key? key}) : super(key: key);
@@ -17,8 +22,12 @@ class JamTracks extends StatefulWidget {
   State createState() => _JamTracksState();
 }
 
-class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
+class _JamTracksState extends State<JamTracks>
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin<JamTracks> {
   late TabController cntrl;
+  Setlist? _setlist;
+  bool _readOnlySetlist = false;
+  final SetlistPlayerState playerState = SetlistPlayerState.instance();
 
   @override
   void initState() {
@@ -34,39 +43,39 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
         if (mounted) setState(() {});
       });
     });
+
+    playerState.addListener(onPlayerStateChange);
   }
 
   @override
   void dispose() {
     super.dispose();
     cntrl.dispose();
+    playerState.removeListener(onPlayerStateChange);
   }
 
-  //try to get best version of tags (mp3 only)
-  //if not - use filename but strip the extension
-  String getProperTags(Map? tags, String filename) {
-    String title = "", artist = "";
-    if (tags != null) {
-      if (tags.containsKey("artist")) artist = tags["artist"];
-      if (tags.containsKey("title")) title = tags["title"];
-    }
-
-    if (artist.isNotEmpty || title.isNotEmpty) {
-      return "$artist - $title";
-    }
-
-    String fn = basename(filename);
-    if (fn.contains('.')) {
-      return fn.substring(0, fn.lastIndexOf("."));
-    }
-    return fn;
+  void onPlayerStateChange() {
+    setState(() {});
   }
 
   Widget showSetlists(bool hasTracks) {
-    if (hasTracks) return const Setlists();
+    if (hasTracks) {
+      return Setlists(
+        onAllTracksSelect: () {
+          _readOnlySetlist = true;
+          _setlist = TrackData().allTracks;
+          setState(() {});
+        },
+        onSetlistSelect: (setlist) {
+          _readOnlySetlist = false;
+          _setlist = setlist;
+          setState(() {});
+        },
+      );
+    }
     return Stack(
       children: [
-        const Setlists(),
+        Setlists(),
         TextButton(
           child: const Center(child: Text("")),
           onPressed: () {
@@ -77,10 +86,71 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
     );
   }
 
+  Widget mainView() {
+    if (_setlist == null) {
+      bool hasTracks = TrackData().tracks.isNotEmpty;
+      return Column(
+        children: [
+          TabBar(
+            tabs: const [Tab(text: "Setlists"), Tab(text: "Tracks")],
+            controller: cntrl,
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: cntrl,
+              children: [
+                showSetlists(hasTracks),
+                const TracksPage(),
+              ],
+            ),
+          ),
+        ],
+      );
+    } else {
+      return SetlistPage(
+        setlist: _setlist!,
+        readOnly: _readOnlySetlist,
+        onBack: _setlist == null
+            ? null
+            : () {
+                _setlist = null;
+                setState(() {});
+              },
+      );
+    }
+  }
+
+  Widget _permissionInfo() {
+    return Center(
+      child: ElevatedButton(
+        child: const Text("Grant storage permission"),
+        onPressed: () async {
+          await Permission.storage.request();
+          setState(() {});
+        },
+      ),
+    );
+  }
+
+  Widget _jamtracksWidget() {
+    return NestedWillPopScope(
+        onWillPop: () {
+          if (playerState.expanded) {
+            playerState.toggleExpanded();
+            return Future.value(false);
+          }
+          if (_setlist != null) {
+            _setlist = null;
+            setState(() {});
+            return Future.value(false);
+          }
+          return Future.value(true);
+        },
+        child: JamtracksView(child: mainView()));
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool hasTracks = TrackData().tracks.isNotEmpty;
-
     return SafeArea(
       child: FutureBuilder<PermissionStatus>(
         future: Permission.storage.status,
@@ -89,38 +159,9 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
           if (snapshot.hasData) {
             switch (snapshot.data) {
               case PermissionStatus.denied:
-                return Center(
-                  child: ElevatedButton(
-                    child: const Text("Grant storage permission"),
-                    onPressed: () async {
-                      await Permission.storage.request();
-                      setState(() {});
-                    },
-                  ),
-                );
+                return _permissionInfo();
               case PermissionStatus.granted:
-                return Scaffold(
-                  body: Column(
-                    children: [
-                      TabBar(
-                        tabs: const [
-                          Tab(text: "Setlists"),
-                          Tab(text: "Tracks")
-                        ],
-                        controller: cntrl,
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          controller: cntrl,
-                          children: [
-                            showSetlists(hasTracks),
-                            const TracksPage(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return _jamtracksWidget();
               default:
                 return const Text("Permission declined");
             }
@@ -130,4 +171,7 @@ class _JamTracksState extends State<JamTracks> with TickerProviderStateMixin {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

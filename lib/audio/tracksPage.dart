@@ -7,6 +7,7 @@ import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/fabMenu.dart';
 import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/UI/widgets/searchTextField.dart';
+import 'package:mighty_plug_manager/audio/setlist_player/setlistPlayerState.dart';
 import 'package:mighty_plug_manager/audio/widgets/media_library/media_browse.dart';
 import 'package:path/path.dart';
 import '../platform/platformUtils.dart';
@@ -190,7 +191,12 @@ class _TracksPageState extends State<TracksPage>
     setState(() {});
   }
 
+  void stopPlayer() {
+    SetlistPlayerState.instance().stop();
+  }
+
   void editTrack(BuildContext context, JamTrack track) {
+    stopPlayer();
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => AudioEditor(track)))
         .then((value) {
@@ -231,7 +237,7 @@ class _TracksPageState extends State<TracksPage>
     if (widget.selectorOnly) return null;
     return PopupMenuButton(
       child: const Padding(
-        padding: EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
+        padding: EdgeInsets.only(left: 12.0, right: 12, bottom: 10, top: 10),
         child: Icon(Icons.more_vert, color: Colors.grey),
       ),
       itemBuilder: (context) {
@@ -333,6 +339,7 @@ class _TracksPageState extends State<TracksPage>
   }
 
   void addFromOnlineSource(BuildContext context) {
+    stopPlayer();
     Navigator.of(context)
         .push(
             MaterialPageRoute(builder: (context) => const OnlineSourceSearch()))
@@ -352,6 +359,7 @@ class _TracksPageState extends State<TracksPage>
   }
 
   void addFromYoutubeSource(BuildContext context) {
+    stopPlayer();
     Navigator.of(context)
         .push(MaterialPageRoute(
             builder: (context) => OnlineSearchScreen(source: YoutubeSource())))
@@ -432,6 +440,7 @@ class _TracksPageState extends State<TracksPage>
                       ListView.builder(
                         controller: scrollController,
                         itemCount: TrackData().tracks.length,
+                        padding: const EdgeInsets.only(bottom: 90),
                         itemBuilder: (context, index) {
                           if (filter != "" &&
                               !TrackData()

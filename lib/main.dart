@@ -120,7 +120,7 @@ class _AppState extends State<App> {
       title: 'Mightier Amp',
       theme: getTheme(),
       home: MainTabs(),
-      scrollBehavior: MaterialScrollBehavior().copyWith(
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.mouse,
           PointerDeviceKind.touch,
@@ -375,7 +375,6 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                         totalTabs: _tabs.length,
                         currentVolume: currentVolume,
                         onVolumeChanged: _onVolumeChanged,
-                        onVolumeDragEnd: _onVolumeDragEnd,
                         volumeFormatter: volFormatter,
                       ),
                     Expanded(
@@ -389,7 +388,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
-                if (layoutMode != LayoutMode.drawer)
+                if (layoutMode != LayoutMode.drawer && _currentIndex != 3)
                   BottomDrawer(
                     isBottomDrawerOpen: isBottomDrawerOpen,
                     onExpandChange: (val) => setState(() {
@@ -398,7 +397,6 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                     child: VolumeSlider(
                       currentVolume: currentVolume,
                       onVolumeChanged: _onVolumeChanged,
-                      onVolumeDragEnd: _onVolumeDragEnd,
                       volumeFormatter: volFormatter,
                     ),
                   ),
@@ -419,23 +417,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     );
   }
 
-  void _onVolumeDragEnd(_) {
-    if (NuxDeviceControl.instance().device.fakeMasterVolume) {
-      SharedPrefs().setValue(
-        SettingsKeys.masterVolume,
-        NuxDeviceControl.instance().masterVolume,
-      );
-    }
-  }
-
-  void _onVolumeChanged(value, bool skip) {
-    final device = NuxDeviceControl.instance().device;
-    if (device.fakeMasterVolume) {
-      NuxDeviceControl.instance().masterVolume = value;
-    } else {
-      device.presets[device.selectedChannel].volume = value;
-    }
-
+  void _onVolumeChanged() {
     setState(() {});
   }
 

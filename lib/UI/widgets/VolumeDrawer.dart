@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueFormatter.dart';
 
+import '../../bluetooth/NuxDeviceControl.dart';
+import '../../platform/simpleSharedPrefs.dart';
 import 'thickSlider.dart';
 
 const _kBottomDrawerPickHeight = 50.0;
@@ -66,16 +68,16 @@ class BottomDrawer extends StatelessWidget {
 }
 
 class VolumeSlider extends StatelessWidget {
-  final Function(double value, bool skip) onVolumeChanged;
-  final ValueChanged<double> onVolumeDragEnd;
+  final void Function() onVolumeChanged;
   final double currentVolume;
   final ValueFormatter volumeFormatter;
+  final String label;
   const VolumeSlider(
       {Key? key,
       required this.onVolumeChanged,
       required this.currentVolume,
-      required this.onVolumeDragEnd,
-      required this.volumeFormatter})
+      required this.volumeFormatter,
+      this.label = "Volume"})
       : super(key: key);
 
   @override
@@ -84,13 +86,33 @@ class VolumeSlider extends StatelessWidget {
       activeColor: Colors.blue,
       value: currentVolume,
       skipEmitting: 3,
-      label: "Volume",
+      label: label,
       labelFormatter: volumeFormatter.toLabel,
       min: volumeFormatter.min.toDouble(),
       max: volumeFormatter.max.toDouble(),
       handleVerticalDrag: false,
-      onChanged: onVolumeChanged,
-      onDragEnd: onVolumeDragEnd,
+      onChanged: _onVolumeChanged,
+      onDragEnd: _onVolumeDragEnd,
     );
+  }
+
+  void _onVolumeDragEnd(_) {
+    if (NuxDeviceControl.instance().device.fakeMasterVolume) {
+      SharedPrefs().setValue(
+        SettingsKeys.masterVolume,
+        NuxDeviceControl.instance().masterVolume,
+      );
+    }
+  }
+
+  void _onVolumeChanged(value, bool skip) {
+    final device = NuxDeviceControl.instance().device;
+    if (device.fakeMasterVolume) {
+      NuxDeviceControl.instance().masterVolume = value;
+    } else {
+      device.presets[device.selectedChannel].volume = value;
+    }
+
+    onVolumeChanged.call();
   }
 }

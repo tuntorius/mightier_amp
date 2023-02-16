@@ -18,8 +18,7 @@ class AppDrawer extends StatefulWidget {
   final int currentIndex;
   final int totalTabs;
 
-  final Function(double value, bool skip) onVolumeChanged;
-  final ValueChanged<double> onVolumeDragEnd;
+  final void Function() onVolumeChanged;
   final double currentVolume;
   final ValueFormatter volumeFormatter;
 
@@ -28,7 +27,6 @@ class AppDrawer extends StatefulWidget {
     required this.currentIndex,
     required this.totalTabs,
     required this.onVolumeChanged,
-    required this.onVolumeDragEnd,
     required this.currentVolume,
     required this.volumeFormatter,
     Key? key,
@@ -141,7 +139,6 @@ class _AppDrawerState extends State<AppDrawer> {
                     volumeFormatter: widget.volumeFormatter,
                     currentVolume: widget.currentVolume,
                     onVolumeChanged: widget.onVolumeChanged,
-                    onVolumeDragEnd: widget.onVolumeDragEnd,
                   ),
                 ),
             ],

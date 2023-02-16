@@ -76,7 +76,7 @@ class _AudioEditorState extends State<AudioEditor> {
     device = NuxDeviceControl.instance().device;
 
     decodeAudio(widget.track.path);
-    automation.setAudioFile(widget.track.path, 100);
+    automation.setAudioFile(widget.track.path, 4);
 
     automation.positionStream.listen(playPositionUpdate);
     automation.playerStateStream.listen(playerStateUpdate);

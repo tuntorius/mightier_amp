@@ -4,10 +4,13 @@ import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 
 import 'models/setlist.dart';
-import 'setlistPage.dart';
 
 class Setlists extends StatefulWidget {
-  const Setlists({Key? key}) : super(key: key);
+  Function(Setlist)? onSetlistSelect;
+  Function()? onAllTracksSelect;
+
+  Setlists({Key? key, this.onSetlistSelect, this.onAllTracksSelect})
+      : super(key: key);
 
   @override
   State createState() => _SetlistsState();
@@ -102,9 +105,6 @@ class _SetlistsState extends State<Setlists> {
 
   void menuActions(BuildContext context, int action, Setlist item) async {
     switch (action) {
-      // case 0: //edit
-      //   editTrack(context, item);
-      //   break;
       case 1: //rename
         renameSetlist(context, item);
         break;
@@ -163,11 +163,7 @@ class _SetlistsState extends State<Setlists> {
                 subtitle: Text("${TrackData().allTracks.items.length} tracks"),
                 trailing: const Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => SetlistPage(
-                            setlist: TrackData().allTracks,
-                            readOnly: true,
-                          )));
+                  widget.onAllTracksSelect?.call();
                 },
               ),
               Expanded(
@@ -177,17 +173,14 @@ class _SetlistsState extends State<Setlists> {
                     //shadowColor: Colors.grey,
                   ),
                   child: ReorderableListView.builder(
+                      padding: const EdgeInsets.only(bottom: 90),
                       itemCount: setlists.length,
                       itemBuilder: (context, index) {
                         return Container(
                           key: Key("$index"),
                           child: InkWell(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => SetlistPage(
-                                        setlist: setlists[index],
-                                        readOnly: false,
-                                      )));
+                              widget.onSetlistSelect?.call(setlists[index]);
                             },
                             onTapDown: (details) {
                               _position = details.globalPosition;

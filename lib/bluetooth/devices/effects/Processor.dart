@@ -8,6 +8,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueForm
 import '../NuxFXID.dart';
 import '../utilities/MathEx.dart';
 import '../value_formatters/SwitchFormatters.dart';
+import 'MidiControllerHandles.dart';
 
 class Parameter {
   ValueFormatter formatter;
@@ -17,6 +18,7 @@ class Parameter {
   int devicePresetIndex;
   double value;
   bool masterVolume = false;
+  MidiControllerHandle? midiControllerHandle;
 
   Parameter(
       {required this.value,
@@ -25,6 +27,7 @@ class Parameter {
       required this.name,
       required this.midiCC,
       required this.devicePresetIndex,
+      this.midiControllerHandle,
       this.masterVolume = false});
 
   int get midiValue => formatter.valueToMidi7Bit(value);
@@ -47,14 +50,14 @@ class ProcessorInfo {
   String shortName;
   String longName;
   String keyName;
-  NuxFXID nuxOrderIndex;
+  NuxFXID nuxFXID;
   Color color;
   IconData icon;
   ProcessorInfo(
       {required this.shortName,
       required this.longName,
       required this.keyName,
-      required this.nuxOrderIndex,
+      required this.nuxFXID,
       required this.color,
       required this.icon});
 }
@@ -82,6 +85,13 @@ abstract class Processor {
 
   //The CC command that selects the active effect for a certain slot
   int get midiCCSelectionValue;
+
+  //MIDI foot controller stuff
+  MidiControllerHandle? get midiControlOff;
+  MidiControllerHandle? get midiControlOn;
+  MidiControllerHandle? get midiControlToggle;
+  MidiControllerHandle? get midiControlPrev;
+  MidiControllerHandle? get midiControlNext;
 
   //used to declare that the device is a separator
   //Used in the selection popup menu

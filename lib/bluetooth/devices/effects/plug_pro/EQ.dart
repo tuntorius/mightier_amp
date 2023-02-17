@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class EQ extends Processor {
@@ -22,6 +23,18 @@ abstract class EQ extends Processor {
 
   @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iEQ;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.eqOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.eqOn;
+  @override
+  MidiControllerHandle? get midiControlToggle => MidiControllerHandles.eqToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.eqPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.eqNext;
 }
 
 class EQSixBand extends EQ {

@@ -6,6 +6,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/EFXv2.dar
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class EFX extends Processor {
@@ -24,6 +25,19 @@ abstract class EFX extends Processor {
 
   @override
   int get midiCCSelectionValue => MidiCCValues.bCC_DistMode;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.efxOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.efxOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.efxToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.efxPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.efxNext;
 }
 
 class TouchWah extends EFX {
@@ -47,14 +61,16 @@ class TouchWah extends EFX {
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Sense",
         handle: "sense",
         value: 27,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxRate),
   ];
 }
 
@@ -72,14 +88,16 @@ class UniVibe extends EFX {
         value: 73,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 83,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxDepth),
     Parameter(
         name: "Mode",
         handle: "mode",
@@ -104,14 +122,16 @@ class TremoloEFX extends EFX {
         value: 58,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 73,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxDepth),
   ];
 }
 
@@ -129,21 +149,24 @@ class PhaserEFX extends EFX {
         value: 78,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 54,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxDepth),
     Parameter(
         name: "Feedback",
         handle: "feedback",
         value: 65,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxGain),
   ];
 }
 
@@ -161,14 +184,16 @@ class Boost extends EFX {
         value: 41,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Level",
         handle: "level",
         value: 78,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
   ];
 
   @override
@@ -192,21 +217,24 @@ class TSDrive extends EFX {
         value: 41,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 67,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxTone),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxGain),
   ];
 }
 
@@ -224,21 +252,24 @@ class BassTS extends EFX {
         value: 41,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 67,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxTone),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxGain),
   ];
 
   @override
@@ -262,21 +293,24 @@ class ThreeBandEQ extends EFX {
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -294,21 +328,24 @@ class Muff extends EFX {
         value: 40,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxTone),
     Parameter(
         name: "Sustain",
         handle: "sustain",
         value: 40,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxDepth),
   ];
 }
 
@@ -326,21 +363,24 @@ class Crunch extends EFX {
         value: 20,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 80,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxTone),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxGain),
   ];
 }
 
@@ -358,21 +398,24 @@ class RedDist extends EFX {
         value: 45,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 55,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxTone),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 85,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxGain),
   ];
 }
 
@@ -390,21 +433,24 @@ class MorningDrive extends EFX {
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxTone),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxGain),
   ];
 }
 
@@ -422,20 +468,23 @@ class DistOne extends EFX {
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 40,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxTone),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 55,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxGain),
   ];
 }

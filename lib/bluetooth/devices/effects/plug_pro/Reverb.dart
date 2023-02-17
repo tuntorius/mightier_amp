@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class Reverb extends Processor {
@@ -20,6 +21,19 @@ abstract class Reverb extends Processor {
   int get midiCCEnableValue => MidiCCValuesPro.Head_iRVB;
   @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iRVB;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.reverbOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.reverbOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.reverbToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.reverbPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.reverbNext;
 }
 
 class RoomReverb extends Reverb {
@@ -36,21 +50,24 @@ class RoomReverb extends Reverb {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para3,
-        midiCC: MidiCCValuesPro.RVB_Para3),
+        midiCC: MidiCCValuesPro.RVB_Para3,
+        midiControllerHandle: MidiControllerHandles.reverbMix),
     Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para1,
-        midiCC: MidiCCValuesPro.RVB_Para1),
+        midiCC: MidiCCValuesPro.RVB_Para1,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
-        midiCC: MidiCCValuesPro.RVB_Para2),
+        midiCC: MidiCCValuesPro.RVB_Para2,
+        midiControllerHandle: MidiControllerHandles.reverbTone),
   ];
 }
 
@@ -68,21 +85,24 @@ class HallReverb extends Reverb {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para4,
-        midiCC: MidiCCValuesPro.RVB_Para4),
+        midiCC: MidiCCValuesPro.RVB_Para4,
+        midiControllerHandle: MidiControllerHandles.reverbMix),
     Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para1,
-        midiCC: MidiCCValuesPro.RVB_Para1),
+        midiCC: MidiCCValuesPro.RVB_Para1,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Pre Delay",
         handle: "predelay",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
-        midiCC: MidiCCValuesPro.RVB_Para2),
+        midiCC: MidiCCValuesPro.RVB_Para2,
+        midiControllerHandle: MidiControllerHandles.reverbTone),
     Parameter(
         name: "Liveliness",
         handle: "liveliness",
@@ -107,14 +127,16 @@ class PlateReverb extends Reverb {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
-        midiCC: MidiCCValuesPro.RVB_Para2),
+        midiCC: MidiCCValuesPro.RVB_Para2,
+        midiControllerHandle: MidiControllerHandles.reverbMix),
     Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para1,
-        midiCC: MidiCCValuesPro.RVB_Para1),
+        midiCC: MidiCCValuesPro.RVB_Para1,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
   ];
 }
 
@@ -132,14 +154,16 @@ class SpringReverb extends Reverb {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
-        midiCC: MidiCCValuesPro.RVB_Para2),
+        midiCC: MidiCCValuesPro.RVB_Para2,
+        midiControllerHandle: MidiControllerHandles.reverbMix),
     Parameter(
         name: "Decay",
         handle: "decay",
         value: 32,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para1,
-        midiCC: MidiCCValuesPro.RVB_Para1),
+        midiCC: MidiCCValuesPro.RVB_Para1,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
   ];
 }
 
@@ -157,21 +181,24 @@ class ShimmerReverb extends Reverb {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para1,
-        midiCC: MidiCCValuesPro.RVB_Para1),
+        midiCC: MidiCCValuesPro.RVB_Para1,
+        midiControllerHandle: MidiControllerHandles.reverbMix),
     Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
-        midiCC: MidiCCValuesPro.RVB_Para2),
+        midiCC: MidiCCValuesPro.RVB_Para2,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Shimmer",
         handle: "shimmer",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para3,
-        midiCC: MidiCCValuesPro.RVB_Para3)
+        midiCC: MidiCCValuesPro.RVB_Para3,
+        midiControllerHandle: MidiControllerHandles.reverbTone)
   ];
 }
 
@@ -189,13 +216,15 @@ class DampReverb extends Reverb {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para1,
-        midiCC: MidiCCValuesPro.RVB_Para1),
+        midiCC: MidiCCValuesPro.RVB_Para1,
+        midiControllerHandle: MidiControllerHandles.reverbMix),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
-        midiCC: MidiCCValuesPro.RVB_Para2)
+        midiCC: MidiCCValuesPro.RVB_Para2,
+        midiControllerHandle: MidiControllerHandles.reverbTone)
   ];
 }

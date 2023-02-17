@@ -1,6 +1,8 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:mighty_plug_manager/bluetooth/devices/effects/MidiControllerHandles.dart';
+
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
@@ -21,6 +23,19 @@ abstract class Modulation extends Processor {
   int get midiCCEnableValue => MidiCCValuesPro.Head_iMOD;
   @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iMOD;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.modOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.modOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.modToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.modPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.modNext;
 }
 
 class ModCE1 extends Modulation {
@@ -37,22 +52,24 @@ class ModCE1 extends Modulation {
         value: 39,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
+        midiCC: MidiCCValuesPro.MOD_Para3,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Intensity",
         handle: "intensity",
         value: 32,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
-
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
 
@@ -70,14 +87,16 @@ class ModCE2 extends Modulation {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modDepth),
   ];
 }
 
@@ -95,21 +114,24 @@ class STChorus extends Modulation {
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
+        midiCC: MidiCCValuesPro.MOD_Para3,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Width",
         handle: "width",
         value: 36,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Intensity",
         handle: "intensity",
         value: 74,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
 
@@ -127,14 +149,16 @@ class Vibrato extends Modulation {
         value: 56,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 68,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2)
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modDepth)
   ];
 }
 
@@ -152,21 +176,24 @@ class Detune extends Modulation {
         value: 54,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Shift-R",
         handle: "shift_r",
         value: 0,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
+        midiCC: MidiCCValuesPro.MOD_Para3,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 80,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
 
@@ -184,21 +211,24 @@ class Flanger extends Modulation {
         value: 59,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Width",
         handle: "width",
         value: 63,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
+        midiCC: MidiCCValuesPro.MOD_Para3,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Level",
         handle: "level",
         value: 59,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
     Parameter(
         name: "Feedback",
         handle: "feedback",
@@ -223,7 +253,8 @@ class Phase90 extends Modulation {
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
   ];
 }
 
@@ -241,14 +272,16 @@ class Phase100 extends Modulation {
         value: 39,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Intensity",
         handle: "intensity",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
 
@@ -266,21 +299,24 @@ class SCF extends Modulation {
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Width",
         handle: "width",
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Intensity",
         handle: "intensity",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para4,
-        midiCC: MidiCCValuesPro.MOD_Para4),
+        midiCC: MidiCCValuesPro.MOD_Para4,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
     Parameter(
         name: "Mode",
         handle: "mode",
@@ -305,21 +341,24 @@ class Vibe extends Modulation {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Volume",
         handle: "volume",
         value: 80,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
     Parameter(
         name: "Intensity",
         handle: "intensity",
         value: 80,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
+        midiCC: MidiCCValuesPro.MOD_Para3,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Mode",
         handle: "mode",
@@ -344,14 +383,16 @@ class Tremolo extends Modulation {
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 15,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modDepth),
   ];
 }
 
@@ -369,14 +410,16 @@ class Rotary extends Modulation {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Balance",
         handle: "balance",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modDepth),
   ];
 }
 
@@ -394,20 +437,23 @@ class SCH1 extends Modulation {
         value: 30,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
-        midiCC: MidiCCValuesPro.MOD_Para1),
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
-        midiCC: MidiCCValuesPro.MOD_Para2),
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
+        midiCC: MidiCCValuesPro.MOD_Para3,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }

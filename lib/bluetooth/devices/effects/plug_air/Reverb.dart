@@ -4,6 +4,7 @@
 import '../../NuxConstants.dart';
 import '../../NuxMightyPlugAir.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class Reverb extends Processor {
@@ -17,6 +18,19 @@ abstract class Reverb extends Processor {
   int get midiCCEnableValue => MidiCCValues.bCC_ReverbEnable;
   @override
   int get midiCCSelectionValue => MidiCCValues.bCC_ReverbMode;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.reverbOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.reverbOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.reverbToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.reverbPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.reverbNext;
 }
 
 class RoomReverb extends Reverb {
@@ -33,14 +47,16 @@ class RoomReverb extends Reverb {
         value: 64,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbdecay,
-        midiCC: MidiCCValues.bCC_ReverbDecay),
+        midiCC: MidiCCValues.bCC_ReverbDecay,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbmix,
-        midiCC: MidiCCValues.bCC_ReverbLevel)
+        midiCC: MidiCCValues.bCC_ReverbLevel,
+        midiControllerHandle: MidiControllerHandles.reverbMix)
   ];
 }
 
@@ -58,14 +74,16 @@ class HallReverb extends Reverb {
         value: 70,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbdecay,
-        midiCC: MidiCCValues.bCC_ReverbDecay),
+        midiCC: MidiCCValues.bCC_ReverbDecay,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 65,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbmix,
-        midiCC: MidiCCValues.bCC_ReverbLevel)
+        midiCC: MidiCCValues.bCC_ReverbLevel,
+        midiControllerHandle: MidiControllerHandles.reverbMix)
   ];
 }
 
@@ -83,21 +101,24 @@ class PlateReverb extends Reverb {
         value: 81,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbdecay,
-        midiCC: MidiCCValues.bCC_ReverbDecay),
+        midiCC: MidiCCValues.bCC_ReverbDecay,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Damp",
         handle: "damp",
         value: 45,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbdamp,
-        midiCC: MidiCCValues.bCC_ReverbRouting),
+        midiCC: MidiCCValues.bCC_ReverbRouting,
+        midiControllerHandle: MidiControllerHandles.reverbTone),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 66,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbmix,
-        midiCC: MidiCCValues.bCC_ReverbLevel)
+        midiCC: MidiCCValues.bCC_ReverbLevel,
+        midiControllerHandle: MidiControllerHandles.reverbMix)
   ];
 }
 
@@ -115,14 +136,16 @@ class SpringReverb extends Reverb {
         value: 32,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar1decay,
-        midiCC: MidiCCValues.bCC_ReverbDecay),
+        midiCC: MidiCCValues.bCC_ReverbDecay,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar2damp,
-        midiCC: MidiCCValues.bCC_ReverbLevel)
+        midiCC: MidiCCValues.bCC_ReverbLevel,
+        midiControllerHandle: MidiControllerHandles.reverbMix)
   ];
 }
 
@@ -140,14 +163,16 @@ class ShimmerReverb extends Reverb {
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbdecay,
-        midiCC: MidiCCValues.bCC_ReverbDecay),
+        midiCC: MidiCCValues.bCC_ReverbDecay,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbmix,
-        midiCC: MidiCCValues.bCC_ReverbLevel)
+        midiCC: MidiCCValues.bCC_ReverbLevel,
+        midiControllerHandle: MidiControllerHandles.reverbMix)
   ];
   @override
   int? getEquivalentEffect(int version) {
@@ -171,21 +196,24 @@ class RoomReverbv2 extends Reverb {
         value: 35,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar1decay,
-        midiCC: MidiCCValues.bCC_ReverbDecay),
+        midiCC: MidiCCValues.bCC_ReverbDecay,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 25,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar2damp,
-        midiCC: MidiCCValues.bCC_ReverbLevel),
+        midiCC: MidiCCValues.bCC_ReverbLevel,
+        midiControllerHandle: MidiControllerHandles.reverbMix),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 45,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar3mix,
-        midiCC: MidiCCValues.bCC_ReverbRouting)
+        midiCC: MidiCCValues.bCC_ReverbRouting,
+        midiControllerHandle: MidiControllerHandles.reverbTone)
   ];
 }
 
@@ -203,21 +231,24 @@ class HallReverbv2 extends Reverb {
         value: 70,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar1decay,
-        midiCC: MidiCCValues.bCC_ReverbDecay),
+        midiCC: MidiCCValues.bCC_ReverbDecay,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 45,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar2damp,
-        midiCC: MidiCCValues.bCC_ReverbLevel),
+        midiCC: MidiCCValues.bCC_ReverbLevel,
+        midiControllerHandle: MidiControllerHandles.reverbMix),
     Parameter(
         name: "Damp",
         handle: "damp",
         value: 85,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar3mix,
-        midiCC: MidiCCValues.bCC_ReverbRouting)
+        midiCC: MidiCCValues.bCC_ReverbRouting,
+        midiControllerHandle: MidiControllerHandles.reverbTone)
   ];
 }
 
@@ -235,13 +266,15 @@ class PlateReverbv2 extends Reverb {
         value: 81,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar1decay,
-        midiCC: MidiCCValues.bCC_ReverbDecay),
+        midiCC: MidiCCValues.bCC_ReverbDecay,
+        midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 66,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.reverbvar2damp,
-        midiCC: MidiCCValues.bCC_ReverbLevel)
+        midiCC: MidiCCValues.bCC_ReverbLevel,
+        midiControllerHandle: MidiControllerHandles.reverbMix)
   ];
 }

@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class M8BTAmplifier extends Amplifier {
@@ -20,6 +21,18 @@ abstract class M8BTAmplifier extends Amplifier {
   int get midiCCSelectionValue => MidiCCValues.bCC_NotUsed;
   @override
   int get defaultCab => 0;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => null;
+  @override
+  MidiControllerHandle? get midiControlOn => null;
+  @override
+  MidiControllerHandle? get midiControlToggle => null;
+  @override
+  MidiControllerHandle? get midiControlPrev => null;
+  @override
+  MidiControllerHandle? get midiControlNext => null;
 }
 
 class AmpClean extends M8BTAmplifier {
@@ -42,14 +55,16 @@ class AmpClean extends M8BTAmplifier {
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampTone),
     Parameter(
         name: "Level",
         handle: "level",
@@ -57,7 +72,8 @@ class AmpClean extends M8BTAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Mic Level",
         handle: "miclevel",

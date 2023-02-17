@@ -7,6 +7,7 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 //cabinets are 3 categories - electric, acoustic and bass
@@ -21,6 +22,18 @@ abstract class CabinetMP2 extends Cabinet {
   int get midiCCEnableValue => MidiCCValues.bCC_CabEnable;
   @override
   int get midiCCSelectionValue => MidiCCValues.bCC_CabMode;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => null;
+  @override
+  MidiControllerHandle? get midiControlOn => null;
+  @override
+  MidiControllerHandle? get midiControlToggle => null;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.cabPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.cabNext;
 
   @override
   String get cabName;
@@ -37,7 +50,8 @@ abstract class CabinetMP2 extends Cabinet {
       handle: "level",
       value: 0,
       formatter: ValueFormatters.decibelMP2,
-      midiCC: MidiCCValues.bCC_Routing);
+      midiCC: MidiCCValues.bCC_Routing,
+      midiControllerHandle: MidiControllerHandles.cabLevel);
 
   @override
   List<Parameter> get parameters => [value];

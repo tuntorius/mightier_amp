@@ -1,6 +1,7 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:mighty_plug_manager/bluetooth/devices/effects/MidiControllerHandles.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueFormatter.dart';
 
 import '../../NuxConstants.dart';
@@ -22,6 +23,18 @@ abstract class PlugAirAmplifier extends Amplifier {
   int get midiCCSelectionValue => MidiCCValues.bCC_AmpModeSetup;
   @override
   int get defaultCab;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => null;
+  @override
+  MidiControllerHandle? get midiControlOn => null;
+  @override
+  MidiControllerHandle? get midiControlToggle => null;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.ampPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.ampNext;
 }
 
 class TwinVerb extends PlugAirAmplifier {
@@ -46,7 +59,8 @@ class TwinVerb extends PlugAirAmplifier {
         value: 78,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -54,14 +68,16 @@ class TwinVerb extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 68,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 
   @override
@@ -88,7 +104,8 @@ class JZ120 extends PlugAirAmplifier {
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -96,35 +113,40 @@ class JZ120 extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 75,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 62,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 54,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 
   @override
@@ -151,7 +173,8 @@ class TweedDlx extends PlugAirAmplifier {
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -159,35 +182,40 @@ class TweedDlx extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 42,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 59,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 66,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 49,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 
   @override
@@ -219,7 +247,8 @@ class Plexi extends PlugAirAmplifier {
         value: 26,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -227,14 +256,16 @@ class Plexi extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 70,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
   @override
   int? getEquivalentEffect(int version) {
@@ -261,7 +292,8 @@ class TopBoost extends PlugAirAmplifier {
         value: 44,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -269,35 +301,40 @@ class TopBoost extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 35,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mdl",
         value: 71,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 52,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Tone (Presence)",
         handle: "tone",
         value: 58,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 
   @override
@@ -324,7 +361,8 @@ class Lead100 extends PlugAirAmplifier {
         value: 71,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -332,35 +370,40 @@ class Lead100 extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "middle",
         value: 62,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 53,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Tone (Presence)",
         handle: "tone",
         value: 67,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
   @override
   int? getEquivalentEffect(int version) {
@@ -391,7 +434,8 @@ class Fireman extends PlugAirAmplifier {
         value: 54,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -399,14 +443,16 @@ class Fireman extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 53,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -427,7 +473,8 @@ class DIEVH4 extends PlugAirAmplifier {
         value: 68,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -435,35 +482,40 @@ class DIEVH4 extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 41,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 64,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 55,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Tone (Presence)",
         handle: "tone",
         value: 51,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
   @override
   int? getEquivalentEffect(int version) {
@@ -489,7 +541,8 @@ class Recto extends PlugAirAmplifier {
         value: 73,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -497,35 +550,40 @@ class Recto extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 69,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 35,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 46,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Tone (Presence)",
         handle: "tone",
         value: 63,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 
   //this is used for version transition
@@ -558,7 +616,8 @@ class Optima extends PlugAirAmplifier {
         value: 72,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -566,28 +625,32 @@ class Optima extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
   @override
   int? getEquivalentEffect(int version) {
@@ -613,7 +676,8 @@ class Stageman extends PlugAirAmplifier {
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -621,28 +685,32 @@ class Stageman extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
 
   @override
@@ -674,7 +742,8 @@ class MLD extends PlugAirAmplifier {
         value: 70,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -682,35 +751,40 @@ class MLD extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 59,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 61,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Mid Freq",
         handle: "mid_freq",
         value: 63,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 
   @override
@@ -737,7 +811,8 @@ class AGL extends PlugAirAmplifier {
         value: 61,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -745,35 +820,40 @@ class AGL extends PlugAirAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugAir.amplevel,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 72,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampbass,
-        midiCC: MidiCCValues.bCC_OverDriveDrive),
+        midiCC: MidiCCValues.bCC_OverDriveDrive,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ampmiddle,
-        midiCC: MidiCCValues.bCC_OverDriveTone),
+        midiCC: MidiCCValues.bCC_OverDriveTone,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 63,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptreble,
-        midiCC: MidiCCValues.bCC_OverDriveLevel),
+        midiCC: MidiCCValues.bCC_OverDriveLevel,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Mid Freq",
         handle: "mid_freq",
         value: 63,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
   @override
   int? getEquivalentEffect(int version) {

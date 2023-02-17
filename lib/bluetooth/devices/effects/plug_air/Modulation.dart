@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class Modulation extends Processor {
@@ -17,6 +18,19 @@ abstract class Modulation extends Processor {
   int get midiCCEnableValue => MidiCCValues.bCC_ModfxEnable;
   @override
   int get midiCCSelectionValue => MidiCCValues.bCC_ModfxMode;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.modOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.modOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.modToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.modPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.modNext;
 }
 
 class Phaser extends Modulation {
@@ -33,21 +47,24 @@ class Phaser extends Modulation {
         value: 39,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Feedback",
         handle: "feedback",
         value: 32,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
+        midiCC: MidiCCValues.bCC_ChorusLevel,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
 
@@ -65,21 +82,24 @@ class Chorus extends Modulation {
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 88,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 64,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
+        midiCC: MidiCCValues.bCC_ChorusLevel,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
 
@@ -97,21 +117,24 @@ class STChorus extends Modulation {
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 74,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 36,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
+        midiCC: MidiCCValues.bCC_ChorusLevel,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
 
@@ -129,21 +152,24 @@ class Flanger extends Modulation {
         value: 56,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 68,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Mix",
         handle: "mix",
         value: 80,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxmix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
+        midiCC: MidiCCValues.bCC_ChorusLevel,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
 
@@ -161,14 +187,16 @@ class Vibe extends Modulation {
         value: 54,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 80,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Mode",
         handle: "mode",
@@ -193,14 +221,16 @@ class Tremolo extends Modulation {
         value: 59,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 63,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
   ];
 }
 
@@ -218,14 +248,16 @@ class PH100 extends Modulation {
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar1rate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 39,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar2depth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modRate),
   ];
 }
 
@@ -243,21 +275,24 @@ class CE1 extends Modulation {
         value: 64,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar1rate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
     Parameter(
         name: "Depth",
         handle: "depth",
         value: 88,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar2depth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar3mix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
+        midiCC: MidiCCValues.bCC_ChorusLevel,
+        midiControllerHandle: MidiControllerHandles.modRate),
   ];
 }
 
@@ -275,21 +310,24 @@ class STChorusv2 extends Modulation {
         value: 36,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar1rate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
     Parameter(
         name: "Width",
         handle: "depth",
         value: 74,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar2depth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar3mix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
+        midiCC: MidiCCValues.bCC_ChorusLevel,
+        midiControllerHandle: MidiControllerHandles.modRate),
   ];
 }
 
@@ -307,20 +345,23 @@ class SCF extends Modulation {
         value: 56,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar1rate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate),
     Parameter(
         name: "Width",
         handle: "depth",
         value: 68,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar2depth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Intensity",
         handle: "mix",
         value: 80,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.modfxvar3mix,
-        midiCC: MidiCCValues.bCC_ChorusLevel),
+        midiCC: MidiCCValues.bCC_ChorusLevel,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }

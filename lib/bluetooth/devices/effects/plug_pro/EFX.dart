@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class EFX extends Processor {
@@ -21,6 +22,19 @@ abstract class EFX extends Processor {
 
   @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iEFX;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.efxOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.efxOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.efxToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.efxPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.efxNext;
 }
 
 class DistortionPlus extends EFX {
@@ -37,14 +51,16 @@ class DistortionPlus extends EFX {
         value: 75,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Sensitivity",
         handle: "sensitivity",
         value: 80,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxGain),
   ];
 }
 
@@ -62,28 +78,32 @@ class RCBoost extends EFX {
         value: 40,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 35,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 35,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxBass),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para4,
-        midiCC: MidiCCValuesPro.EFX_Para4),
+        midiCC: MidiCCValuesPro.EFX_Para4,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -101,28 +121,32 @@ class ACBoost extends EFX {
         value: 40,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 35,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxBass),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para4,
-        midiCC: MidiCCValuesPro.EFX_Para4),
+        midiCC: MidiCCValuesPro.EFX_Para4,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -140,21 +164,24 @@ class DistOne extends EFX {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 40,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 55,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -171,21 +198,24 @@ class TSDrive extends EFX {
         value: 55,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -203,21 +233,24 @@ class BluesDrive extends EFX {
         value: 40,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -235,21 +268,24 @@ class MorningDrive extends EFX {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -267,21 +303,24 @@ class EatDist extends EFX {
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Distortion",
         handle: "distortion",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Filter",
         handle: "filter",
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -299,21 +338,24 @@ class RedDirt extends EFX {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Drive",
         handle: "drive",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -331,21 +373,24 @@ class Crunch extends EFX {
         value: 25,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 45,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -363,21 +408,24 @@ class MuffFuzz extends EFX {
         value: 40,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Sustain",
         handle: "sustain",
         value: 40,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxDepth),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
 
@@ -396,7 +444,8 @@ class Katana extends EFX {
         value: 45,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Boost",
         handle: "boost",
@@ -421,20 +470,23 @@ class STSinger extends EFX {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
-        midiCC: MidiCCValuesPro.EFX_Para2),
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Filter",
         handle: "filter",
         value: 40,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
-        midiCC: MidiCCValuesPro.EFX_Para3),
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }

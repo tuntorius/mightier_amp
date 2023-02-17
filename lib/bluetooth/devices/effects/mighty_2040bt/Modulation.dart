@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class Modulation extends Processor {
@@ -17,6 +18,19 @@ abstract class Modulation extends Processor {
   int get midiCCEnableValue => MidiCCValues.bCC_ModfxEnable;
   @override
   int get midiCCSelectionValue => MidiCCValues.bCC_ModfxMode;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.modOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.modOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.modToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.modPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.modNext;
 }
 
 class Phaser extends Modulation {
@@ -33,14 +47,16 @@ class Phaser extends Modulation {
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 39,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate)
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate)
   ];
 }
 
@@ -58,14 +74,16 @@ class Chorus extends Modulation {
         value: 88,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 60,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate),
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate),
   ];
 }
 
@@ -83,13 +101,15 @@ class Tremolo extends Modulation {
         value: 63,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxdepth,
-        midiCC: MidiCCValues.bCC_ModfxDepth),
+        midiCC: MidiCCValues.bCC_ModfxDepth,
+        midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 59,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.modfxrate,
-        midiCC: MidiCCValues.bCC_ModfxRate)
+        midiCC: MidiCCValues.bCC_ModfxRate,
+        midiControllerHandle: MidiControllerHandles.modRate)
   ];
 }

@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class MXXBTAmplifier extends Amplifier {
@@ -19,6 +20,17 @@ abstract class MXXBTAmplifier extends Amplifier {
   int get midiCCSelectionValue => MidiCCValues.bCC_NotUsed;
   @override
   int get defaultCab => 0;
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => null;
+  @override
+  MidiControllerHandle? get midiControlOn => null;
+  @override
+  MidiControllerHandle? get midiControlToggle => null;
+  @override
+  MidiControllerHandle? get midiControlPrev => null;
+  @override
+  MidiControllerHandle? get midiControlNext => null;
 }
 
 class Amp1 extends MXXBTAmplifier {
@@ -41,7 +53,8 @@ class Amp1 extends MXXBTAmplifier {
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Level",
         handle: "level",
@@ -49,28 +62,32 @@ class Amp1 extends MXXBTAmplifier {
         formatter: ValueFormatters.percentage,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_AmpMaster),
+        midiCC: MidiCCValues.bCC_AmpMaster,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_AmpBass),
+        midiCC: MidiCCValues.bCC_AmpBass,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Mid",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.miclevel,
-        midiCC: MidiCCValues.bCC_AmpMid),
+        midiCC: MidiCCValues.bCC_AmpMid,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "High",
         handle: "high",
         value: 50,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexLite.micambsend,
-        midiCC: MidiCCValues.bCC_AmpHigh),
+        midiCC: MidiCCValues.bCC_AmpHigh,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
 }
 /*

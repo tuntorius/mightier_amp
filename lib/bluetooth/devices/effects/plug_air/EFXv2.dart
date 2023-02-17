@@ -1,6 +1,7 @@
 import '../../NuxConstants.dart';
 import '../../NuxMightyPlugAir.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 import 'EFX.dart';
 
@@ -18,14 +19,16 @@ class PH100EFX extends EFX {
         value: 78,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 54,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxRate),
   ];
 }
 
@@ -43,21 +46,24 @@ class STSinger extends EFX {
         value: 35,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
     Parameter(
         name: "Gain",
         handle: "gain",
         value: 78,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Filter",
         handle: "filter",
         value: 65,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 
   @override
@@ -89,7 +95,8 @@ class Katana extends EFX {
         value: 78,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
   ];
 
   @override
@@ -113,21 +120,24 @@ class RedDirt extends EFX {
         value: 80,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 30,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxTone),
     Parameter(
         name: "Level",
         handle: "level",
         value: 40,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
   ];
 }
 
@@ -145,14 +155,16 @@ class RoseComp extends EFX {
         value: 55,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar2,
-        midiCC: MidiCCValues.bCC_DistTone),
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxDepth),
     Parameter(
         name: "Level",
         handle: "level",
         value: 45,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
   ];
 
   @override

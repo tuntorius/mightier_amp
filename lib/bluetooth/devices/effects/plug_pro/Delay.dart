@@ -3,6 +3,7 @@
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class Delay extends Processor {
@@ -20,6 +21,19 @@ abstract class Delay extends Processor {
   int get midiCCEnableValue => MidiCCValuesPro.Head_iDLY;
   @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iDLY;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.delayOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.delayOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.delayToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.delayPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.delayNext;
 }
 
 class AnalogDelay extends Delay {
@@ -37,21 +51,24 @@ class AnalogDelay extends Delay {
         value: 52,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
-        midiCC: MidiCCValuesPro.DLY_Para3),
+        midiCC: MidiCCValuesPro.DLY_Para3,
+        midiControllerHandle: MidiControllerHandles.delayLevel),
     Parameter(
         name: "Time",
         handle: "echo",
         value: 45,
         formatter: ValueFormatters.tempoProAnalog,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
-        midiCC: MidiCCValuesPro.DLY_Para2),
+        midiCC: MidiCCValuesPro.DLY_Para2,
+        midiControllerHandle: MidiControllerHandles.delayTime),
     Parameter(
         name: "Rate",
         handle: "rate",
         value: 34,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
-        midiCC: MidiCCValuesPro.DLY_Para1),
+        midiCC: MidiCCValuesPro.DLY_Para1,
+        midiControllerHandle: MidiControllerHandles.delayRepeat),
   ];
 }
 
@@ -69,21 +86,24 @@ class DigitalDelay extends Delay {
         value: 49,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
-        midiCC: MidiCCValuesPro.DLY_Para1),
+        midiCC: MidiCCValuesPro.DLY_Para1,
+        midiControllerHandle: MidiControllerHandles.delayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 48,
         formatter: ValueFormatters.tempoPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
-        midiCC: MidiCCValuesPro.DLY_Para3),
+        midiCC: MidiCCValuesPro.DLY_Para3,
+        midiControllerHandle: MidiControllerHandles.delayTime),
     Parameter(
         name: "Feedback",
         handle: "feedback",
         value: 68,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
-        midiCC: MidiCCValuesPro.DLY_Para2),
+        midiCC: MidiCCValuesPro.DLY_Para2,
+        midiControllerHandle: MidiControllerHandles.delayRepeat),
   ];
 }
 
@@ -101,28 +121,32 @@ class ModDelay extends Delay {
         value: 68,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
-        midiCC: MidiCCValuesPro.DLY_Para2),
+        midiCC: MidiCCValuesPro.DLY_Para2,
+        midiControllerHandle: MidiControllerHandles.delayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 49,
         formatter: ValueFormatters.tempoProMod,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
-        midiCC: MidiCCValuesPro.DLY_Para1),
+        midiCC: MidiCCValuesPro.DLY_Para1,
+        midiControllerHandle: MidiControllerHandles.delayTime),
     Parameter(
         name: "Repeat",
         handle: "repeat",
         value: 48,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para4,
-        midiCC: MidiCCValuesPro.DLY_Para4),
+        midiCC: MidiCCValuesPro.DLY_Para4,
+        midiControllerHandle: MidiControllerHandles.delayRepeat),
     Parameter(
         name: "Mod",
         handle: "mod",
         value: 68,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
-        midiCC: MidiCCValuesPro.DLY_Para3),
+        midiCC: MidiCCValuesPro.DLY_Para3,
+        midiControllerHandle: MidiControllerHandles.delayMod),
   ];
 }
 
@@ -140,21 +164,24 @@ class TapeEcho extends Delay {
         value: 43,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
-        midiCC: MidiCCValuesPro.DLY_Para2),
+        midiCC: MidiCCValuesPro.DLY_Para2,
+        midiControllerHandle: MidiControllerHandles.delayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 61,
         formatter: ValueFormatters.tempoProTapeEcho,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
-        midiCC: MidiCCValuesPro.DLY_Para1),
+        midiCC: MidiCCValuesPro.DLY_Para1,
+        midiControllerHandle: MidiControllerHandles.delayTime),
     Parameter(
         name: "Repeat",
         handle: "repeat",
         value: 56,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
-        midiCC: MidiCCValuesPro.DLY_Para3),
+        midiCC: MidiCCValuesPro.DLY_Para3,
+        midiControllerHandle: MidiControllerHandles.delayRepeat),
   ];
 }
 
@@ -172,20 +199,23 @@ class PanDelay extends Delay {
         value: 45,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
-        midiCC: MidiCCValuesPro.DLY_Para3),
+        midiCC: MidiCCValuesPro.DLY_Para3,
+        midiControllerHandle: MidiControllerHandles.delayLevel),
     Parameter(
         name: "Time",
         handle: "time",
         value: 50,
         formatter: ValueFormatters.tempoPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
-        midiCC: MidiCCValuesPro.DLY_Para1),
+        midiCC: MidiCCValuesPro.DLY_Para1,
+        midiControllerHandle: MidiControllerHandles.delayTime),
     Parameter(
         name: "Repeat",
         handle: "repeat",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
-        midiCC: MidiCCValuesPro.DLY_Para2),
+        midiCC: MidiCCValuesPro.DLY_Para2,
+        midiControllerHandle: MidiControllerHandles.delayRepeat),
   ];
 }

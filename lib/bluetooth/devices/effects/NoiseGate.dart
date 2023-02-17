@@ -1,5 +1,6 @@
 import '../NuxConstants.dart';
 import '../value_formatters/ValueFormatter.dart';
+import 'MidiControllerHandles.dart';
 import 'Processor.dart';
 
 class NoiseGate2Param extends Processor {
@@ -21,6 +22,19 @@ class NoiseGate2Param extends Processor {
   @override
   int get midiCCSelectionValue => 0;
 
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.gateOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.gateOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.gateToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => null;
+  @override
+  MidiControllerHandle? get midiControlNext => null;
+
   @override
   List<Parameter> parameters = [
     Parameter(
@@ -29,14 +43,16 @@ class NoiseGate2Param extends Processor {
         value: 41,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ngthresold,
-        midiCC: MidiCCValues.bCC_GateThresold),
+        midiCC: MidiCCValues.bCC_GateThresold,
+        midiControllerHandle: MidiControllerHandles.gateSense),
     Parameter(
         name: "Sustain",
         handle: "sustain",
         value: 47,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ngsustain,
-        midiCC: MidiCCValues.bCC_GateDecay),
+        midiCC: MidiCCValues.bCC_GateDecay,
+        midiControllerHandle: MidiControllerHandles.gateDecay),
   ];
 }
 
@@ -61,6 +77,19 @@ class NoiseGate1Param extends Processor {
   @override
   int get midiCCSelectionValue => 0;
 
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.gateOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.gateOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.gateToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => null;
+  @override
+  MidiControllerHandle? get midiControlNext => null;
+
   @override
   List<Parameter> parameters = [
     Parameter(
@@ -69,7 +98,8 @@ class NoiseGate1Param extends Processor {
         value: 41,
         formatter: ValueFormatters.percentage,
         devicePresetIndex: PresetDataIndexPlugAir.ngthresold,
-        midiCC: MidiCCValues.bCC_GateThresold),
+        midiCC: MidiCCValues.bCC_GateThresold,
+        midiControllerHandle: MidiControllerHandles.gateSense),
   ];
 }
 
@@ -97,6 +127,19 @@ class NoiseGatePro extends Processor {
   @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iNG;
 
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.gateOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.gateOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.gateToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => null;
+  @override
+  MidiControllerHandle? get midiControlNext => null;
+
   @override
   List<Parameter> parameters = [
     Parameter(
@@ -105,13 +148,15 @@ class NoiseGatePro extends Processor {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.NG_Para1,
-        midiCC: MidiCCValuesPro.NG_Para1),
+        midiCC: MidiCCValuesPro.NG_Para1,
+        midiControllerHandle: MidiControllerHandles.gateSense),
     Parameter(
         name: "Decay",
         handle: "decay",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.NG_Para2,
-        midiCC: MidiCCValuesPro.NG_Para2),
+        midiCC: MidiCCValuesPro.NG_Para2,
+        midiControllerHandle: MidiControllerHandles.gateDecay),
   ];
 }

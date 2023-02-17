@@ -5,6 +5,7 @@ import 'dart:core';
 
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class CabinetPro extends Cabinet {
@@ -23,6 +24,19 @@ abstract class CabinetPro extends Cabinet {
   @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iCAB;
 
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.cabOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.cabOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.cabToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.cabPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.cabNext;
+
   @override
   String get name => cabName;
 
@@ -34,21 +48,24 @@ abstract class CabinetPro extends Cabinet {
         handle: "level",
         value: 0,
         formatter: ValueFormatters.decibelMPPro,
-        midiCC: MidiCCValuesPro.CAB_Para4),
+        midiCC: MidiCCValuesPro.CAB_Para4,
+        midiControllerHandle: MidiControllerHandles.cabLevel),
     Parameter(
         devicePresetIndex: PresetDataIndexPlugPro.CAB_Para5,
         name: "Low Cut",
         handle: "lowcut",
         value: 20,
         formatter: ValueFormatters.lowFreqFormatter,
-        midiCC: MidiCCValuesPro.CAB_Para5),
+        midiCC: MidiCCValuesPro.CAB_Para5,
+        midiControllerHandle: MidiControllerHandles.cabLoCut),
     Parameter(
         devicePresetIndex: PresetDataIndexPlugPro.CAB_Para6,
         name: "High Cut",
         handle: "hicut",
         value: 100,
         formatter: ValueFormatters.highFreqFormatter,
-        midiCC: MidiCCValuesPro.CAB_Para6)
+        midiCC: MidiCCValuesPro.CAB_Para6,
+        midiControllerHandle: MidiControllerHandles.cabHiCut)
   ];
 }
 

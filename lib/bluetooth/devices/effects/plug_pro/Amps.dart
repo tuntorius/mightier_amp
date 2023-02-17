@@ -1,6 +1,8 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'package:mighty_plug_manager/bluetooth/devices/effects/MidiControllerHandles.dart';
+
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
 import '../Processor.dart';
@@ -24,6 +26,19 @@ abstract class PlugProAmplifier extends Amplifier {
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iAMP;
   @override
   int get defaultCab;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => MidiControllerHandles.ampOff;
+  @override
+  MidiControllerHandle? get midiControlOn => MidiControllerHandles.ampOn;
+  @override
+  MidiControllerHandle? get midiControlToggle =>
+      MidiControllerHandles.ampToggle;
+  @override
+  MidiControllerHandle? get midiControlPrev => MidiControllerHandles.ampPrev;
+  @override
+  MidiControllerHandle? get midiControlNext => MidiControllerHandles.ampNext;
 }
 
 class JazzClean extends PlugProAmplifier {
@@ -48,7 +63,8 @@ class JazzClean extends PlugProAmplifier {
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -56,35 +72,40 @@ class JazzClean extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 55,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Bright",
         handle: "bright",
         value: 100,
         formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -105,7 +126,8 @@ class DeluxeRvb extends PlugProAmplifier {
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -113,28 +135,32 @@ class DeluxeRvb extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
 }
 
@@ -160,7 +186,8 @@ class BassMate extends PlugProAmplifier {
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -168,35 +195,40 @@ class BassMate extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 55,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 100,
         formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -222,7 +254,8 @@ class Tweedy extends PlugProAmplifier {
         value: 78,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -230,14 +263,16 @@ class Tweedy extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Tone",
         handle: "tone",
         value: 68,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -258,7 +293,8 @@ class HiWire extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -266,35 +302,40 @@ class HiWire extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 75,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 62,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 54,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -315,7 +356,8 @@ class CaliCrunch extends PlugProAmplifier {
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -323,35 +365,40 @@ class CaliCrunch extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 42,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 59,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 66,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 49,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -372,7 +419,8 @@ class ClassA30 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -380,28 +428,32 @@ class ClassA30 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Cut",
         handle: "cut",
         value: 40,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -422,7 +474,8 @@ class Plexi100 extends PlugProAmplifier {
         value: 71,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -430,35 +483,40 @@ class Plexi100 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 62,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 53,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 67,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -479,7 +537,8 @@ class Plexi45 extends PlugProAmplifier {
         value: 26,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -487,35 +546,40 @@ class Plexi45 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 62,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 53,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 67,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -536,7 +600,8 @@ class Brit800 extends PlugProAmplifier {
         value: 44,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -544,35 +609,40 @@ class Brit800 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 35,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 71,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 52,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 58,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -593,7 +663,8 @@ class Pl1987x50 extends PlugProAmplifier {
         value: 44,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -601,35 +672,40 @@ class Pl1987x50 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 35,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 71,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 52,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 58,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -650,7 +726,8 @@ class Slo100 extends PlugProAmplifier {
         value: 44,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -658,35 +735,40 @@ class Slo100 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 35,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 71,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 52,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 58,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -707,7 +789,8 @@ class FiremanHBE extends PlugProAmplifier {
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -715,35 +798,40 @@ class FiremanHBE extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 55,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -764,7 +852,8 @@ class DualRect extends PlugProAmplifier {
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -772,35 +861,40 @@ class DualRect extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 55,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -821,7 +915,8 @@ class DIEVH4 extends PlugProAmplifier {
         value: 68,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -829,35 +924,40 @@ class DIEVH4 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 41,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 64,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 55,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 51,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -878,7 +978,8 @@ class MrZ38 extends PlugProAmplifier {
         value: 44,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -886,35 +987,40 @@ class MrZ38 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 35,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 71,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 52,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Cut",
         handle: "cut",
         value: 58,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -935,7 +1041,8 @@ class SuperRvb extends PlugProAmplifier {
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -943,35 +1050,40 @@ class SuperRvb extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 65,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 55,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Bright",
         handle: "bright",
         value: 100,
         formatter: ValueFormatters.brightModePro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -997,7 +1109,8 @@ class AGL extends PlugProAmplifier {
         value: 61,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1005,35 +1118,40 @@ class AGL extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 72,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Mid Freq",
         handle: "mid_freq",
         value: 63,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6, //check this
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 63,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
 }
 
@@ -1054,7 +1172,8 @@ class MLD extends PlugProAmplifier {
         value: 70,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1062,35 +1181,40 @@ class MLD extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 59,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Mid Freq",
         handle: "mid_freq",
         value: 63,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 61,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
 }
 
@@ -1116,7 +1240,8 @@ class OptimaAir extends PlugProAmplifier {
         value: 72,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1124,28 +1249,32 @@ class OptimaAir extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
 }
 
@@ -1166,7 +1295,8 @@ class Stageman extends PlugProAmplifier {
         value: 60,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1174,28 +1304,32 @@ class Stageman extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
 }
 
@@ -1216,7 +1350,8 @@ class Unknown5 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1224,35 +1359,40 @@ class Unknown5 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -1273,7 +1413,8 @@ class Unknown8 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1281,35 +1422,40 @@ class Unknown8 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -1330,7 +1476,8 @@ class Unknown18 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1338,35 +1485,40 @@ class Unknown18 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -1387,7 +1539,8 @@ class Unknown19 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1395,35 +1548,40 @@ class Unknown19 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -1444,7 +1602,8 @@ class Unknown22 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1452,35 +1611,40 @@ class Unknown22 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -1501,7 +1665,8 @@ class Unknown23 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1509,35 +1674,40 @@ class Unknown23 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -1558,7 +1728,8 @@ class Unknown24 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1566,35 +1737,40 @@ class Unknown24 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -1615,7 +1791,8 @@ class Unknown25 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1623,35 +1800,40 @@ class Unknown25 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }
 
@@ -1672,7 +1854,8 @@ class Unknown30 extends PlugProAmplifier {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1),
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
         name: "Master",
         handle: "master",
@@ -1680,34 +1863,39 @@ class Unknown30 extends PlugProAmplifier {
         formatter: ValueFormatters.percentageMPPro,
         masterVolume: true,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2),
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
         name: "Bass",
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3),
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
         name: "Middle",
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4),
+        midiCC: MidiCCValuesPro.AMP_Para4,
+        midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5),
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
         name: "Presence",
         handle: "presence",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6),
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
   ];
 }

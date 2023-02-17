@@ -1,5 +1,6 @@
 import '../../NuxConstants.dart';
 import '../../value_formatters/ValueFormatter.dart';
+import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 class WahDummyPro extends Processor {
@@ -23,6 +24,18 @@ class WahDummyPro extends Processor {
 
   @override
   int get midiCCSelectionValue => MidiCCValuesPro.Head_iWAH;
+
+  //MIDI foot controller stuff
+  @override
+  MidiControllerHandle? get midiControlOff => null;
+  @override
+  MidiControllerHandle? get midiControlOn => null;
+  @override
+  MidiControllerHandle? get midiControlToggle => null;
+  @override
+  MidiControllerHandle? get midiControlPrev => null;
+  @override
+  MidiControllerHandle? get midiControlNext => null;
 
   @override
   List<Parameter> parameters = [

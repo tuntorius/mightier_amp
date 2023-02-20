@@ -112,7 +112,7 @@ class VolumeSlider extends StatelessWidget {
     } else {
       device.presets[device.selectedChannel].volume = value;
     }
-
+    NuxDeviceControl.instance().forceNotifyListeners();
     onVolumeChanged.call();
   }
 }

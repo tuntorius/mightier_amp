@@ -15,7 +15,8 @@ class JamtracksView extends StatelessWidget {
     return Column(
       children: [
         Expanded(child: child),
-        const SetlistMiniPlayer(),
+        if (SetlistPlayerState.instance().setlist != null)
+          const SetlistMiniPlayer(),
       ],
     );
   }

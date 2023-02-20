@@ -185,8 +185,8 @@ class SetlistPlayerState extends ChangeNotifier {
         state = PlayerState.pause;
       }
     } else {
-      await _openTrack(currentTrack);
       currentTrack = 0;
+      await _openTrack(currentTrack);
       state = PlayerState.pause;
     }
     notifyListeners();

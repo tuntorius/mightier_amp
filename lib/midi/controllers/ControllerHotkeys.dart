@@ -45,7 +45,8 @@ class ControllerHotkey {
           if (channel < 0) channel = device.channelsCount - 1;
         } while (!device.getChannelActive(channel));
         device.setSelectedChannel(channel,
-            notifyBT: true, sendFullPreset: true, notifyUI: true);
+            notifyBT: true, sendFullPreset: false, notifyUI: true);
+        device.getPreset(device.selectedChannel).setupPresetFromNuxData();
         break;
       case HotkeyControl.NextChannel:
         do {
@@ -53,11 +54,13 @@ class ControllerHotkey {
           if (channel >= device.channelsCount) channel = 0;
         } while (!device.getChannelActive(channel));
         device.setSelectedChannel(channel,
-            notifyBT: true, sendFullPreset: true, notifyUI: true);
+            notifyBT: true, sendFullPreset: false, notifyUI: true);
+        device.getPreset(device.selectedChannel).setupPresetFromNuxData();
         break;
       case HotkeyControl.ChannelByIndex:
         device.setSelectedChannel(channel,
-            notifyBT: true, sendFullPreset: true, notifyUI: true);
+            notifyBT: true, sendFullPreset: false, notifyUI: true);
+        device.getPreset(device.selectedChannel).setupPresetFromNuxData();
         break;
       case HotkeyControl.EffectSlotEnable:
         var p = device.getPreset(device.selectedChannel);

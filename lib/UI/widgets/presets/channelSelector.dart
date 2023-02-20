@@ -139,7 +139,10 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         child: GestureDetector(
             onTap: () {
               widget.device.setSelectedChannel(i,
-                  notifyBT: true, sendFullPreset: true, notifyUI: true);
+                  notifyBT: true, sendFullPreset: false, notifyUI: true);
+              widget.device
+                  .getPreset(widget.device.selectedChannel)
+                  .setupPresetFromNuxData();
             },
             onLongPress: () {
               widget.device.toggleChannelActive(i);

@@ -33,12 +33,14 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
     super.initState();
     playerState.addListener(_onPlayerStateChange);
     _positionSub = playerState.positionStream.listen(_opPlayerPosition);
+    NuxDeviceControl().addListener(_onPlayerStateChange);
   }
 
   @override
   void dispose() {
     super.dispose();
     playerState.removeListener(_onPlayerStateChange);
+    NuxDeviceControl().removeListener(_onPlayerStateChange);
     _positionSub?.cancel();
   }
 

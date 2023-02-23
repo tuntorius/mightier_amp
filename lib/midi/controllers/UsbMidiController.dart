@@ -5,7 +5,7 @@ class UsbMidiController extends MidiController {
   MidiDevice device;
   @override
   ControllerType get type => ControllerType.MidiUsb;
-  UsbMidiController(this.device);
+  UsbMidiController(this.device, super.onHotkeyReceived);
 
   @override
   String get id => device.id;

@@ -25,7 +25,6 @@ class SlidersEditor extends StatefulWidget {
 }
 
 class _SlidersEditorState extends State<SlidersEditor> {
-  DelayTapTimer timer = DelayTapTimer();
   double _oldValue = 0;
 
   ThickSlider _createSlider(Parameter param, bool isPortrait) {
@@ -39,7 +38,7 @@ class _SlidersEditorState extends State<SlidersEditor> {
       labelFormatter: (val) => param.label,
       activeColor: enabled
           ? widget.preset.effectColor(widget.slot)
-          : TinyColor(widget.preset.effectColor(widget.slot))
+          : TinyColor.fromColor(widget.preset.effectColor(widget.slot))
               .desaturate(80)
               .color,
       onChanged: (value, bool skip) {
@@ -83,8 +82,8 @@ class _SlidersEditorState extends State<SlidersEditor> {
     bool enabled = widget.preset.slotEnabled(widget.slot);
     return RawMaterialButton(
       onPressed: () {
-        timer.addClickTime();
-        var result = timer.calculate();
+        DelayTapTimer.addClickTime();
+        var result = DelayTapTimer.calculate();
         if (result != false) {
           setState(() {
             var newValue = (param.formatter as TempoFormatter)

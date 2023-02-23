@@ -40,6 +40,22 @@ class HotkeysMainPage extends StatelessWidget {
                   builder: (context) => HotkeysSetup(
                         controller: controller,
                         category: HotkeyCategory.EffectParameters,
+                      )))),
+          ListTile(
+              title: const Text("Drums Hotkeys"),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => HotkeysSetup(
+                        controller: controller,
+                        category: HotkeyCategory.Drums,
+                      )))),
+          ListTile(
+              title: const Text("JamTracks Hotkeys"),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => HotkeysSetup(
+                        controller: controller,
+                        category: HotkeyCategory.JamTracks,
                       ))))
         ],
       ),

@@ -4,15 +4,16 @@ import 'package:flutter/widgets.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 
 import '../bluetooth/ble_controllers/BLEController.dart';
+import 'ControllerConstants.dart';
 import 'MidiControllerManager.dart';
 import 'controllers/BleMidiController.dart';
 
 class BleMidiManager extends ChangeNotifier {
-  static final BleMidiManager _controller = BleMidiManager._();
   //List<MidiDevice> _devices = [];
 
   bool get isScanning => BLEMidiHandler.instance().isScanning;
   bool _firstTimeScanned = false;
+  final Function(HotkeyControl) onHotkeyReceived;
 
   List<BleMidiController> get controllers => _controllers;
   final List<BleMidiController> _controllers = [];
@@ -22,11 +23,7 @@ class BleMidiManager extends ChangeNotifier {
   StreamSubscription<MidiSetupStatus>? _bleStatusSub;
   StreamSubscription<bool>? _bleScanSub;
 
-  factory BleMidiManager() {
-    return _controller;
-  }
-
-  BleMidiManager._() {
+  BleMidiManager(this.onHotkeyReceived) {
     _bleStatusSub = BLEMidiHandler.instance().status.listen(_bleStatusListener);
   }
 
@@ -37,7 +34,8 @@ class BleMidiManager extends ChangeNotifier {
       if (!controllers[i].connected) controllers.removeAt(i);
     }
 
-    _bleScanSub = BLEMidiHandler.instance().isScanningStream.listen(_scanStatusListener);
+    _bleScanSub =
+        BLEMidiHandler.instance().isScanningStream.listen(_scanStatusListener);
     BLEMidiHandler.instance().startScanning(true);
   }
 
@@ -49,9 +47,9 @@ class BleMidiManager extends ChangeNotifier {
   createControllers() {
     var ctrls = BLEMidiHandler.instance().controllerDevices;
     for (var ctl in ctrls) {
-      var blectl = BleMidiController(ctl);
+      var blectl = BleMidiController(ctl, onHotkeyReceived);
       if (!_controllers.contains(blectl)) {
-        _controllers.add(BleMidiController(ctl));
+        _controllers.add(BleMidiController(ctl, onHotkeyReceived));
       }
     }
   }

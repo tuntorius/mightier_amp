@@ -1,24 +1,26 @@
 class DelayTapTimer {
-  final timeout = 1500;
-  final maxSamples = 20;
-  List<DateTime> timeArray = <DateTime>[];
+  DelayTapTimer._();
 
-  addClickTime() {
+  static const _timeout = 1800;
+  static const _maxSamples = 20;
+  static List<DateTime> timeArray = <DateTime>[];
+
+  static addClickTime() {
     var now = DateTime.now();
 
     if (timeArray.isNotEmpty &&
-        now.difference(timeArray.last).inMilliseconds > timeout) {
+        now.difference(timeArray.last).inMilliseconds > _timeout) {
       timeArray.clear();
     }
 
     timeArray.add(now);
 
-    while (timeArray.length > maxSamples) {
+    while (timeArray.length > _maxSamples) {
       timeArray.removeAt(0);
     }
   }
 
-  calculate() {
+  static calculate() {
     if (timeArray.length < 2) return false;
 
     int sum = 0;
@@ -28,5 +30,11 @@ class DelayTapTimer {
     }
 
     return sum / (timeArray.length - 1);
+  }
+
+  static calculateBpm() {
+    var result = calculate();
+    if (result != false) result = 60 / (result / 1000);
+    return result;
   }
 }

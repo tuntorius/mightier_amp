@@ -1,6 +1,8 @@
 import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
 
 class HidController extends MidiController {
+  HidController(super.onHotkeyReceived);
+
   @override
   Future<bool> connect() {
     return Future.value(true);

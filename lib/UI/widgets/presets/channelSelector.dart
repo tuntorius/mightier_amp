@@ -175,7 +175,6 @@ class _ChannelSelectorState extends State<ChannelSelector> {
           });
         } else if (PlatformUtils.isIOS) {
           final content = await QrUtils.scanImage();
-          print(content);
           if (content != null) {
             setupFromQRData(content);
             setState(() {});

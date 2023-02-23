@@ -43,13 +43,48 @@ class LiteCommunication extends DeviceCommunication {
   }
 
   @override
-  void sendDrumsEnabled(bool enabled) {}
+  void sendDrumsEnabled(bool enabled) {
+    if (!device.deviceControl.isConnected) return;
+    var data =
+        createCCMessage(MidiCCValues.bCC_drumOnOff_No, enabled ? 0x7f : 0);
+    device.deviceControl.sendBLEData(data);
+  }
+
   @override
-  void sendDrumsStyle(int style) {}
+  void sendDrumsStyle(int style) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValues.bCC_drumType_No, style);
+    device.deviceControl.sendBLEData(data);
+  }
+
   @override
-  void sendDrumsLevel(double volume) {}
+  void sendDrumsLevel(double volume) {
+    if (!device.deviceControl.isConnected) return;
+    int val = percentageTo7Bit(volume);
+    var data = createCCMessage(MidiCCValues.bCC_drumLevel_No, val);
+    device.deviceControl.sendBLEData(data);
+  }
+
   @override
-  void sendDrumsTempo(double tempo) {}
+  void sendDrumsTempo(double tempo) {
+    if (!device.deviceControl.isConnected) return;
+
+    int tempoNux = (((tempo - 40) / 200) * 16384).floor();
+    //these must be sent as 2 7bit values
+    int tempoL = tempoNux & 0x7f;
+    int tempoH = (tempoNux >> 7);
+
+    //no idea what the first 2 messages are for
+    var data = createCCMessage(MidiCCValues.bCC_drumTempo1, 0x06);
+    device.deviceControl.sendBLEData(data);
+    data = createCCMessage(MidiCCValues.bCC_drumTempo2, 0x26);
+    device.deviceControl.sendBLEData(data);
+    data = createCCMessage(MidiCCValues.bCC_drumTempoH, tempoH);
+    device.deviceControl.sendBLEData(data);
+    data = createCCMessage(MidiCCValues.bCC_drumTempoL, tempoL);
+    device.deviceControl.sendBLEData(data);
+  }
+
   @override
   void setEcoMode(bool enable) {}
   @override

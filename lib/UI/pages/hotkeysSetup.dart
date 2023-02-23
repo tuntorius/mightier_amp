@@ -179,11 +179,21 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
       for (var handle in effectHandles) {
         var title = "$name ${handle.label}";
 
-        //TODO: this id should not be 0
         widgets.add(buildWidget(title, icon, color, HotkeyControl.ParameterSet,
             handle.id.index, 0, true,
             infoButton: () => _displayParameterInfo(effects, handle.id)));
       }
+    }
+
+    return widgets;
+  }
+
+  List<Widget> _buildWidgetsRange(HotkeyControl from, HotkeyControl to) {
+    List<Widget> widgets = [];
+    for (int i = from.index; i <= to.index; i++) {
+      HotkeyControl cat = HotkeyControl.values[i];
+      widgets.add(
+          buildWidget(cat.label!, cat.icon, null, cat, 0, 0, cat.sliderMode));
     }
 
     return widgets;
@@ -214,6 +224,16 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
       case HotkeyCategory.EffectParameters:
         widgetList = _buildParametersWidgets();
         title = "Parameter Hotkeys";
+        break;
+      case HotkeyCategory.Drums:
+        title = "Drums Hotkeys";
+        widgetList = _buildWidgetsRange(
+            HotkeyControl.DrumsStartStop, HotkeyControl.DrumsNextStyle);
+        break;
+      case HotkeyCategory.JamTracks:
+        title = "JamTracks Hotkeys";
+        widgetList = _buildWidgetsRange(
+            HotkeyControl.JamTracksPlayPause, HotkeyControl.JamTracksABRepeat);
         break;
     }
 

@@ -1,15 +1,18 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/DrumStyleBottomSheet.dart';
+import 'package:mighty_plug_manager/UI/widgets/tempoTrainerBottomSheet.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/utilities/DelayTapTimer.dart';
 import '../widgets/thickSlider.dart';
 import '../widgets/scrollPicker.dart';
-import 'dart:math' as math;
 
 enum DrumEditorLayout { Standard, PlugPro }
 
@@ -24,7 +27,6 @@ class _DrumEditorState extends State<DrumEditor> {
   DrumEditorLayout _layout = DrumEditorLayout.Standard;
   int _selectedDrumPattern = 0;
   late NuxDevice device;
-  final DelayTapTimer _timer = DelayTapTimer();
 
   @override
   void initState() {
@@ -284,10 +286,18 @@ class _DrumEditorState extends State<DrumEditor> {
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
     );
+  }
+
+  void _showTempoTrainer() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return const TempoTrainerBottomSheet();
+        });
   }
 
   @override
@@ -326,7 +336,12 @@ class _DrumEditorState extends State<DrumEditor> {
                     if (_layout == DrumEditorLayout.PlugPro)
                       ..._toneSliders(smallSliders),
                     const SizedBox(height: 6),
-                    _tapButton()
+                    _tapButton(),
+                    if (kDebugMode)
+                      ElevatedButton(
+                        onPressed: _showTempoTrainer,
+                        child: const Text("Tempo Trainer"),
+                      )
                   ],
                 ),
               ),
@@ -350,7 +365,12 @@ class _DrumEditorState extends State<DrumEditor> {
                         children: [
                           ..._sliders(false),
                           const SizedBox(height: 10),
-                          _tapButton()
+                          _tapButton(),
+                          if (kDebugMode)
+                            ElevatedButton(
+                              onPressed: _showTempoTrainer,
+                              child: const Text("Tempo Trainer"),
+                            )
                         ]),
                   ),
                   const SizedBox(
@@ -450,20 +470,15 @@ class _DrumEditorState extends State<DrumEditor> {
   void _modifyTempo(double amount) {
     setState(() {
       double newTempo = device.drumsTempo + amount;
-      newTempo = math.max(
-          math.min(newTempo, device.drumsMaxTempo), device.drumsMinTempo);
       device.setDrumsTempo(newTempo, true);
     });
   }
 
   void _onTapTempo() {
-    _timer.addClickTime();
-    var result = _timer.calculate();
-    if (result != false) {
+    DelayTapTimer.addClickTime();
+    var bpm = DelayTapTimer.calculateBpm();
+    if (bpm != false) {
       setState(() {
-        var bpm = 60 / (result / 1000);
-        bpm =
-            math.min(math.max(bpm, device.drumsMinTempo), device.drumsMaxTempo);
         device.setDrumsTempo(bpm, true);
       });
     }

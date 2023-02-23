@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/midi/ControllerConstants.dart';
 
-import 'ControllerHotkeys.dart';
+import 'ControllerHotkey.dart';
 
 enum ControllerType { Hid, MidiUsb, MidiBle }
 
@@ -11,7 +11,9 @@ abstract class MidiController {
   String get name;
   String get id;
   ControllerType get type;
+  final Function(HotkeyControl) onHotkeyReceived;
 
+  MidiController(this.onHotkeyReceived);
   final List<ControllerHotkey> _hotkeys = [];
 
   //faster access by code
@@ -29,7 +31,8 @@ abstract class MidiController {
           index: index,
           subIndex: subindex,
           hotkeyCode: keyCode,
-          hotkeyName: hotkeyName);
+          hotkeyName: hotkeyName,
+          onHotkeyReceived: onHotkeyReceived);
     } else {
       hk.hotkeyCode = keyCode;
       hk.hotkeyName = hotkeyName;
@@ -61,8 +64,7 @@ abstract class MidiController {
     for (var key in _hotkeysDictionary.keys) {
       var _key = key & 0xffffff00;
       if (_key == mainCode &&
-          (ignoreLowByte ||
-              _hotkeysDictionary[key]!.control == HotkeyControl.ParameterSet)) {
+          (ignoreLowByte || _hotkeysDictionary[key]!.control.sliderMode)) {
         return _hotkeysDictionary[key];
       }
     }
@@ -127,13 +129,15 @@ abstract class MidiController {
     return data;
   }
 
-  fromJson(dynamic json) {
+  fromJson(dynamic json, Function(HotkeyControl) onReceived) {
     if (json["hotkeys"] != null) {
       _hotkeys.clear();
       for (var hk in json["hotkeys"]) {
         try {
-          var hotkey = ControllerHotkey.fromJson(hk);
+          var hotkey = ControllerHotkey.fromJson(hk, onReceived);
           _hotkeys.add(hotkey);
+        } on Exception catch (e) {
+          print(e);
         } finally {}
       }
       _rebuildDictionary();

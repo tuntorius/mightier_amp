@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -14,18 +15,27 @@ import 'BleMidiManager.dart';
 import 'ControllerConstants.dart';
 import 'controllers/MidiController.dart';
 
-typedef MidiDataOverride = void Function(int code, int? sliderValue, String name);
+typedef MidiDataOverride = void Function(
+    int code, int? sliderValue, String name);
 
 class MidiControllerManager extends ChangeNotifier {
   static final MidiControllerManager _controller = MidiControllerManager._();
 
-  bool get isScanning => BleMidiManager().isScanning;
+  late BleMidiManager _bleMidiManager;
+  late UsbMidiManager _usbMidiManager;
+
+  bool get isScanning => _bleMidiManager.isScanning;
   List<MidiController> get controllers => _controllers;
   final List<MidiController> _controllers = [];
 
-  final MidiController _hidController = HidController();
+  late MidiController _hidController;
 
   MidiDataOverride? dataOverride;
+
+  final StreamController<HotkeyControl> _midiCommandController =
+      StreamController<HotkeyControl>.broadcast();
+
+  Stream<HotkeyControl> get controllerStream => _midiCommandController.stream;
 
   //file stuff for saving controller assignments
   static const controllersFile = "midicontrollers.json";
@@ -40,8 +50,11 @@ class MidiControllerManager extends ChangeNotifier {
   }
 
   MidiControllerManager._() {
+    _bleMidiManager = BleMidiManager(_onHotkeyReceived);
+    _usbMidiManager = UsbMidiManager(_onHotkeyReceived);
+    _hidController = HidController(_onHotkeyReceived);
     _controllers.add(_hidController);
-    BleMidiManager().addListener(_onBleMidiManagerChanged);
+    _bleMidiManager.addListener(_onBleMidiManagerChanged);
     loadConfig();
 
     BLEMidiHandler.instance().status.listen(_statusListener);
@@ -69,7 +82,7 @@ class MidiControllerManager extends ChangeNotifier {
     _controllers.add(_hidController);
     _loadControllerHotkeys(_hidController);
     //scan for usb midi devices
-    UsbMidiManager().getDevices().then((value) {
+    _usbMidiManager.getDevices().then((value) {
       _controllers.addAll(value);
       for (var dev in value) {
         dev.setOnStatus(onControllerStatus);
@@ -79,11 +92,11 @@ class MidiControllerManager extends ChangeNotifier {
       notifyListeners();
     });
 
-    BleMidiManager().startScan();
+    _bleMidiManager.startScan();
   }
 
   stopScan() {
-    BleMidiManager().stopScan();
+    _bleMidiManager.stopScan();
     notifyListeners();
   }
 
@@ -97,7 +110,7 @@ class MidiControllerManager extends ChangeNotifier {
 
   _onBleMidiManagerChanged() {
     //check for new device
-    for (var dev in BleMidiManager().controllers) {
+    for (var dev in _bleMidiManager.controllers) {
       if (!_controllers.contains(dev)) {
         _controllers.add(dev);
         dev.setOnStatus(onControllerStatus);
@@ -141,7 +154,8 @@ class MidiControllerManager extends ChangeNotifier {
             if (data.length - i < 3) break;
             code = data[i] << 16 | data[i + 1] << 8 | data[i + 2];
             value = data[i + 2];
-            name = "CC ${data[i + 1].toRadixString(16)} ${data[i + 2].toRadixString(16)}";
+            name =
+                "CC ${data[i + 1].toRadixString(16)} ${data[i + 2].toRadixString(16)}";
             consumed = true;
             break;
           case MidiConstants.ProgramChange:
@@ -175,10 +189,12 @@ class MidiControllerManager extends ChangeNotifier {
   }
 
   onHIDData(RawKeyEvent event) {
-    _onControlMessage(_hidController, event.physicalKey.usbHidUsage, null, event.logicalKey.keyLabel);
+    _onControlMessage(_hidController, event.physicalKey.usbHidUsage, null,
+        event.logicalKey.keyLabel);
   }
 
-  _onControlMessage(MidiController ctrl, int code, int? sliderValue, String name) {
+  _onControlMessage(
+      MidiController ctrl, int code, int? sliderValue, String name) {
     //do whatever you do
     if (dataOverride != null) {
       dataOverride!.call(code, sliderValue, name);
@@ -235,8 +251,14 @@ class MidiControllerManager extends ChangeNotifier {
   _loadControllerHotkeys(MidiController ctrl) {
     for (var config in _controllersData) {
       if (config is Map<String, dynamic>) {
-        if (config["name"] == ctrl.name) ctrl.fromJson(config);
+        if (config["name"] == ctrl.name) {
+          ctrl.fromJson(config, _onHotkeyReceived);
+        }
       }
     }
+  }
+
+  void _onHotkeyReceived(HotkeyControl hotkey) {
+    _midiCommandController.add(hotkey);
   }
 }

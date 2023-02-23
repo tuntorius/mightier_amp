@@ -31,8 +31,8 @@ class Parameter {
       this.masterVolume = false});
 
   int get midiValue => formatter.valueToMidi7Bit(value);
-  int get masterVolMidiValue =>
-      formatter.valueToMidi7Bit(value * NuxDeviceControl().masterVolume * 0.01);
+  int get masterVolMidiValue => formatter
+      .valueToMidi7Bit(value * (NuxDeviceControl().masterVolume * 0.01));
   set midiValue(mv) => value = formatter.midi7BitToValue(mv);
   String get label => formatter.toLabel(value);
 

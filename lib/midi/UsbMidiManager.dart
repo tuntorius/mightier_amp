@@ -5,21 +5,18 @@ import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 import 'package:mighty_plug_manager/midi/controllers/UsbMidiController.dart';
 
 import '../platform/platformUtils.dart';
+import 'ControllerConstants.dart';
 import 'controllers/MidiController.dart';
 
 class UsbMidiManager {
-  static final UsbMidiManager _controller = UsbMidiManager._();
   List<MidiDevice> _devices = [];
+  final Function(HotkeyControl) onHotkeyReceived;
 
   final List<UsbMidiController> _controllers = [];
 
   bool usbMidiSupported = false;
 
-  factory UsbMidiManager() {
-    return _controller;
-  }
-
-  UsbMidiManager._() {
+  UsbMidiManager(this.onHotkeyReceived) {
     _init();
   }
 
@@ -44,7 +41,7 @@ class UsbMidiManager {
 
     _controllers.clear();
     for (var dev in _devices) {
-      var udev = UsbMidiController(dev);
+      var udev = UsbMidiController(dev, onHotkeyReceived);
       _controllers.add(udev);
     }
     return _controllers;

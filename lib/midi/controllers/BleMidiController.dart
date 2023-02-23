@@ -15,7 +15,7 @@ class BleMidiController extends MidiController {
   @override
   ControllerType get type => ControllerType.MidiBle;
 
-  BleMidiController(this._scanResult);
+  BleMidiController(this._scanResult, super.onHotkeyReceived);
 
   @override
   String get id => _scanResult.id;
@@ -29,7 +29,8 @@ class BleMidiController extends MidiController {
 
   @override
   Future<bool> connect() async {
-    _bleConnection = await BLEMidiHandler.instance().connectToDevice(_scanResult.device);
+    _bleConnection =
+        await BLEMidiHandler.instance().connectToDevice(_scanResult.device);
 
     if (_bleConnection != null) {
       _onConnected();
@@ -38,10 +39,12 @@ class BleMidiController extends MidiController {
   }
 
   _onConnected() {
-    _deviceStatusSubscription = _scanResult.device.state.listen(_deviceStateListener);
+    _deviceStatusSubscription =
+        _scanResult.device.state.listen(_deviceStateListener);
     _connected = true;
 
-    _characteristicSubscription = _bleConnection!.data.listen(_onDataReceivedEvent);
+    _characteristicSubscription =
+        _bleConnection!.data.listen(_onDataReceivedEvent);
   }
 
   _onDataReceivedEvent(List<int> data) {

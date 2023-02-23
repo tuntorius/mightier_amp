@@ -677,7 +677,6 @@ const z = {
   @override
   void onDataReceive(List<int> data) {
     if (data.length > 2) {
-      debugPrint(data.toString());
       switch (data[2]) {
         case MidiMessageValues.controlChange:
           switch (data[3]) {

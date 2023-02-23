@@ -223,7 +223,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
-      dev.presetChangedNotifier.addListener(presetChangedListener);
+      dev.presetChanged.stream.listen(presetChangedListener);
       dev.parameterChanged.stream.listen(parameterChangedListener);
       _deviceInstances[i].effectChanged.stream.listen(effectChangedListener);
       _deviceInstances[i].effectSwitched.stream.listen(effectSwitchedListener);
@@ -352,9 +352,9 @@ class NuxDeviceControl extends ChangeNotifier {
     sendParameter(param, false);
   }
 
-  void presetChangedListener() {
+  void presetChangedListener(int channel) {
     if (!isConnected) return;
-    changeDevicePreset(device.presetChangedNotifier.value);
+    changeDevicePreset(channel);
   }
 
   void changeDevicePreset(int preset) {
@@ -480,7 +480,6 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void sendBLEData(List<int> data) {
-    print("OUT -> ${data.toString()}");
     _midiHandler.sendData(data);
   }
 

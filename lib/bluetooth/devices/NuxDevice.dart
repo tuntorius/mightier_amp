@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
@@ -10,6 +11,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dar
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:qr_utils/qr_utils.dart';
 
+import '../../modules/cloud/presetEncoder.dart';
 import '../NuxDeviceControl.dart';
 import '../bleMidiHandler.dart';
 import "NuxConstants.dart";
@@ -80,7 +82,7 @@ abstract class NuxDevice extends ChangeNotifier {
   String channelName(int channel);
 
   //notifiers for bluetooth control
-  final ValueNotifier<int> presetChangedNotifier = ValueNotifier<int>(0);
+  final StreamController<int> presetChanged = StreamController<int>();
 
   //Notifies when an effect is switched on and off
   final StreamController<int> effectSwitched = StreamController<int>();
@@ -149,9 +151,10 @@ abstract class NuxDevice extends ChangeNotifier {
       chan = 0;
     }
 
-    selectedChannelP = chan;
-    if (notifyBT) presetChangedNotifier.value = selectedChannelP;
-
+    if (selectedChannelP != chan) {
+      selectedChannelP = chan;
+      if (notifyBT) presetChanged.add(selectedChannelP);
+    }
     if (sendFullPreset) deviceControl.sendFullPresetSettings();
     if (notifyUI) notifyListeners();
     if (deviceControl.isConnected) sendAmpLevel();
@@ -222,6 +225,9 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   dynamic getDrumStyles();
+  int getDrumStylesCount() {
+    return (getDrumStyles() as List).length;
+  }
 
   void resetDrumSettings() {
     config.drumsEnabled = false;
@@ -249,6 +255,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void setDrumsTempo(double tempo, bool send) {
     if (config.drumsTempo == tempo) return;
+    tempo = math.min(math.max(tempo, drumsMinTempo), drumsMaxTempo);
     config.drumsTempo = tempo;
     if (send) communication.sendDrumsTempo(tempo);
   }
@@ -317,13 +324,14 @@ abstract class NuxDevice extends ChangeNotifier {
     }
     if (newIndex == index) {
       setSelectedChannel(index,
-          notifyBT: false, notifyUI: true, sendFullPreset: true);
+          notifyBT: false, notifyUI: true, sendFullPreset: false);
     } else {
       //skipped - update ui
       setSelectedChannel(newIndex,
-          notifyBT: true, sendFullPreset: true, notifyUI: true);
+          notifyBT: true, sendFullPreset: false, notifyUI: true);
     }
 
+    getPreset(selectedChannel).setupPresetFromNuxData();
     //immediately set the amp level
     sendAmpLevel();
   }
@@ -450,6 +458,15 @@ abstract class NuxDevice extends ChangeNotifier {
     return null;
   }
 
+  List<int>? jsonToCompressedData(Map<String, dynamic> jsonPreset) {
+    var preset = presetFromJson(jsonPreset, null, qrOnly: true);
+    if (preset != null) {
+      var data = preset.createNuxDataFromPreset();
+      var encoded = PresetEncoder.encode(data);
+    }
+    throw Exception("Mamati");
+  }
+
   String channelToQR(int channel) {
     var data = presets[channel].createNuxDataFromPreset();
     return "${QrUtils.nuxQRPrefix}${base64Encode(data)}";
@@ -540,7 +557,6 @@ abstract class NuxDevice extends ChangeNotifier {
 
   Preset? presetFromJson(Map<String, dynamic> preset, double? overrideLevel,
       {bool qrOnly = false}) {
-    debugPrint(json.encode(preset));
     var pVersion = preset["version"] ?? 0;
 
     var nuxChannel = preset["channel"];

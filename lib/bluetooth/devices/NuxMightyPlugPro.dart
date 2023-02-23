@@ -238,6 +238,7 @@ class NuxMightyPlugPro extends NuxDevice {
 
   List<String> channelNames = [];
 
+  int? _drumStylesCount;
   static const Map<String, int> rockStyles = {
     'Standard': 0,
     'Swing Rock': 1,
@@ -389,6 +390,17 @@ class NuxMightyPlugPro extends NuxDevice {
 
   @override
   dynamic getDrumStyles() => drumCategories;
+
+  @override
+  int getDrumStylesCount() {
+    if (_drumStylesCount == null) {
+      _drumStylesCount = 0;
+      for (var cat in drumCategories.values) {
+        _drumStylesCount = _drumStylesCount! + cat.length;
+      }
+    }
+    return _drumStylesCount!;
+  }
 
   @override
   List<Preset> getPresetsList() {

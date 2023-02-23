@@ -92,7 +92,20 @@ class BLEMidiHandler {
       PermissionStatus pStatus;
       bool askOneTime = false;
       if (noLocationNeeded) {
-        pStatus = PermissionStatus.granted;
+        pStatus = await Permission.bluetoothScan.status;
+        if (!pStatus.isGranted) {
+          pStatus = await Permission.bluetoothScan.request();
+        }
+        if (!pStatus.isGranted) {
+          onError(BleError.scanPermissionDenied, pStatus);
+          return;
+        }
+
+        pStatus = await Permission.bluetoothConnect.status;
+        if (!pStatus.isGranted) {
+          pStatus = await Permission.bluetoothConnect.request();
+        }
+        if (!pStatus.isGranted) onError(BleError.scanPermissionDenied, pStatus);
       } else {
         do {
           pStatus = await Permission.location.status;

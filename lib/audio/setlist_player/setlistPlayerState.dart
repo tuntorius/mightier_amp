@@ -92,6 +92,7 @@ class SetlistPlayerState extends ChangeNotifier {
   }
 
   Future playPause() async {
+    if (setlist == null) return;
     if (_automation == null) await _openTrack(currentTrack);
     await _automation?.playPause();
     if (_automation!.player.playerState.playing == false) {
@@ -111,7 +112,7 @@ class SetlistPlayerState extends ChangeNotifier {
 
   void previous() async {
     if (_automation == null) return;
-    if (currentTrack == 0 || _automation!.player.position.inSeconds > 2) {
+    if (currentTrack == 0 || _automation!.player.position.inSeconds > 3) {
       _automation!.rewind();
     } else if (currentTrack > 0) {
       await closeTrack();

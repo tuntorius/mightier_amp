@@ -8,8 +8,7 @@
             "name": "Mightier Amp",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart",
-            "args": ["--enable-software-rendering"]
+            "program": "lib/main.dart"
         },
         {
             "name": "Mightier Amp Profile",

@@ -9,7 +9,15 @@ import '../../../platform/platformUtils.dart';
 import '../../mightierIcons.dart';
 import '../../theme.dart';
 
-enum PresetItemActions { Delete, Rename, ChangeChannel, Duplicate, Export, ChangeCategory, ExportQR }
+enum PresetItemActions {
+  Delete,
+  Rename,
+  ChangeChannel,
+  Duplicate,
+  Export,
+  ChangeCategory,
+  ExportQR
+}
 
 class PresetItem extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -128,7 +136,8 @@ class PresetItem extends StatelessWidget {
 
   List<Widget> _buildEffectsPreview(Map<String, dynamic> preset) {
     var widgets = <Widget>[];
-    NuxDevice? dev = NuxDeviceControl.instance().getDeviceFromId(item["product_id"]);
+    NuxDevice? dev =
+        NuxDeviceControl.instance().getDeviceFromId(item["product_id"]);
     //int presetVersion = preset["version"] ?? 0;
 
     if (dev != null) {
@@ -138,7 +147,8 @@ class PresetItem extends StatelessWidget {
         if (preset.containsKey(pi.keyName)) {
           //special case for amp
           if (pi.keyName == "amp") {
-            var name = dev.getAmpNameByNuxIndex(preset[pi.keyName]["fx_type"], pVersion);
+            var name = dev.getAmpNameByNuxIndex(
+                preset[pi.keyName]["fx_type"], pVersion);
             widgets.insert(
                 0,
                 Padding(
@@ -218,7 +228,10 @@ class PresetItem extends StatelessWidget {
 
     bool selected = item["uuid"] == device.presetUUID;
 
-    Color color = Preset.channelColors[item["channel"]];
+    var d = NuxDeviceControl.instance().getDeviceFromId(item["product_id"]) ??
+        device;
+    Color color = d.getPreset(0).channelColorsList[item["channel"]];
+
     if (!enabled) color = TinyColor.fromColor(color).desaturate(90).color;
 
     int alpha = selected && !simplified ? 105 : 0;
@@ -232,14 +245,17 @@ class PresetItem extends StatelessWidget {
           leading: Container(
             margin: const EdgeInsets.only(left: 4),
             decoration: BoxDecoration(
-                border: Border.all(color: color, width: 1.5), borderRadius: const BorderRadius.all(Radius.circular(5))),
+                border: Border.all(color: color, width: 1.5),
+                borderRadius: const BorderRadius.all(Radius.circular(5))),
             width: 45,
             height: 45,
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Text(
-                  NuxDeviceControl.instance().getDeviceFromId(item["product_id"])!.productIconLabel,
+                  NuxDeviceControl.instance()
+                      .getDeviceFromId(item["product_id"])!
+                      .productIconLabel,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: color),
                 ),
@@ -255,7 +271,9 @@ class PresetItem extends StatelessWidget {
               ],
             ),
           ),
-          title: Text(item["name"], style: TextStyle(color: enabled ? Colors.white : Colors.grey[600])),
+          title: Text(item["name"],
+              style:
+                  TextStyle(color: enabled ? Colors.white : Colors.grey[600])),
           subtitle: Opacity(
             opacity: enabled ? 1 : 0.5,
             child: Row(

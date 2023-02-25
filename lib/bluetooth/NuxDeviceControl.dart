@@ -223,7 +223,6 @@ class NuxDeviceControl extends ChangeNotifier {
 
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
-      dev.presetChanged.stream.listen(presetChangedListener);
       dev.parameterChanged.stream.listen(parameterChangedListener);
       _deviceInstances[i].effectChanged.stream.listen(effectChangedListener);
       _deviceInstances[i].effectSwitched.stream.listen(effectSwitchedListener);
@@ -350,11 +349,6 @@ class NuxDeviceControl extends ChangeNotifier {
   void parameterChangedListener(Parameter param) {
     if (!isConnected) return;
     sendParameter(param, false);
-  }
-
-  void presetChangedListener(int channel) {
-    if (!isConnected) return;
-    changeDevicePreset(channel);
   }
 
   void changeDevicePreset(int preset) {

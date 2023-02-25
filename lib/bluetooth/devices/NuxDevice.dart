@@ -81,9 +81,6 @@ abstract class NuxDevice extends ChangeNotifier {
   List<String> groupsName = <String>[];
   String channelName(int channel);
 
-  //notifiers for bluetooth control
-  final StreamController<int> presetChanged = StreamController<int>();
-
   //Notifies when an effect is switched on and off
   final StreamController<int> effectSwitched = StreamController<int>();
 
@@ -153,7 +150,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
     if (selectedChannelP != chan) {
       selectedChannelP = chan;
-      if (notifyBT) presetChanged.add(selectedChannelP);
+      if (notifyBT) deviceControl.changeDevicePreset(selectedChannelP);
     }
     if (sendFullPreset) deviceControl.sendFullPresetSettings();
     if (notifyUI) notifyListeners();

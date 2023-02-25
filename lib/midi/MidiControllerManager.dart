@@ -140,29 +140,38 @@ class MidiControllerManager extends ChangeNotifier {
             code = data[i] << 16 | data[i + 1] << 8;
             value = data[i + 2];
             if (value == 0) return;
-            name = "NO ${data[i + 1].toRadixString(16)}";
+            if (dataOverride != null) {
+              name = "NO ${data[i + 1].toRadixString(16)}";
+            }
             consumed = true;
             break;
           case MidiConstants.PolyAfterTouch:
             if (data.length - i < 3) break;
             code = data[i] << 8 | data[i + 1] << 8;
             value = data[i + 2];
-            name = "PKP ${data[i + 1].toRadixString(16)}";
+            if (dataOverride != null) {
+              name = "PKP ${data[i + 1].toRadixString(16).padLeft(2, '0')}";
+            }
             consumed = true;
             break;
           case MidiConstants.ControlChange:
             if (data.length - i < 3) break;
             code = data[i] << 16 | data[i + 1] << 8 | data[i + 2];
             value = data[i + 2];
-            name =
-                "CC ${data[i + 1].toRadixString(16)} ${data[i + 2].toRadixString(16)}";
+            if (dataOverride != null) {
+              name =
+                  "CC ${data[i + 1].toRadixString(16).padLeft(2, '0')} ${data[i + 2].toRadixString(16).padLeft(2, '0')}";
+            }
             consumed = true;
             break;
           case MidiConstants.ProgramChange:
             if (data.length - i < 2) break;
             code = data[i] << 16 | data[i + 1] << 8;
             value = null;
-            name = "PC ${data[i + 1].toRadixString(16)}";
+
+            if (dataOverride != null) {
+              name = "PC ${data[i + 1].toRadixString(16).padLeft(2, '0')}";
+            }
             consumed = true;
             break;
           case MidiConstants.ChannelPressure:

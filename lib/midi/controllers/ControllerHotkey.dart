@@ -23,6 +23,9 @@ class ControllerHotkey {
   //sub parameter - which slider for example
   int subIndex;
 
+  //whether to invert knob/slider style value
+  bool invertSlider;
+
   final Function(HotkeyControl) onHotkeyReceived;
 
   NuxDevice? _cachedDevice;
@@ -36,7 +39,8 @@ class ControllerHotkey {
       required this.index,
       required this.subIndex,
       required this.hotkeyCode,
-      required this.hotkeyName});
+      required this.hotkeyName,
+      required this.invertSlider});
 
   execute(int? value) {
     var device = NuxDeviceControl().device;
@@ -185,7 +189,9 @@ class ControllerHotkey {
   }
 
   double midiToPercentage(int? midiVal) {
-    return ((midiVal ?? 0) / 127) * 100;
+    var val = midiVal ?? 0;
+    if (invertSlider) val = 127 - val;
+    return (val / 127) * 100;
   }
 
   void _modifyTempo(NuxDevice device, double amount) {
@@ -297,7 +303,7 @@ class ControllerHotkey {
     data["code"] = hotkeyCode;
     data["index"] = index;
     data["subIndex"] = subIndex;
-
+    data["invert"] = invertSlider;
     return data;
   }
 
@@ -309,6 +315,7 @@ class ControllerHotkey {
         hotkeyName: json["name"],
         index: json["index"],
         subIndex: json["subIndex"],
+        invertSlider: json["invert"] ?? false,
         onHotkeyReceived: onReceived);
     return hk;
   }

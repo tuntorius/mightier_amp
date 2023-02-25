@@ -21,6 +21,7 @@ class HotkeyInputDialog {
   //slider mode vars
   int _previousCode = -1;
   int? previousSliderValue;
+  bool _invert = false;
 
   _applyHotkey() {
     if (_hotkeyCode != null) {
@@ -34,7 +35,7 @@ class HotkeyInputDialog {
         }
       } while (_control == HotkeyControl.ParameterSet);
       _midiController.assignHotkey(
-          _control, _index, _subindex, _hotkeyCode!, controller.text);
+          _control, _index, _subindex, _hotkeyCode!, controller.text, _invert);
       MidiControllerManager().saveConfig();
     } else {
       _midiController.removeHotkeyByFunction(_control, _index, _subindex);
@@ -46,9 +47,12 @@ class HotkeyInputDialog {
 
   _onControllerData(int code, int? sliderValue, String name) {
     if (_sliderMode) {
+      if (_invert) sliderValue = 127 - sliderValue!;
       code &= 0xffffff00;
       if (code == _previousCode && previousSliderValue != sliderValue) {
         //valid adjustment
+        name = name.substring(0, name.length - 2);
+        name += sliderValue!.toRadixString(16).padLeft(2, '0');
         controller.text = name;
         _hotkeyCode = code;
       }
@@ -77,6 +81,7 @@ class HotkeyInputDialog {
     var hk = _midiController.getHotkeyByFunction(ctrl, ctrlIndex, ctrlSubIndex);
 
     controller = TextEditingController(text: hk == null ? None : hk.hotkeyName);
+    _invert = hk?.invertSlider ?? false;
 
     MidiControllerManager().overrideOnData(_onControllerData);
 
@@ -89,54 +94,65 @@ class HotkeyInputDialog {
         }
         return KeyEventResult.skipRemainingHandlers;
       },
-      child: AlertDialog(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            IconButton(
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
-                onPressed: () => Navigator.of(context).pop()),
-            const Text('Set hotkey'),
+      child: StatefulBuilder(builder: (context, setState) {
+        return AlertDialog(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () => Navigator.of(context).pop()),
+              const Text('Set hotkey'),
+            ],
+          ),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            if (sliderMode)
+              Text(
+                  "Adjust the pedal/knob/slider you wish to assign to $hotkeyName")
+            else
+              Text("Press the control you wish to assign to $hotkeyName"),
+            if (sliderMode)
+              CheckboxListTile(
+                  title: const Text("Invert"),
+                  value: _invert,
+                  onChanged: (value) {
+                    setState(() {
+                      _invert = value!;
+                    });
+                  }),
+            AbsorbPointer(
+              child: TextField(
+                controller: controller,
+                readOnly: true,
+                autofocus: false,
+              ),
+            )
+          ]),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  controller.text = None;
+                  _hotkeyCode = null;
+                },
+                child: const Text("Clear")),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancel")),
+            TextButton(
+                onPressed: _applyHotkey,
+                child: Text(
+                  "OK",
+                  style: TextStyle(color: Theme.of(context).hintColor),
+                ))
           ],
-        ),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          if (sliderMode)
-            Text(
-                "Adjust the pedal/knob/slider you wish to assign to $hotkeyName")
-          else
-            Text("Press the control you wish to assign to $hotkeyName"),
-          AbsorbPointer(
-            child: TextField(
-              controller: controller,
-              readOnly: true,
-              autofocus: false,
-            ),
-          )
-        ]),
-        actions: [
-          TextButton(
-              onPressed: () {
-                controller.text = None;
-                _hotkeyCode = null;
-              },
-              child: const Text("Clear")),
-          TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel")),
-          TextButton(
-              onPressed: _applyHotkey,
-              child: Text(
-                "OK",
-                style: TextStyle(color: Theme.of(context).hintColor),
-              ))
-        ],
-        actionsAlignment: MainAxisAlignment.spaceBetween,
-      ),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+        );
+      }),
     );
   }
 }

@@ -20,7 +20,7 @@ abstract class MidiController {
   final Map<int, ControllerHotkey> _hotkeysDictionary = {};
 
   assignHotkey(HotkeyControl ctrl, int index, int subindex, int keyCode,
-      String hotkeyName) {
+      String hotkeyName, bool invert) {
     //find if already set for this function
     if (ctrl == HotkeyControl.ParameterSet) keyCode &= 0xffffff00;
 
@@ -32,6 +32,7 @@ abstract class MidiController {
           subIndex: subindex,
           hotkeyCode: keyCode,
           hotkeyName: hotkeyName,
+          invertSlider: invert,
           onHotkeyReceived: onHotkeyReceived);
     } else {
       hk.hotkeyCode = keyCode;

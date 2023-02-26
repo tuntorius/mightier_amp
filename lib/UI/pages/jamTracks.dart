@@ -122,12 +122,29 @@ class _JamTracksState extends State<JamTracks>
 
   Widget _permissionInfo() {
     return Center(
-      child: ElevatedButton(
-        child: const Text("Grant storage permission"),
-        onPressed: () async {
-          await Permission.storage.request();
-          setState(() {});
-        },
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+                textAlign: TextAlign.center,
+                "To access your music files and play along to your favorite songs, the app requires permission to access your device's media library."),
+            const SizedBox(
+              height: 30,
+            ),
+            SizedBox(
+              height: 60,
+              child: ElevatedButton(
+                child: const Text("Grant access to Media Library "),
+                onPressed: () async {
+                  await Permission.storage.request();
+                  setState(() {});
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

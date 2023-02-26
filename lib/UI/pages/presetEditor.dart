@@ -1,17 +1,21 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
+import 'package:mighty_plug_manager/audio/setlist_player/setlistPlayerState.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../popups/savePreset.dart';
 import '../utils.dart';
 import '../widgets/presets/channelSelector.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
+import '../widgets/presets/trackEventsBlockInfo.dart';
 import '../widgets/rounded_icon_button.dart';
 
 class PresetEditor extends StatefulWidget {
-  const PresetEditor();
+  const PresetEditor({super.key});
   @override
   _PresetEditorState createState() => _PresetEditorState();
 }
@@ -25,6 +29,7 @@ class _PresetEditorState extends State<PresetEditor> {
     device = NuxDeviceControl.instance().device;
     device.addListener(onDeviceDataChanged);
     NuxDeviceControl.instance().addListener(onDeviceChanged);
+    SetlistPlayerState.instance().addListener(onJamTracksStateChange);
   }
 
   @override
@@ -32,12 +37,19 @@ class _PresetEditorState extends State<PresetEditor> {
     super.dispose();
     device.removeListener(onDeviceDataChanged);
     NuxDeviceControl.instance().removeListener(onDeviceChanged);
+    SetlistPlayerState.instance().removeListener(onJamTracksStateChange);
   }
 
   void onDeviceChanged() {
-    device.removeListener(onDeviceDataChanged);
-    device = NuxDeviceControl.instance().device;
-    device.addListener(onDeviceDataChanged);
+    if (device != NuxDeviceControl.instance().device) {
+      device.removeListener(onDeviceDataChanged);
+      device = NuxDeviceControl.instance().device;
+      device.addListener(onDeviceDataChanged);
+    }
+    setState(() {});
+  }
+
+  void onJamTracksStateChange() {
     setState(() {});
   }
 
@@ -76,7 +88,7 @@ class _PresetEditorState extends State<PresetEditor> {
     bool uploadPresetEnabled =
         device.deviceControl.isConnected && device.presetSaveSupport;
 
-    return SafeArea(
+    Widget ui = SafeArea(
       child: wrapContainer(
         layout == EditorLayoutMode.expand,
         [
@@ -209,5 +221,18 @@ class _PresetEditorState extends State<PresetEditor> {
         ],
       ),
     );
+
+    var sps = SetlistPlayerState.instance();
+    if (sps.state != PlayerState.play ||
+        (sps.automation?.presetChangeEventsAvailable == false)) {
+      return ui;
+    } else {
+      return TrackEventsBlockInfo(
+        onBypass: () {
+          setState(() {});
+        },
+        child: ui,
+      );
+    }
   }
 }

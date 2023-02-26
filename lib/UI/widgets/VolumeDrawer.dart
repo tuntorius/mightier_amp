@@ -68,35 +68,36 @@ class BottomDrawer extends StatelessWidget {
 }
 
 class VolumeSlider extends StatelessWidget {
-  final void Function() onVolumeChanged;
-  final double currentVolume;
-  final ValueFormatter volumeFormatter;
   final String label;
-  const VolumeSlider(
-      {Key? key,
-      required this.onVolumeChanged,
-      required this.currentVolume,
-      required this.volumeFormatter,
-      this.label = "Volume"})
-      : super(key: key);
+  VolumeSlider({Key? key, this.label = "Volume"}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ThickSlider(
-      activeColor: Colors.blue,
-      value: currentVolume,
-      skipEmitting: 3,
-      label: label,
-      labelFormatter: volumeFormatter.toLabel,
-      min: volumeFormatter.min.toDouble(),
-      max: volumeFormatter.max.toDouble(),
-      handleVerticalDrag: false,
-      onChanged: _onVolumeChanged,
-      onDragEnd: _onVolumeDragEnd,
+    return ValueListenableBuilder(
+      valueListenable: NuxDeviceControl.instance().masterVolumeNotifier,
+      builder: (context, value, child) {
+        final device = NuxDeviceControl.instance().device;
+        final volumeFormatter = device.fakeMasterVolume
+            ? ValueFormatters.percentage
+            : device.decibelFormatter!;
+        return ThickSlider(
+          activeColor: Colors.blue,
+          value: NuxDeviceControl.instance().masterVolume,
+          skipEmitting: 3,
+          label: label,
+          labelFormatter: volumeFormatter.toLabel,
+          min: volumeFormatter.min.toDouble(),
+          max: volumeFormatter.max.toDouble(),
+          handleVerticalDrag: false,
+          onChanged: _onVolumeChanged,
+          onDragEnd: _onVolumeDragEnd,
+        );
+      },
     );
   }
 
-  void _onVolumeDragEnd(_) {
+  void _onVolumeDragEnd(value) {
+    NuxDeviceControl.instance().masterVolume = value;
     if (NuxDeviceControl.instance().device.fakeMasterVolume) {
       SharedPrefs().setValue(
         SettingsKeys.masterVolume,
@@ -106,13 +107,8 @@ class VolumeSlider extends StatelessWidget {
   }
 
   void _onVolumeChanged(value, bool skip) {
-    final device = NuxDeviceControl.instance().device;
-    if (device.fakeMasterVolume) {
+    if (!skip) {
       NuxDeviceControl.instance().masterVolume = value;
-    } else {
-      device.presets[device.selectedChannel].volume = value;
     }
-    NuxDeviceControl.instance().forceNotifyListeners();
-    onVolumeChanged.call();
   }
 }

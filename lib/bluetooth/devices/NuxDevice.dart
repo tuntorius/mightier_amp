@@ -150,11 +150,14 @@ abstract class NuxDevice extends ChangeNotifier {
 
     if (selectedChannelP != chan) {
       selectedChannelP = chan;
-      if (notifyBT) deviceControl.changeDevicePreset(selectedChannelP);
+      deviceControl.clearPresetData();
+      if (notifyBT) deviceControl.changeDeviceChannel(selectedChannelP);
     }
     if (sendFullPreset) deviceControl.sendFullPresetSettings();
-    if (notifyUI) notifyListeners();
     if (deviceControl.isConnected) sendAmpLevel();
+    if (notifyUI) {
+      deviceControl.forceNotifyListeners();
+    }
   }
 
   bool getChannelActive(int channel) {
@@ -183,10 +186,6 @@ abstract class NuxDevice extends ChangeNotifier {
   //UI Stuff
   int selectedSlot = 0;
 
-  String presetName = "";
-  String presetCategory = "";
-  String presetUUID = "";
-
   //general settings
 
   bool get ecoMode => config.ecoMode;
@@ -201,19 +200,11 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void onConnect() {
     nuxPresetsReceived = false;
-
-    clearPresetData();
     //reset nux data
     for (int i = 0; i < presets.length; i++) {
       presets[i].resetNuxData();
     }
     resetDrumSettings();
-  }
-
-  void clearPresetData() {
-    presetName = "";
-    presetCategory = "";
-    presetUUID = "";
   }
 
   void onDisconnect() {
@@ -440,7 +431,7 @@ abstract class NuxDevice extends ChangeNotifier {
     var result = presets[selectedChannel].setupPresetFromQRData(qrData);
 
     if (result == PresetQRError.Ok) {
-      clearPresetData();
+      deviceControl.clearPresetData();
     }
 
     return result;
@@ -560,12 +551,12 @@ abstract class NuxDevice extends ChangeNotifier {
 
     if (!qrOnly) {
       BLEMidiHandler.instance().clearDataQueue();
-      presetName = preset["name"];
-      var category = PresetsStorage().findCategoryOfPreset(preset);
-      presetCategory = category!["name"];
-      presetUUID = preset["uuid"];
       setSelectedChannel(nuxChannel,
           notifyBT: true, notifyUI: true, sendFullPreset: false);
+      deviceControl.presetName = preset["name"];
+      var category = PresetsStorage().findCategoryOfPreset(preset);
+      deviceControl.presetCategory = category!["name"];
+      deviceControl.presetUUID = preset["uuid"];
     }
 
     Preset p;
@@ -623,7 +614,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
     //update widgets
     if (!qrOnly) {
-      notifyListeners();
+      deviceControl.forceNotifyListeners();
     } else {
       return p;
     }

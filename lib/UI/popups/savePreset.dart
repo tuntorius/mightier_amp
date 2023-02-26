@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../widgets/scrollParent.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/presets/presetsStorage.dart';
@@ -14,10 +15,12 @@ class SavePresetDialog {
   final parentScroll = ScrollController();
   final NuxDevice device;
   final Color? confirmColor;
+  late NuxDeviceControl deviceControl;
 
   SavePresetDialog({required this.device, this.confirmColor}) {
-    categoryCtrl.text = device.presetCategory;
-    nameCtrl.text = device.presetName;
+    deviceControl = device.deviceControl;
+    categoryCtrl.text = deviceControl.presetCategory;
+    nameCtrl.text = deviceControl.presetName;
   }
 
   Widget buildDialog(NuxDevice device, BuildContext context) {
@@ -152,12 +155,12 @@ class SavePresetDialog {
 
   savePreset(context) {
     var preset = device.presetToJson();
-    device.presetName = nameCtrl.value.text;
-    device.presetCategory = categoryCtrl.value.text;
+    deviceControl.presetName = nameCtrl.value.text;
+    deviceControl.presetCategory = categoryCtrl.value.text;
 
-    String uuid = PresetsStorage()
-        .savePreset(preset, device.presetName, device.presetCategory);
+    String uuid = PresetsStorage().savePreset(
+        preset, deviceControl.presetName, deviceControl.presetCategory);
 
-    device.presetUUID = uuid;
+    deviceControl.presetUUID = uuid;
   }
 }

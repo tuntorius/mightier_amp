@@ -183,7 +183,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         break;
       case 3:
         var qr = widget.device.channelToQR(widget.device.selectedChannel);
-        var name = widget.device.presetName;
+        var name = widget.device.deviceControl.presetName;
         Image img = await QrUtils.generateQR(qr);
         if (name.isEmpty) {
           AlertDialogs.showInputDialog(context,

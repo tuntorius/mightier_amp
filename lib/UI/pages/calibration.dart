@@ -45,7 +45,7 @@ class _CalibrationState extends State<Calibration> {
       if (!toggled) {
         nuxMode++;
         if (nuxMode > 2) nuxMode = 0;
-        devControl.changeDevicePreset(nuxMode);
+        devControl.changeDeviceChannel(nuxMode);
 
         setState(() {
           presetColor = Preset.channelColors[nuxMode];

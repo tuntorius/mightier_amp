@@ -226,7 +226,7 @@ class PresetItem extends StatelessWidget {
       enabled = item["product_id"] == customProductId;
     }
 
-    bool selected = item["uuid"] == device.presetUUID;
+    bool selected = item["uuid"] == device.deviceControl.presetUUID;
 
     var d = NuxDeviceControl.instance().getDeviceFromId(item["product_id"]) ??
         device;

@@ -1,8 +1,11 @@
 import 'package:drag_and_drop_lists/drag_and_drop_list_interface.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/toneshare/toneshare_main.dart';
 import 'package:qr_utils/qr_utils.dart';
 
+import '../../../audio/setlist_player/setlistPlayerState.dart';
 import '../../../audio/trackdata/trackData.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
@@ -14,6 +17,7 @@ import '../../popups/changeCategory.dart';
 import '../../popups/exportQRCode.dart';
 import '../../theme.dart';
 import 'presetItem.dart';
+import 'trackEventsBlockInfo.dart';
 
 enum PresetsTopMenuActions { ExportAll, Import }
 
@@ -122,10 +126,9 @@ class _PresetListState extends State<PresetList>
     super.initState();
     NuxDeviceControl.instance().addListener(refreshPresets);
     PresetsStorage().addListener(refreshPresets);
-
-    //cache devices
-    for (var element in NuxDeviceControl.instance().deviceList) {
-      devices[element.productStringId] = element;
+    NuxDeviceControl.instance().presetNameNotifier.addListener(refreshPresets);
+    if (!widget.simplified) {
+      SetlistPlayerState.instance().addListener(refreshPresets);
     }
   }
 
@@ -134,10 +137,36 @@ class _PresetListState extends State<PresetList>
     super.dispose();
     NuxDeviceControl.instance().removeListener(refreshPresets);
     PresetsStorage().removeListener(refreshPresets);
+    NuxDeviceControl.instance()
+        .presetNameNotifier
+        .removeListener(refreshPresets);
+    if (!widget.simplified) {
+      SetlistPlayerState.instance().removeListener(refreshPresets);
+    }
   }
 
   void refreshPresets() {
     setState(() {});
+  }
+
+  void _openToneShare() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const ToneShare()));
+  }
+
+  Widget _mainPopupMenu() {
+    return PopupMenuButton(
+      child: const Padding(
+        padding: EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
+        child: Icon(Icons.more_vert, color: Colors.grey),
+      ),
+      itemBuilder: (context) {
+        return presetsMenu;
+      },
+      onSelected: (pos) {
+        mainMenuActions(pos);
+      },
+    );
   }
 
   @override
@@ -150,28 +179,27 @@ class _PresetListState extends State<PresetList>
     var header = widget.simplified
         ? null
         : ListTile(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            // shape: RoundedRectangleBorder(
+            //     borderRadius: BorderRadius.circular(20),
+            //     side: BorderSide(color: Colors.grey)),
             contentPadding: const EdgeInsets.only(left: 16, right: 12),
             title: const Text("Presets"),
-            trailing: PlatformUtils.isIOS
-                ? null
-                : PopupMenuButton(
-                    child: const Padding(
-                      padding: EdgeInsets.only(
-                          left: 12.0, right: 4, bottom: 10, top: 10),
-                      child: Icon(Icons.more_vert, color: Colors.grey),
-                    ),
-                    itemBuilder: (context) {
-                      return presetsMenu;
-                    },
-                    onSelected: (pos) {
-                      mainMenuActions(pos);
-                    },
-                  ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (kDebugMode)
+                  IconButton(
+                      onPressed: _openToneShare,
+                      icon: const Icon(
+                        Icons.cloud_download,
+                        size: 28,
+                      )),
+                if (PlatformUtils.isAndroid) _mainPopupMenu()
+              ],
+            ),
           );
 
-    return SafeArea(
+    var ui = SafeArea(
       child: DragAndDropLists(
         key: const PageStorageKey<String>("presets"),
         children: list,
@@ -223,6 +251,20 @@ class _PresetListState extends State<PresetList>
         ),
       ),
     );
+
+    if (widget.simplified) return ui;
+    var sps = SetlistPlayerState.instance();
+    if (sps.state != PlayerState.play ||
+        (sps.automation?.presetChangeEventsAvailable == false)) {
+      return ui;
+    } else {
+      return TrackEventsBlockInfo(
+        child: ui,
+        onBypass: () {
+          setState(() {});
+        },
+      );
+    }
   }
 
   void _categoryMenu(CategoryMenuActions action, String item) {

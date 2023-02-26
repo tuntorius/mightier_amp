@@ -62,6 +62,20 @@ class NuxDeviceControl extends ChangeNotifier {
   StreamSubscription<List<int>>? rxSubscription;
   Timer? batteryTimer;
 
+  //Preset Name Stuff
+  String _presetName = "";
+  String presetCategory = "";
+  String presetUUID = "";
+
+  String get presetName => _presetName;
+  set presetName(String name) {
+    _presetName = name;
+    presetNameNotifier.value = name;
+  }
+
+  ValueNotifier presetNameNotifier = ValueNotifier<String>("");
+  ValueNotifier<int> masterVolumeNotifier = ValueNotifier<int>(100);
+
   double _masterVolume = 100;
 
   ChangeStack get changes => device.presets[device.selectedChannel].changes;
@@ -69,11 +83,23 @@ class NuxDeviceControl extends ChangeNotifier {
   bool developer = false;
   Function(List<int>)? onDataReceiveDebug;
 
-  double get masterVolume => _masterVolume;
+  double get masterVolume {
+    if (device.fakeMasterVolume) {
+      return _masterVolume;
+    } else {
+      return device.presets[device.selectedChannel].volume;
+    }
+  }
+
   set masterVolume(double vol) {
-    _masterVolume = vol;
-    if (isConnected) {
-      device.sendAmpLevel();
+    masterVolumeNotifier.value = vol.toInt();
+    if (device.fakeMasterVolume) {
+      _masterVolume = vol;
+      if (isConnected) {
+        device.sendAmpLevel();
+      }
+    } else {
+      device.presets[device.selectedChannel].volume = vol;
     }
   }
 
@@ -115,6 +141,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   set deviceIndex(int index) {
     _clearAllDevicesStack();
+    clearPresetData();
     _device = _deviceInstances[index];
 
     updateDiagnosticsData();
@@ -135,6 +162,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   set deviceFirmwareVersion(int ver) {
     _clearDeviceStack();
+    clearPresetData();
     device.setFirmwareVersionByIndex(ver);
     SharedPrefs().setValue(SettingsKeys.deviceVersion, ver);
   }
@@ -184,6 +212,12 @@ class NuxDeviceControl extends ChangeNotifier {
 
   undoStackChanged() {
     notifyListeners();
+  }
+
+  void clearPresetData() {
+    presetName = "";
+    presetCategory = "";
+    presetUUID = "";
   }
 
   forceNotifyListeners() {
@@ -270,6 +304,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void _onConnect() {
     debugPrint("Device connected");
+    clearPresetData();
     device.onConnect();
     connectStatus.add(DeviceConnectionState.connectionBegin);
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
@@ -280,6 +315,7 @@ class NuxDeviceControl extends ChangeNotifier {
   void _onDisconnect() {
     batteryTimer?.cancel();
     rxSubscription?.cancel();
+    clearPresetData();
     device.onDisconnect();
     debugPrint("Device disconnected");
   }
@@ -351,9 +387,9 @@ class NuxDeviceControl extends ChangeNotifier {
     sendParameter(param, false);
   }
 
-  void changeDevicePreset(int preset) {
+  void changeDeviceChannel(int channel) {
     if (!isConnected) return;
-    sendBLEData(device.communication.setChannel(preset));
+    sendBLEData(device.communication.setChannel(channel));
   }
 
   void effectChangedListener(int slot) {
@@ -426,7 +462,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void resetToChannelDefaults() {
     int channel = device.selectedChannel;
-    changeDevicePreset(channel);
+    changeDeviceChannel(channel);
     sendFullPresetSettings();
   }
 

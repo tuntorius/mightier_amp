@@ -10,13 +10,13 @@ import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 import '../../bluetooth/ble_controllers/BLEController.dart';
 import 'blinkWidget.dart';
 
-class NuxAppBar extends StatefulWidget implements PreferredSizeWidget {
+class MAAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double? elevation;
   final bool showExpandButton;
   final bool expanded;
   final Function(bool)? onExpandStateChanged;
 
-  const NuxAppBar({
+  const MAAppBar({
     this.elevation,
     this.showExpandButton = false,
     this.onExpandStateChanged,
@@ -28,10 +28,10 @@ class NuxAppBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(46);
 
   @override
-  State<NuxAppBar> createState() => _NuxAppBarState();
+  State<MAAppBar> createState() => _NuxAppBarState();
 }
 
-class _NuxAppBarState extends State<NuxAppBar> {
+class _NuxAppBarState extends State<MAAppBar> {
   static const batteryKey = "batteryValue";
 
   int? batteryValue;
@@ -39,11 +39,13 @@ class _NuxAppBarState extends State<NuxAppBar> {
   @override
   void initState() {
     super.initState();
-    batteryValue = PageStorage.of(context)?.readState(context, identifier: batteryKey) as int?;
+    batteryValue = PageStorage.of(context)
+        .readState(context, identifier: batteryKey) as int?;
   }
 
   @override
   Widget build(BuildContext context) {
+    var devControl = NuxDeviceControl.instance();
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -66,22 +68,24 @@ class _NuxAppBarState extends State<NuxAppBar> {
           Expanded(
             child: AppBar(
               elevation: widget.elevation,
-              title: const Text("Mightier Amp"),
+              title: const AppBarTitle(),
               titleSpacing: widget.showExpandButton ? 0 : null,
               centerTitle: widget.showExpandButton ? false : null,
               actions: [
                 //battery percentage
                 StreamBuilder<int>(
-                  stream: NuxDeviceControl.instance().batteryPercentage.stream,
+                  stream: devControl.batteryPercentage.stream,
                   builder: (context, batteryPercentage) {
-                    if (NuxDeviceControl.instance().isConnected &&
+                    if (devControl.isConnected &&
                         (batteryPercentage.data != 0 || batteryValue != null) &&
-                        NuxDeviceControl.instance().device.batterySupport) {
+                        devControl.device.batterySupport) {
                       if (batteryPercentage.hasData) {
                         batteryValue = batteryPercentage.data;
                       }
                       if (batteryValue != null) {
-                        PageStorage.of(context)?.writeState(context, batteryValue, identifier: batteryKey);
+                        PageStorage.of(context).writeState(
+                            context, batteryValue,
+                            identifier: batteryKey);
                       }
                       return Stack(
                         alignment: Alignment.center,
@@ -94,7 +98,10 @@ class _NuxAppBarState extends State<NuxAppBar> {
                               )),
                           Text(
                             "$batteryValue%",
-                            style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
                           )
                         ],
                       );
@@ -117,7 +124,8 @@ class _NuxAppBarState extends State<NuxAppBar> {
                       case MidiSetupStatus.deviceConnecting:
                         icon = Icons.bluetooth;
                         break;
-                      case MidiSetupStatus.deviceFound: //note device found is issued
+                      case MidiSetupStatus
+                          .deviceFound: //note device found is issued
                       //during search only, but here it means nothing
                       //so keep search status
                       case MidiSetupStatus.deviceSearching:
@@ -155,6 +163,23 @@ class _NuxAppBarState extends State<NuxAppBar> {
             ),
           )
       ],
+    );
+  }
+}
+
+class AppBarTitle extends StatelessWidget {
+  const AppBarTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      builder: (BuildContext context, value, Widget? child) {
+        if (value is String && value.trim() != "") {
+          return Text("$value - Mightier Amp");
+        }
+        return const Text("Mightier Amp");
+      },
+      valueListenable: NuxDeviceControl.instance().presetNameNotifier,
     );
   }
 }

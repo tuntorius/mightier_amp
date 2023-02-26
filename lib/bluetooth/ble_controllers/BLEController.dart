@@ -21,7 +21,12 @@ enum BleState { off, on }
 
 enum BleDeviceState { disconnected, connecting, connected, disconnecting }
 
-enum BleError { unavailable, permissionDenied, locationServiceOff }
+enum BleError {
+  unavailable,
+  permissionDenied,
+  locationServiceOff,
+  scanPermissionDenied
+}
 
 typedef ScanResultsCallback = void Function(
     List<BLEScanResult> nuxDevices, List<BLEScanResult> controllerDevices);
@@ -115,6 +120,14 @@ abstract class BLEController {
 
   void sendData(List<int> data) {
     var queueLength = dataQueue.length;
+
+    if (data[2] == MidiMessageValues.controlChange && dataQueue.isNotEmpty) {
+      //check if another CC message with the same code is in the queue and remove it
+      dataQueue.removeWhere((element) =>
+          element[2] == MidiMessageValues.controlChange &&
+          element[3] == data[3]);
+    }
+
     dataQueue.addLast(data);
     if (queueLength == 0) _queueSender();
   }
@@ -182,7 +195,7 @@ abstract class BLEController {
             await Future.delayed(const Duration(milliseconds: 100));
           }
           await writeToCharacteristic(data, noResponse);
-          //await Future.delayed(const Duration(milliseconds: 50));
+          await Future.delayed(const Duration(milliseconds: 10));
           noResponse = true;
           dataQueue.removeFirst();
           //}

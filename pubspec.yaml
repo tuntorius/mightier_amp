@@ -23,22 +23,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  permission_handler: ^6.1.0
+  permission_handler: ^10.2.0
   path_provider: ^2.0.10
   html: ^0.15.0
   just_audio: ^0.9.20
 
-  tinycolor2: ^2.0.1
+  tinycolor2: ^3.0.1
 
   wakelock: ^0.6.1+2
-  package_info_plus: ^1.4.2
-  device_info_plus: ^3.2.3
+  package_info_plus: ^3.0.3
+  device_info_plus: ^8.1.0
   url_launcher: ^6.1.2
 
   drag_and_drop_lists:
     path: ./plugins/drag_and_drop_list
-
-  sliding_up_panel2: ^3.2.2
   
   #modified to include qr scanning from gallery (for android only)
   #and to make it null safe
@@ -80,15 +78,16 @@ dependencies:
   flutter_typeahead: ^4.0.0
   
   screenshot: ^1.2.3
-  share_plus: ^4.0.4
+  share_plus: ^6.3.1
   convert: ^3.0.1
+  supabase_flutter: ^1.4.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^0.1.3
 
 dev_dependencies:
-  flutter_launcher_icons: ^0.9.0
+  flutter_launcher_icons: ^0.11.0
   flutter_test:
     sdk: flutter
 
@@ -101,8 +100,7 @@ dev_dependencies:
   
 flutter_icons:
   android: "launcher_icon"
-  ios: true
-  remove_alpha_ios: true
+  ios: false
   image_path: "assets/icon_big.png"
   adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "assets/icon_adaptive.png"

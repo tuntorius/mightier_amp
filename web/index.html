@@ -23,7 +23,7 @@
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="mighty_plug_manager">
+  <meta name="apple-mobile-web-app-title" content="Mightier Amp">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -53,6 +53,26 @@
         return appRunner.runApp();
       });
     });
+  </script>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAz_oTpelQhzqZmbQy9ghTWYy-9ZUDFlZg",
+      authDomain: "mightier-amp.firebaseapp.com",
+      projectId: "mightier-amp",
+      storageBucket: "mightier-amp.appspot.com",
+      messagingSenderId: "303119619345",
+      appId: "1:303119619345:web:04cfe58eda9631985868b0"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
   </script>
 </body>
 </html>

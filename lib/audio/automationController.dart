@@ -9,6 +9,8 @@ import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'models/jamTrack.dart';
 import 'online_sources/sourceResolver.dart';
 
+enum ABRepeatState { off, addedA, addedB }
+
 class AutomationController {
   final TrackAutomation automation;
   final JamTrack track;
@@ -22,6 +24,14 @@ class AutomationController {
   List<AutomationEvent> get events => automation.events;
   AutomationEvent get initialEvent => automation.initialEvent;
 
+  bool get presetChangeEventsAvailable {
+    if (_presetChangeBypass) return false;
+    for (var event in events) {
+      if (event.type == AutomationEventType.preset) return true;
+    }
+    return false;
+  }
+
   //optimisation for searching for the next event
   int _nextEvent = 0;
   int _positionReport = 0;
@@ -29,6 +39,11 @@ class AutomationController {
 
   int _currentLoop = 0;
   bool _forceLoopDisable = false;
+
+  bool _presetChangeBypass = false;
+
+  ABRepeatState _abRepeatState = ABRepeatState.off;
+  ABRepeatState get abRepeatState => _abRepeatState;
 
   AutomationController(this.track, this.automation);
 
@@ -44,18 +59,20 @@ class AutomationController {
   int _latency = 0;
   final int _speed = 1;
 
+  StreamSubscription<Duration>? _positionSubscription;
+
   //loop variables
 
   bool get loopEnable => _forceLoopDisable ? false : track.loopEnable;
-
-  StreamSubscription<Duration>? _positionSubscription;
 
   set loopEnable(val) {
     track.loopEnable = val;
     _currentLoop = 0;
   }
 
-  bool get useLoopPoints => track.useLoopPoints;
+  bool get useLoopPoints =>
+      track.useLoopPoints || abRepeatState == ABRepeatState.addedB;
+
   set useLoopPoints(val) {
     track.useLoopPoints = val;
     _currentLoop = 0;
@@ -113,7 +130,6 @@ class AutomationController {
     if (_positionReport % _positionResolution == 0) {
       _positionController.add(position);
     }
-
     _positionReport++;
 
     if (position == player.duration) {
@@ -170,6 +186,7 @@ class AutomationController {
 
     switch (event.type) {
       case AutomationEventType.preset:
+        if (_presetChangeBypass) break;
         debugPrint("Changing preset ${event.name}");
         var preset = event.getPreset();
         if (preset != null && preset["product_id"] == device.productStringId) {
@@ -324,6 +341,10 @@ class AutomationController {
     sortEvents();
   }
 
+  void bypassPresetChanges() {
+    _presetChangeBypass = true;
+  }
+
   //TODO: make sure there are always 2 loop events
   void removeAllLoopEvents() {
     for (int i = events.length - 1; i >= 0; i--) {
@@ -350,6 +371,29 @@ class AutomationController {
     }
 
     return loopPoints;
+  }
+
+  void toggleABRepeat() {
+    switch (abRepeatState) {
+      case ABRepeatState.off:
+        loopEnable = false;
+        removeAllLoopEvents();
+        addEvent(player.position, AutomationEventType.loop);
+        _abRepeatState = ABRepeatState.addedA;
+        break;
+      case ABRepeatState.addedA:
+        loopTimes = 0;
+        addEvent(player.position, AutomationEventType.loop);
+        var lp = getLoopPoints();
+        seek(lp[0].eventTime);
+        _abRepeatState = ABRepeatState.addedB;
+        loopEnable = true;
+        break;
+      case ABRepeatState.addedB:
+        loopEnable = false;
+        _abRepeatState = ABRepeatState.off;
+        break;
+    }
   }
 
   Future dispose() async {

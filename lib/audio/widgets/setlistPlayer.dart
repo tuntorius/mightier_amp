@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:marquee_text/marquee_text.dart';
+import '../../UI/mightierIcons.dart';
 import '../../UI/widgets/VolumeDrawer.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
-import '../../bluetooth/devices/value_formatters/ValueFormatter.dart';
+import '../automationController.dart';
 import '../setlist_player/setlistPlayerState.dart';
 import 'speedPanel.dart';
 
@@ -19,14 +21,6 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
   final animationDuration = const Duration(milliseconds: 200);
   final SetlistPlayerState playerState = SetlistPlayerState.instance();
   StreamSubscription? _positionSub;
-
-  final device = NuxDeviceControl.instance().device;
-  double get currentVolume => device.fakeMasterVolume
-      ? NuxDeviceControl.instance().masterVolume
-      : device.presets[device.selectedChannel].volume;
-  ValueFormatter get volFormatter => device.fakeMasterVolume
-      ? ValueFormatters.percentage
-      : device.decibelFormatter!;
 
   @override
   void initState() {
@@ -68,98 +62,98 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
   }
 
   Widget createPlayerView(BuildContext context) {
-    return ListView(
-      //crossAxisAlignment: CrossAxisAlignment.stretch,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        ListTile(
-          leading: IconButton(
-            iconSize: 32,
-            onPressed: playerState.toggleExpanded,
-            icon: const Icon(Icons.keyboard_arrow_down),
-          ),
-          title: createTitle(),
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: createFullTrackControls(),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Row(
-            children: [
-              Text(playerState.getMMSS(playerState.currentPosition)),
-              Expanded(
-                  child: SliderTheme(
-                data: SliderThemeData(
-                    trackShape: SliderRepeatTrackShape(state: playerState)),
-                child: Slider(
-                  value: playerState.currentPosition.inMilliseconds.toDouble(),
-                  onChanged: (value) {
-                    playerState.setPosition(value.round());
-                  },
-                  max: playerState.getDuration().inMilliseconds.toDouble(),
-                  onChangeStart: (val) {
-                    //state.setPositionUpdateMode(true);
-                  },
-                  onChangeEnd: (val) {
-                    //state.currentPosition = Duration(milliseconds: val.round());
-                    //state.setPositionUpdateMode(false);
-                  },
-                ),
-              )),
-              Text(playerState.getMMSS(playerState.getDuration()))
-            ],
-          ),
-        ),
-        /*ListTile(
-            title: Text("Current preset: aoufh"),
-          ),*/
-        CheckboxListTile(
-            title: const Text("Auto Advance"),
-            value: playerState.autoAdvance,
-            onChanged: (value) {
-              playerState.autoAdvance = value ?? true;
-              setState(() {});
-            }),
-        if (playerState.automation != null &&
-            playerState.automation!.loopEnable)
+    return LayoutBuilder(builder: (context, constraints) {
+      return ListView(
+        //crossAxisAlignment: CrossAxisAlignment.stretch,
+        //physics: const NeverScrollableScrollPhysics(),
+        children: [
           ListTile(
-            title: Text("Loop ${createLoopLabel()}"),
-            trailing: ElevatedButton(
-              child: const Text("Cancel Loop"),
-              onPressed: () {
-                playerState.automation?.forceLoopDisable();
-
-                setState(() {});
-              },
+            tileColor: Colors.grey[850],
+            leading: IconButton(
+              iconSize: 32,
+              onPressed: playerState.toggleExpanded,
+              icon: const Icon(Icons.keyboard_arrow_down),
+            ),
+            title: createTitle(),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: createFullTrackControls(constraints),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              children: [
+                Text(playerState.getMMSS(playerState.currentPosition)),
+                Expanded(
+                    child: SliderTheme(
+                  data: SliderThemeData(
+                      trackShape: SliderRepeatTrackShape(state: playerState)),
+                  child: Slider(
+                    value:
+                        playerState.currentPosition.inMilliseconds.toDouble(),
+                    onChanged: (value) {
+                      setState(() {
+                        playerState.setPosition(value.round());
+                      });
+                    },
+                    max: playerState.getDuration().inMilliseconds.toDouble(),
+                    onChangeStart: (val) {
+                      playerState.setPositionUpdateMode(true);
+                    },
+                    onChangeEnd: (val) {
+                      playerState.setPosition(val.round());
+                      playerState.setPositionUpdateMode(false);
+                    },
+                  ),
+                )),
+                Text(playerState.getMMSS(playerState.getDuration()))
+              ],
             ),
           ),
-        SpeedPanel(
-          onSemitonesChanged: (val) {
-            playerState.pitch = val;
-            playerState.automation?.setPitch(val);
-            setState(() {});
-          },
-          onSpeedChanged: (speed) {
-            playerState.speed = speed;
-            playerState.automation?.setSpeed(speed);
-            setState(() {});
-          },
-          semitones: playerState.pitch,
-          speed: playerState.speed,
-        ),
-        VolumeSlider(
-          label: "Amp Volume",
-          currentVolume: currentVolume,
-          onVolumeChanged: () {
-            setState(() {});
-          },
-          volumeFormatter: volFormatter,
-        )
-      ],
-    );
+          /*ListTile(
+            title: Text("Current preset: aoufh"),
+          ),*/
+          CheckboxListTile(
+              title: const Text("Auto Advance"),
+              value: playerState.autoAdvance,
+              onChanged: (value) {
+                playerState.autoAdvance = value ?? true;
+                setState(() {});
+              }),
+          if (playerState.automation != null &&
+              playerState.automation!.loopEnable &&
+              playerState.automation!.abRepeatState != ABRepeatState.addedB)
+            ListTile(
+              title: Text("Loop ${createLoopLabel()}"),
+              trailing: ElevatedButton(
+                child: const Text("Cancel Loop"),
+                onPressed: () {
+                  playerState.automation?.forceLoopDisable();
+
+                  setState(() {});
+                },
+              ),
+            ),
+          SpeedPanel(
+            onSemitonesChanged: (val) {
+              playerState.pitch = val;
+              playerState.automation?.setPitch(val);
+              setState(() {});
+            },
+            onSpeedChanged: (speed) {
+              playerState.speed = speed;
+              playerState.automation?.setSpeed(speed);
+              setState(() {});
+            },
+            semitones: playerState.pitch,
+            speed: playerState.speed,
+          ),
+          VolumeSlider(label: "Amp Volume")
+        ],
+      );
+    });
   }
 
   String createLoopLabel() {
@@ -167,8 +161,20 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
     return "${playerState.automation!.currentLoop}/${playerState.automation!.loopTimes}";
   }
 
-  List<Widget> createFullTrackControls() {
-    var totalIconSize = MediaQuery.of(context).size.width.floorToDouble() / 5;
+  IconData getABRepeatIcon() {
+    switch (SetlistPlayerState.instance().abRepeat) {
+      case ABRepeatState.off:
+        return MightierIcons.repeat;
+      case ABRepeatState.addedA:
+        return MightierIcons.repeat_a;
+      case ABRepeatState.addedB:
+        return MightierIcons.repeat_ab;
+    }
+  }
+
+  List<Widget> createFullTrackControls(BoxConstraints constraints) {
+    var totalIconSize = constraints.maxWidth.floorToDouble() / 6;
+    totalIconSize = math.min(totalIconSize, 70);
     var iconSize = totalIconSize - 14;
     var padding = const EdgeInsets.all(7);
     return [
@@ -231,6 +237,15 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
           color: Colors.white,
         ),
       ),
+      IconButton(
+        padding: padding,
+        onPressed: playerState.toggleABRepeat,
+        iconSize: iconSize,
+        icon: Icon(
+          getABRepeatIcon(),
+          color: Colors.white,
+        ),
+      ),
     ];
   }
 }
@@ -271,6 +286,7 @@ class SliderRepeatTrackShape extends RoundedRectSliderTrackShape {
     required Animation<double> enableAnimation,
     required TextDirection textDirection,
     required Offset thumbCenter,
+    Offset? secondaryOffset,
     bool isDiscrete = false,
     bool isEnabled = false,
     double additionalActiveTrackHeight = 2,

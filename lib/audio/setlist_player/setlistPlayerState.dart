@@ -33,6 +33,8 @@ class SetlistPlayerState extends ChangeNotifier {
   int _pitch = 1;
   double _speed = 1;
 
+  ABRepeatState get abRepeat => automation?.abRepeatState ?? ABRepeatState.off;
+
   int get pitch => _pitch;
   set pitch(val) {
     _pitch = val;
@@ -161,9 +163,11 @@ class SetlistPlayerState extends ChangeNotifier {
     if (positionMS > duration) positionMS = duration;
 
     currentPosition = Duration(milliseconds: positionMS);
-    _automation?.seek(currentPosition);
-    notifyListeners();
-    _positionController.add(currentPosition);
+    if (!_inPositionUpdateMode) {
+      _automation?.seek(currentPosition);
+      notifyListeners();
+      _positionController.add(currentPosition);
+    }
   }
 
   void setPositionUpdateMode(bool enabled) {
@@ -195,6 +199,12 @@ class SetlistPlayerState extends ChangeNotifier {
 
   void toggleExpanded() {
     _expanded = !_expanded;
+    notifyListeners();
+  }
+
+  void toggleABRepeat() {
+    if (state != PlayerState.play) return;
+    automation?.toggleABRepeat();
     notifyListeners();
   }
 }

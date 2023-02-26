@@ -181,7 +181,7 @@ class ControllerHotkey {
                 .inMilliseconds);
         break;
       case HotkeyControl.JamTracksABRepeat:
-        // TODO: Handle this case.
+        SetlistPlayerState.instance().toggleABRepeat();
         break;
       default:
         onHotkeyReceived(control);

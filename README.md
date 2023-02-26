@@ -10,13 +10,22 @@ This app aims to cover all the functionality of the original app plus many enhan
 
 ## Supported Amps
 
-1.Mighty Plug/Mighty Air  
-2.Mighty Plug Pro  
-3.Mighty 8 BT*  
-4.Mighty 20 BT*/Mighty 40 BT*  
-5.Mighty BT Lite*/AirBorne Go*/GUO AN*  
+1.Mighty Plug / Mighty Air  
+2.Mighty Plug Pro / Mighty Space\*  
+3.Mighty 8 BT\*\*  
+4.Mighty 20 BT\*\* / Mighty 40 BT\*\*  
+5.Mighty BT Lite\*\* / AirBorne Go\*\* / GUO AN\*\*  
 
-\* these amps are not tested and might not work.
+\* Mighty Space looper controls are not supported.  
+\*\* These amps are not tested and might not work.  
+
+## Helpful Resources
+Check out the great video tutorial series created by Diego Zuccotti, where he walks through the features and functionality of the app, and the usage of the NUX amps in general.  
+[Click here to watch!](https://www.youtube.com/@TutoJam)
+
+Facebook groups for presets sharing and amps discussion:  
+[Mighty Plug/Mighty Air](https://www.facebook.com/groups/nuxmightyplugairgroup/)  
+[Mighty Plug Pro/Mighty Space](https://www.facebook.com/groups/mightyplugpro/)  
 
 ## iOS Support
 I'm working on it and most of the features are ready. However I don't have any apple devices and therefore can't publish it in the App Store. If somebody is interested in helping, there is an issue about iOS [here](https://github.com/tuntorius/mightier_amp/issues/16).
@@ -37,4 +46,4 @@ https://github.com/tuntorius/mightier_amp/releases/latest
 ## Donation
 Mightier Amp is an open-source project that I am developing in my free time. If you like it you can support me by donating. 
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?hosted_button_id=FZWWAM4NUFRPC)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?hosted_button_id=FZWWAM4NUFRPC)  

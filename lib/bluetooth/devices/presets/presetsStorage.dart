@@ -412,8 +412,27 @@ class PresetsStorage extends ChangeNotifier {
 
   String? _findFreeName(String name, String category) {
     for (int i = 1; i < 1000; i++) {
-      String _name = "$name ($i)";
-      if (findPreset(category, _name) == null) return _name;
+      RegExp regex = RegExp(r"\((\d+)\)$");
+      String newName = "";
+
+      RegExpMatch? match = regex.firstMatch(name);
+      if (match != null) {
+        //already has a number in the name
+        String? numStr = match.group(1);
+        if (numStr != null) {
+          int? num = int.tryParse(numStr);
+          if (num != null) {
+            num++;
+            newName = name.replaceFirst(regex, "($num)");
+            name = newName;
+          }
+        }
+      }
+
+      if (newName == "") {
+        newName = "$name ($i)";
+      }
+      if (findPreset(newName, category) == null) return newName;
     }
 
     return null;

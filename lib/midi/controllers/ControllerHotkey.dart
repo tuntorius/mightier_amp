@@ -65,7 +65,7 @@ class ControllerHotkey {
         device.getPreset(device.selectedChannel).setupPresetFromNuxData();
         break;
       case HotkeyControl.ChannelByIndex:
-        device.setSelectedChannel(channel,
+        device.setSelectedChannel(index,
             notifyBT: true, sendFullPreset: false, notifyUI: true);
         device.getPreset(device.selectedChannel).setupPresetFromNuxData();
         break;

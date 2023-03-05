@@ -49,7 +49,7 @@ Future<String> openFileString(String mime) async {
   } on PlatformException {
     //fails native call
     //handle error
-    return Future.error("Can't open file");
+    return Future.error("Can't open text file");
   }
 }
 
@@ -64,6 +64,6 @@ Future<List<int>> openFile(String mime) async {
   } on PlatformException {
     //fails native call
     //handle error
-    return Future.error("Can't open file");
+    return Future.error("Can't open byte array file");
   }
 }

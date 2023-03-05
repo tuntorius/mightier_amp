@@ -155,7 +155,7 @@ abstract class Preset {
 
   String getAmpNameByNuxIndex(int index, int version) {
     var ampIndex = NuxFXID.fromInt(device.amplifierSlotIndex);
-    getEffectArrayIndexFromNuxIndex(ampIndex, ampIndex);
+    getEffectArrayIndexFromNuxIndex(ampIndex, index);
     return amplifierList[index].name;
   }
 

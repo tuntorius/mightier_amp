@@ -48,6 +48,7 @@ class PlugAirCommunication extends DeviceCommunication {
   void performNextConnectionStep() {
     switch (currentConnectionStep) {
       case 0:
+        _readyPresetsCount = 0;
         device.deviceControl.sendBLEData(requestPresetByIndex(0));
         break;
       case 1: //eco mode and other

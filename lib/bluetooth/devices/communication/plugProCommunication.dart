@@ -465,6 +465,7 @@ class PlugProCommunication extends DeviceCommunication {
 
     for (var preset in device.presets) {
       PlugProPreset proPreset = preset as PlugProPreset;
+      if (index >= proPreset.cabinetList.length) return;
       var cab = proPreset.cabinetList[index];
       if (cab is UserCab) {
         cab.setName(name);

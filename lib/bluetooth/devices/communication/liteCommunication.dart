@@ -100,7 +100,7 @@ class LiteCommunication extends DeviceCommunication {
 
   @override
   void onDataReceive(List<int> data) {
-    if (data.length < 2) return;
+    if (data.length < 3) return;
     device.onDataReceived(data.sublist(2));
   }
 

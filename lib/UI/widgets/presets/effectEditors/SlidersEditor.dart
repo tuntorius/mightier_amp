@@ -11,6 +11,7 @@ import '../../../../bluetooth/devices/utilities/DelayTapTimer.dart';
 import '../../../../bluetooth/devices/value_formatters/TempoFormatter.dart';
 import '../../../../bluetooth/devices/value_formatters/ValueFormatter.dart';
 import '../../../popups/alertDialogs.dart';
+import '../../../utils.dart';
 import '../../ModeControl.dart';
 import '../../thickSlider.dart';
 
@@ -27,7 +28,7 @@ class SlidersEditor extends StatefulWidget {
 class _SlidersEditorState extends State<SlidersEditor> {
   double _oldValue = 0;
 
-  ThickSlider _createSlider(Parameter param, bool isPortrait) {
+  ThickSlider _createSlider(Parameter param, bool handleVerticalDrag) {
     bool enabled = widget.preset.slotEnabled(widget.slot);
     return ThickSlider(
       value: param.value,
@@ -57,7 +58,7 @@ class _SlidersEditorState extends State<SlidersEditor> {
             (oldVal) => widget.preset.setParameterValue(param, oldVal)));
         NuxDeviceControl.instance().undoStackChanged();
       },
-      handleVerticalDrag: isPortrait,
+      handleVerticalDrag: handleVerticalDrag,
     );
   }
 
@@ -100,8 +101,10 @@ class _SlidersEditorState extends State<SlidersEditor> {
       },
       elevation: 2.0,
       fillColor: enabled
-          ? TinyColor(widget.preset.effectColor(widget.slot)).darken(15).color
-          : TinyColor(widget.preset.effectColor(widget.slot))
+          ? TinyColor.fromColor(widget.preset.effectColor(widget.slot))
+              .darken(15)
+              .color
+          : TinyColor.fromColor(widget.preset.effectColor(widget.slot))
               .desaturate(80)
               .darken(15)
               .color,
@@ -184,7 +187,9 @@ class _SlidersEditorState extends State<SlidersEditor> {
     var sliders = <Widget>[];
 
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    var layout = getEditorLayoutMode(MediaQuery.of(context));
 
+    var handleVerticalDrag = isPortrait && layout != EditorLayoutMode.scroll;
     //get all the parameters for the slot
     List<Processor> prc = preset.getEffectsForSlot(slot);
 
@@ -199,7 +204,7 @@ class _SlidersEditorState extends State<SlidersEditor> {
           case InputType.SliderInput:
             widget = Flexible(
                 fit: FlexFit.loose,
-                child: _createSlider(params[i], isPortrait));
+                child: _createSlider(params[i], handleVerticalDrag));
             break;
           case InputType.SwitchInput:
             widget = _createModeControl(params[i]);

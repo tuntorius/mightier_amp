@@ -105,8 +105,9 @@ class _EffectSelectorState extends State<EffectSelector> {
 
     //try to darken up to 2 times until the color is not light anymore
     for (int i = 0; i < 2; i++) {
-      if (TinyColor(popupEffectColor).isLight()) {
-        popupEffectColor = TinyColor(popupEffectColor).darken(15).color;
+      if (TinyColor.fromColor(popupEffectColor).isLight()) {
+        popupEffectColor =
+            TinyColor.fromColor(popupEffectColor).darken(15).color;
       }
     }
 

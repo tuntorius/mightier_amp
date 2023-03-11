@@ -28,14 +28,14 @@ class _EffectEditorState extends State<EffectEditor> {
     List<Processor> prc = preset.getEffectsForSlot(slot);
 
     //create the widgets to edit them
-    var _selected = preset.getSelectedEffectForSlot(slot);
+    var selected = preset.getSelectedEffectForSlot(slot);
 
-    switch (prc[_selected].editorUI) {
+    switch (prc[selected].editorUI) {
       case EffectEditorUI.Sliders:
         return SlidersEditor(preset: widget.preset, slot: widget.slot);
       case EffectEditorUI.EQ:
         return EqualizerEditor(
-          eqEffect: prc[_selected],
+          eqEffect: prc[selected],
           enabled: widget.preset.slotEnabled(widget.slot),
           onChanged: (parameter, value, skip) {
             setState(() {

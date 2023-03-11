@@ -237,7 +237,7 @@ class PlugAirCommunication extends DeviceCommunication {
 
   @override
   void onDataReceive(List<int> data) {
-    if (data.length > 2) {
+    if (data.length > 3) {
       switch (data[2] & 0xf0) {
         case MidiMessageValues.sysExStart:
           switch (data[3]) {

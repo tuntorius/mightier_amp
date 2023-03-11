@@ -36,7 +36,7 @@ class MainActivity: FlutterActivity() {
     internal var OPEN_REQUEST_CODE = 22222
     internal var OPEN_REQUEST_CODE_BYTEARRAY = 33333
     internal var _result: Result? = null
-    internal var _data: String? = null
+    internal var _data: String = ""
     internal var _dataBa: ByteArray? = null
     internal var saveByteArray:Boolean = false 
 
@@ -58,7 +58,7 @@ class MainActivity: FlutterActivity() {
                 if (saveByteArray)
                     _dataBa =call.argument<ByteArray>("data")
                 else
-                    _data = call.argument<String>("data");
+                    _data = call.argument<String>("data") ?: "";
                 var mime:String? = call.argument<String?>("mime");
                 var name:String? = call.argument<String?>("name");
                 if (mime!=null && name!=null)
@@ -144,25 +144,21 @@ class MainActivity: FlutterActivity() {
   private fun writeInFile(uri: Uri) {
     val outputStream: OutputStream?
     try {
-      outputStream = getContentResolver().openOutputStream(uri)
+      outputStream = getContentResolver().openOutputStream(uri);
       if (outputStream!=null) {
         if (saveByteArray && _dataBa!=null) {
-            val ds = DataOutputStream(outputStream)
-            ds.write(_dataBa!!, 0, _dataBa?.count() ?: 0);
-            ds.flush()
-            ds.close()
+            outputStream.write(_dataBa);
+            outputStream.close();
         }
-        else{
-            val bw = BufferedWriter(OutputStreamWriter(outputStream))
-            bw.write(_data)
-            bw.flush()
-            bw.close()
+        else {
+            outputStream.write(_data.toByteArray(Charsets.UTF_8));
+            outputStream.close();
         }
-        
+            
         _result?.success("SUCCESS");
-      }
-      else
-        _result?.error("ERROR", "Unable to write", null)
+        }
+        else
+            _result?.error("ERROR", "Unable to write", null)
     } catch (e:Exception){
       _result?.error("ERROR", "Unable to write", null)
     }

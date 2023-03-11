@@ -47,12 +47,13 @@ class HotkeyInputDialog {
 
   _onControllerData(int code, int? sliderValue, String name) {
     if (_sliderMode) {
-      if (_invert) sliderValue = 127 - sliderValue!;
+      if (sliderValue == null) return;
+      if (_invert) sliderValue = 127 - sliderValue;
       code &= 0xffffff00;
       if (code == _previousCode && previousSliderValue != sliderValue) {
         //valid adjustment
         name = name.substring(0, name.length - 2);
-        name += sliderValue!.toRadixString(16).padLeft(2, '0');
+        name += sliderValue.toRadixString(16).padLeft(2, '0');
         controller.text = name;
         _hotkeyCode = code;
       }

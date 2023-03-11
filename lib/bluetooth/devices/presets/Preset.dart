@@ -27,7 +27,7 @@ abstract class Preset {
   NuxDevice device;
   int channel;
   String channelName;
-  Color get channelColor => channelColors[channel];
+  Color get channelColor => channelColorsList[channel];
   List<Color> get channelColorsList => channelColors;
   List<Amplifier> get amplifierList;
 

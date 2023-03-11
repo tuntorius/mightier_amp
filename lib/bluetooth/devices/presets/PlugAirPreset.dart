@@ -8,6 +8,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Ampsv2.dart';
 
 import '../../NuxDeviceControl.dart';
+import '../../bleMidiHandler.dart';
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
@@ -28,8 +29,24 @@ class PlugAirPreset extends Preset {
   int channel;
   @override
   String channelName;
+
+  static const List<Color> channelColors = [
+    Color.fromARGB(255, 0, 255, 0),
+    Color.fromARGB(255, 212, 202, 0),
+    Color.fromARGB(255, 255, 0, 0),
+    Color.fromARGB(220, 255, 0, 255),
+    Color.fromARGB(255, 0, 191, 255),
+    Color.fromARGB(255, 224, 142, 0),
+    Color.fromARGB(255, 20, 125, 255),
+  ];
+
   @override
-  Color get channelColor => Preset.channelColors[channel];
+  List<Color> get channelColorsList {
+    if ((device as NuxMightyPlug).ampVariant == PlugAirVariant.MightyAir) {
+      return channelColors;
+    }
+    return Preset.channelColors;
+  }
 
   @override
   int get qrDataLength => 40;
@@ -316,11 +333,7 @@ class PlugAirPreset extends Preset {
 
   @override
   Color effectColor(int index) {
-    if (index != 2) {
-      return device.processorList[index].color;
-    } else {
-      return channelColor;
-    }
+    return device.processorList[index].color;
   }
 
   @override

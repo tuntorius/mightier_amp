@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/device_specific_settings/PlugAirSettings.dart';
+import '../bleMidiHandler.dart';
 import 'NuxFXID.dart';
 import 'communication/communication.dart';
 import 'communication/plugAirCommunication.dart';
@@ -19,6 +20,8 @@ import 'value_formatters/ValueFormatter.dart';
 enum PlugAirChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
 
 enum PlugAirVersion { PlugAir15, PlugAir21 }
+
+enum PlugAirVariant { MightyPlug, MightyAir }
 
 class NuxMightyPlugConfiguration extends NuxDeviceConfiguration {
   int usbMode = 0;
@@ -45,6 +48,8 @@ class NuxMightyPlug extends NuxDevice {
 
   PlugAirVersion version = PlugAirVersion.PlugAir21;
 
+  PlugAirVariant ampVariant = PlugAirVariant.MightyPlug;
+
   @override
   String get productName => "NUX Mighty Plug/Air";
   @override
@@ -59,6 +64,7 @@ class NuxMightyPlug extends NuxDevice {
   List<String> get productBLENames =>
       ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
 
+  String get mightyAirBLEName => productBLENames[1];
   //general settings
 
   int get usbMode => config.usbMode;
@@ -234,6 +240,17 @@ class NuxMightyPlug extends NuxDevice {
   @override
   String channelName(int channel) {
     return channelNames[channel];
+  }
+
+  @override
+  void onConnect() {
+    var name = BLEMidiHandler.instance().connectedDevice?.name;
+    if (name == mightyAirBLEName) {
+      ampVariant = PlugAirVariant.MightyAir;
+    } else {
+      ampVariant = PlugAirVariant.MightyPlug;
+    }
+    super.onConnect();
   }
 
   @override

@@ -5,7 +5,6 @@ import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/communication/liteCommunication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_pro/EmptyEffects.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
@@ -42,8 +41,6 @@ class PlugProPreset extends Preset {
   int channel;
   @override
   String channelName;
-  @override
-  Color get channelColor => PlugProPreset.channelColors[channel];
   @override
   List<Color> get channelColorsList => PlugProPreset.channelColors;
 

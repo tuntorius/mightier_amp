@@ -53,6 +53,7 @@ void main() {
         if (!kDebugMode) {
           await SentryFlutter.init((options) {
             options.dsn = sentryDsn;
+            options.sampleRate = 0.33;
           });
         }
         mainRunApp();

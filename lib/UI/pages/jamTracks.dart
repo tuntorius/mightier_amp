@@ -138,7 +138,14 @@ class _JamTracksState extends State<JamTracks>
               child: ElevatedButton(
                 child: const Text("Grant access to Media Library "),
                 onPressed: () async {
-                  await Permission.storage.request();
+                  Stopwatch stopwatch = Stopwatch()..start();
+                  var status = await Permission.storage.request();
+                  stopwatch.stop();
+
+                  if (status == PermissionStatus.permanentlyDenied &&
+                      stopwatch.elapsedMilliseconds < 500) {
+                    await openAppSettings();
+                  }
                   setState(() {});
                 },
               ),

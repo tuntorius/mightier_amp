@@ -108,9 +108,9 @@ class FlutterBluePlusController extends BLEController {
   }
 
   @override
-  void stopScanning() {
-    if (bleState == BleState.off) return;
-    flutterBlue.stopScan();
+  Future stopScanning() {
+    if (bleState == BleState.off) return Future.value(null);
+    return flutterBlue.stopScan();
   }
 
   @override
@@ -128,7 +128,7 @@ class FlutterBluePlusController extends BLEController {
     }
 
     _connectInProgress = true;
-    stopScanning();
+    await stopScanning();
     setMidiSetupStatus(MidiSetupStatus.deviceConnecting);
     try {
       await ownDevice.connect(

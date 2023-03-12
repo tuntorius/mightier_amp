@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class MidiConstants {
   static const NoteOn = 0x90;
@@ -35,7 +34,11 @@ enum HotkeyControl {
   JamTracksNextTrack,
   JamTracksRewind,
   JamTracksFF,
-  JamTracksABRepeat;
+  JamTracksABRepeat,
+  PreviousPresetGlobal,
+  NextPresetGlobal,
+  PreviousPresetCategory,
+  NextPresetCategory
 }
 
 extension HotkeyLabel on HotkeyControl {

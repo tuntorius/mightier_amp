@@ -16,7 +16,7 @@ class HotkeysMainPage extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-            title: const Text("Channel Hotkeys"),
+            title: const Text("Channel/Preset Hotkeys"),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => HotkeysSetup(

@@ -84,6 +84,27 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
       widgets.add(buildWidget("Channel ${i + 1}", Icons.circle, colors[i],
           HotkeyControl.ChannelByIndex, i, 0, false));
     }
+
+    widgets.add(buildWidget("Previous Preset", Icons.keyboard_double_arrow_up,
+        null, HotkeyControl.PreviousPresetGlobal, 0, 0, false));
+    widgets.add(buildWidget("Next Preset", Icons.keyboard_double_arrow_down,
+        null, HotkeyControl.NextPresetGlobal, 0, 0, false));
+    widgets.add(buildWidget(
+        "Previous Preset in Category",
+        Icons.keyboard_arrow_up,
+        null,
+        HotkeyControl.PreviousPresetCategory,
+        0,
+        0,
+        false));
+    widgets.add(buildWidget(
+        "Next Preset in Category",
+        Icons.keyboard_arrow_down,
+        null,
+        HotkeyControl.NextPresetCategory,
+        0,
+        0,
+        false));
     return widgets;
   }
 

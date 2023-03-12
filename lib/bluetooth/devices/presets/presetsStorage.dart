@@ -11,6 +11,8 @@ import 'package:uuid/uuid.dart';
 
 import '../../../platform/platformUtils.dart';
 
+enum PresetChangeDirection { previous, next }
+
 class PresetsStorage extends ChangeNotifier {
   static final PresetsStorage _storage = PresetsStorage._();
   static const presetsFile = "presets.json";
@@ -148,6 +150,29 @@ class PresetsStorage extends ChangeNotifier {
       }
     }
     return null;
+  }
+
+  dynamic findAdjacentPreset(
+      String uuid, bool acrossCategories, PresetChangeDirection direction) {
+    int catsCount = presetsData.length;
+    int catIndex = 0;
+
+    if (uuid.isEmpty) {
+      return _getAdjacentPreset(0, -1, direction, acrossCategories);
+    }
+    for (catIndex = 0; catIndex < catsCount; catIndex++) {
+      int pIndex = 0;
+      var cat = presetsData[catIndex];
+      var presets = cat["presets"];
+      int pCount = presets.length;
+      for (pIndex = 0; pIndex < pCount; pIndex++) {
+        if (presets[pIndex]?["uuid"] == uuid) {
+          return _getAdjacentPreset(
+              catIndex, pIndex, direction, acrossCategories);
+        }
+      }
+    }
+    return _getAdjacentPreset(0, -1, direction, acrossCategories);
   }
 
   Map<String, dynamic>? findCategoryOfPreset(Map<String, dynamic> preset) {
@@ -408,6 +433,44 @@ class PresetsStorage extends ChangeNotifier {
 
     //save preset
     if (_name != null) savePreset(presetData, _name, category);
+  }
+
+  dynamic _getAdjacentPreset(int catIndex, int pIndex,
+      PresetChangeDirection direction, bool acrossCategory) {
+    if (presetsData.length <= catIndex) return null;
+    var catLength = presetsData[catIndex]["presets"].length;
+    if (direction == PresetChangeDirection.previous) {
+      pIndex--;
+    } else {
+      pIndex++;
+    }
+
+    if (pIndex < 0) {
+      if (!acrossCategory) {
+        pIndex = catLength - 1;
+      } else {
+        do {
+          catIndex--;
+          if (catIndex < 0) {
+            catIndex = presetsData.length - 1;
+          }
+        } while (presetsData[catIndex]["presets"].length == 0);
+        pIndex = presetsData[catIndex]["presets"].length - 1;
+      }
+    } else if (pIndex >= catLength) {
+      if (!acrossCategory) {
+        pIndex = 0;
+      } else {
+        do {
+          catIndex++;
+          if (catIndex >= presetsData.length) {
+            catIndex = 0;
+          }
+        } while (presetsData[catIndex]["presets"].length == 0);
+        pIndex = 0;
+      }
+    }
+    return presetsData[catIndex]["presets"][pIndex];
   }
 
   String? _findFreeName(String name, String category) {

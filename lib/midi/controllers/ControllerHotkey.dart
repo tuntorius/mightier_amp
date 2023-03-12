@@ -1,5 +1,6 @@
 import 'package:mighty_plug_manager/audio/setlist_player/setlistPlayerState.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/utilities/DelayTapTimer.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/effects/MidiControllerHandles.dart';
@@ -183,6 +184,18 @@ class ControllerHotkey {
       case HotkeyControl.JamTracksABRepeat:
         SetlistPlayerState.instance().toggleABRepeat();
         break;
+      case HotkeyControl.PreviousPresetGlobal:
+        _changeToAdjacentPreset(device, true, PresetChangeDirection.previous);
+        break;
+      case HotkeyControl.NextPresetGlobal:
+        _changeToAdjacentPreset(device, true, PresetChangeDirection.next);
+        break;
+      case HotkeyControl.PreviousPresetCategory:
+        _changeToAdjacentPreset(device, false, PresetChangeDirection.previous);
+        break;
+      case HotkeyControl.NextPresetCategory:
+        _changeToAdjacentPreset(device, false, PresetChangeDirection.next);
+        break;
       default:
         onHotkeyReceived(control);
     }
@@ -192,6 +205,23 @@ class ControllerHotkey {
     var val = midiVal ?? 0;
     if (invertSlider) val = 127 - val;
     return (val / 127) * 100;
+  }
+
+  void _changeToAdjacentPreset(
+      NuxDevice device, bool acrossCategories, PresetChangeDirection dir) {
+    var uuid = NuxDeviceControl.instance().presetUUID;
+    for (int i = 0; i < 200; i++) {
+      var preset =
+          PresetsStorage().findAdjacentPreset(uuid, acrossCategories, dir);
+      if (preset != null &&
+          preset["uuid"] != uuid &&
+          device.isPresetSupported(preset)) {
+        device.presetFromJson(preset, null);
+        break;
+      } else if (preset != null) {
+        uuid = preset["uuid"];
+      }
+    }
   }
 
   void _modifyTempo(NuxDevice device, double amount) {

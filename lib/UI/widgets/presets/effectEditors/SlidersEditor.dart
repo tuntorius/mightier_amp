@@ -160,7 +160,7 @@ class _SlidersEditorState extends State<SlidersEditor> {
             child: Center(
               child: RichText(
                   text: const TextSpan(
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18, color: Colors.white),
                 children: [
                   TextSpan(text: "Use "),
                   TextSpan(

@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 //import 'package:audio_picker/audio_picker.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/audio/setlistPage.dart';
 import 'package:mighty_plug_manager/audio/setlistsPage.dart';
@@ -28,10 +29,22 @@ class _JamTracksState extends State<JamTracks>
   Setlist? _setlist;
   bool _readOnlySetlist = false;
   final SetlistPlayerState playerState = SetlistPlayerState.instance();
-
+  Permission? _mediaPermission;
   @override
   void initState() {
     super.initState();
+
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    deviceInfoPlugin.androidInfo.then((androidInfo) {
+      int sdk = androidInfo.version.sdkInt;
+      if (sdk < 33) {
+        _mediaPermission = Permission.storage;
+      } else {
+        _mediaPermission = Permission.audio;
+      }
+      setState(() {});
+    });
+
     cntrl = TabController(length: 2, vsync: this);
 
     cntrl.addListener(() {
@@ -139,7 +152,7 @@ class _JamTracksState extends State<JamTracks>
                 child: const Text("Grant access to Media Library "),
                 onPressed: () async {
                   Stopwatch stopwatch = Stopwatch()..start();
-                  var status = await Permission.storage.request();
+                  var status = await _mediaPermission!.request();
                   stopwatch.stop();
 
                   if (status == PermissionStatus.permanentlyDenied &&
@@ -177,7 +190,7 @@ class _JamTracksState extends State<JamTracks>
   Widget build(BuildContext context) {
     return SafeArea(
       child: FutureBuilder<PermissionStatus>(
-        future: Permission.storage.status,
+        future: _mediaPermission?.status,
         builder:
             (BuildContext context, AsyncSnapshot<PermissionStatus> snapshot) {
           if (snapshot.hasData) {

@@ -85,7 +85,7 @@ class BLEMidiHandler {
     //TODO: what happens with iOS?
     if (PlatformUtils.isAndroid) {
       final androidInfo = await deviceInfoPlugin.androidInfo;
-      noLocationNeeded = (androidInfo.version.sdkInt ?? 0) >= 31;
+      noLocationNeeded = (androidInfo.version.sdkInt) >= 31;
     }
 
     if (PlatformUtils.isMobile) {

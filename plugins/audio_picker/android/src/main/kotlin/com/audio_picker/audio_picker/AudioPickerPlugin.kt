@@ -112,6 +112,28 @@ class AudioPickerPlugin : MethodCallHandler {
         }
     }
 
+    fun getAudioMetadata(uri: Uri, context: Context): Pair<String?, String?> {
+        var title: String? = null
+        var artist: String? = null
+
+        val projection = arrayOf(
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ARTIST
+        )
+
+        context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+            val titleIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+            val artistIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+
+            if (cursor.moveToFirst()) {
+                title = cursor.getString(titleIndex)
+                artist = cursor.getString(artistIndex)
+            }
+        }
+
+        return Pair(title, artist)
+    }
+
     override fun onMethodCall(call: MethodCall, result: Result) {
         if (call.method == "pick_audio") {
             AudioPickerPlugin.result = result
@@ -123,46 +145,25 @@ class AudioPickerPlugin : MethodCallHandler {
             result.notImplemented()
         }
     }
-
+    
     private fun openAudioPicker(multiple: Boolean) {
         val intent: Intent
 
-        if (checkPermission()) {
+        intent = Intent(Intent.ACTION_GET_CONTENT)
+        val uri = Uri.parse(Environment.getExternalStorageDirectory().path + separator)
+        intent.setDataAndType(uri, "audio/*")
+        intent.type = "audio/*"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        if (multiple)
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
 
-            intent = Intent(Intent.ACTION_GET_CONTENT)
-            val uri = Uri.parse(Environment.getExternalStorageDirectory().path + separator)
-            intent.setDataAndType(uri, "audio/*")
-            intent.type = "audio/*"
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            if (multiple)
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-
-            instance?.activity()?.let {
-                if (intent.resolveActivity(it.packageManager) != null) {
-                    instance?.activity()?.startActivityForResult(intent, REQUEST_CODE)
-                } else {
-                    Log.e(TAG, "Can't find a valid activity to handle the request. Make sure you've a file explorer installed.")
-                    result?.error(TAG, "Can't handle the provided file type.", null)
-                }
+        instance?.activity()?.let {
+            if (intent.resolveActivity(it.packageManager) != null) {
+                instance?.activity()?.startActivityForResult(intent, REQUEST_CODE)
+            } else {
+                Log.e(TAG, "Can't find a valid activity to handle the request. Make sure you've a file explorer installed.")
+                result?.error(TAG, "Can't handle the provided file type.", null)
             }
-        } else {
-            requestPermission()
         }
     }
-
-    private fun checkPermission(): Boolean {
-        instance?.activity()?.let {
-            Log.i(TAG, "Checking permission: $permission")
-            return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(it, permission)
-        }
-        return false
-    }
-
-    private fun requestPermission() {
-        instance?.activity()?.let {
-            Log.i(TAG, "Requesting permission: $permission")
-            ActivityCompat.requestPermissions(it, arrayOf(permission), PERM_CODE)
-        }
-    }
-
 }

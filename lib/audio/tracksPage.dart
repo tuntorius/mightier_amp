@@ -305,8 +305,9 @@ class _TracksPageState extends State<TracksPage>
                 : libSong.title;
 
         TrackData().addTrack(libSong.uri, name, false);
+      } else {
+        TrackData().addTrack(path[i], basenameWithoutExtension(path[i]), false);
       }
-
       //clear filter and scroll to bottom
       searchCtrl.text = "";
       setState(() {});

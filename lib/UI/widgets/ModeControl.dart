@@ -66,41 +66,31 @@ class ModeControl extends StatelessWidget {
           var color = enabled
               ? effectColor
               : TinyColor.fromColor(effectColor).desaturate(80).color;
-          var height = constraints.maxHeight;
 
           var elements = getElementsCount();
           var active = List<bool>.filled(elements.length, false);
           var index = getIndexByValue(value.round());
           active[index] = true;
-          return SizedBox(
-            height: height,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(getText(),
-                      style:
-                          const TextStyle(color: Colors.white, fontSize: 20)),
-                  ToggleButtons(
-                    isSelected: active,
-                    fillColor: TinyColor(color).darken(15).color,
-                    borderColor: color,
-                    selectedBorderColor: color,
-                    color: color,
-                    selectedColor: Colors.white,
-                    onPressed: (int newIndex) {
-                      var val = getElementValues()[newIndex];
-                      onChanged?.call(val.toDouble());
-                    },
-                    children: [
-                      for (var i = 0; i < elements.length; i++)
-                        getButtonItem(elements[i]),
-                    ],
-                  )
-                ],
-              ),
+          return ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+            dense: true,
+            title: Text(getText(),
+                style: const TextStyle(color: Colors.white, fontSize: 20)),
+            trailing: ToggleButtons(
+              isSelected: active,
+              fillColor: TinyColor.fromColor(color).darken(15).color,
+              borderColor: color,
+              selectedBorderColor: color,
+              color: color,
+              selectedColor: Colors.white,
+              onPressed: (int newIndex) {
+                var val = getElementValues()[newIndex];
+                onChanged?.call(val.toDouble());
+              },
+              children: [
+                for (var i = 0; i < elements.length; i++)
+                  getButtonItem(elements[i]),
+              ],
             ),
           );
         }));

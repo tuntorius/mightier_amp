@@ -234,7 +234,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                   child: effectSelectButton,
                 )
               else
-                effectSelectButton,
+                ExcludeSemantics(child: effectSelectButton),
               const SizedBox(
                   width: 1,
                   height:

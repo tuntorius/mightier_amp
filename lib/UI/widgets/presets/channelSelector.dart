@@ -80,6 +80,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     var disabledColor = Theme.of(context).disabledColor;
     List<Widget> buttons = <Widget>[];
 
+    var tooltip = "";
     _presets = widget.device.getPresetsList();
     int row1 = _width < 330 && _presets.length > 4
         ? (_presets.length / 2).ceil()
@@ -93,27 +94,26 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
       Widget buttonBody;
       if (widget.device.longChannelNames) {
-        buttonBody = Semantics(
-          selected: widget.device.getChannelActive(i),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                widget.device.getChannelActive(i)
-                    ? Icons.circle
-                    : Icons.circle_outlined,
-                color: col,
-                size: 32,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: FittedBox(
-                    fit: BoxFit.fill, child: Text(_presets[i].channelName)),
-              ),
-            ],
-          ),
+        tooltip = _presets[i].channelName;
+        buttonBody = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              widget.device.getChannelActive(i)
+                  ? Icons.circle
+                  : Icons.circle_outlined,
+              color: col,
+              size: 32,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+              child: FittedBox(
+                  fit: BoxFit.fill, child: Text(_presets[i].channelName)),
+            ),
+          ],
         );
       } else {
+        tooltip = "Channel ${i + 1}";
         buttonBody = Stack(
           alignment: Alignment.center,
           children: [
@@ -136,18 +136,22 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         width: width,
         height:
             AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),
-        child: GestureDetector(
-            onTap: () {
-              widget.device.setSelectedChannel(i,
-                  notifyBT: true, sendFullPreset: false, notifyUI: true);
-              widget.device
-                  .getPreset(widget.device.selectedChannel)
-                  .setupPresetFromNuxData();
-            },
-            onLongPress: () {
-              widget.device.toggleChannelActive(i);
-            },
-            child: buttonBody),
+        child: Semantics(
+          selected: widget.device.selectedChannel == i,
+          label: tooltip,
+          child: GestureDetector(
+              onTap: () {
+                widget.device.setSelectedChannel(i,
+                    notifyBT: true, sendFullPreset: false, notifyUI: true);
+                widget.device
+                    .getPreset(widget.device.selectedChannel)
+                    .setupPresetFromNuxData();
+              },
+              onLongPress: () {
+                widget.device.toggleChannelActive(i);
+              },
+              child: ExcludeSemantics(child: buttonBody)),
+        ),
       );
       buttons.add(button);
     }

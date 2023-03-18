@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:tinycolor2/tinycolor2.dart';
@@ -52,7 +53,6 @@ class _ThickSliderState extends State<ThickSlider> {
   int lastTapDown = 0;
   int emitCounter = 0;
   double scale = 1;
-  bool useAccessibility = false;
 
   Offset startDragPos = const Offset(0, 0);
   double width = 0;
@@ -133,6 +133,8 @@ class _ThickSliderState extends State<ThickSlider> {
     //call the last factor value here
     widget.onChanged?.call(_lerp(factor), false);
     widget.onDragEnd?.call(_lerp(factor));
+    SemanticsService.announce(
+        widget.labelFormatter(_lerp(factor)), TextDirection.ltr);
   }
 
   void manualValueEnter() {
@@ -190,110 +192,96 @@ class _ThickSliderState extends State<ThickSlider> {
 
   @override
   Widget build(BuildContext context) {
-    useAccessibility = MediaQuery.of(context).accessibleNavigation;
-    if (useAccessibility) {
-      return ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: widget.maxHeight ?? 50),
-        child: Slider(
-          semanticFormatterCallback: (value) {
-            return "${widget.label}, ${widget.labelFormatter(value)}";
-          },
-          label: widget.labelFormatter(_lerp(factor)),
-          divisions: 100,
-          min: widget.min,
-          max: widget.max,
-          value: widget.value,
-          activeColor: widget.activeColor,
-          onChangeStart: widget.onDragStart,
-          onChanged: (value) {
-            widget.onChanged?.call(value, false);
-          },
-          onChangeEnd: widget.onDragEnd,
-        ),
-      );
-    }
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: widget.maxHeight ?? 50),
-      child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-        width = constraints.maxWidth - 1;
-        height = constraints.maxHeight;
-        factor = _unlerp(widget.value);
-        pos = factor * width;
+      child: Semantics(
+        slider: true,
+        label: widget.label,
+        value: widget.labelFormatter(_lerp(factor)),
+        enabled: widget.enabled,
+        excludeSemantics: true,
+        child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+          width = constraints.maxWidth - 1;
+          height = constraints.maxHeight;
+          factor = _unlerp(widget.value);
+          pos = factor * width;
 
-        return GestureDetector(
-          dragStartBehavior: DragStartBehavior.start,
+          return GestureDetector(
+            dragStartBehavior: DragStartBehavior.start,
+            onDoubleTap: manualValueEnter,
+            //onLongPress: manualValueEnter,
+            onTapDown: (details) {
+              if (!widget.enabled) return;
 
-          onDoubleTap: manualValueEnter,
-          //onLongPress: manualValueEnter,
-          onTapDown: (details) {
-            if (!widget.enabled) return;
-
-            //double tap
-            // var now = DateTime.now().millisecondsSinceEpoch;
-            // if (now - lastTapDown < 300) {
-            //   setPercentage(details.localPosition.dx, width);
-            //   widget.onChanged?.call(_lerp(factor));
-            // }
-            // lastTapDown = now;
-          },
-          onVerticalDragStart: widget.handleVerticalDrag ? dragStart : null,
-          onVerticalDragUpdate: widget.handleVerticalDrag ? dragUpdate : null,
-          onVerticalDragEnd: widget.handleVerticalDrag ? dragEnd : null,
-          onHorizontalDragStart: dragStart,
-          onHorizontalDragUpdate: dragUpdate,
-          onHorizontalDragEnd: dragEnd,
-          child: Container(
-            color: Colors.transparent,
-            height: height,
-            child: Stack(
-              alignment: Alignment.centerLeft,
-              children: [
-                Container(
-                  height: height * 0.75,
-                  color: widget.enabled
-                      ? TinyColor.fromColor(widget.activeColor).darken(15).color
-                      : Colors.grey[800],
-                  width: max(factor * width, 0),
-                ),
-                Positioned(
-                    left: _lerp2(factor, 10, width - 10) - 10,
-                    width: 20,
-                    height: height * 0.9,
-                    child: Container(
-                        color: widget.enabled
-                            ? widget.activeColor
-                            : Colors.grey[700],
-                        width: 20)),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          widget.label,
-                          style: TextStyle(
-                              color: widget.enabled
-                                  ? Colors.white
-                                  : Colors.grey[600],
-                              fontSize: 20),
-                        ),
-                        Text(
-                          widget.labelFormatter(_lerp(factor)),
-                          style: TextStyle(
-                              color: widget.enabled
-                                  ? Colors.white
-                                  : Colors.grey[600],
-                              fontSize: 20),
-                        )
-                      ]),
-                ),
-                Center(child: Text(scale < 1 ? "x$scale" : ""))
-              ],
+              //double tap
+              // var now = DateTime.now().millisecondsSinceEpoch;
+              // if (now - lastTapDown < 300) {
+              //   setPercentage(details.localPosition.dx, width);
+              //   widget.onChanged?.call(_lerp(factor));
+              // }
+              // lastTapDown = now;
+            },
+            onVerticalDragStart: widget.handleVerticalDrag ? dragStart : null,
+            onVerticalDragUpdate: widget.handleVerticalDrag ? dragUpdate : null,
+            onVerticalDragEnd: widget.handleVerticalDrag ? dragEnd : null,
+            onHorizontalDragStart: dragStart,
+            onHorizontalDragUpdate: dragUpdate,
+            onHorizontalDragEnd: dragEnd,
+            child: Container(
+              color: Colors.transparent,
+              height: height,
+              child: Stack(
+                alignment: Alignment.centerLeft,
+                children: [
+                  Container(
+                    height: height * 0.75,
+                    color: widget.enabled
+                        ? TinyColor.fromColor(widget.activeColor)
+                            .darken(15)
+                            .color
+                        : Colors.grey[800],
+                    width: max(factor * width, 0),
+                  ),
+                  Positioned(
+                      left: _lerp2(factor, 10, width - 10) - 10,
+                      width: 20,
+                      height: height * 0.9,
+                      child: Container(
+                          color: widget.enabled
+                              ? widget.activeColor
+                              : Colors.grey[700],
+                          width: 20)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            widget.label,
+                            style: TextStyle(
+                                color: widget.enabled
+                                    ? Colors.white
+                                    : Colors.grey[600],
+                                fontSize: 20),
+                          ),
+                          Text(
+                            widget.labelFormatter(_lerp(factor)),
+                            style: TextStyle(
+                                color: widget.enabled
+                                    ? Colors.white
+                                    : Colors.grey[600],
+                                fontSize: 20),
+                          )
+                        ]),
+                  ),
+                  Center(child: Text(scale < 1 ? "x$scale" : ""))
+                ],
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

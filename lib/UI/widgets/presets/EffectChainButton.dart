@@ -33,8 +33,7 @@ class EffectChainButton extends StatelessWidget {
           fit: BoxFit.fitHeight,
           child: Semantics(
             label: effectInfo.longName,
-            selected: true,
-            button: true,
+            selected: selected,
             child: GestureDetector(
               onTap: onTap,
               //onDoubleTap: onDoubleTap,

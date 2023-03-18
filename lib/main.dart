@@ -19,7 +19,7 @@ import 'bluetooth/NuxDeviceControl.dart';
 
 //recreate this file with your own api keys
 import 'configKeys.dart';
-import 'modules/cloud/supabase.dart';
+import 'modules/cloud/cloudManager.dart';
 
 //able to create snackbars/messages everywhere
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -83,7 +83,7 @@ void main() {
 }
 
 mainRunApp() {
-  if (kDebugMode) SupabaseUtils.instance.initialize();
+  if (kDebugMode) CloudManager.instance.initialize();
   runApp(const App());
 }
 

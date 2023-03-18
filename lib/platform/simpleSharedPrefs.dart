@@ -101,6 +101,11 @@ class SharedPrefs {
     _savePrefs();
   }
 
+  void remove(String key) {
+    _prefsData.remove(key);
+    _savePrefs();
+  }
+
   dynamic getValue(String key, dynamic _default) {
     if (_prefsData.containsKey(key)) return _prefsData[key];
     return _default;

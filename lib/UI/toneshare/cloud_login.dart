@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:mighty_plug_manager/modules/cloud/cloudManager.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 import 'toneshare_main.dart';
 
@@ -35,17 +38,17 @@ class _SignInFormState extends State<SignInForm> {
 
       try {
         ToneShare.startLoading(context);
-        var result = await Supabase.instance.client.auth.signInWithPassword(
-            password: _passwordController.text.trim(),
-            email: _emailController.text.trim());
-      } on AuthException catch (e) {
-        setState(() {
-          _errorMessage = "Wrong credentials or account not verified";
-        });
-      } catch (e) {
-        setState(() {
+        await CloudManager.instance.signIn(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim());
+      } on ClientException catch (e) {
+        if (e.isAbort) {
           _errorMessage = "No internet connection";
-        });
+        } else {
+          _errorMessage = e.response["message"];
+          //"Wrong credentials or account not verified";
+        }
+        setState(() {});
       } finally {
         ToneShare.stopLoading(context);
       }

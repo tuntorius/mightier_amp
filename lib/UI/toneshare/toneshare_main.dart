@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../modules/cloud/supabase.dart';
+import '../../modules/cloud/cloudManager.dart';
 import 'cloud_authentication.dart';
 import 'toneshare_home.dart';
 
@@ -38,13 +38,13 @@ class _ToneShareState extends State<ToneShare> {
   @override
   void initState() {
     super.initState();
-    SupabaseUtils.instance.addListener(_onAuthChange);
+    CloudManager.instance.addListener(_onAuthChange);
   }
 
   @override
   void dispose() {
     super.dispose();
-    SupabaseUtils.instance.removeListener(_onAuthChange);
+    CloudManager.instance.removeListener(_onAuthChange);
   }
 
   void _onAuthChange() {
@@ -54,7 +54,7 @@ class _ToneShareState extends State<ToneShare> {
   @override
   Widget build(BuildContext context) {
     Widget page;
-    if (SupabaseUtils.instance.signedIn) {
+    if (CloudManager.instance.signedIn) {
       page = ToneShareHome();
     } else {
       page = const CloudAuthentication();

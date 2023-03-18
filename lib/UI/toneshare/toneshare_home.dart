@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:mighty_plug_manager/modules/cloud/cloudManager.dart';
 
 import '../widgets/searchTextField.dart';
 
@@ -23,10 +23,11 @@ class _ToneShareHomeState extends State<ToneShareHome> {
   void _search(String? query) async {
     if (query == null || query.isEmpty) return;
 
-    final response = await Supabase.instance.client
+    final response = null;
+    /*await Supabase.instance.client
         .from("presets")
         .select("*")
-        .textSearch("name", query, type: TextSearchType.websearch);
+        .textSearch("name", query, type: TextSearchType.websearch);*/
 
     if (response != null) {
       // Process results
@@ -42,10 +43,6 @@ class _ToneShareHomeState extends State<ToneShareHome> {
     // TODO: implement dispose
     super.dispose();
     //searchCtrl.removeListener(() {});
-  }
-
-  void _signOut() {
-    Supabase.instance.client.auth.signOut();
   }
 
   @override
@@ -64,7 +61,9 @@ class _ToneShareHomeState extends State<ToneShareHome> {
             );
           },
         )),
-        ElevatedButton(child: const Text("Sign Out"), onPressed: _signOut)
+        ElevatedButton(
+            child: const Text("Sign Out"),
+            onPressed: CloudManager.instance.signOut)
       ],
     );
   }

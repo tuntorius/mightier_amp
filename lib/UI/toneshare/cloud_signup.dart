@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'toneshare_main.dart';
 
@@ -33,7 +32,7 @@ class _SignUpFormState extends State<SignUpForm> {
         _errorMessage = "";
       });
 
-      try {
+      /*try {
         ToneShare.startLoading(context);
         var result = await Supabase.instance.client.auth.signUp(
             password: _passwordController.text.trim(),
@@ -50,7 +49,7 @@ class _SignUpFormState extends State<SignUpForm> {
         });
       } finally {
         ToneShare.stopLoading(context);
-      }
+      }*/
     }
   }
 

@@ -158,9 +158,10 @@ class MainActivity: FlutterActivity() {
         _result?.success("SUCCESS");
         }
         else
-            _result?.error("ERROR", "Unable to write", null)
+            _result?.error("ERROR", "writeInFile: Output stream is null", null)
     } catch (e:Exception){
-      _result?.error("ERROR", "Unable to write", null)
+        _result?.error("ERROR", "Unable to write. Exception: $e", null)
+        e.printStackTrace()
     }
   }
 

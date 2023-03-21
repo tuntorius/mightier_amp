@@ -1,6 +1,6 @@
 {
-    "name": "mighty_plug_manager",
-    "short_name": "mighty_plug_manager",
+    "name": "Mightier Amp",
+    "short_name": "Mightier Amp",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

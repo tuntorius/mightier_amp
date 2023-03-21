@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import '../widgets/scrollParent.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
-import '../../bluetooth/devices/presets/presetsStorage.dart';
+import '../../platform/presetsStorage.dart';
 import 'alertDialogs.dart';
 
 class SavePresetDialog {

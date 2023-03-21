@@ -8,7 +8,7 @@ import 'package:mighty_plug_manager/audio/setlistPage.dart';
 import 'package:mighty_plug_manager/audio/setlistsPage.dart';
 import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 import 'package:mighty_plug_manager/audio/tracksPage.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
+import 'package:mighty_plug_manager/platform/presetsStorage.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../audio/models/setlist.dart';

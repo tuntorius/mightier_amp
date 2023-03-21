@@ -9,7 +9,7 @@ import '../../../audio/setlist_player/setlistPlayerState.dart';
 import '../../../audio/trackdata/trackData.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
-import '../../../bluetooth/devices/presets/presetsStorage.dart';
+import '../../../platform/presetsStorage.dart';
 import '../../../platform/fileSaver.dart';
 import '../../../platform/platformUtils.dart';
 import '../../popups/alertDialogs.dart';
@@ -158,7 +158,7 @@ class _PresetListState extends State<PresetList>
     return PopupMenuButton(
       child: const Padding(
         padding: EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
-        child: Icon(Icons.more_vert, color: Colors.grey),
+        child: Icon(Icons.more_vert),
       ),
       itemBuilder: (context) {
         return presetsMenu;
@@ -296,7 +296,7 @@ class _PresetListState extends State<PresetList>
               child: const Padding(
                 padding:
                     EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
-                child: Icon(Icons.more_vert, color: Colors.grey),
+                child: Icon(Icons.more_vert),
               ),
               itemBuilder: (context) {
                 return _popupMenu;

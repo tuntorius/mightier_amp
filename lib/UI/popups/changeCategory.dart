@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../widgets/scrollParent.dart';
-import '../../bluetooth/devices/presets/presetsStorage.dart';
+import '../../platform/presetsStorage.dart';
 
 class ChangeCategoryDialog {
   static final _formKey = GlobalKey<FormState>();

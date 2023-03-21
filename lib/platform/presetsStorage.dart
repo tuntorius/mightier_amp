@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
 import '../../../platform/platformUtils.dart';
+import 'presetStorageListener.dart';
 
 enum PresetChangeDirection { previous, next }
 
@@ -34,6 +35,8 @@ class PresetsStorage extends ChangeNotifier {
   Directory? storageDirectory;
   File? _presetsFile;
   bool _presetsReady = false;
+
+  List<PresetStorageListener> _changeListeners = [];
 
   List presetsData = [];
   List<String> _categoriesCache = <String>[];
@@ -199,7 +202,7 @@ class PresetsStorage extends ChangeNotifier {
       Map<String, dynamic> preset, String name, String categoryName) {
     preset["name"] = name;
     String uuid;
-
+    bool newPreset = false;
     var category = _findOrCreateCategory(categoryName);
 
     var data = findPresetInCategory(name, category);
@@ -213,8 +216,14 @@ class PresetsStorage extends ChangeNotifier {
       _addUuid(preset);
       category["presets"].add(preset);
       uuid = preset[uuidKey];
+      newPreset = true;
     }
 
+    if (newPreset) {
+      _presetCreated(preset);
+    } else {
+      _presetUpdated(preset);
+    }
     _savePresets();
     return uuid;
   }
@@ -223,6 +232,7 @@ class PresetsStorage extends ChangeNotifier {
     var cat = findCategoryOfPreset(preset);
 
     if (cat != null) {
+      _presetDeleted(preset["uuid"]);
       (cat["presets"] as List).remove(preset);
       return _savePresets();
     }
@@ -326,6 +336,11 @@ class PresetsStorage extends ChangeNotifier {
         uuids.add(p[uuidKey]);
       }
       presetsData.remove(cat);
+
+      for (var uuid in uuids) {
+        _presetDeleted(uuid);
+      }
+
       await _savePresets();
       return uuids;
     }
@@ -584,5 +599,27 @@ class PresetsStorage extends ChangeNotifier {
       }
       preset[uuidKey] = id;
     } while (unique == false);
+  }
+
+  void registerPresetStorageListener(PresetStorageListener listener) {
+    _changeListeners.add(listener);
+  }
+
+  void _presetCreated(Map<String, dynamic> preset) {
+    for (var listener in _changeListeners) {
+      listener.onPresetCreated(preset);
+    }
+  }
+
+  void _presetUpdated(Map<String, dynamic> preset) {
+    for (var listener in _changeListeners) {
+      listener.onPresetUpdated(preset);
+    }
+  }
+
+  void _presetDeleted(String uuid) {
+    for (var listener in _changeListeners) {
+      listener.onPresetDeleted(uuid);
+    }
   }
 }

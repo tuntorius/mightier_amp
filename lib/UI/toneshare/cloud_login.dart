@@ -38,9 +38,10 @@ class _SignInFormState extends State<SignInForm> {
 
       try {
         ToneShare.startLoading(context);
-        await CloudManager.instance.signIn(
+        var result = await CloudManager.instance.signIn(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim());
+        print(result);
       } on ClientException catch (e) {
         if (e.isAbort) {
           _errorMessage = "No internet connection";

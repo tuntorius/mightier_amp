@@ -3,7 +3,7 @@ import 'package:mighty_plug_manager/UI/popups/selectPreset.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
+import 'package:mighty_plug_manager/platform/presetsStorage.dart';
 import '../models/trackAutomation.dart';
 
 class EventEditor {

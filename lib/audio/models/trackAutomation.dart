@@ -1,7 +1,7 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'package:mighty_plug_manager/bluetooth/devices/presets/presetsStorage.dart';
+import 'package:mighty_plug_manager/platform/presetsStorage.dart';
 
 enum AutomationEventType { preset, loop }
 

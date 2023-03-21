@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pocketbase/pocketbase.dart';
 
+import '../../modules/cloud/cloudManager.dart';
 import 'toneshare_main.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -32,24 +34,28 @@ class _SignUpFormState extends State<SignUpForm> {
         _errorMessage = "";
       });
 
-      /*try {
+      try {
         ToneShare.startLoading(context);
-        var result = await Supabase.instance.client.auth.signUp(
-            password: _passwordController.text.trim(),
-            email: _emailController.text.trim());
-
-        //if succeeded, proceed to login screen with the provided email
-      } on AuthException catch (e) {
-        setState(() {
-          _errorMessage = "You must provide email and password";
-        });
-      } catch (e) {
-        setState(() {
+        var result = await CloudManager.instance.register(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim());
+        print(result);
+      } on ClientException catch (e) {
+        if (e.isAbort) {
           _errorMessage = "No internet connection";
-        });
+        } else {
+          Map data = e.response["data"];
+          if (data.containsKey("email") &&
+              data["email"]["code"] == "validation_invalid_email")
+            _errorMessage = data["email"]["message"];
+          else
+            _errorMessage = e.response["message"];
+          //"Wrong credentials or account not verified";
+        }
+        setState(() {});
       } finally {
         ToneShare.stopLoading(context);
-      }*/
+      }
     }
   }
 
@@ -117,12 +123,16 @@ class _SignUpFormState extends State<SignUpForm> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _signUpWithEmailAndPassword,
-            child: const Text('Sign In'),
+            child: const Text('Sign Up'),
           ),
-          SizedBox(height: 16),
           ElevatedButton(
             onPressed: _SignUpWithGoogle,
             child: const Text('Sign in with Google'),
+          ),
+          ElevatedButton(
+            onPressed: () => CloudManager.instance
+                .requestValidation(_emailController.text.trim()),
+            child: const Text('Validado'),
           ),
           const SizedBox(height: 16),
           GestureDetector(

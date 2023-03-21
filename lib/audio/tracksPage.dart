@@ -237,7 +237,7 @@ class _TracksPageState extends State<TracksPage>
     return PopupMenuButton(
       child: const Padding(
         padding: EdgeInsets.only(left: 12.0, right: 12, bottom: 10, top: 10),
-        child: Icon(Icons.more_vert, color: Colors.grey),
+        child: Icon(Icons.more_vert),
       ),
       itemBuilder: (context) {
         return popupSubmenu;

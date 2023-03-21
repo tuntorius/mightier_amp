@@ -93,6 +93,8 @@ class _EffectSelectorState extends State<EffectSelector> {
     _preset = widget.preset;
 
     _effectColor = _preset.effectColor(_selectedSlot);
+    var _effectColorBright =
+        TinyColor.fromColor(_effectColor).brighten(20).color;
 
     var proc = _preset.getFXIDFromSlot(_selectedSlot);
     var effectInfo = widget.device.getProcessorInfoByFXID(proc)!;
@@ -153,15 +155,15 @@ class _EffectSelectorState extends State<EffectSelector> {
           children: [
             Icon(
               effectInfo.icon,
-              color: _effectColor,
+              color: _effectColorBright,
             ),
             const SizedBox(
               width: 5,
             ),
             Text(
               effectInfo.longName,
-              style:
-                  TextStyle(color: _effectColor, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: _effectColorBright, fontWeight: FontWeight.bold),
             ),
             if (_effectItems.length > 1) const SizedBox(height: 1, width: 8),
             if (_effectItems.length > 1) Text(_selectedEffectName)
@@ -253,9 +255,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                       icon: Transform.rotate(
                           angle: pi,
                           child: Icon(Icons.play_arrow,
-                              color: TinyColor.fromColor(_effectColor)
-                                  .brighten(20)
-                                  .color)),
+                              color: _effectColorBright)),
                       iconSize: 30,
                     ),
                   if (_effectItems.length > 1)
@@ -267,10 +267,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                         if (effect > effects.length - 1) effect = 0;
                         setSelectedEffect(effect);
                       },
-                      icon: Icon(Icons.play_arrow,
-                          color: TinyColor.fromColor(_effectColor)
-                              .brighten(20)
-                              .color),
+                      icon: Icon(Icons.play_arrow, color: _effectColorBright),
                       iconSize: 30,
                     ),
                   if (_preset.slotSwitchable(_selectedSlot))
@@ -281,9 +278,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                         onChanged: (val) {
                           _setSlotEnabledState(_selectedSlot, val);
                         },
-                        activeColor: TinyColor.fromColor(_effectColor)
-                            .brighten(20)
-                            .color,
+                        activeColor: _effectColorBright,
                         inactiveThumbColor: Colors.grey,
                         inactiveTrackColor: Colors.grey[700],
                       ),

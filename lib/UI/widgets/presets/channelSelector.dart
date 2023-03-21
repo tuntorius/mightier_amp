@@ -258,7 +258,10 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                             Icons.qr_code_2,
                             size: 32,
                           ),
-                          Text("QR Code")
+                          Text(
+                            "QR Code",
+                            textAlign: TextAlign.center,
+                          )
                         ],
                       ),
                     )),

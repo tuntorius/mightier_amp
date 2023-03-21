@@ -219,8 +219,7 @@ class _SetlistsState extends State<Setlists> {
                                             right: 4,
                                             bottom: 10,
                                             top: 10),
-                                        child: Icon(Icons.more_vert,
-                                            color: Colors.grey),
+                                        child: Icon(Icons.more_vert),
                                       ),
                                       itemBuilder: (context) {
                                         return popupSubmenu;

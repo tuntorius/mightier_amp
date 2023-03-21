@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tuntori.mightieramp">
+    package="com.tuntori.mightieramp"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- FlutterActivity is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
@@ -11,6 +12,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" 
+      android:maxSdkVersion="30"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"
       android:minSdkVersion="33"/>
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"

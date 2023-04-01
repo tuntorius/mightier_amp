@@ -51,6 +51,9 @@ class _ToneShareHomeState extends State<ToneShareHome> {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        ElevatedButton(
+            child: const Text("Sync"),
+            onPressed: CloudManager.instance.syncPresets),
         SearchTextField(controller: searchCtrl, onSearch: _search),
         Expanded(
             child: ListView.builder(

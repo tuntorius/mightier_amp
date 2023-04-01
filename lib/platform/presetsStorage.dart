@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
@@ -17,7 +16,7 @@ enum PresetChangeDirection { previous, next }
 class PresetsStorage extends ChangeNotifier {
   static final PresetsStorage _storage = PresetsStorage._();
   static const presetsFile = "presets.json";
-  static const presetsVersion = 1;
+  static const presetsVersion = 2;
 
   static const presetsSingle = "preset-single";
   static const presetsMultiple = "preset-multiple";
@@ -79,6 +78,10 @@ class PresetsStorage extends ChangeNotifier {
           _savePresets();
         } else {
           presetsData = data["Categories"];
+          if (data["Version"] < presetsVersion) {
+            upgradeDataVersion(data["Version"]);
+            _savePresets();
+          }
         }
 
         _buildCategoryCache();
@@ -92,14 +95,16 @@ class PresetsStorage extends ChangeNotifier {
   _savePresets() async {
     _buildCategoryCache();
 
-    Map<String, dynamic> file = {
-      "Version": presetsVersion,
-      "Categories": presetsData
-    };
+    Map<String, dynamic> file = _createFileOuterObject(presetsData);
 
     String jsonData = json.encode(file);
     await _presetsFile!.writeAsString(jsonData);
     notifyListeners();
+  }
+
+  _createFileOuterObject(List<dynamic> data) {
+    Map<String, dynamic> file = {"Version": presetsVersion, "Categories": data};
+    return file;
   }
 
   Future waitLoading() async {
@@ -191,7 +196,7 @@ class PresetsStorage extends ChangeNotifier {
     var category = _findCategory(name);
 
     if (category == null) {
-      category = {"name": name, "presets": []};
+      category = {"name": name, "uuid": uuid.v4(), "presets": []};
       presetsData.add(category);
     }
 
@@ -268,12 +273,14 @@ class PresetsStorage extends ChangeNotifier {
 
   Future renamePreset(Map<String, dynamic> preset, String newName) {
     preset["name"] = newName;
+    _presetUpdated(preset);
     return _savePresets();
   }
 
   void reorderCategories(int oldListIndex, int newListIndex) {
     var movedList = presetsData.removeAt(oldListIndex);
     presetsData.insert(newListIndex, movedList);
+    _categoryReordered(oldListIndex, newListIndex);
     _savePresets();
   }
 
@@ -544,6 +551,17 @@ class PresetsStorage extends ChangeNotifier {
     return presetData;
   }
 
+  void upgradeDataVersion(int version) {
+    if (version < 2) {
+      //add guids to categories
+      for (Map cat in presetsData) {
+        if (!cat.containsKey("uuid")) {
+          cat["uuid"] = uuid.v4();
+        }
+      }
+    }
+  }
+
   List<dynamic> _getPresetsInCategoryOldFormat(
       List<dynamic> oldPresets, String category) {
     List<dynamic> presets = [];
@@ -579,10 +597,7 @@ class PresetsStorage extends ChangeNotifier {
       categories.add(category);
     }
 
-    Map<String, dynamic> file = {
-      "Version": presetsVersion,
-      "Categories": categories
-    };
+    Map<String, dynamic> file = _createFileOuterObject(categories);
 
     return file;
   }
@@ -620,6 +635,12 @@ class PresetsStorage extends ChangeNotifier {
   void _presetDeleted(String uuid) {
     for (var listener in _changeListeners) {
       listener.onPresetDeleted(uuid);
+    }
+  }
+
+  void _categoryReordered(int from, int to) {
+    for (var listener in _changeListeners) {
+      listener.onCategoryReordered(from, to);
     }
   }
 }

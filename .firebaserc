@@ -1,0 +1,22 @@
+{
+  "projects": {
+    "default": "mightier-amp"
+  },
+  "targets": {
+    "mightieramp": {
+      "hosting": {
+        "mightieramp": [
+          "mightieramp"
+        ]
+      }
+    },
+    "mightier-amp": {
+      "hosting": {
+        "mightieramp": [
+          "mightieramp"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

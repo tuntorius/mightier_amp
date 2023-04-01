@@ -105,6 +105,7 @@ class _DrumEditorState extends State<DrumEditor> {
 
   Widget _activeSwitch() {
     return SwitchListTile(
+      dense: true,
       title: const Text(
         "Active",
         style: TextStyle(fontSize: 20),
@@ -206,57 +207,33 @@ class _DrumEditorState extends State<DrumEditor> {
   }
 
   Widget _tapButton() {
+    bool trainer = kDebugMode;
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 110),
+      constraints: BoxConstraints(maxHeight: trainer ? 120 : 60),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            flex: 5,
-            child: ElevatedButton(
-              onPressed: device.drumsEnabled ? _onTapTempo : null,
-              style: ButtonStyle(
-                overlayColor: MaterialStateProperty.resolveWith(
-                  (states) {
-                    return states.contains(MaterialState.pressed)
-                        ? Colors.lightBlue[100]
-                        : null;
-                  },
-                ),
-              ),
-              child: const Text(
-                "Tap Tempo",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-
           //TapOrHoldButton here
           //https://stackoverflow.com/questions/52128572/flutter-execute-method-so-long-the-button-pressed
-
           Expanded(
-            flex: 4,
+            flex: 1,
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: ElevatedButton(
-                      onPressed:
-                          device.drumsEnabled ? () => _modifyTempo(-5) : null,
-                      child: const Text("-5", semanticsLabel: "Tempo -5"),
-                    ),
+                SizedBox(
+                  width: 48,
+                  child: ElevatedButton(
+                    onPressed:
+                        device.drumsEnabled ? () => _modifyTempo(-5) : null,
+                    child: const Text("-5", semanticsLabel: "Tempo -5"),
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: SizedBox(
+                    width: 48,
                     child: ElevatedButton(
                       onPressed:
                           device.drumsEnabled ? () => _modifyTempo(-1) : null,
@@ -265,8 +242,27 @@ class _DrumEditorState extends State<DrumEditor> {
                   ),
                 ),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: ElevatedButton(
+                    onPressed: device.drumsEnabled ? _onTapTempo : null,
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith(
+                        (states) {
+                          return states.contains(MaterialState.pressed)
+                              ? Colors.lightBlue[100]
+                              : null;
+                        },
+                      ),
+                    ),
+                    child: const Text(
+                      "Tap Tempo",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: SizedBox(
+                    width: 48,
                     child: ElevatedButton(
                       onPressed:
                           device.drumsEnabled ? () => _modifyTempo(1) : null,
@@ -277,22 +273,32 @@ class _DrumEditorState extends State<DrumEditor> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 4),
-                    child: ElevatedButton(
-                      onPressed:
-                          device.drumsEnabled ? () => _modifyTempo(5) : null,
-                      child: const Text(
-                        "+5",
-                        semanticsLabel: "Tempo +5",
-                      ),
+                SizedBox(
+                  width: 48,
+                  child: ElevatedButton(
+                    onPressed:
+                        device.drumsEnabled ? () => _modifyTempo(5) : null,
+                    child: const Text(
+                      "+5",
+                      semanticsLabel: "Tempo +5",
                     ),
                   ),
                 )
               ],
             ),
           ),
+          if (trainer)
+            const SizedBox(
+              height: 6,
+            ),
+          if (trainer)
+            Expanded(
+              flex: 1,
+              child: ElevatedButton(
+                onPressed: _showTempoTrainer,
+                child: const Text("Tempo Trainer"),
+              ),
+            )
         ],
       ),
     );
@@ -343,11 +349,6 @@ class _DrumEditorState extends State<DrumEditor> {
                       ..._toneSliders(smallSliders),
                     const SizedBox(height: 6),
                     _tapButton(),
-                    if (kDebugMode)
-                      ElevatedButton(
-                        onPressed: _showTempoTrainer,
-                        child: const Text("Tempo Trainer"),
-                      )
                   ],
                 ),
               ),

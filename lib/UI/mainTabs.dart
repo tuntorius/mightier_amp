@@ -8,7 +8,6 @@ import 'package:mighty_plug_manager/UI/widgets/NuxAppBar.dart';
 import '../bluetooth/NuxDeviceControl.dart';
 import '../bluetooth/bleMidiHandler.dart';
 import '../bluetooth/ble_controllers/BLEController.dart';
-import '../bluetooth/devices/value_formatters/ValueFormatter.dart';
 import '../main.dart';
 import '../midi/MidiControllerManager.dart';
 import '../platform/platformUtils.dart';
@@ -70,7 +69,8 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       Settings(),
     ];
 
-    controller = TabController(initialIndex: 0, length: 5, vsync: this);
+    controller =
+        TabController(initialIndex: 0, length: _tabs.length, vsync: this);
 
     controller.addListener(() {
       setState(() {

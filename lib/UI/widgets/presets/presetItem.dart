@@ -180,10 +180,10 @@ class PresetItem extends StatelessWidget {
     if (simplified) {
       trailingWidget = null;
     } else {
-      var button = PopupMenuButton(
+      trailingWidget = PopupMenuButton(
         child: const Padding(
           padding: EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
-          child: Icon(Icons.more_vert, color: Colors.grey),
+          child: Icon(Icons.more_vert),
         ),
         itemBuilder: (context) {
           return _popupSubmenu;
@@ -192,27 +192,39 @@ class PresetItem extends StatelessWidget {
           onPopupMenuTap?.call(pos as PresetItemActions, item);
         },
       );
-      if (item.containsKey("new")) {
-        trailingWidget = Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.circle,
-              color: Colors.blue,
-              size: 16,
-            ),
-            const SizedBox(
-              width: 12,
-            ),
-            button
-          ],
-        );
-      } else {
-        trailingWidget = button;
-      }
     }
 
     return trailingWidget;
+  }
+
+  Widget _iconLabel(String label, Color color) {
+    var items = label.split("|");
+    List<Widget> widgets = [];
+    for (var item in items) {
+      if (item != '-') {
+        widgets.add(Text(
+          item,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14, color: color),
+        ));
+      } else {
+        widgets.add(SizedBox(
+          width: 36,
+          child: Divider(
+            indent: 0,
+            endIndent: 0,
+            thickness: 2,
+            height: 4,
+            color: color,
+          ),
+        ));
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: widgets,
+    );
   }
 
   @override
@@ -227,6 +239,7 @@ class PresetItem extends StatelessWidget {
     }
 
     bool selected = item["uuid"] == device.deviceControl.presetUUID;
+    bool newItem = item.containsKey("new");
 
     var d = NuxDeviceControl.instance().getDeviceFromId(item["product_id"]) ??
         device;
@@ -252,13 +265,26 @@ class PresetItem extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Text(
-                  NuxDeviceControl.instance()
-                      .getDeviceFromId(item["product_id"])!
-                      .productIconLabel,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: color),
+                FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: _iconLabel(
+                        NuxDeviceControl.instance()
+                            .getDeviceFromId(item["product_id"])!
+                            .productIconLabel,
+                        color),
+                  ),
                 ),
+                if (newItem)
+                  Transform(
+                    transform: Matrix4.translationValues(22, -20, 0),
+                    child: const Icon(
+                      Icons.circle,
+                      color: Colors.blue,
+                      size: 16,
+                    ),
+                  ),
                 if (enabled && pVersion != devVersion)
                   Transform(
                     transform: Matrix4.translationValues(18, 15, 0),

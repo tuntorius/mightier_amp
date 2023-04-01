@@ -59,7 +59,7 @@ class NuxMightyPlug extends NuxDevice {
   @override
   int get productVersion => version.index;
   @override
-  String get productIconLabel => "PLUG\nAIR";
+  String get productIconLabel => "PLUG|-|AIR";
   @override
   List<String> get productBLENames =>
       ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];

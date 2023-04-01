@@ -36,7 +36,7 @@ class NuxMightyLite extends NuxDevice {
   @override
   int get productVersion => 0;
   @override
-  String get productIconLabel => "PLUG\nLITE";
+  String get productIconLabel => "PLUG|LITE";
 
   @override
   List<String> get productBLENames =>

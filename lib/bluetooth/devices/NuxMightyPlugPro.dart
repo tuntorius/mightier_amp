@@ -46,6 +46,12 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
   bool micNoiseGate = false;
   int micNGSensitivity = 50;
   int micNGDecay = 50;
+
+  int loopState = 0;
+  int loopUndoState = 0;
+  int loopRecordMode = 0;
+  bool loopHasAudio = false;
+  int loopLevel = 50;
 }
 
 class NuxMightyPlugPro extends NuxDevice {
@@ -74,7 +80,7 @@ class NuxMightyPlugPro extends NuxDevice {
   @override
   int get productVersion => version.index;
   @override
-  String get productIconLabel => "PLUG\nPRO";
+  String get productIconLabel => "MP-3|-|SPACE";
   @override
   List<String> get productBLENames => ["MIGHTY PLUG PRO", "MIGHTY SPACE"];
 
@@ -140,6 +146,8 @@ class NuxMightyPlugPro extends NuxDevice {
   double get drumsMiddle => config.drumsMiddle;
   double get drumsTreble => config.drumsTreble;
 
+  int get loopState => config.loopState;
+  int get loopUndoState => config.loopUndoState;
   @override
   List<ProcessorInfo> get processorList => _processorList;
 

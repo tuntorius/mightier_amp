@@ -569,6 +569,13 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.forceNotifyListeners();
   }
 
+  void _handleLooperState(int state) {
+    config.loopState = state & 0x0f;
+    config.loopUndoState = (state >> 4) & 0x03;
+    config.loopHasAudio = (state >> 6) & 0x01 != 0;
+    device.deviceControl.forceNotifyListeners();
+  }
+
   //Info: in plugProDataObject.js in the beginning there are few const enums
   // O, G, z, etc... they are the indexes of some SysEx data
   //just reduce with 1
@@ -625,7 +632,7 @@ const z = {
 };
 */
   void _handleDrumData(List<int> data) {
-    if (data[0] == SyxDir.kSYXDIR_REQ) {
+    if (data[0] == SyxDir.kSYXDIR_REQ && data.length >= 8) {
       config.drumsEnabled = data[1] != 0;
       config.selectedDrumStyle = data[2];
       config.drumsVolume = data[3].toDouble();
@@ -686,6 +693,10 @@ const z = {
               return;
             case MidiCCValuesPro.MASTER:
               _handleVolumeData(data[4]);
+              break;
+            case MidiCCValuesPro.LOOPSTATE:
+              _handleLooperState(data[4]);
+              break;
           }
           bool consumed = false;
           consumed = _handleDrumCCData(data[3], data[4]);

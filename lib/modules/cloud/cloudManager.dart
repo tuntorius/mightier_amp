@@ -31,10 +31,12 @@ class CloudManager extends ChangeNotifier {
     _signedIn = pb.authStore.isValid;
     print("PocketBase initialized. Signed in = $_signedIn");
 
-    PresetsStorage().registerPresetStorageListener(_storageListener);
+    //used for syncing across devices
+    //PresetsStorage().registerPresetStorageListener(_storageListener);
 
     //TEST syncing or sth
     if (_signedIn) {
+      refreshToken();
       // var sw = Stopwatch()..start();
       // syncPresets().then((value) {
       //   sw.stop();
@@ -46,6 +48,10 @@ class CloudManager extends ChangeNotifier {
   Future<RecordAuth> signIn({required String email, required String password}) {
     email = email.toLowerCase();
     return pb.collection('users').authWithPassword(email, password);
+  }
+
+  Future<RecordAuth> refreshToken() {
+    return pb.collection('users').authRefresh();
   }
 
   Future register({required String email, required String password}) {

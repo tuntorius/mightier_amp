@@ -7,6 +7,7 @@ MacOS is possible, due to almost 100% identical code to iOS
 */
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -184,6 +185,12 @@ class FlutterBluePlusController extends BLEController {
     setMidiSetupStatus(MidiSetupStatus.deviceConnected);
     _deviceStreamSubscription = device.state.listen((event) {
       if (event == BluetoothDeviceState.disconnected) {
+        if (Platform.isAndroid) {
+          //android deadObjectException fix
+          device.clearGattCache().then((value) {
+            device.disconnect();
+          }).catchError((_) {});
+        }
         _deviceStreamSubscription?.cancel();
         _device = null;
         _midiCharacteristic = null;

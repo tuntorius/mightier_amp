@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
+import '../../widgets/ModeControlRegular.dart';
 
 class RouteModel {
   final String name;
@@ -63,13 +64,6 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
     super.didChangeDependencies();
   }
 
-  Widget _modeButton(String mode) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      child: Text(mode, style: fontSize),
-    );
-  }
-
   void _setUsbDryWetValue(double value, bool skip) {
     if (skip) {
       device.config.usbDryWet = value.round();
@@ -102,11 +96,8 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
     const routes = PlugProUsbSettings.routes;
     var routeModeInt = device.config.routingMode & modeMask;
     var routeMode = routes.firstWhere((r) => r.value == routeModeInt);
-    var arrayIndex = routes.indexOf(routeMode);
+    var modeIndex = routes.indexOf(routeMode);
     var loopback = device.config.routingMode & loopbackMask != 0;
-
-    var selected = List<bool>.filled(routes.length, false);
-    selected[arrayIndex] = true;
 
     return Scaffold(
       appBar: AppBar(
@@ -125,22 +116,17 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                   style: fontSize,
                 ),
               ),
-              ToggleButtons(
-                fillColor: Colors.blue,
-                selectedBorderColor: Colors.blue,
-                color: Colors.grey,
-                isSelected: selected,
-                onPressed: (index) {
+              ModeControlRegular(
+                selected: modeIndex,
+                options: routes.map((e) => e.name).toList(),
+                onSelected: (index) {
                   var mode = routes[index];
                   var value = mode.value;
                   if (mode.loopback && loopback) value |= loopbackMask;
                   device.setUsbMode(value);
                   setState(() {});
                 },
-                children: [
-                  for (var i = 0; i < routes.length; i++)
-                    _modeButton(routes[i].name)
-                ],
+                textStyle: fontSize,
               ),
               const SizedBox(
                 height: 8,

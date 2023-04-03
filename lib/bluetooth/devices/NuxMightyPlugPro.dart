@@ -146,6 +146,9 @@ class NuxMightyPlugPro extends NuxDevice {
   double get drumsMiddle => config.drumsMiddle;
   double get drumsTreble => config.drumsTreble;
 
+  @override
+  double get drumsMaxTempo => 300;
+
   int get loopState => config.loopState;
   int get loopUndoState => config.loopUndoState;
   @override

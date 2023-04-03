@@ -27,6 +27,7 @@ class _DrumEditorState extends State<DrumEditor> {
   DrumEditorLayout _layout = DrumEditorLayout.Standard;
   int _selectedDrumPattern = 0;
   late NuxDevice device;
+  static const _fontStyle = TextStyle(fontSize: 20);
 
   @override
   void initState() {
@@ -77,7 +78,7 @@ class _DrumEditorState extends State<DrumEditor> {
                   color: device.drumsEnabled ? Colors.white : Colors.grey)),
           title: Text(
             _getComplexListStyle(_drumStyles),
-            style: const TextStyle(fontSize: 20),
+            style: _fontStyle,
           ),
           trailing: const Icon(Icons.keyboard_arrow_right),
           onTap: !device.drumsEnabled
@@ -108,7 +109,7 @@ class _DrumEditorState extends State<DrumEditor> {
       dense: true,
       title: const Text(
         "Active",
-        style: TextStyle(fontSize: 20),
+        style: _fontStyle,
       ),
       value: device.drumsEnabled,
       onChanged: (val) {
@@ -255,7 +256,7 @@ class _DrumEditorState extends State<DrumEditor> {
                     ),
                     child: const Text(
                       "Tap Tempo",
-                      style: TextStyle(fontSize: 20),
+                      style: _fontStyle,
                     ),
                   ),
                 ),
@@ -296,7 +297,7 @@ class _DrumEditorState extends State<DrumEditor> {
               flex: 1,
               child: ElevatedButton(
                 onPressed: _showTempoTrainer,
-                child: const Text("Tempo Trainer"),
+                child: const Text("Tempo Trainer", style: _fontStyle),
               ),
             )
         ],
@@ -373,11 +374,6 @@ class _DrumEditorState extends State<DrumEditor> {
                           ..._sliders(false),
                           const SizedBox(height: 10),
                           _tapButton(),
-                          if (kDebugMode)
-                            ElevatedButton(
-                              onPressed: _showTempoTrainer,
-                              child: const Text("Tempo Trainer"),
-                            )
                         ]),
                   ),
                   const SizedBox(

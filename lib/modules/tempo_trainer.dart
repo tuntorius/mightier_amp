@@ -5,7 +5,7 @@ import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 
 import '../bluetooth/devices/NuxDevice.dart';
 
-enum TempoChangeMode { bar, time }
+enum TempoChangeMode { beat, time }
 
 class TempoTrainer {
   static final TempoTrainer _tempoTrainer = TempoTrainer._();
@@ -23,9 +23,14 @@ class TempoTrainer {
 
   RangeValues tempoRange = const RangeValues(90, 120);
   double tempoStep = 5;
-  TempoChangeMode _changeMode = TempoChangeMode.bar;
+  TempoChangeMode changeMode = TempoChangeMode.beat;
+
+  //this how much beats or seconds to the next change
   int changeUnits = 2;
   bool _enable = false;
+
+  DateTime _expiryTime = DateTime.now();
+  double _durationMs = 0;
 
   bool get enable => _enable;
   set enable(enable) {
@@ -46,9 +51,17 @@ class TempoTrainer {
 
   void _setupTimer() {
     //setup for the next iteration of the trainer
-    var durationMs =
-        ((59.9 / _device.drumsTempo) * changeUnits.toDouble()) * 1000;
-    _timer = Timer(Duration(milliseconds: durationMs.round()), _onTimerStep);
+    _durationMs = changeMode == TempoChangeMode.beat
+        ? ((59.9 / _device.drumsTempo) * changeUnits.toDouble()) * 1000
+        : changeUnits.toDouble() * 1000;
+    _expiryTime =
+        DateTime.now().add(Duration(milliseconds: _durationMs.round()));
+    _timer = Timer(Duration(milliseconds: _durationMs.round()), _onTimerStep);
+  }
+
+  double getTimerCountdown() {
+    if (!_enable) return 0;
+    return _expiryTime.difference(DateTime.now()).inMilliseconds / _durationMs;
   }
 
   void _onTimerStep() {

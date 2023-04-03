@@ -108,6 +108,7 @@ class BLEMidiHandler {
         if (!pStatus.isGranted) onError(BleError.scanPermissionDenied, pStatus);
       } else {
         do {
+          if (PlatformUtils.isIOS) break;
           pStatus = await Permission.location.status;
           if (pStatus.isGranted) break;
           if (!askOneTime) {
@@ -133,7 +134,7 @@ class BLEMidiHandler {
       onError(BleError.unavailable, null);
     }
 
-    if (PlatformUtils.isMobile && !noLocationNeeded) {
+    if (PlatformUtils.isAndroid && !noLocationNeeded) {
       ServiceStatus ss = await Permission.location.serviceStatus;
 
       if (!ss.isEnabled) {

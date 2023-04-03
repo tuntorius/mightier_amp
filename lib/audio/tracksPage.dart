@@ -168,8 +168,10 @@ class _TracksPageState extends State<TracksPage>
 
   void querySongs() async {
     if (songList != null) return;
-    final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-    songList = await audioQuery.getSongs();
+    if (PlatformUtils.isAndroid) {
+      final FlutterAudioQuery audioQuery = FlutterAudioQuery();
+      songList = await audioQuery.getSongs();
+    }
   }
 
   void multiselectHandler(int index) {

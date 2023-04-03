@@ -51,12 +51,6 @@
 	<string>Needs BLE permission</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Needs BLE permission</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Needs Location permission</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Needs Location permission</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Needs Location permission</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app uses camera to scan QR codes that contain preset data for the connected amplifier</string>
 	<key>NSPhotoLibraryUsageDescription</key>

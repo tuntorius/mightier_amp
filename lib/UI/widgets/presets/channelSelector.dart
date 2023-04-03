@@ -9,6 +9,7 @@ import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/popups/exportQRCode.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/fileSaver.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_utils/qr_utils.dart';
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
@@ -162,6 +163,10 @@ class _ChannelSelectorState extends State<ChannelSelector> {
   qrPopupSelection(pos) async {
     switch (pos) {
       case 1: //scan qr
+        var result = await Permission.camera.request();
+        if (result.isPermanentlyDenied) {
+          //TODO: Explain why camera is needed and open settings
+        }
         final content = await QrUtils.scanQR;
         if (content != null) {
           setupFromQRData(content);

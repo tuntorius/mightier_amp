@@ -21,7 +21,8 @@ class QRExportDialog {
     return AlertDialog(
         title: const Text("Share QR Code"),
         insetPadding: EdgeInsets.zero,
-        contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         content: FittedBox(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -37,10 +38,14 @@ class QRExportDialog {
                       children: [
                         Text(
                           device.getProductNameVersion(device.productVersion),
-                          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                         qrImage,
-                        Text(presetName, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold))
+                        Text(presetName,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold))
                       ],
                     ),
                   ),
@@ -68,17 +73,26 @@ class QRExportDialog {
                       onPressed: () async {
                         Directory? storageDirectory;
                         if (PlatformUtils.isAndroid) {
-                          storageDirectory = await getExternalStorageDirectory();
+                          storageDirectory =
+                              await getExternalStorageDirectory();
                         } else if (PlatformUtils.isIOS) {
-                          storageDirectory = await getApplicationDocumentsDirectory();
+                          storageDirectory =
+                              await getApplicationDocumentsDirectory();
                         }
-                        var tracksPath = path.join(storageDirectory?.path ?? "", "");
+                        var tracksPath =
+                            path.join(storageDirectory?.path ?? "", "");
 
                         //var path = '$directory';
 
-                        await screenshotController.captureAndSave(tracksPath, fileName: "preset.png");
+                        await screenshotController.captureAndSave(tracksPath,
+                            fileName: "preset.png");
 
-                        Share.shareFiles(['$tracksPath/preset.png'], text: 'QR Code');
+                        Share.shareFiles(['$tracksPath/preset.png'],
+                            text: 'QR Code',
+                            sharePositionOrigin: Rect.fromCenter(
+                                center: const Offset(100, 100),
+                                width: 100,
+                                height: 100));
                       },
                       icon: const Icon(Icons.share),
                       label: const Text("Share"))

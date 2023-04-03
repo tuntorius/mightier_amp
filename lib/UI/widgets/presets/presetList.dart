@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/toneshare/toneshare_main.dart';
 import 'package:qr_utils/qr_utils.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../audio/setlist_player/setlistPlayerState.dart';
 import '../../../audio/trackdata/trackData.dart';
@@ -457,7 +458,11 @@ class _PresetListState extends State<PresetList>
       if (!PlatformUtils.isIOS) {
         saveFileString("application/octet-stream", "$category.nuxpreset", data);
       } else {
-        FilePicker().saveFile(data);
+        Share.share(data,
+            subject: "$category.nuxpreset",
+            sharePositionOrigin: Rect.fromCenter(
+                center: const Offset(100, 100), width: 100, height: 100));
+        //FilePicker().saveFile(data);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

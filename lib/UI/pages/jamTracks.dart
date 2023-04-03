@@ -14,6 +14,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../audio/models/setlist.dart';
 import '../../audio/setlist_player/setlistPlayerState.dart';
 import '../../audio/widgets/jamtracksView.dart';
+import '../../platform/platformUtils.dart';
 import '../widgets/nestedWillPopScope.dart';
 
 class JamTracks extends StatefulWidget {
@@ -35,15 +36,19 @@ class _JamTracksState extends State<JamTracks>
     super.initState();
 
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-    deviceInfoPlugin.androidInfo.then((androidInfo) {
-      int sdk = androidInfo.version.sdkInt;
-      if (sdk < 33) {
-        _mediaPermission = Permission.storage;
-      } else {
-        _mediaPermission = Permission.audio;
-      }
-      setState(() {});
-    });
+    if (PlatformUtils.isAndroid) {
+      deviceInfoPlugin.androidInfo.then((androidInfo) {
+        int sdk = androidInfo.version.sdkInt;
+        if (sdk < 33) {
+          _mediaPermission = Permission.storage;
+        } else {
+          _mediaPermission = Permission.audio;
+        }
+        setState(() {});
+      });
+    } else {
+      _mediaPermission = Permission.storage;
+    }
 
     cntrl = TabController(length: 2, vsync: this);
 

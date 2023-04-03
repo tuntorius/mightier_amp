@@ -89,7 +89,7 @@ class _SetlistsState extends State<Setlists> {
   void showContextMenu(
       BuildContext context, dynamic item, List<PopupMenuEntry> menu) {
     final RenderBox overlay =
-        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+        Overlay.of(context).context.findRenderObject() as RenderBox;
     //open menu
     var rect = RelativeRect.fromRect(
         _position & const Size(40, 40), // smaller rect, the touch area

@@ -152,56 +152,58 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
       appBar: AppBar(
         title: const Text("Bluetooth EQ Settings"),
       ),
-      body: ListTileTheme(
-          minLeadingWidth: 0,
-          iconColor: Colors.white,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (isPortrait)
-                ListTile(
-                  leading: const Icon(Icons.bluetooth),
-                  title: const Text("Bluetooth Settings"),
-                  trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: _buildButtons(btEQ)),
-                ),
-              if (isPortrait)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: _buildGroupWidget(),
-                ),
-              if (!isPortrait)
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+      body: StreamBuilder(
+          stream:
+              (device.communication as PlugProCommunication).bluetoothEQStream,
+          builder: (context, AsyncSnapshot<List<int>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                _requestInProgress) {
+              btEQ.setupFromNuxPayload(snapshot.data!);
+              device.config.bluetoothInvertChannel = snapshot.data![12] > 0;
+              device.config.bluetoothEQMute = snapshot.data![13] > 0;
+              _requestInProgress = false;
+            }
+            return ListTileTheme(
+                minLeadingWidth: 0,
+                iconColor: Colors.white,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ..._buildGroupWidget(),
-                    Row(children: _buildButtons(btEQ))
-                  ],
-                ),
-              Expanded(
-                child: StreamBuilder(
-                    stream: (device.communication as PlugProCommunication)
-                        .bluetoothEQStream,
-                    builder: (context, AsyncSnapshot<List<int>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done &&
-                          _requestInProgress) {
-                        btEQ.setupFromNuxPayload(snapshot.data!);
-                        _requestInProgress = false;
-                      }
-                      return EqualizerEditor(
+                    if (isPortrait)
+                      ListTile(
+                        leading: const Icon(Icons.bluetooth),
+                        title: const Text("Bluetooth Settings"),
+                        trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: _buildButtons(btEQ)),
+                      ),
+                    if (isPortrait)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: _buildGroupWidget(),
+                      ),
+                    if (!isPortrait)
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ..._buildGroupWidget(),
+                          Row(children: _buildButtons(btEQ))
+                        ],
+                      ),
+                    Expanded(
+                      child: EqualizerEditor(
                         eqEffect: btEQ,
                         enabled: true,
                         onChanged: _changeEQValue,
                         onChangedFinal: (parameter, value, oldValue) =>
                             _changeEQValue(parameter, value, false),
-                      );
-                    }),
-              )
-            ],
-          )),
+                      ),
+                    )
+                  ],
+                ));
+          }),
     );
   }
 

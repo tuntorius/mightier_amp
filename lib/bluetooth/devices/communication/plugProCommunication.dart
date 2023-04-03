@@ -25,7 +25,7 @@ class PlugProCommunication extends DeviceCommunication {
   int get productVID => 48;
 
   @override
-  get connectionSteps => 7;
+  get connectionSteps => 6;
 
   int _readyPresetsCount = 0;
   int _readyIRsCount = 0;
@@ -69,11 +69,11 @@ class PlugProCommunication extends DeviceCommunication {
         _readyIRsCount = 0;
         device.deviceControl.sendBLEData(requestPresetByIndex(0));
         break;
-      case 1: //IR names
-        device.deviceControl.sendBLEData(_requestIRName(customIRStart));
+      case 1:
+        device.deviceControl.sendBLEData(_requestCurrentChannel());
         break;
       case 2:
-        device.deviceControl.sendBLEData(_requestCurrentChannel());
+        device.deviceControl.sendBLEData(_requestIRName(customIRStart));
         break;
       case 3:
         device.deviceControl.sendBLEData(_requestSystemSettings());
@@ -83,9 +83,6 @@ class PlugProCommunication extends DeviceCommunication {
         break;
       case 5:
         device.deviceControl.sendBLEData(_requestMicSettings());
-        break;
-      case 6:
-        requestBTEQData(4, skipStream: true);
         break;
     }
   }
@@ -137,13 +134,12 @@ class PlugProCommunication extends DeviceCommunication {
         SyxMsg.kSYX_CURSTATE, SyxDir.kSYXDIR_REQ, []);
   }
 
-  void requestBTEQData(int index, {bool skipStream = false}) {
+  void requestBTEQData(int index) {
     if (!device.deviceControl.isConnected) return;
     var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_BTSET, SyxDir.kSYXDIR_REQ, [index]);
     device.deviceControl.sendBLEData(data);
-
-    if (!skipStream) _bluetoothEQReceived = StreamController<List<int>>();
+    _bluetoothEQReceived = StreamController<List<int>>();
   }
 
   @override
@@ -657,25 +653,15 @@ const z = {
       config.micNGSensitivity = data[4];
       config.micNGDecay = data[5];
 
-      debugPrint("Current state step ready");
+      debugPrint("Mic step ready");
       connectionStepReady();
     }
   }
 
   void _handleBTEqData(List<int> data) {
     if (data[0] == SyxDir.kSYXDIR_REQ) {
-      //Strange Plug pro bug.
-      //this BT group request should return phase and mute value, however it doesn't.
-      //BUT if I request group 4 (remember, groups are valid from 1 to 3)
-      //it gives the values, together with values for group 3
-      if (data[1] == 4) {
-        config.bluetoothInvertChannel = data[14] > 0;
-        config.bluetoothEQMute = data[15] > 0;
-        connectionStepReady();
-      } else {
-        _bluetoothEQReceived?.add(data.sublist(2));
-        _bluetoothEQReceived?.close();
-      }
+      _bluetoothEQReceived?.add(data.sublist(2));
+      _bluetoothEQReceived?.close();
     }
   }
 

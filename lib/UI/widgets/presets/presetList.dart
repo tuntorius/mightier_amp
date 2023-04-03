@@ -1,5 +1,6 @@
 import 'package:drag_and_drop_lists/drag_and_drop_list_interface.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/toneshare/toneshare_main.dart';
@@ -101,20 +102,20 @@ class _PresetListState extends State<PresetList>
         ],
       ),
     ),
-    if (!PlatformUtils.isIOS)
-      PopupMenuItem(
-        value: CategoryMenuActions.Export,
-        child: Row(
-          children: <Widget>[
-            Icon(
-              Icons.save_alt,
-              color: AppThemeConfig.contextMenuIconColor,
-            ),
-            const SizedBox(width: 5),
-            const Text("Export Category"),
-          ],
-        ),
-      )
+    //if (!PlatformUtils.isIOS)
+    PopupMenuItem(
+      value: CategoryMenuActions.Export,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.save_alt,
+            color: AppThemeConfig.contextMenuIconColor,
+          ),
+          const SizedBox(width: 5),
+          const Text("Export Category"),
+        ],
+      ),
+    )
   ];
 
   NuxDevice get device => NuxDeviceControl.instance().device;
@@ -453,7 +454,10 @@ class _PresetListState extends State<PresetList>
     String? data = PresetsStorage().presetsToJson(category);
 
     if (data != null) {
-      saveFileString("application/octet-stream", "$category.nuxpreset", data);
+      if (!PlatformUtils.isIOS)
+        saveFileString("application/octet-stream", "$category.nuxpreset", data);
+      else
+        FilePicker()..saveFile(data);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.deepOrange,

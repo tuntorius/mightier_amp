@@ -52,7 +52,8 @@ dependencies:
   #maybe don't show it in ios altogether
   audio_picker:
     path: ./plugins/audio_picker
-
+  file_picker:
+    path: ./plugins/file_picker
   #modified to work on ios but not tested
   flutter_audio_query:
     path: ./plugins/flutter_audio_query

@@ -61,7 +61,11 @@
 	<string>This app uses camera to scan QR codes that contain preset data for the connected amplifier</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app wants to use your photos.</string>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>Mightier Amp needs files access to let you backup your presets.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 </dict>
 </plist>

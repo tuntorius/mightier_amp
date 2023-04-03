@@ -454,10 +454,11 @@ class _PresetListState extends State<PresetList>
     String? data = PresetsStorage().presetsToJson(category);
 
     if (data != null) {
-      if (!PlatformUtils.isIOS)
+      if (!PlatformUtils.isIOS) {
         saveFileString("application/octet-stream", "$category.nuxpreset", data);
-      else
-        FilePicker()..saveFile(data);
+      } else {
+        FilePicker().saveFile(data);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.deepOrange,

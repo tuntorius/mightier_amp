@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 
@@ -8,6 +9,7 @@ import '../../../bluetooth/devices/presets/Preset.dart';
 import '../../../platform/platformUtils.dart';
 import '../../mightierIcons.dart';
 import '../../theme.dart';
+import '../../toneshare/share_preset.dart';
 
 enum PresetItemActions {
   Delete,
@@ -174,11 +176,38 @@ class PresetItem extends StatelessWidget {
     return widgets;
   }
 
-  Widget? _createPresetTrailingWidget(Map<String, dynamic> item) {
+  Widget? _createPresetTrailingWidget(
+      Map<String, dynamic> item, BuildContext context) {
     //create trailing widget based on whether the preset is new
     Widget? trailingWidget;
     if (simplified) {
       trailingWidget = null;
+    } else if (kDebugMode) {
+      trailingWidget = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => PresetForm()),
+                );
+              },
+              icon: Icon(Icons.share)),
+          PopupMenuButton(
+            child: const Padding(
+              padding:
+                  EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
+              child: Icon(Icons.more_vert),
+            ),
+            itemBuilder: (context) {
+              return _popupSubmenu;
+            },
+            onSelected: (pos) {
+              onPopupMenuTap?.call(pos as PresetItemActions, item);
+            },
+          ),
+        ],
+      );
     } else {
       trailingWidget = PopupMenuButton(
         child: const Padding(
@@ -306,7 +335,7 @@ class PresetItem extends StatelessWidget {
               children: _buildEffectsPreview(item),
             ),
           ),
-          trailing: _createPresetTrailingWidget(item),
+          trailing: _createPresetTrailingWidget(item, context),
           onTap: onTap),
     );
   }

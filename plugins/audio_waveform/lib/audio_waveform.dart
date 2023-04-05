@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
@@ -26,6 +27,8 @@ class AudioWaveformDecoder {
   }
 
   Future<Uint8List?> nextBuffer() async {
+    if (Platform.isIOS)
+      return await platform.invokeMethod("next", {"frameCount": 128});
     return await platform.invokeMethod("next");
   }
 
@@ -47,20 +50,12 @@ class AudioWaveformDecoder {
 
   void decode(void Function() onStart, bool Function() onProgress,
       void Function() onFinish) async {
-    //this holds actual buffer length
-    int len = 0;
-
     //get audio duration
     _durationms = await _duration() / 1000000;
     int sampleRate = await _sampleRate();
     print("$duration} seconds");
     //calc approx buffer size and create it
     int bytes = ((duration) * sampleRate).ceil();
-
-    //used for max audio sample value
-    //int maxValue = 0;
-
-    int cursor = 0;
     int bufferIndex = 0;
     int sampleStep = max(duration.round() / 10, 1).floor();
 
@@ -78,21 +73,14 @@ class AudioWaveformDecoder {
         break;
       }
 
-      var blob = ByteData.sublistView(list);
-      for (int i = 0; i < list.length; i++) {
-        if (cursor % (sampleStep * 4) == 1) {
-          //try to implement lowpass filter here
-          var val = blob.getInt8(i).abs();
-
-          //do a rudimentary dynamic range expansion
-          if (val < 30) val = (val * 0.2).round();
-          if (val > 40) val = (val * 1.5).round();
-          //if (maxValue < val) maxValue = val;
-          pos < expectedSize ? _samples[pos++] = val : _samples.add(val);
-        }
-        cursor++;
+      int listEndIndex = pos + list.length;
+      if (listEndIndex > _samples.length) {
+        _samples.length = listEndIndex;
       }
-      len += list.length;
+
+      _samples.setRange(pos, listEndIndex, list);
+      pos += list.length;
+
       bufferIndex++;
 
       //update on every hundredth sample or so
@@ -105,7 +93,7 @@ class AudioWaveformDecoder {
       }
     } while (true);
 
-    print("Length: $len");
+    print("Length: $pos");
     print(
         "expected length ${(bytes / sampleStep).ceil()}, final length ${_samples.length}");
     print('decode executed in ${stopwatch.elapsed}');

@@ -25,11 +25,13 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.AudioFormat;
 import android.net.Uri;
+import android.util.Log;
 
 import android.content.Context;
 
 public class WaveformExtractor {
 
+    private static final String TAG = "WaveformExtractor";
     private final boolean DEBUG = false;
 
     private MediaExtractor extractor;
@@ -42,6 +44,8 @@ public class WaveformExtractor {
 
     private ByteBuffer[] outputBuffers;
     private int outputBufferIndex = -1;
+
+    private int sampleStep = 1;
 
     public WaveformExtractor(){}
 
@@ -104,6 +108,9 @@ public class WaveformExtractor {
         inputBuffers = decoder.getInputBuffers();
         outputBuffers = decoder.getOutputBuffers();
         end_of_input_file = false;
+
+        int duration = (int)Math.round(getDuration() / 1000000.0);
+        sampleStep = Math.max(duration / 10, 1);
     }
     
 
@@ -124,22 +131,40 @@ public class WaveformExtractor {
             return null;
 
         BufferInfo info = new BufferInfo();
-        
-        for (;;) {
+
+    while (true) {
             // Read data from the file into the codec.
             if (!end_of_input_file) {
-                int inputBufferIndex = decoder.dequeueInputBuffer(10000);
+                int inputBufferIndex = decoder.dequeueInputBuffer(2000);
                 if (inputBufferIndex >= 0) {
-                    int size = extractor.readSampleData(inputBuffers[inputBufferIndex], 0);
-                    if (size < 0) {
+                    int bufferChunkSize = 0;
+                    long presentationTime = 0;
+                    for(int b=0;b<50;b++) {
+                        long sSize = extractor.getSampleSize();
+                        if (sSize<0 || inputBuffers[inputBufferIndex].remaining() < sSize)
+                            break;
+                        ByteBuffer tempBuffer = ByteBuffer.allocate((int)sSize);
+                        int size = extractor.readSampleData(tempBuffer, 0);
+
+                        if (size > 0) {
+                            bufferChunkSize += size;
+                            inputBuffers[inputBufferIndex].put(tempBuffer);
+
+                            presentationTime += extractor.getSampleTime();
+                        }
+                        else
+                            break;
+                        extractor.advance();
+                    }
+                    if (bufferChunkSize == 0) {
+                        
                         // End Of File
                         decoder.queueInputBuffer(inputBufferIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                         end_of_input_file = true;
                         if (DEBUG)
                             System.out.println("EndOfFile");
                     } else {
-                        decoder.queueInputBuffer(inputBufferIndex, 0, size, extractor.getSampleTime(), 0);
-                        extractor.advance();
+                        decoder.queueInputBuffer(inputBufferIndex, 0, bufferChunkSize, presentationTime, 0);
                     }
                 }
             }
@@ -149,7 +174,7 @@ public class WaveformExtractor {
                 // Ensure that the data is placed at the start of the buffer
                 outputBuffers[outputBufferIndex].position(0);
                 
-            outputBufferIndex = decoder.dequeueOutputBuffer(info, 10000);
+            outputBufferIndex = decoder.dequeueOutputBuffer(info, 2000);
             if (outputBufferIndex >= 0) {
                 // Handle EOF
                 if (info.flags != 0) {
@@ -208,7 +233,7 @@ public class WaveformExtractor {
         if (data == null)
             return null;
         
-        byte[] returnData = new byte[info.size];
+        byte[] returnData = null;
          
         if (DEBUG) {
             System.out.println("buffer info " + info.size);
@@ -216,9 +241,38 @@ public class WaveformExtractor {
         }
 
         if (info.size>0)
-            data.get(returnData);
+            returnData = simplifyData(data, info.size);
+        else
+            returnData = new byte[0];
 
         releaseBuffer();
         return returnData;
+    }
+
+    public byte[] simplifyData(ByteBuffer buffer, int size) {
+        int cursor = 0;
+        byte[] samples = new byte[size / (4 * sampleStep)];
+        int pos = 0;
+
+        for (int i = 0; i < size; i++) {
+            if (cursor % (sampleStep * 4) == 1) {
+                byte val = (byte) Math.abs(buffer.get(i));
+
+                // do a rudimentary dynamic range expansion
+                if (val < 30) {
+                    val = (byte) Math.round(val * 0.2);
+                }
+                if (val > 40) {
+                    val = (byte) Math.round(val * 1.5);
+                }
+
+                if (pos < samples.length) {
+                    samples[pos++] = val;
+                }
+            }
+            cursor++;
+        }
+
+        return samples;
     }
 }

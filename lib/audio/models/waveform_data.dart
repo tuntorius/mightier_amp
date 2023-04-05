@@ -32,6 +32,7 @@ class WaveformData {
   }
 
   void setReady() {
+    setUpdate();
     _ready = true;
   }
 

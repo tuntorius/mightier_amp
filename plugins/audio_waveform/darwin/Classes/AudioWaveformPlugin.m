@@ -1,3 +1,4 @@
+#if 0
 #import "AudioWaveformPlugin.h"
 
 @implementation AudioWaveformPlugin {
@@ -260,3 +261,4 @@
 }
 
 @end
+#endif

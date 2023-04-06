@@ -104,6 +104,7 @@ class _AudioEditorState extends State<AudioEditor> {
 
   Future decodeAudio(String path) async {
     path = await SourceResolver.getSourceUrl(path);
+    print("Audio path $path");
     await decoder.open(path);
 
     decoder.decode(() {

@@ -14,6 +14,13 @@ class AudioWaveformDecoder {
   double get duration => _durationms;
 
   Future<void> open(String path) async {
+    if (Platform.isIOS) {
+      if (path.contains("ipod-library://")) {
+        String url = path;
+        Uri uri = Uri.parse(url);
+        path = uri.queryParameters["id"] ?? path;
+      }
+    }
     try {
       print("opening $path");
       size = 0;
@@ -26,9 +33,11 @@ class AudioWaveformDecoder {
     }
   }
 
-  Future<Uint8List?> nextBuffer() async {
-    if (Platform.isIOS)
-      return await platform.invokeMethod("next", {"frameCount": 128});
+  Future<List<int>?> nextBuffer() async {
+    if (Platform.isIOS) {
+      var result = await platform.invokeMethod("next", {"frameCount": 242144});
+      return result?.cast<int>() ?? null;
+    }
     return await platform.invokeMethod("next");
   }
 
@@ -68,7 +77,7 @@ class AudioWaveformDecoder {
     onStart();
     Stopwatch stopwatch = Stopwatch()..start();
     do {
-      Uint8List? list = await nextBuffer();
+      List<int>? list = await nextBuffer();
       if (list == null) {
         break;
       }
@@ -84,7 +93,8 @@ class AudioWaveformDecoder {
       bufferIndex++;
 
       //update on every hundredth sample or so
-      if (bufferIndex % 200 == 0) {
+      var skip = Platform.isAndroid ? 200 : 2;
+      if (bufferIndex % skip == 0) {
         // inform for progress and check whether to continue
         if (!onProgress()) {
           await release();

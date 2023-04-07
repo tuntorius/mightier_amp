@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../../platform/platformUtils.dart';
 
 class SpeedPanel extends StatelessWidget {
   final double speed;
@@ -43,28 +44,30 @@ class SpeedPanel extends StatelessWidget {
             ],
           ),
         ),
-        ListTile(
-          title: Text("Pitch: ${semitones > 0 ? "+" : ""}$semitones semitones"),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    if (semitones == -12) return;
-                    var _semitones = semitones - 1;
-                    onSemitonesChanged(_semitones);
-                  },
-                  child: const Text("-")),
-              ElevatedButton(
-                  onPressed: () {
-                    if (semitones == 12) return;
-                    var _semitones = semitones + 1;
-                    onSemitonesChanged(_semitones);
-                  },
-                  child: const Text("+"))
-            ],
+        if (!PlatformUtils.isIOS)
+          ListTile(
+            title:
+                Text("Pitch: ${semitones > 0 ? "+" : ""}$semitones semitones"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      if (semitones == -12) return;
+                      var _semitones = semitones - 1;
+                      onSemitonesChanged(_semitones);
+                    },
+                    child: const Text("-")),
+                ElevatedButton(
+                    onPressed: () {
+                      if (semitones == 12) return;
+                      var _semitones = semitones + 1;
+                      onSemitonesChanged(_semitones);
+                    },
+                    child: const Text("+"))
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

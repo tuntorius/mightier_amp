@@ -24,7 +24,7 @@ class UsbMidiManager {
     if (PlatformUtils.isAndroid) {
       var deviceInfoPlugin = DeviceInfoPlugin();
       final androidInfo = await deviceInfoPlugin.androidInfo;
-      usbMidiSupported = (androidInfo.version.sdkInt ?? 0) >= 23;
+      usbMidiSupported = (androidInfo.version.sdkInt) >= 23;
     } else if (PlatformUtils.isIOS) {
       //TODO: Check if all ios versions support midi
       usbMidiSupported = true;

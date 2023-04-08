@@ -33,19 +33,21 @@ public class AudioQueryDelegate: AudioQueryDelegateProtocol {
     private var  m_imageLoader: ImageLoader;
     
     init(){
+        /* 
         m_artistLoader = ArtistLoader()
         m_albumLoader = AlbumLoader()
         m_songLoader = SongLoader()
         m_genreLoader = GenreLoader()
         m_playlistLoader = PlaylistLoader()
         m_imageLoader = ImageLoader()
-        
+    
         MPMediaLibrary.requestAuthorization {
             (status) in
             if status == .authorized {
                 self.avaibale = true
             }
         }
+    */
     }
     
     /**

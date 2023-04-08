@@ -8,6 +8,7 @@ import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'models/jamTrack.dart';
 import 'online_sources/sourceResolver.dart';
+import '../platform/platformUtils.dart';
 
 enum ABRepeatState { off, addedA, addedB }
 
@@ -243,6 +244,7 @@ class AutomationController {
   }
 
   void setPitch(int pitch) {
+    if (PlatformUtils.isIOS) return;
     double lPitch = pow(2, pitch / 12).toDouble();
     player.setPitch(lPitch);
   }

@@ -13,7 +13,7 @@ class WaveformExtractor {
         let predicate = MPMediaPropertyPredicate(value: mediaLibraryItemID, forProperty: MPMediaItemPropertyPersistentID)
         query.addFilterPredicate(predicate)
         guard let mediaItem = query.items?.first else {
-            return nil
+            return URL(string: mediaLibraryItemID)
         }
         return mediaItem.assetURL
     }
@@ -47,11 +47,8 @@ class WaveformExtractor {
         guard let audioFile = audioFile else {
             return nil
         }
-        guard let format = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 44100, channels: 2, interleaved: false) else {
-            return nil
-        }
 
-        guard let audioFileBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: chunkSize) else {
+        guard let audioFileBuffer = AVAudioPCMBuffer(pcmFormat: audioFile.processingFormat, frameCapacity: chunkSize) else {
             return nil
         }
         do {
@@ -59,37 +56,38 @@ class WaveformExtractor {
         } catch {
             return nil
         }
-        print("Buffer len \(audioFileBuffer.frameLength)")
-        guard let audioData = audioFileBuffer.int16ChannelData?[0] else {
+        
+        guard let audioData = audioFileBuffer.floatChannelData?[0] else {
             return nil
         }
         let audioDataCount = Int(audioFileBuffer.frameLength) * Int(audioFileBuffer.format.channelCount)
         let audioDataBuffer = UnsafeBufferPointer(start: audioData, count: audioDataCount)
-        let samples = [Int16](audioDataBuffer)
+        let samples = [Float](audioDataBuffer)
 
         return simplifyData(samples: samples);
     }
 
-    func simplifyData(samples: [Int16]) -> [UInt8] {
-        let finalSize = samples.count / (4 * sampleStep)
+    func simplifyData(samples: [Float]) -> [UInt8] {
+        let finalSize = samples.count / (2 * sampleStep) + 1
         var simplifiedSamples = [UInt8](repeating: 0, count: finalSize)
 
-        for i in 0..<samples.count {
-            if i % (sampleStep * 4) == 1 {
-                var val = Int(abs(samples[i]))
+        for i in stride(from: 0, to: samples.count/2, by: sampleStep) {
+            var val = UInt16(abs(samples[i])*256)
 
-                // do a rudimentary dynamic range expansion
-                if val < 30 {
-                    val = Int(Double(val) * 0.2)
-                }
-                if val > 40 {
-                    val = Int(Double(val) * 1.5)
-                }
+            // do a rudimentary dynamic range expansion
+//            if val < 30 {
+//                val = val / 5
+//            }
+//            else if val > 40 {
+//                val = (val * 15) / 10
+//                if val>255 {
+//                    val=255
+//                }
+//            }
 
-                if simplifiedSamples.count < finalSize {
-                    simplifiedSamples[i / (sampleStep * 4)] = UInt8(truncatingIfNeeded: val)
-                }
-            }
+            //if i / (sampleStep * 2) < simplifiedSamples.count {
+                simplifiedSamples[i / (sampleStep)] = UInt8(truncatingIfNeeded: val)
+            //}
         }
 
         return simplifiedSamples

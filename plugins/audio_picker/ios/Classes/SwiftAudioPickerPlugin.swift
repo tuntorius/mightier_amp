@@ -33,6 +33,15 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
             _flutterResult = result
             openAudioPicker(multiple:true)
         }
+        if (call.method=="get_metadata") {
+            if let args = call.arguments as? [String: Any],
+            let assetUrl = args["assetUrl"] as? String {
+                let metadata = getArtistAndTitle(from: assetUrl)
+                result(metadata)
+            } else {
+                result(FlutterError(code: "invalid_argument", message: "Invalid arguments", details: nil))
+            }
+        }
     }
 
     enum ExportError: Error {
@@ -52,7 +61,7 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
         else {
             var pathList:[String] = []
 
-            for (index, item) in mediaItemCollection.items.enumerated() {
+            for (index, _) in mediaItemCollection.items.enumerated() {
                 pathList.append(mediaItemCollection.items[index].assetURL?.absoluteString ?? "")
             }
             self._flutterResult?(pathList)
@@ -74,5 +83,18 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
         _audioPickerController?.modalPresentationStyle = UIModalPresentationStyle.currentContext
         _viewController?.present(_audioPickerController!, animated: true, completion: nil)
     }
-    
+
+    func getArtistAndTitle(from assetUrl: String) -> [String: String] {
+        
+        let query = MPMediaQuery.songs()
+        let predicate = MPMediaPropertyPredicate(value: assetUrl, forProperty: MPMediaItemPropertyPersistentID)
+        query.addFilterPredicate(predicate)
+        if let result = query.items?.first {
+            let title = result.title ?? ""
+            let artist = result.artist ?? ""
+            return ["artist": artist, "title": title]
+        }
+        
+        return ["artist": "", "title": ""]
+    }
 }

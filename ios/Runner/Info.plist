@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -22,6 +24,22 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>The app uses music as backing tracks that are streamed to the connected guitar amplifier</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Bluetooth Low Energy is used to connect to the guitar amplifier</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth Low Energy is used to connect to the guitar amplifier</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses camera to scan QR codes that contain preset data for the connected amplifier</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app lets you scan a photo containing QR code with amp preset data.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -39,25 +57,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>The app uses music as backing tracks that are streamed to the connected guitar amplifier</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Needs BLE permission</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Needs BLE permission</string>
-	<key>NSCameraUsageDescription</key>
-	<string>This app uses camera to scan QR codes that contain preset data for the connected amplifier</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app wants to use your photos.</string>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
 </dict>
 </plist>

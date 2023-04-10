@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
@@ -16,4 +17,17 @@ class AudioPicker {
     if (absolutePath != null) return List<String>.from(absolutePath);
     return [];
   }
+
+  static Future<Map<String, String>> getMetadata(String assetUrl) async {
+    if (!Platform.isIOS)
+      throw Exception("getMetadata is only for iOS");
+
+    if (assetUrl.contains("ipod-library://")) {
+      String url = assetUrl;
+      Uri uri = Uri.parse(url);
+      assetUrl = uri.queryParameters["id"] ?? assetUrl;
+    }
+  final result = await _channel.invokeMethod('get_metadata', {'assetUrl': assetUrl});
+  return Map<String, String>.from(result);
+}
 }

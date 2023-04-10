@@ -230,6 +230,18 @@ class FlutterBluePlusController extends BLEController {
       debugPrint(event.toString());
       switch (event) {
         case BluetoothState.unknown:
+          if (Platform.isIOS) {
+            Future.delayed(const Duration(milliseconds: 500 )).then((value) {
+              flutterBlue.isOn.then((value) {
+                  if (value) {
+                    bleState =BleState.on;
+                    setMidiSetupStatus(MidiSetupStatus.deviceSearching);
+                    startScanning();
+                  }
+                });
+            });
+          }
+          break;
         case BluetoothState.unavailable:
         case BluetoothState.unauthorized:
           bleState = BleState.off;

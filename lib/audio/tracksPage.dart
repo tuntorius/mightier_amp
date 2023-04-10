@@ -288,7 +288,8 @@ class _TracksPageState extends State<TracksPage>
             break;
           }
         }
-      } else {
+      }
+      else {
         //find song in media library
         String file = basename(path[i]);
 
@@ -300,16 +301,33 @@ class _TracksPageState extends State<TracksPage>
         }
       }
 
+      String artist = "";
+      String title = "";
+      String trackName = "";
+      String url = "";
       if (libSong != null) {
-        String name =
-            libSong.artist != "<unknown>" || libSong.artist.trim().isEmpty
-                ? "${libSong.artist} - ${libSong.title}"
-                : libSong.title;
-
-        TrackData().addTrack(libSong.uri, name, false);
+        artist = libSong.artist == "<unknown>" ? "":libSong.artist;
+        title = libSong.title;
+        url = libSong.uri;
+      } else if (PlatformUtils.isIOS) {
+        var meta = await AudioPicker.getMetadata(path[i]);
+        artist = meta["artist"] ?? "";
+        title = meta["title"] ?? "";
+        url = path[i];
       } else {
         TrackData().addTrack(path[i], basenameWithoutExtension(path[i]), false);
       }
+
+      trackName = artist.isNotEmpty ? "$artist - $title" : title;
+
+      if (url.isEmpty) {
+        url = path[i];
+      }
+      if (trackName.isEmpty) {
+        trackName = basenameWithoutExtension(path[i]);
+      }
+
+      TrackData().addTrack(url, trackName, false);
       //clear filter and scroll to bottom
       searchCtrl.text = "";
       setState(() {});

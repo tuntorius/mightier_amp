@@ -137,7 +137,7 @@ SPEC CHECKSUMS:
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   Protobuf: d7f7c8329edf5eb8af65547a8ba3e9c1cee927d5
-  qr_utils: f8364c024ea259dfe0d88d4ba4f7b34984b7a61f
+  qr_utils: 6dc668f03d5da6a3460ec343d54d6ce4d3ae5f2e
   Sentry: 8ffc397d98fe58d693e73959b26ed0eaee55646a
   sentry_flutter: 5028afacfa875785cb0e3682aece171fcd9dc0d5
   SentryPrivate: bf776a47a131648f5023097215987b40fbd47025
@@ -145,6 +145,6 @@ SPEC CHECKSUMS:
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
 
-PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
+PODFILE CHECKSUM: 993b00b1dfbbb9742d56df5215fe5022b690b664
 
 COCOAPODS: 1.12.0

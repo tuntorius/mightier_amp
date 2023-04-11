@@ -11,7 +11,7 @@ class QrUtils {
   static const QRMessages = [
     "Imported Successfully",
     "Error! Unsupported Format!",
-    "Error! This preset is for different device!",
+    "Error! This preset is for different amp model!",
     "Error! This preset is for different firmware version!"
   ];
   static const MethodChannel _channel =

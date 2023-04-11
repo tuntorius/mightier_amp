@@ -168,8 +168,8 @@ class _ChannelSelectorState extends State<ChannelSelector> {
           //TODO: Explain why camera is needed and open settings
         }
         final content = await QrUtils.scanQR;
-        if (content != null) {
-          setupFromQRData(content);
+        if (content?.isNotEmpty ?? false) {
+          setupFromQRData(content!);
           setState(() {});
         }
         break;

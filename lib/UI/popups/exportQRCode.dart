@@ -19,8 +19,21 @@ class QRExportDialog {
   Widget buildDialog(BuildContext context) {
     ScreenshotController screenshotController = ScreenshotController();
     return AlertDialog(
-        title: const Text("Share QR Code"),
+        title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                      icon: Icon(
+                        Icons.adaptive.arrow_back,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => Navigator.of(context).pop()),
+                  const Text("Share QR Code",
+                      style: TextStyle(color: Colors.white)),
+                ],
+              ),
         insetPadding: EdgeInsets.zero,
+
         contentPadding:
             const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         content: FittedBox(
@@ -55,6 +68,7 @@ class QRExportDialog {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  if (!PlatformUtils.isIOS)
                   ElevatedButton.icon(
                       onPressed: () async {
                         //var path = '$directory';

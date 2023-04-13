@@ -28,7 +28,7 @@ Facebook groups for presets sharing and amps discussion:
 [Mighty Plug Pro/Mighty Space](https://www.facebook.com/groups/mightyplugpro/)  
 
 ## iOS Support
-I'm working on it and most of the features are ready. However I don't have any apple devices and therefore can't publish it in the App Store. If somebody is interested in helping, there is an issue about iOS [here](https://github.com/tuntorius/mightier_amp/issues/16).
+Coming soon.
 
 ## Download
 

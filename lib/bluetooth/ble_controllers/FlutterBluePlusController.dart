@@ -91,6 +91,8 @@ class FlutterBluePlusController extends BLEController {
     _subscribeBleState();
     _subscribeScanningStatus();
     _subscribeScanResults();
+
+    flutterBlue.setLogLevel(LogLevel.info);
   }
 
   @override
@@ -230,15 +232,16 @@ class FlutterBluePlusController extends BLEController {
       debugPrint(event.toString());
       switch (event) {
         case BluetoothState.unknown:
+          //fix for ios not recognizing bluetooth on at startup
           if (Platform.isIOS) {
-            Future.delayed(const Duration(milliseconds: 500 )).then((value) {
+            Future.delayed(const Duration(milliseconds: 500)).then((value) {
               flutterBlue.isOn.then((value) {
-                  if (value) {
-                    bleState =BleState.on;
-                    setMidiSetupStatus(MidiSetupStatus.deviceSearching);
-                    startScanning();
-                  }
-                });
+                if (value) {
+                  bleState = BleState.on;
+                  setMidiSetupStatus(MidiSetupStatus.deviceSearching);
+                  startScanning();
+                }
+              });
             });
           }
           break;

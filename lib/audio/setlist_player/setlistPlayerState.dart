@@ -112,6 +112,12 @@ class SetlistPlayerState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future clear() async {
+    setlist = null;
+    currentTrack = 0;
+    await stop();
+  }
+
   void previous() async {
     if (_automation == null) return;
     if (currentTrack == 0 || _automation!.player.position.inSeconds > 3) {

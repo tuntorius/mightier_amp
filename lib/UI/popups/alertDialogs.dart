@@ -54,7 +54,7 @@ class AlertDialogs {
     Widget cancel = TextButton(
       child: Text(cancelButton),
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
         onConfirm?.call(false);
       },
     );
@@ -64,7 +64,7 @@ class AlertDialogs {
         style: TextStyle(color: confirmColor),
       ),
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
         onConfirm?.call(true);
       },
     );

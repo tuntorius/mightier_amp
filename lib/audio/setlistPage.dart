@@ -4,6 +4,7 @@ import 'package:mighty_plug_manager/UI/popups/selectTrack.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/setlist_player/setlistPlayerState.dart';
+import '../UI/pages/jamTracks.dart';
 import 'models/setlist.dart';
 import 'trackdata/trackData.dart';
 
@@ -54,7 +55,9 @@ class _SetlistPageState extends State<SetlistPage> {
             confirmButton: "Delete",
             confirmColor: Colors.red, onConfirm: (delete) {
           if (delete) {
+            SetlistItem? currentSong = findPlayedTrack();
             widget.setlist.items.remove(item);
+            reattachTrackIndex(currentSong);
             TrackData().saveSetlists().then((value) {
               setState(() {});
             });
@@ -100,6 +103,24 @@ class _SetlistPageState extends State<SetlistPage> {
     selected.clear();
     _multiselectMode = false;
     setState(() {});
+  }
+
+  SetlistItem? findPlayedTrack() {
+    if (playerState.setlist == widget.setlist) {
+      return widget.setlist.items[playerState.currentTrack];
+    }
+    return null;
+  }
+
+  void reattachTrackIndex(SetlistItem? currentSong) {
+    if (currentSong != null) {
+      var index = widget.setlist.items.indexOf(currentSong);
+      if (index > -1) {
+        playerState.currentTrack = index;
+      } else {
+        playerState.clear();
+      }
+    }
   }
 
   Widget? createTrailingWidget(BuildContext context, int index) {
@@ -259,7 +280,8 @@ class _SetlistPageState extends State<SetlistPage> {
                 onPressed: () {
                   if (_multiselectMode) {
                     //delete mode
-                    AlertDialogs.showConfirmDialog(context,
+                    AlertDialogs.showConfirmDialog(
+                        JamTracks.jamtracksNavigator.currentContext!,
                         title: "Confirm",
                         description:
                             "Are you sure you want to remove ${selected.length} items?",
@@ -267,10 +289,16 @@ class _SetlistPageState extends State<SetlistPage> {
                         confirmButton: "Delete",
                         confirmColor: Colors.red, onConfirm: (delete) async {
                       if (delete) {
+                        SetlistItem? currentSong = findPlayedTrack();
+
                         for (int i = selected.length - 1; i >= 0; i--) {
-                          widget.setlist.items
-                              .removeAt(selected.keys.elementAt(i));
+                          var index = selected.keys.elementAt(i);
+                          if (playerState.setlist == widget.setlist &&
+                              playerState.currentTrack == index) {}
+                          widget.setlist.items.removeAt(index);
                         }
+
+                        reattachTrackIndex(currentSong);
                         await TrackData().saveSetlists();
                         deselectAll();
                       }

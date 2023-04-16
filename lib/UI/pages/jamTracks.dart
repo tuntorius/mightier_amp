@@ -20,6 +20,8 @@ import '../widgets/nestedWillPopScope.dart';
 class JamTracks extends StatefulWidget {
   const JamTracks({Key? key}) : super(key: key);
 
+  static final GlobalKey<NavigatorState> jamtracksNavigator = GlobalKey();
+
   @override
   State createState() => _JamTracksState();
 }
@@ -27,8 +29,7 @@ class JamTracks extends StatefulWidget {
 class _JamTracksState extends State<JamTracks>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin<JamTracks> {
   late TabController cntrl;
-  Setlist? _setlist;
-  bool _readOnlySetlist = false;
+
   final SetlistPlayerState playerState = SetlistPlayerState.instance();
   Permission? _mediaPermission;
   @override
@@ -46,8 +47,8 @@ class _JamTracksState extends State<JamTracks>
         }
         setState(() {});
       });
-    } else {
-      _mediaPermission = Permission.storage;
+    } else if (PlatformUtils.isIOS) {
+      _mediaPermission = Permission.mediaLibrary;
     }
 
     cntrl = TabController(length: 2, vsync: this);
@@ -77,23 +78,22 @@ class _JamTracksState extends State<JamTracks>
   }
 
   Widget showSetlists(bool hasTracks) {
+    var innerContext = JamTracks.jamtracksNavigator.currentContext!;
     if (hasTracks) {
       return Setlists(
         onAllTracksSelect: () {
-          _readOnlySetlist = true;
-          _setlist = TrackData().allTracks;
-          setState(() {});
+          Navigator.pushNamed(innerContext, '/setlist',
+              arguments: SetlistArguments(TrackData().allTracks, true));
         },
         onSetlistSelect: (setlist) {
-          _readOnlySetlist = false;
-          _setlist = setlist;
-          setState(() {});
+          Navigator.pushNamed(innerContext, '/setlist',
+              arguments: SetlistArguments(setlist, false));
         },
       );
     }
     return Stack(
       children: [
-        Setlists(),
+        const Setlists(),
         TextButton(
           child: const Center(child: Text("")),
           onPressed: () {
@@ -105,37 +105,46 @@ class _JamTracksState extends State<JamTracks>
   }
 
   Widget mainView() {
-    if (_setlist == null) {
-      bool hasTracks = TrackData().tracks.isNotEmpty;
-      return Column(
-        children: [
-          TabBar(
-            tabs: const [Tab(text: "Setlists"), Tab(text: "Tracks")],
-            controller: cntrl,
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: cntrl,
-              children: [
-                showSetlists(hasTracks),
-                const TracksPage(),
-              ],
-            ),
-          ),
-        ],
-      );
-    } else {
-      return SetlistPage(
-        setlist: _setlist!,
-        readOnly: _readOnlySetlist,
-        onBack: _setlist == null
-            ? null
-            : () {
-                _setlist = null;
-                setState(() {});
-              },
-      );
-    }
+    bool hasTracks = TrackData().tracks.isNotEmpty;
+    return Navigator(
+      key: JamTracks.jamtracksNavigator,
+      onGenerateRoute: (settings) {
+        if (settings.name == '/') {
+          return MaterialPageRoute(
+            builder: (context) {
+              return Column(
+                children: [
+                  TabBar(
+                    tabs: const [Tab(text: "Setlists"), Tab(text: "Tracks")],
+                    controller: cntrl,
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: cntrl,
+                      children: [
+                        showSetlists(hasTracks),
+                        const TracksPage(),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        } else if (settings.name == "/setlist") {
+          return MaterialPageRoute(
+            builder: (context) {
+              final SetlistArguments arguments =
+                  settings.arguments as SetlistArguments;
+              return SetlistPage(
+                setlist: arguments.setlist,
+                readOnly: arguments.readOnly,
+              );
+            },
+          );
+        }
+      },
+    );
   }
 
   Widget _permissionInfo() {
@@ -180,12 +189,12 @@ class _JamTracksState extends State<JamTracks>
           if (playerState.expanded) {
             playerState.toggleExpanded();
             return Future.value(false);
-          }
-          if (_setlist != null) {
-            _setlist = null;
-            setState(() {});
+          } else if (JamTracks.jamtracksNavigator.currentState?.canPop() ??
+              false) {
+            JamTracks.jamtracksNavigator.currentState?.pop();
             return Future.value(false);
           }
+
           return Future.value(true);
         },
         child: JamtracksView(child: mainView()));
@@ -193,6 +202,7 @@ class _JamTracksState extends State<JamTracks>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       child: FutureBuilder<PermissionStatus>(
         future: _mediaPermission?.status,
@@ -208,7 +218,7 @@ class _JamTracksState extends State<JamTracks>
                 return const Text("Permission declined");
             }
           }
-          return const Text("Unknown status");
+          return const SizedBox();
         },
       ),
     );
@@ -216,4 +226,11 @@ class _JamTracksState extends State<JamTracks>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class SetlistArguments {
+  final Setlist setlist;
+  final bool readOnly;
+
+  SetlistArguments(this.setlist, this.readOnly);
 }

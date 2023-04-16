@@ -6,10 +6,10 @@ import 'package:mighty_plug_manager/audio/trackdata/trackData.dart';
 import 'models/setlist.dart';
 
 class Setlists extends StatefulWidget {
-  Function(Setlist)? onSetlistSelect;
-  Function()? onAllTracksSelect;
+  final Function(Setlist)? onSetlistSelect;
+  final Function()? onAllTracksSelect;
 
-  Setlists({Key? key, this.onSetlistSelect, this.onAllTracksSelect})
+  const Setlists({Key? key, this.onSetlistSelect, this.onAllTracksSelect})
       : super(key: key);
 
   @override

@@ -10,10 +10,8 @@ import 'trackdata/trackData.dart';
 class SetlistPage extends StatefulWidget {
   final Setlist setlist;
   final bool readOnly;
-  final Function()? onBack;
 
-  const SetlistPage(
-      {Key? key, required this.setlist, required this.readOnly, this.onBack})
+  const SetlistPage({Key? key, required this.setlist, required this.readOnly})
       : super(key: key);
   @override
   State createState() => _SetlistPageState();
@@ -133,7 +131,6 @@ class _SetlistPageState extends State<SetlistPage> {
   Widget build(BuildContext context) {
     return NestedWillPopScope(
       onWillPop: () async {
-        print("setlistPage will pop scope");
         if (_multiselectMode) {
           deselectAll();
           return false;
@@ -141,16 +138,12 @@ class _SetlistPageState extends State<SetlistPage> {
         return true;
       },
       child: Scaffold(
+        appBar: AppBar(
+            backgroundColor: Colors.grey[850],
+            title: Text(widget.setlist.name)),
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: IconButton(
-                icon: Icon(Icons.adaptive.arrow_back),
-                onPressed: widget.onBack,
-              ),
-              title: Text(widget.setlist.name),
-            ),
             Expanded(
               child: ListTileTheme(
                 selectedTileColor: const Color.fromARGB(255, 9, 51, 116),

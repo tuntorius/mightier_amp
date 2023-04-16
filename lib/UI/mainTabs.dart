@@ -78,10 +78,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       });
     });
 
-    NuxDeviceControl.instance()
-        .connectStatus
-        .stream
-        .listen(connectionStateListener);
+    NuxDeviceControl.instance().connectStatus.listen(connectionStateListener);
     NuxDeviceControl.instance().addListener(onDeviceChanged);
 
     BLEMidiHandler.instance().initBle(bleErrorHandler);
@@ -201,6 +198,8 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         dialogSetState = null;
         _timeout.cancel();
         Navigator.pop(context);
+        break;
+      case DeviceConnectionState.disconnected:
         break;
     }
   }

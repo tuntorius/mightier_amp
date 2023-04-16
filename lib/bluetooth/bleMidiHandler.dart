@@ -5,8 +5,6 @@
 //https://support.chefsteps.com/hc/en-us/articles/360009480814-I-have-an-Android-Why-am-I-being-asked-to-allow-location-access-
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:mighty_ble/mighty_ble.dart';
-import 'package:mighty_plug_manager/bluetooth/ble_controllers/MightyBle.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'ble_controllers/DummyBLEController.dart';
 import 'ble_controllers/FlutterBluePlusController.dart';

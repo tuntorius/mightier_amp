@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../NuxDevice.dart';
 import '../NuxFXID.dart';
 import '../effects/plug_pro/Cabinet.dart';
+import '../features/tuner.dart';
 import '../presets/PlugProPreset.dart';
 
 import '../../../platform/simpleSharedPrefs.dart';
@@ -395,6 +396,34 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  void enableTuner(bool enable) {
+    tunerSetSettings(tunerOn: enable);
+  }
+
+  void tunerSetSettings({bool tunerOn = true}) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_TUNER_SETTINGS, SyxDir.kSYXDIR_SET, [
+      tunerOn ? 1 : 0,
+      config.tunerData.mode.mode,
+      config.tunerData.referencePitch,
+      config.tunerData.muted ? 1 : 0,
+      0,
+      0,
+      0
+    ]);
+
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void requestTunerSettings() {
+    if (!device.deviceControl.isConnected) return;
+    var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_TUNER_SETTINGS, SyxDir.kSYXDIR_GET, [0, 0, 0, 0, 0, 0, 0]);
+
+    device.deviceControl.sendBLEData(data);
+  }
+
   List<List<int>> _splitPresetData(List<int> data) {
     List<List<int>> presetData = [];
     int pos = 0;
@@ -509,6 +538,12 @@ class PlugProCommunication extends DeviceCommunication {
       //containing the date of the build
       //for now it's not needed
       device.setFirmwareVersion(0);
+
+      //get FW version date of MPPro
+      var versionArray = data.sublist(6, 14);
+      String asciiString = String.fromCharCodes(versionArray);
+      (device as NuxMightyPlugPro).setVersionDate(asciiString);
+
       //save device version since we know it already
       SharedPrefs().setValue(SettingsKeys.deviceVersion, device.productVersion);
 
@@ -570,6 +605,32 @@ class PlugProCommunication extends DeviceCommunication {
     config.loopUndoState = (state >> 4) & 0x03;
     config.loopHasAudio = (state >> 6) & 0x01 != 0;
     device.deviceControl.forceNotifyListeners();
+  }
+
+  void _handleTuner(int ccNumber, int value) {
+    switch (ccNumber) {
+      case MidiCCValuesPro.TUNER_State:
+        config.tunerData.enabled = value == 1;
+        break;
+      case MidiCCValuesPro.TUNER_Note:
+        config.tunerData.note = value;
+        break;
+      case MidiCCValuesPro.TUNER_Cent:
+        config.tunerData.cents = value;
+        break;
+      case MidiCCValuesPro.TUNER_Number:
+        config.tunerData.stringNumber = value;
+        break;
+    }
+    (device as NuxMightyPlugPro).notifyTunerListeners();
+  }
+
+  void _handleTunerSysEx(List<int> data) {
+    if (data[0] != 2) return;
+    config.tunerData.mode = TunerMode.getByMode(data[2]) ?? TunerMode.chromatic;
+    config.tunerData.referencePitch = data[3];
+    config.tunerData.muted = data[4] == 1;
+    (device as NuxMightyPlugPro).notifyTunerListeners();
   }
 
   //Info: in plugProDataObject.js in the beginning there are few const enums
@@ -683,6 +744,11 @@ const z = {
             case MidiCCValuesPro.LOOPSTATE:
               _handleLooperState(data[4]);
               break;
+            case MidiCCValuesPro.TUNER_State:
+            case MidiCCValuesPro.TUNER_Note:
+            case MidiCCValuesPro.TUNER_Number:
+            case MidiCCValuesPro.TUNER_Cent:
+              _handleTuner(data[3], data[4]);
           }
           bool consumed = false;
           consumed = _handleDrumCCData(data[3], data[4]);
@@ -727,6 +793,9 @@ const z = {
                   return;
                 case SyxMsg.kSYX_BTSET:
                   _handleBTEqData(data.sublist(7));
+                  return;
+                case SyxMsg.kSYX_TUNER_SETTINGS:
+                  _handleTunerSysEx(data.sublist(7));
                   return;
                 case SyxMsg.kSYX_SENDCMD:
                   if (data[7] == SyxDir.kSYXDIR_REQ) {

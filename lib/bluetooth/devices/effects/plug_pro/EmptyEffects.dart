@@ -45,13 +45,13 @@ class WahDummyPro extends Processor {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.WAH_Para1,
-        midiCC: MidiCCValuesPro.WAH_Para1),
+        midiCC: MidiCCValuesPro.CC_Unknown),
     Parameter(
         name: "Param2",
         handle: "param2",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.WAH_Para2,
-        midiCC: MidiCCValuesPro.WAH_Para2),
+        midiCC: MidiCCValuesPro.CC_Unknown),
   ];
 }

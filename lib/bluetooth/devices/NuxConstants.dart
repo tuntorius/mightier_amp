@@ -141,7 +141,6 @@ class PresetDataIndexPlugAir {
 
 class PresetDataIndex8BT {
   //use PresetDataIndexLite for most of the constants
-
 }
 
 class PresetDataIndexLite {
@@ -413,6 +412,7 @@ class SyxMsg {
   static const kSYX_UAC_EFFECT = const SyxMsg._internal(99);
   static const kSYX_UAC_TRANS = const SyxMsg._internal(100);
   static const kSYX_UAC_SAVE = const SyxMsg._internal(101);
+  static const kSYX_TUNER_SETTINGS = 111;
   static const kSYX_VOLDISPLAY = const SyxMsg._internal(116);
   static const kSYX_SPEC_CMD = 117;
   static const kSYX_HW_VERSION = const SyxMsg._internal(118);
@@ -521,6 +521,7 @@ class MidiCCValues {
 }
 
 class MidiCCValuesPro {
+  static const CC_Unknown = 0;
   static const Head_iWAH = 0;
   static const Head_iCMP = 1;
   static const Head_iEFX = 2;
@@ -532,8 +533,8 @@ class MidiCCValuesPro {
   static const Head_iRVB = 8;
   static const Head_iCAB = 9;
   static const Head_iSR = 10;
-  static const WAH_Para1 = 11;
-  static const WAH_Para2 = 12;
+  static const TUNER_State = 11;
+  static const TUNER_Note = 12;
   static const CMP_Para1 = 13;
   static const CMP_Para2 = 14;
   static const CMP_Para3 = 15;
@@ -592,8 +593,8 @@ class MidiCCValuesPro {
   static const CAB_Para4 = 68;
   static const CAB_Para5 = 69;
   static const CAB_Para6 = 70;
-  static const SR_Para1 = 71;
-  static const SR_Para2 = 72;
+  static const TUNER_Number = 71;
+  static const TUNER_Cent = 72;
   static const MASTER = 73; //patch level
   static const MSELECT = 74;
   static const PEDAL = 75;
@@ -609,8 +610,8 @@ class MidiCCValuesPro {
   static const MICMUTE = 85;
   static const USBROUNT_1 = 86; //Recording LV
   static const USBROUNT_2 = 87; //Playback LV
-  static const USBROUNT_3 =
-      88; //Audio Mode 0-2 0-dry out, 1 - normal, 2 - reamp, ---x ---- - this bit is for loopback
+  static const USBROUNT_3 = 88; //Audio Mode 0-2
+  //0-dry out, 1 - normal, 2 - reamp, ---x ---- - this bit is for loopback
   //the loopback is supposed to work with normal only, but I can set it with everything
   static const USBROUNT_4 = 89; //Dry/Wet
   static const AUX_MUTE = 90;
@@ -626,7 +627,7 @@ class MidiCCValuesPro {
   static const AUX_BAND_9 = 100;
   static const AUX_BAND_10 = 101;
   static const AUX_BAND_11 = 102;
-  static const AUX_BAND_12 = 103;
+  static const AUX_BAND_12 = 103; //NOT USED
   static const DRUM_BASS = 104;
   static const DRUM_MIDDLE = 105;
   static const DRUM_TREBLE = 106;

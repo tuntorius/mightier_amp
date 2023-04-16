@@ -47,6 +47,8 @@ class MightierIcons {
       IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData repeat_ab =
       IconData(0xe80a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData tuner =
+      IconData(0xe80c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData drum =
       IconData(0xf569, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

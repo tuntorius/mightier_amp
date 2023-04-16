@@ -1,7 +1,6 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'package:audio_waveform/audio_waveform.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
@@ -12,12 +11,15 @@ import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/bleMidiHandler.dart';
 import '../../bluetooth/ble_controllers/BLEController.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
+import '../../bluetooth/devices/features/tuner.dart';
 import '../../platform/simpleSharedPrefs.dart';
+import '../mightierIcons.dart';
 import '../widgets/deviceList.dart';
 import 'DebugConsolePage.dart';
 import 'calibration.dart';
 import 'developerPage.dart';
 import 'midiControllers.dart';
+import 'tunerPage.dart';
 
 enum TimeUnit { BPM, Seconds }
 
@@ -196,6 +198,20 @@ class _SettingsState extends State<Settings> {
                       });
                     }),
                 const Divider(),
+                if (device.deviceControl.isConnected &&
+                    device is Tuner &&
+                    (device as Tuner).tunerAvailable)
+                  ListTile(
+                    leading: const Icon(MightierIcons.tuner),
+                    title: const Text("Tuner"),
+                    trailing: const Icon(Icons.keyboard_arrow_right),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => TunerPage(
+                                device: device,
+                              )));
+                    },
+                  ),
                 device.getSettingsWidget(),
                 const Divider(),
                 //const Divider(),

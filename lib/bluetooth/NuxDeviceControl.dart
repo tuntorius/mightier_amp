@@ -24,7 +24,8 @@ import 'devices/effects/Processor.dart';
 enum DeviceConnectionState {
   connectionBegin,
   presetsLoaded,
-  connectionComplete
+  connectionComplete,
+  disconnected
 }
 
 class NuxDiagnosticData {
@@ -104,10 +105,13 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   //connect status control
-  final StreamController<DeviceConnectionState> connectStatus =
-      StreamController();
-  final StreamController<int> batteryPercentage =
+  final StreamController<DeviceConnectionState> _connectStatus =
+      StreamController.broadcast();
+  final StreamController<int> _batteryPercentage =
       StreamController<int>.broadcast();
+
+  Stream<DeviceConnectionState> get connectStatus => _connectStatus.stream;
+  Stream<int> get batteryPercentage => _batteryPercentage.stream;
 
   bool get isConnected => _midiHandler.connectedDevice != null;
 
@@ -306,7 +310,7 @@ class NuxDeviceControl extends ChangeNotifier {
     debugPrint("Device connected");
     clearPresetData();
     device.onConnect();
-    connectStatus.add(DeviceConnectionState.connectionBegin);
+    _connectStatus.add(DeviceConnectionState.connectionBegin);
     rxSubscription = _midiHandler.registerDataListener(_onDataReceive);
 
     requestFirmwareVersion();
@@ -318,6 +322,7 @@ class NuxDeviceControl extends ChangeNotifier {
     clearPresetData();
     device.onDisconnect();
     debugPrint("Device disconnected");
+    _connectStatus.add(DeviceConnectionState.disconnected);
   }
 
   void _onDataReceive(List<int> data) {
@@ -351,7 +356,7 @@ class NuxDeviceControl extends ChangeNotifier {
         _onBatteryTimer(null);
       }
       device.sendAmpLevel();
-      connectStatus.add(DeviceConnectionState.connectionComplete);
+      _connectStatus.add(DeviceConnectionState.connectionComplete);
       debugPrint("Device connection complete");
       notifyListeners();
     } else {
@@ -364,7 +369,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void onPresetsReady() {
-    connectStatus.add(DeviceConnectionState.presetsLoaded);
+    _connectStatus.add(DeviceConnectionState.presetsLoaded);
   }
 
   //for some reason we should not ask for presets immediately
@@ -378,7 +383,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void onBatteryPercentage(int val) {
-    batteryPercentage.add(val);
+    _batteryPercentage.add(val);
   }
 
   //preset editing listeners
@@ -504,7 +509,7 @@ class NuxDeviceControl extends ChangeNotifier {
     //show loading popup
     if (device.presetSaveSupport) {
       await Future.delayed(const Duration(seconds: 3));
-      connectStatus.add(DeviceConnectionState.connectionBegin);
+      _connectStatus.add(DeviceConnectionState.connectionBegin);
       requestPresetDelayed(3000);
     }
   }

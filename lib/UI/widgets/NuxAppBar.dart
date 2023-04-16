@@ -8,6 +8,9 @@ import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
 
 import '../../bluetooth/ble_controllers/BLEController.dart';
+import '../../bluetooth/devices/features/tuner.dart';
+import '../mightierIcons.dart';
+import '../pages/tunerPage.dart';
 import 'blinkWidget.dart';
 
 class MAAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -74,7 +77,7 @@ class _NuxAppBarState extends State<MAAppBar> {
               actions: [
                 //battery percentage
                 StreamBuilder<int>(
-                  stream: devControl.batteryPercentage.stream,
+                  stream: devControl.batteryPercentage,
                   builder: (context, batteryPercentage) {
                     if (devControl.isConnected &&
                         (batteryPercentage.data != 0 || batteryValue != null) &&
@@ -110,6 +113,26 @@ class _NuxAppBarState extends State<MAAppBar> {
                   },
                 ),
                 const SizedBox(width: 8),
+                if (!widget.showExpandButton)
+                  StreamBuilder(
+                    stream: devControl.connectStatus,
+                    builder: (context,
+                        AsyncSnapshot<DeviceConnectionState> snapshot) {
+                      if (snapshot.data != DeviceConnectionState.disconnected &&
+                          devControl.device is Tuner &&
+                          (devControl.device as Tuner).tunerAvailable) {
+                        return IconButton(
+                            icon: const Icon(MightierIcons.tuner),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => TunerPage(
+                                        device: devControl.device,
+                                      )));
+                            });
+                      }
+                      return const SizedBox();
+                    },
+                  ),
                 StreamBuilder<MidiSetupStatus>(
                   stream: BLEMidiHandler.instance().status,
                   builder: (context, snapshot) {

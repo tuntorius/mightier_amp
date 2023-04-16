@@ -1,6 +1,8 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../UI/pages/device_specific_settings/PlugProSettings.dart';
 import 'NuxFXID.dart';
@@ -13,6 +15,7 @@ import 'NuxConstants.dart';
 import 'NuxDevice.dart';
 import 'effects/Processor.dart';
 import 'effects/plug_pro/EQ.dart';
+import 'features/tuner.dart';
 import 'presets/PlugProPreset.dart';
 import 'presets/Preset.dart';
 import 'value_formatters/ValueFormatter.dart';
@@ -52,9 +55,11 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
   int loopRecordMode = 0;
   bool loopHasAudio = false;
   int loopLevel = 50;
+
+  TunerData tunerData = TunerData();
 }
 
-class NuxMightyPlugPro extends NuxDevice {
+class NuxMightyPlugPro extends NuxDevice implements Tuner {
   //NUX's own app source has info about wah, but is it really available?
   static const enableWahExperimental = false;
 
@@ -66,10 +71,13 @@ class NuxMightyPlugPro extends NuxDevice {
   DeviceCommunication get communication => _communication;
 
   final NuxPlugProConfiguration _config = NuxPlugProConfiguration();
+
   @override
   NuxPlugProConfiguration get config => _config;
 
   PlugProVersion version = PlugProVersion.PlugPro1;
+
+  String versionDate = "";
 
   @override
   String get productName => "NUX Mighty Plug Pro/Mighty Space";
@@ -154,10 +162,12 @@ class NuxMightyPlugPro extends NuxDevice {
   @override
   List<ProcessorInfo> get processorList => _processorList;
 
+  final tunerController = StreamController<TunerData>.broadcast();
+
   @override
-  ProcessorInfo? getProcessorInfoByFXID(NuxFXID index) {
+  ProcessorInfo? getProcessorInfoByFXID(NuxFXID fxid) {
     for (var proc in _processorList) {
-      if (proc.nuxFXID == index) return proc;
+      if (proc.nuxFXID == fxid) return proc;
     }
     return null;
   }
@@ -444,6 +454,16 @@ class NuxMightyPlugPro extends NuxDevice {
     }
   }
 
+  void setVersionDate(String vDate) {
+    versionDate = vDate;
+  }
+
+  @override
+  onDisconnect() {
+    versionDate = "";
+    super.onDisconnect();
+  }
+
   @override
   PlugProPreset getCustomPreset(int channel) {
     var preset = PlugProPreset(device: this, channel: channel, channelName: "");
@@ -494,5 +514,50 @@ class NuxMightyPlugPro extends NuxDevice {
         break;
     }
     if (send) _communication.setDrumsTone(value, control);
+  }
+
+  @override
+  bool get tunerAvailable {
+    return versionDate.compareTo("20230101") > 0;
+  }
+
+  @override
+  void tunerEnable(bool enable) {
+    _communication.enableTuner(enable);
+  }
+
+  @override
+  void tunerRequestSettings() {
+    _communication.requestTunerSettings();
+  }
+
+  @override
+  void tunerSetMode(TunerMode mode) {
+    config.tunerData.mode = mode;
+    _communication.tunerSetSettings();
+    notifyTunerListeners();
+  }
+
+  @override
+  void tunerSetReferencePitch(int refPitch) {
+    config.tunerData.referencePitch = refPitch;
+    _communication.tunerSetSettings();
+    notifyTunerListeners();
+  }
+
+  @override
+  void tunerMute(bool enable) {
+    config.tunerData.muted = enable;
+    _communication.tunerSetSettings();
+    notifyTunerListeners();
+  }
+
+  @override
+  Stream<TunerData> getTunerDataStream() {
+    return tunerController.stream;
+  }
+
+  void notifyTunerListeners() {
+    tunerController.add(_config.tunerData);
   }
 }

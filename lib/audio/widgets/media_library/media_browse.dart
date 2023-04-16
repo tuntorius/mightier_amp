@@ -106,7 +106,8 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
                             }),
                       );
                   }
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                      child: CircularProgressIndicator.adaptive());
                 },
               ),
             ),

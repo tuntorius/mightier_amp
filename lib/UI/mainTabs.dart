@@ -157,7 +157,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (!connectionFailed)
-                            const CircularProgressIndicator(),
+                            const CircularProgressIndicator.adaptive(),
                           if (connectionFailed)
                             const Icon(
                               Icons.error,

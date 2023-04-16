@@ -21,7 +21,7 @@ class ToneShare extends StatefulWidget {
               Colors.black45, // can change this to your prefered color
           children: <Widget>[
             Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator.adaptive(),
             )
           ],
         );

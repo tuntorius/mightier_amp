@@ -163,7 +163,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                   alignment: Alignment.center,
                   index: loading == true ? 0 : 1,
                   children: [
-                    const CircularProgressIndicator(),
+                    const CircularProgressIndicator.adaptive(),
                     ListView.builder(
                       itemBuilder: (context, index) {
                         return ListTile(

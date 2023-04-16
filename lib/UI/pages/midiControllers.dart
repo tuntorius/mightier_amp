@@ -54,11 +54,15 @@ class _MidiControllersState extends State<MidiControllers> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ListTile(
-                  title: Text("Available Devices", style: AppThemeConfig.ListTileHeaderStyle),
+                  title: Text("Available Devices",
+                      style: AppThemeConfig.ListTileHeaderStyle),
                   dense: true,
                   trailing: !ctrl.isScanning
                       ? null
-                      : const SizedBox(width: 15, height: 15, child: CircularProgressIndicator()),
+                      : const SizedBox(
+                          width: 15,
+                          height: 15,
+                          child: CircularProgressIndicator.adaptive()),
                 ),
                 Flexible(
                   child: ConstrainedBox(
@@ -85,8 +89,11 @@ class _MidiControllersState extends State<MidiControllers> {
                 ),
                 ElevatedButton(
                     onPressed: ctrl.isScanning ? ctrl.stopScan : ctrl.startScan,
-                    child: !ctrl.isScanning ? const Text("Start Scanning") : const Text("Stop Scanning")),
-                if (midiHandler.bleState == BleState.off) const Text("Enable Bluetooth to discover BLE MIDI devices"),
+                    child: !ctrl.isScanning
+                        ? const Text("Start Scanning")
+                        : const Text("Stop Scanning")),
+                if (midiHandler.bleState == BleState.off)
+                  const Text("Enable Bluetooth to discover BLE MIDI devices"),
                 const Divider(),
               ],
             );

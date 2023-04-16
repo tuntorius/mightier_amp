@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/verticalThickSlider.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 import '../../../../bluetooth/devices/effects/Processor.dart';
+import '../../../utils.dart';
 
 class EqualizerEditor extends StatefulWidget {
   final Processor eqEffect;
@@ -31,6 +32,7 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
       var isPortrait =
           MediaQuery.of(context).orientation == Orientation.portrait;
       var screenWidth = constraints.maxWidth;
+      var layout = getEditorLayoutMode(MediaQuery.of(context));
 
       List<Parameter> params = widget.eqEffect.parameters;
       List<Widget> sliders = [];
@@ -82,7 +84,7 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
         );
       }
 
-      if (isPortrait) {
+      if (layout == EditorLayoutMode.expand) {
         return Column(
           children: [
             Expanded(child: slidersContainer),

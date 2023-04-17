@@ -8,9 +8,9 @@ If you choose to use my Service, then you agree to the collection and use of inf
 
 The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which is accessible at Mightier Amp unless otherwise defined in this Privacy Policy.
 ## Data Collection
-Mightier Amp app does not collect any personal data from its users. The only data that is collected is for diagnostics and error reporting purposes. This data is collected anonymously and is used to improve the app's performance and user experience. The data is collected using a third-party service called Sentry, which has its own privacy policy.
+Mightier Amp app does not collect any personal data from its users. 
 ## Third-Party Services
-Mightier Amp uses the Sentry service for diagnostics and error reporting. When an error occurs, the app sends anonymous diagnostic information to Sentry. This information may include device information, operating system version, and other technical data. Sentry's privacy policy can be found [here](https://sentry.io/privacy/).
+Mightier Amp does not use third-party data collection services. 
 ## Contact Us
 If you have any questions or concerns about our privacy practices, please contact us at mightieramp@gmail.com.
 ## Changes to This Policy

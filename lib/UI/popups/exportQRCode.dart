@@ -108,7 +108,7 @@ class QRExportDialog {
                                 width: 100,
                                 height: 100));
                       },
-                      icon: const Icon(Icons.share),
+                      icon: Icon(Icons.adaptive.share),
                       label: const Text("Share"))
                 ],
               ),

@@ -106,22 +106,17 @@ extension SwiftQrUtilsPlugin {
     }
 
     func generateQR(text:String){
-        if qrcodeImage == nil {
-            if text == "" {
-                return
-            }
-            let data = text.data(using: .isoLatin1, allowLossyConversion: false)
-            let filter = CIFilter(name: "CIQRCodeGenerator")
+        if text == "" {
+            return
+        }
+        let data = text.data(using: .isoLatin1, allowLossyConversion: false)
+        let filter = CIFilter(name: "CIQRCodeGenerator")
+    
+        filter!.setValue(data, forKey: "inputMessage")
+        filter!.setValue("Q", forKey: "inputCorrectionLevel")
         
-            filter!.setValue(data, forKey: "inputMessage")
-            filter!.setValue("Q", forKey: "inputCorrectionLevel")
-            
-            qrcodeImage = filter!.outputImage
-            displayQRCodeImage()
-        }
-        else {
-            qrcodeImage = nil
-        }
+        qrcodeImage = filter!.outputImage
+        displayQRCodeImage()
     }
     
     func displayQRCodeImage() {

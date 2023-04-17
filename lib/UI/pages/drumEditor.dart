@@ -228,7 +228,8 @@ class _DrumEditorState extends State<DrumEditor> {
                   child: ElevatedButton(
                     onPressed:
                         device.drumsEnabled ? () => _modifyTempo(-5) : null,
-                    child: const Text("-5", semanticsLabel: "Tempo -5"),
+                    child: const Text("-5", semanticsLabel: "Tempo -5",
+                      softWrap: false),
                   ),
                 ),
                 Padding(
@@ -238,7 +239,8 @@ class _DrumEditorState extends State<DrumEditor> {
                     child: ElevatedButton(
                       onPressed:
                           device.drumsEnabled ? () => _modifyTempo(-1) : null,
-                      child: const Text("-1", semanticsLabel: "Tempo -1"),
+                      child: const Text("-1", semanticsLabel: "Tempo -1",
+                      softWrap: false),
                     ),
                   ),
                 ),
@@ -269,6 +271,7 @@ class _DrumEditorState extends State<DrumEditor> {
                           device.drumsEnabled ? () => _modifyTempo(1) : null,
                       child: const Text(
                         "+1",
+                      softWrap: false,
                         semanticsLabel: "Tempo +1",
                       ),
                     ),
@@ -281,6 +284,7 @@ class _DrumEditorState extends State<DrumEditor> {
                         device.drumsEnabled ? () => _modifyTempo(5) : null,
                     child: const Text(
                       "+5",
+                      softWrap: false,
                       semanticsLabel: "Tempo +5",
                     ),
                   ),

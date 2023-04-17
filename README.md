@@ -5,6 +5,7 @@ Alternative app for controlling NUX Mighty amps series.
 This app aims to cover all the functionality of the original app plus many enhancements:
 - Ability to save presets locally on your mobile device and export them to share with others.
 - Remote control using a MIDI controller or a HID device. Both USB and Bluetooth MIDI controllers are supported.
+- Landscape mode.
 - Improved Jam Tracks functionality. Select any audio file in your device, add events like loop points, preset changes and others at any point and play along.
 - Various other enhancements.
 

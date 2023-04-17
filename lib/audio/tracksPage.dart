@@ -198,7 +198,7 @@ class _TracksPageState extends State<TracksPage>
 
   void editTrack(BuildContext context, JamTrack track) {
     stopPlayer();
-    Navigator.of(context)
+    Navigator.of(context, rootNavigator: true)
         .push(MaterialPageRoute(builder: (context) => AudioEditor(track)))
         .then((value) {
       //save track data
@@ -288,8 +288,7 @@ class _TracksPageState extends State<TracksPage>
             break;
           }
         }
-      }
-      else {
+      } else {
         //find song in media library
         String file = basename(path[i]);
 
@@ -306,7 +305,7 @@ class _TracksPageState extends State<TracksPage>
       String trackName = "";
       String url = "";
       if (libSong != null) {
-        artist = libSong.artist == "<unknown>" ? "":libSong.artist;
+        artist = libSong.artist == "<unknown>" ? "" : libSong.artist;
         title = libSong.title;
         url = libSong.uri;
       } else if (PlatformUtils.isIOS) {
@@ -339,7 +338,7 @@ class _TracksPageState extends State<TracksPage>
   }
 
   void addFromMediaLibrary(BuildContext context) {
-    Navigator.of(context)
+    Navigator.of(context, rootNavigator: true)
         .push(MaterialPageRoute(builder: (context) => MediaLibraryBrowser()))
         .then((value) {
       if (value is List<SongInfo>) {
@@ -360,7 +359,7 @@ class _TracksPageState extends State<TracksPage>
 
   void addFromOnlineSource(BuildContext context) {
     stopPlayer();
-    Navigator.of(context)
+    Navigator.of(context, rootNavigator: true)
         .push(
             MaterialPageRoute(builder: (context) => const OnlineSourceSearch()))
         .then((value) {
@@ -380,7 +379,7 @@ class _TracksPageState extends State<TracksPage>
 
   void addFromYoutubeSource(BuildContext context) {
     stopPlayer();
-    Navigator.of(context)
+    Navigator.of(context, rootNavigator: true)
         .push(MaterialPageRoute(
             builder: (context) => OnlineSearchScreen(source: YoutubeSource())))
         .then((value) {
@@ -415,6 +414,7 @@ class _TracksPageState extends State<TracksPage>
         return Future.value(true);
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         body: Column(
           children: [
             if (TrackData().tracks.isNotEmpty)
@@ -423,79 +423,77 @@ class _TracksPageState extends State<TracksPage>
               child: ListTileTheme(
                 selectedTileColor: const Color.fromARGB(255, 9, 51, 116),
                 selectedColor: Colors.white,
-                child: Scaffold(
-                  floatingActionButton: (widget.selectorOnly)
-                      ? null
-                      : FloatingActionBubble(
-                          // Menu items
-                          items: _bubbles(context),
-
-                          // animation controller
-                          animation: _animation,
-
-                          // On pressed change animation state
-                          onPress: () {
+                child: IndexedStack(
+                  index: TrackData().tracks.isEmpty ? 0 : 1,
+                  children: [
+                    Center(
+                        child: Text("No Tracks",
+                            style: Theme.of(context).textTheme.bodyText1)),
+                    ListView.builder(
+                      controller: scrollController,
+                      itemCount: TrackData().tracks.length,
+                      padding: const EdgeInsets.only(bottom: 90),
+                      itemBuilder: (context, index) {
+                        if (filter != "" &&
+                            !TrackData()
+                                .tracks[index]
+                                .name
+                                .toLowerCase()
+                                .contains(filter)) return const SizedBox();
+                        return ListTile(
+                          selected:
+                              multiselectMode && selected.containsKey(index),
+                          title: Text(TrackData().tracks[index].name),
+                          onTap: () {
                             if (multiselectMode) {
-                              deleteSelected(context);
+                              multiselectHandler(index);
+                              return;
+                            }
+                            if (widget.selectorOnly) {
+                              widget.onSelectedTrack
+                                  ?.call(TrackData().tracks[index]);
                             } else {
-                              _animationController.isCompleted
-                                  ? _animationController.reverse()
-                                  : _animationController.forward();
+                              editTrack(context, TrackData().tracks[index]);
                             }
                           },
-
-                          // Floating Action button Icon color
-                          iconColor: Colors.white,
-
-                          // Flaoting Action button Icon
-                          iconData: multiselectMode ? Icons.delete : Icons.add,
-                          backGroundColor: Colors.blue,
-                        ),
-                  body: IndexedStack(
-                    index: TrackData().tracks.isEmpty ? 0 : 1,
-                    children: [
-                      Center(
-                          child: Text("No Tracks",
-                              style: Theme.of(context).textTheme.bodyText1)),
-                      ListView.builder(
-                        controller: scrollController,
-                        itemCount: TrackData().tracks.length,
-                        padding: const EdgeInsets.only(bottom: 90),
-                        itemBuilder: (context, index) {
-                          if (filter != "" &&
-                              !TrackData()
-                                  .tracks[index]
-                                  .name
-                                  .toLowerCase()
-                                  .contains(filter)) return const SizedBox();
-                          return ListTile(
-                            selected:
-                                multiselectMode && selected.containsKey(index),
-                            title: Text(TrackData().tracks[index].name),
-                            onTap: () {
-                              if (multiselectMode) {
-                                multiselectHandler(index);
-                                return;
-                              }
-                              if (widget.selectorOnly) {
-                                widget.onSelectedTrack
-                                    ?.call(TrackData().tracks[index]);
-                              } else {
-                                editTrack(context, TrackData().tracks[index]);
-                              }
-                            },
-                            onLongPress: () => multiselectHandler(index),
-                            trailing: createTrailingWidget(context, index),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                          onLongPress: () => multiselectHandler(index),
+                          trailing: createTrailingWidget(context, index),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
           ],
         ),
+        floatingActionButton: (widget.selectorOnly)
+            ? null
+            : FloatingActionBubble(
+                // Menu items
+                items: _bubbles(context),
+
+                // animation controller
+                animation: _animation,
+
+                // On pressed change animation state
+                onPress: () {
+                  if (multiselectMode) {
+                    deleteSelected(context);
+                  } else {
+                    _animationController.isCompleted
+                        ? _animationController.reverse()
+                        : _animationController.forward();
+                  }
+                },
+
+                // Floating Action button Icon color
+                iconColor: Colors.white,
+
+                // Flaoting Action button Icon
+                iconData: multiselectMode ? Icons.delete : Icons.add,
+                backGroundColor: Colors.blue,
+              ),
       ),
     );
   }

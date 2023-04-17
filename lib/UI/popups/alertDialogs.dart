@@ -108,7 +108,7 @@ class AlertDialogs {
     Widget cancel = TextButton(
       child: Text(cancelButton),
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
       },
     );
     Widget continueButton = TextButton(
@@ -118,7 +118,7 @@ class AlertDialogs {
       ),
       onPressed: () {
         if (_inputFormKey.currentState!.validate()) {
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
           onConfirm?.call(nameCtrl.text);
         } else {
           //error

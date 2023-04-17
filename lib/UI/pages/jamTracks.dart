@@ -48,7 +48,7 @@ class _JamTracksState extends State<JamTracks>
         setState(() {});
       });
     } else if (PlatformUtils.isIOS) {
-      _mediaPermission = Permission.mediaLibrary;
+      _mediaPermission = Permission.storage;
     }
 
     cntrl = TabController(length: 2, vsync: this);

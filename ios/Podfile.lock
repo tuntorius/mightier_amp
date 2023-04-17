@@ -36,13 +36,6 @@ PODS:
   - Protobuf (3.22.1)
   - qr_utils (0.1.5):
     - Flutter
-  - Sentry/HybridSDK (8.3.3):
-    - SentryPrivate (= 8.3.3)
-  - sentry_flutter (0.0.1):
-    - Flutter
-    - FlutterMacOS
-    - Sentry/HybridSDK (= 8.3.3)
-  - SentryPrivate (8.3.3)
   - share_plus (0.0.1):
     - Flutter
   - url_launcher_ios (0.0.1):
@@ -67,7 +60,6 @@ DEPENDENCIES:
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - qr_utils (from `.symlinks/plugins/qr_utils/ios`)
-  - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
@@ -75,8 +67,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Protobuf
-    - Sentry
-    - SentryPrivate
 
 EXTERNAL SOURCES:
   audio_picker:
@@ -111,8 +101,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   qr_utils:
     :path: ".symlinks/plugins/qr_utils/ios"
-  sentry_flutter:
-    :path: ".symlinks/plugins/sentry_flutter/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   url_launcher_ios:
@@ -138,9 +126,6 @@ SPEC CHECKSUMS:
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   Protobuf: d7f7c8329edf5eb8af65547a8ba3e9c1cee927d5
   qr_utils: 6dc668f03d5da6a3460ec343d54d6ce4d3ae5f2e
-  Sentry: 8ffc397d98fe58d693e73959b26ed0eaee55646a
-  sentry_flutter: 5028afacfa875785cb0e3682aece171fcd9dc0d5
-  SentryPrivate: bf776a47a131648f5023097215987b40fbd47025
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f

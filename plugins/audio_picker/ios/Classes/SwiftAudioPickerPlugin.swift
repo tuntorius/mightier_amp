@@ -59,11 +59,13 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
             }
         }
         else {
-            var pathList:[String] = []
-
-            for (index, _) in mediaItemCollection.items.enumerated() {
-                pathList.append(mediaItemCollection.items[index].assetURL?.absoluteString ?? "")
+            var uniquePaths = Set<String>()
+            for item in mediaItemCollection.items {
+                if let path = item.assetURL?.absoluteString {
+                    uniquePaths.insert(path)
+                }
             }
+            let pathList = Array(uniquePaths)
             self._flutterResult?(pathList)
         }
         

@@ -17,9 +17,9 @@ public class SwiftFilePickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDel
     self.result = result
     
     if (call.method == "saveToFile") {
-        if let args = call.arguments as? [String: Any], let contents = args["fileContents"] as? String {
+        if let args = call.arguments as? [String: Any], let contents = args["fileContents"] as? String, let fileName = args["fileName"] as? String {
             self.fileContents = contents
-            openDocumentPicker()
+            openDocumentPicker(fileName: fileName)
         } else {
             result(FlutterError(code: "INVALID_ARGUMENTS", message: "Invalid arguments", details: nil))
         }
@@ -30,20 +30,35 @@ public class SwiftFilePickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDel
     }
   }
 
-  func openDocumentPicker() {
+  func openDocumentPicker(fileName: String) {
     isExporting = true
     DispatchQueue.main.async {
-      let types = ["public.json"]
-      let documentPicker = UIDocumentPickerViewController(documentTypes: types, in: .exportToService)
-      documentPicker.delegate = self
-      UIApplication.shared.keyWindow?.rootViewController?.present(documentPicker, animated: true, completion: nil)
-      self.documentPicker = documentPicker
+        
+        guard let jsonData = self.fileContents?.data(using: .utf8) else {
+            print("Error converting string to data")
+            return
+        }
+        let tempDirectoryURL = FileManager.default.temporaryDirectory
+
+        let fileURL = tempDirectoryURL.appendingPathComponent(fileName).appendingPathExtension("json")
+
+        do {
+            try jsonData.write(to: fileURL)
+        } catch {
+            print("Error writing JSON data: \(error)")
+            return
+        }
+
+        let documentPicker = UIDocumentPickerViewController(urls: [fileURL], in: .moveToService)
+        documentPicker.delegate = self
+
+        UIApplication.shared.keyWindow?.rootViewController?.present(documentPicker, animated: true, completion: nil)
     }
   }
 
   private func readDocument(result: @escaping FlutterResult) {
     isExporting = false
-    let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.data"], in: .import)
+    let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.json"], in: .import)
     documentPicker.delegate = self
     documentPicker.modalPresentationStyle = .formSheet
     UIApplication.shared.keyWindow?.rootViewController?.present(documentPicker, animated: true)
@@ -51,19 +66,6 @@ public class SwiftFilePickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDel
 
   public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
     if isExporting == false {
-        // User has selected one or more documents to import
-        if let url = urls.first {
-          do {
-            try self.fileContents?.write(to: url, atomically: true, encoding: .utf8)
-            self.result?(true)
-          } catch {
-            self.result?(FlutterError(code: "ERROR_SAVING_FILE", message: "Error saving file: \(error)", details: nil))
-          }
-        } else {
-          self.result?(false)
-        }
-    } else {
-        // User has selected a destination to export the document
         let fileURL = urls[0]
         let fileData: Data
         do {

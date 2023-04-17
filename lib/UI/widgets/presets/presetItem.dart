@@ -109,17 +109,16 @@ class PresetItem extends StatelessWidget {
         ],
       ),
     ),
-    if (!PlatformUtils.isIOS)
       PopupMenuItem(
         value: PresetItemActions.Export,
         child: Row(
           children: <Widget>[
             Icon(
-              Icons.save_alt,
+              Icons.archive,
               color: AppThemeConfig.contextMenuIconColor,
             ),
             const SizedBox(width: 5),
-            const Text("Export Preset"),
+            const Text("Backup Preset"),
           ],
         ),
       )
@@ -192,7 +191,7 @@ class PresetItem extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => PresetForm()),
                 );
               },
-              icon: Icon(Icons.share)),
+              icon: Icon(Icons.adaptive.share)),
           PopupMenuButton(
             child: const Padding(
               padding:

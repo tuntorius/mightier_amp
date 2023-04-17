@@ -16,9 +16,11 @@ class MethodChannelFilePicker extends FilePickerPlatform {
   }
 
   @override
-  Future saveFile(String fileContents) async {
+  Future saveFile(String fileName, String fileContents) async {
     final version = await methodChannel
-        .invokeMethod<String>('saveToFile', {'fileContents': fileContents});
+        .invokeMethod<String>('saveToFile', {
+          'fileName':fileName,
+          'fileContents': fileContents});
     return version;
   }
 }

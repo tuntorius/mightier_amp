@@ -27,7 +27,7 @@ abstract class FilePickerPlatform extends PlatformInterface {
     throw UnimplementedError('readFile() has not been implemented.');
   }
 
-  Future saveFile(String fileContents) {
+  Future saveFile(String fileName, String fileContents) {
     throw UnimplementedError('saveFile() has not been implemented.');
   }
 }

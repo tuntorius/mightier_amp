@@ -52,11 +52,11 @@ class _PresetListState extends State<PresetList>
       child: Row(
         children: <Widget>[
           Icon(
-            Icons.save_alt,
+            Icons.archive,
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          const Text("Export All"),
+          const Text("Backup All"),
         ],
       ),
     ),
@@ -65,11 +65,11 @@ class _PresetListState extends State<PresetList>
       child: Row(
         children: <Widget>[
           Icon(
-            Icons.open_in_browser,
+            Icons.unarchive,
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          const Text("Import"),
+          const Text("Restore"),
         ],
       ),
     ),
@@ -103,17 +103,16 @@ class _PresetListState extends State<PresetList>
         ],
       ),
     ),
-    //if (!PlatformUtils.isIOS)
     PopupMenuItem(
       value: CategoryMenuActions.Export,
       child: Row(
         children: <Widget>[
           Icon(
-            Icons.save_alt,
+            Icons.archive,
             color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
-          const Text("Export Category"),
+          const Text("Backup Category"),
         ],
       ),
     )
@@ -196,7 +195,7 @@ class _PresetListState extends State<PresetList>
                         Icons.cloud_download,
                         size: 28,
                       )),
-                if (PlatformUtils.isAndroid) _mainPopupMenu()
+                 _mainPopupMenu()
               ],
             ),
           );
@@ -454,15 +453,14 @@ class _PresetListState extends State<PresetList>
   void _exportCategory(String category) {
     String? data = PresetsStorage().presetsToJson(category);
 
+    if (category.isEmpty) {
+      category = "Backup";
+    }
     if (data != null) {
       if (!PlatformUtils.isIOS) {
         saveFileString("application/octet-stream", "$category.nuxpreset", data);
       } else {
-        Share.share(data,
-            subject: "$category.nuxpreset",
-            sharePositionOrigin: Rect.fromCenter(
-                center: const Offset(100, 100), width: 100, height: 100));
-        //FilePicker().saveFile(data);
+        saveFileIos(category, data);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -476,8 +474,15 @@ class _PresetListState extends State<PresetList>
   }
 
   void _importPresets() {
-    openFileString("application/octet-stream").then((value) {
-      PresetsStorage().presetsFromJson(value).then((value) {
+    if (PlatformUtils.isAndroid) {
+      openFileString("application/octet-stream").then(_onFileRead);
+    } else {
+        FilePicker().readFile().then((value) { if (value!=null) _onFileRead(value);});
+    }
+  }
+
+  void _onFileRead(String value) {
+    PresetsStorage().presetsFromJson(value).then((value) {
         setState(() {});
       }).catchError((error) {
         AlertDialogs.showInfoDialog(context,
@@ -485,7 +490,6 @@ class _PresetListState extends State<PresetList>
             description: "The selected file is not a valid preset file!",
             confirmButton: "OK");
       });
-    });
   }
 
   void _deletePreset(Map<String, dynamic> preset) {
@@ -578,8 +582,12 @@ class _PresetListState extends State<PresetList>
           PresetsStorage().presetToJson(category["name"], preset["name"]);
 
       if (data != null) {
-        saveFileString(
+        if (!PlatformUtils.isIOS) {
+          saveFileString(
             "application/octet-stream", "${preset["name"]}.nuxpreset", data);
+        } else {
+          saveFileIos(preset["name"], data);
+        }
       }
     }
   }
@@ -628,5 +636,23 @@ class _PresetListState extends State<PresetList>
         });
       }
     }
+  }
+
+  void saveFileIos(String name, String data) {
+    AlertDialogs.showInputDialog(context,
+        title: "Backup",
+        description: "Enter backup name:",
+        cancelButton: "Cancel",
+        confirmButton: "Backup",
+        value: name,
+        validation: (String newName) {
+          RegExp regex = RegExp(r'[<>:"/\\|?*\x00-\x1F\x7F]+');
+          return !regex.hasMatch(newName);
+        },
+        validationErrorMessage: "The file name contains invalid characters.",
+        confirmColor: Theme.of(context).hintColor,
+        onConfirm: (newName) async{
+          await FilePicker().saveFile(newName, data);
+        });
   }
 }

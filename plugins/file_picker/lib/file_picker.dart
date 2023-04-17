@@ -5,7 +5,7 @@ class FilePicker {
     return FilePickerPlatform.instance.readFile();
   }
 
-  Future saveFile(String fileContents) {
-    return FilePickerPlatform.instance.saveFile(fileContents);
+  Future saveFile(String fileName, String fileContents) {
+    return FilePickerPlatform.instance.saveFile(fileName, fileContents);
   }
 }

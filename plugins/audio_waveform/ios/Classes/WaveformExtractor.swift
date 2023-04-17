@@ -75,15 +75,15 @@ class WaveformExtractor {
             var val = UInt16(abs(samples[i])*256)
 
             // do a rudimentary dynamic range expansion
-//            if val < 30 {
-//                val = val / 5
-//            }
-//            else if val > 40 {
-//                val = (val * 15) / 10
-//                if val>255 {
-//                    val=255
-//                }
-//            }
+           if val < 30 {
+               val = val / 5
+           }
+           else if val > 40 {
+               val = (val * 15) / 10
+               if val>255 {
+                   val=255
+               }
+           }
 
             //if i / (sampleStep * 2) < simplifiedSamples.count {
                 simplifiedSamples[i / (sampleStep)] = UInt8(truncatingIfNeeded: val)
@@ -98,7 +98,7 @@ class WaveformExtractor {
         return audioFileSampleRate
     }
     
-    // Return the duration of the audio file in seconds.
+    // Return the duration of the audio file in microseconds.
     func getDuration() -> Int64 {
         let duration = Double(audioFileLengthInFrames) / Double(audioFileSampleRate)
         return Int64(duration * 1_000_000)

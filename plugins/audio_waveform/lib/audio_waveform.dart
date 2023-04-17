@@ -62,11 +62,12 @@ class AudioWaveformDecoder {
     //get audio duration
     _durationms = await _duration() / 1000000;
     int sampleRate = await _sampleRate();
-    print("$duration} seconds");
+    print("$_durationms seconds");
+
     //calc approx buffer size and create it
-    int bytes = ((duration) * sampleRate).ceil();
+    int bytes = ((_durationms) * sampleRate).ceil();
     int bufferIndex = 0;
-    int sampleStep = max(duration.round() / 10, 1).floor();
+    int sampleStep = max(_durationms.round() / 10, 1).floor();
 
     print("sample step $sampleStep");
     int expectedSize = (bytes / sampleStep).ceil();
@@ -84,7 +85,7 @@ class AudioWaveformDecoder {
 
       int listEndIndex = pos + list.length;
       if (listEndIndex > _samples.length) {
-        _samples.length = listEndIndex;
+        listEndIndex = _samples.length;
       }
 
       _samples.setRange(pos, listEndIndex, list);

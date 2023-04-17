@@ -39,12 +39,8 @@ Coming soon.
      alt="Get it on F-Droid"
      height="80">](https://f-droid.org/packages/com.tuntori.mightieramp/)
 
-
-or from here:  
-https://github.com/tuntorius/mightier_amp/releases/latest
-
 ## Donation
-Mightier Amp is an open-source project that I am developing in my free time. If you like it you can support me by donating.  
+Mightier Amp is an open-source project that I am developing in my free time. If you find the app useful and would like to support its development, please consider making a donation. Your contribution will help me cover the expenses related to the app's development, like the Apple development account for the upcoming iOS version. Thank you for your support!
 
 <a href='https://ko-fi.com/tuntori' target='_blank'><img height='35' style='border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 &nbsp;&nbsp;[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?hosted_button_id=FZWWAM4NUFRPC)  

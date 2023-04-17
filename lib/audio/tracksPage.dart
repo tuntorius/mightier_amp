@@ -414,7 +414,7 @@ class _TracksPageState extends State<TracksPage>
         return Future.value(true);
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: false,
         body: Column(
           children: [
             if (TrackData().tracks.isNotEmpty)

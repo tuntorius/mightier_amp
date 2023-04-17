@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
 import 'package:mighty_plug_manager/platform/presetsStorage.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 //pages
 import 'UI/mainTabs.dart';
@@ -18,7 +17,7 @@ import 'audio/trackdata/trackData.dart';
 import 'bluetooth/NuxDeviceControl.dart';
 
 //recreate this file with your own api keys
-import 'configKeys.dart';
+//import 'configKeys.dart';
 import 'modules/cloud/cloudManager.dart';
 
 //able to create snackbars/messages everywhere
@@ -31,9 +30,10 @@ void main() {
   SharedPrefs prefs = SharedPrefs();
 
   //capture flutter errors
+  /*
   if (!kDebugMode) {
     FlutterError.onError = (FlutterErrorDetails details) {
-      DebugConsole.print("Flutter error: ${details.toString()}");
+      DebugConsole.printString("Flutter error: ${details.toString()}");
 
       //update diagnostics with json preset
       NuxDeviceControl.instance()
@@ -45,8 +45,9 @@ void main() {
         stackTrace: details.stack,
       );
     };
-  }
+  }*/
 
+/*
   if (!kDebugMode) {
     runZonedGuarded(() {
       prefs.waitLoading().then((value) async {
@@ -63,8 +64,8 @@ void main() {
       // Dart errors to the dev console or Sentry depending on the environment.
       //_reportError(error, stackTrace);
 
-      DebugConsole.print("Dart error: ${error.toString()}");
-      DebugConsole.print(stackTrace);
+      DebugConsole.printString("Dart error: ${error.toString()}");
+      DebugConsole.printString(stackTrace);
 
       //update diagnostics with json preset
       NuxDeviceControl.instance()
@@ -75,11 +76,11 @@ void main() {
         stackTrace: stackTrace,
       );
     });
-  } else {
-    prefs.waitLoading().then((value) {
-      mainRunApp();
-    });
-  }
+  } else {*/
+  prefs.waitLoading().then((value) {
+    mainRunApp();
+  });
+  //}
 }
 
 mainRunApp() {

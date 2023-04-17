@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<String> saveFileString(String mime, String name, String data) async {
   const platform =
@@ -14,13 +13,6 @@ Future<String> saveFileString(String mime, String name, String data) async {
 
     return result;
   } on PlatformException catch (e) {
-    //handle error and report to Sentry
-    final event = SentryEvent(
-      throwable: e,
-      level: SentryLevel.error,
-    );
-    await Sentry.captureEvent(event);
-
     return Future.error("Error saving file");
   }
 }
@@ -38,13 +30,6 @@ Future<String> saveFile(String mime, String name, List<int> data) async {
 
     return result;
   } on PlatformException catch (e) {
-    //handle error and report to Sentry
-    final event = SentryEvent(
-      throwable: e,
-      level: SentryLevel.error,
-    );
-    await Sentry.captureEvent(event);
-
     return Future.error("Error saving file");
   }
 }

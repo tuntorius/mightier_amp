@@ -10,6 +10,10 @@ class DebugConsole extends StatelessWidget {
     output += value.toString();
   }
 
+  static void printString(Object? value) {
+    output += value.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController c = TextEditingController(text: DebugConsole.output);

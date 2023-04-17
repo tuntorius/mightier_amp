@@ -240,6 +240,7 @@ class _AudioEditorState extends State<AudioEditor> {
                     automation: automation,
                     onTimingData: timingData,
                     showType: showEventType(),
+                    channelColors: device.presets[0].channelColorsList,
                     onEventSelectionChanged: () {
                       setState(() {});
                     },

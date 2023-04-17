@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 import 'package:mighty_plug_manager/audio/models/waveform_data.dart';
 import 'package:mighty_plug_manager/audio/widgets/waveform_painter.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
 
 import '../automationController.dart';
 
@@ -18,6 +17,7 @@ class PaintedWaveform extends StatefulWidget {
   final AutomationEventType? showType;
   final AutomationController automation;
   final Function(double, double) onTimingData;
+  final List<Color> channelColors;
   const PaintedWaveform(
       {Key? key,
       required this.sampleData,
@@ -26,7 +26,8 @@ class PaintedWaveform extends StatefulWidget {
       required this.currentSample,
       required this.automation,
       required this.showType,
-      required this.onTimingData})
+      required this.onTimingData,
+      required this.channelColors})
       : super(key: key);
 
   @override
@@ -49,6 +50,13 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
   bool isSingle = true;
 
   bool layoutBuilt = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   void initScaling() {
     endPosition = widget.sampleData!.data.length - 1;
 
@@ -73,11 +81,11 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
     if (_position + _extent > widget.sampleData!.data.length - 1) {
       _position = widget.sampleData!.data.length - 1 - _extent;
     }
-
+    startPosition = _position - _extent;
+      endPosition = _position + _extent;
     _offset = -_scale * startPosition;
     setState(() {
-      startPosition = _position - _extent;
-      endPosition = _position + _extent;
+      
     });
   }
 
@@ -147,6 +155,58 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
     });
   }
 
+  Widget _eventPointer(AutomationEvent event, double msPerSample, double samplesPerPixel)
+  {
+    bool empty = event.type == AutomationEventType.preset &&
+            event.getPresetUuid().isEmpty;
+
+    return Positioned(
+          left: (((event.eventTime.inMilliseconds * msPerSample) -
+                          startPosition) /
+                      (endPosition - startPosition)) *
+                  canvasSize -
+              widget.dragHandlesheight / 2 - 9,
+          child: GestureDetector(
+            onHorizontalDragUpdate: (d) {
+              widget.automation.selectedEvent = event;
+              //get samples per pixel
+
+              setState(() {
+                event.eventTime += Duration(
+                    milliseconds:
+                        (d.delta.dx * (samplesPerPixel / msPerSample)).round());
+              });
+            },
+            onHorizontalDragEnd: (d) {
+              widget.automation.selectedEvent = event;
+              widget.onEventSelectionChanged();
+              widget.automation.sortEvents();
+              //update automation
+              setState(() {});
+            },
+            child: ClipPath(
+              clipper: GuitarPickClipper(),
+              child: ElevatedButton(
+                  onPressed: () {
+                    widget.automation.selectedEvent = event;
+                    widget.onEventSelectionChanged();
+                    setState(() {});
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.fromLTRB(24,20,24,15),
+                    backgroundColor: empty ? Colors.grey : widget.channelColors[event.channel], // <-- Button color
+                    foregroundColor: Colors.black, // <-- Splash color
+                  ),
+                  child: Icon(widget.automation.selectedEvent ==
+                          event
+                      ? Icons.circle
+                      : null)),
+            ),
+          ),
+        );
+  }
+
   @override
   Widget build(context) {
     double msPerSample = 0;
@@ -161,54 +221,15 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
       widget.onTimingData(samplesPerPixel, msPerSample);
       //time = (widget.currentSample / msPerSample) / 1000;
       //create automation event handles (TODO: move them in separate widget)
-      int realIndex = 0;
+
       for (int i = 0; i < widget.automation.events.length; i++) {
         var element = widget.automation.events[i];
-        bool empty = element.type == AutomationEventType.preset &&
-            element.getPresetUuid().isEmpty;
+        
         if (element.type != widget.showType) continue;
-        Widget w = Positioned(
-          left: (((element.eventTime.inMilliseconds * msPerSample) -
-                          startPosition) /
-                      (endPosition - startPosition)) *
-                  canvasSize -
-              widget.dragHandlesheight / 2,
-          child: GestureDetector(
-            onHorizontalDragUpdate: (d) {
-              widget.automation.selectedEvent = widget.automation.events[i];
-              //get samples per pixel
-
-              setState(() {
-                element.eventTime += Duration(
-                    milliseconds:
-                        (d.delta.dx * (samplesPerPixel / msPerSample)).round());
-              });
-            },
-            onHorizontalDragEnd: (d) {
-              widget.automation.selectedEvent = widget.automation.events[i];
-              widget.onEventSelectionChanged();
-              widget.automation.sortEvents();
-              //update automation
-              setState(() {});
-            },
-            child: FloatingActionButton(
-                onPressed: () {
-                  widget.automation.selectedEvent = widget.automation.events[i];
-                  widget.onEventSelectionChanged();
-                  setState(() {});
-                },
-                backgroundColor:
-                    empty ? Colors.grey : Preset.channelColors[element.channel],
-                heroTag: "dragTag$i",
-                child: Icon(widget.automation.selectedEvent ==
-                        widget.automation.events[i]
-                    ? Icons.circle
-                    : null)),
-          ),
-        );
+        Widget w = _eventPointer(element, msPerSample, samplesPerPixel);
 
         automationEventButtons.add(w);
-        realIndex++;
+        
       }
     }
     return ColoredBox(
@@ -289,5 +310,21 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
         },
       ),
     );
+  }
+}
+
+class GuitarPickClipper extends CustomClipper<Path> {
+  @override
+  getClip(Size size) {
+    var path = Path();
+    path.moveTo(size.width*0.5, 0);
+    path.cubicTo(size.width*0.9, size.height*0.5, size.width*0.9, size.height*0.9, size.width*0.5, size.height*0.9);
+    path.cubicTo(size.width*0.1, size.height*0.9,size.width*0.1, size.height*0.5, size.width*0.5, 0);
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper oldClipper) {
+    return true;
   }
 }

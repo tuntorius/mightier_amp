@@ -126,17 +126,20 @@ class _SetlistPageState extends State<SetlistPage> {
   Widget? createTrailingWidget(BuildContext context, int index) {
     if (widget.readOnly) return null;
     if (_multiselectMode) {
-      return Icon(
-        selected.containsKey(index)
-            ? Icons.check_circle
-            : Icons.brightness_1_outlined,
-        color: selected.containsKey(index) ? null : Colors.grey[800],
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
+        child: Icon(
+          selected.containsKey(index)
+              ? Icons.check_circle
+              : Icons.brightness_1_outlined,
+          color: selected.containsKey(index) ? null : Colors.grey[800],
+        ),
       );
     }
 
     return PopupMenuButton(
       child: const Padding(
-        padding: EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
+        padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
         child: Icon(Icons.more_vert),
       ),
       itemBuilder: (context) {
@@ -229,7 +232,7 @@ class _SetlistPageState extends State<SetlistPage> {
                                                     _multiselectMode
                                                 ? 16
                                                 : 0,
-                                            right: 16),
+                                            right: 0),
                                         title: Text(widget.setlist.items[index]
                                             .trackReference!.name),
                                         trailing: createTrailingWidget(

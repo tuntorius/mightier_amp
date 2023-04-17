@@ -17,17 +17,19 @@ class SelectPresetDialog {
                 Icons.adaptive.arrow_back,
                 color: Colors.white,
               ),
-              onPressed: () => Navigator.of(context).pop()),
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop()),
           const Text('Select preset'),
         ],
       ),
-      content: PresetList(
-          simplified: true,
-          noneOption: noneOption,
-          customProductId: customProduct,
-          onTap: (preset) {
-            Navigator.of(context).pop(preset);
-          }),
+      content: Scaffold(
+        body: PresetList(
+            simplified: true,
+            noneOption: noneOption,
+            customProductId: customProduct,
+            onTap: (preset) {
+              Navigator.of(context, rootNavigator: true).pop(preset);
+            }),
+      ),
     );
   }
 }

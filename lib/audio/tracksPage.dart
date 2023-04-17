@@ -227,18 +227,21 @@ class _TracksPageState extends State<TracksPage>
 
   Widget? createTrailingWidget(BuildContext context, int index) {
     if (multiselectMode) {
-      return Icon(
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+        child: Icon(
         selected.containsKey(index)
             ? Icons.check_circle
             : Icons.brightness_1_outlined,
         color: selected.containsKey(index) ? null : Colors.grey[800],
+        ),
       );
     }
 
     if (widget.selectorOnly) return null;
     return PopupMenuButton(
       child: const Padding(
-        padding: EdgeInsets.only(left: 12.0, right: 12, bottom: 10, top: 10),
+        padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
         child: Icon(Icons.more_vert),
       ),
       itemBuilder: (context) {
@@ -310,8 +313,8 @@ class _TracksPageState extends State<TracksPage>
         url = libSong.uri;
       } else if (PlatformUtils.isIOS) {
         var meta = await AudioPicker.getMetadata(path[i]);
-        artist = meta["artist"] ?? "";
-        title = meta["title"] ?? "";
+        artist = meta["artist"]?.trim() ?? "";
+        title = meta["title"]?.trim() ?? "";
         url = path[i];
       } else {
         TrackData().addTrack(path[i], basenameWithoutExtension(path[i]), false);
@@ -441,6 +444,7 @@ class _TracksPageState extends State<TracksPage>
                                 .toLowerCase()
                                 .contains(filter)) return const SizedBox();
                         return ListTile(
+                          contentPadding: const EdgeInsets.only(left: 12),
                           selected:
                               multiselectMode && selected.containsKey(index),
                           title: Text(TrackData().tracks[index].name),
@@ -478,7 +482,10 @@ class _TracksPageState extends State<TracksPage>
 
                 // On pressed change animation state
                 onPress: () {
-                  if (multiselectMode) {
+                  if (PlatformUtils.isIOS && !_showHiddenSources) {
+                    addFromFile();
+                  }
+                  else if (multiselectMode) {
                     deleteSelected(context);
                   } else {
                     _animationController.isCompleted

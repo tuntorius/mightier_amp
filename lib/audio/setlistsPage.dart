@@ -208,17 +208,16 @@ class _SetlistsState extends State<Setlists> {
                                 Expanded(
                                   child: ListTile(
                                     contentPadding:
-                                        const EdgeInsets.only(right: 16),
+                                        const EdgeInsets.only(right: 0),
                                     title: Text(setlists[index].name),
                                     subtitle: Text(
                                         "${setlists[index].items.length} tracks"),
                                     trailing: PopupMenuButton(
+                                      padding: EdgeInsets.zero,
                                       child: const Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 12.0,
-                                            right: 4,
-                                            bottom: 10,
-                                            top: 10),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 10),
                                         child: Icon(Icons.more_vert),
                                       ),
                                       itemBuilder: (context) {

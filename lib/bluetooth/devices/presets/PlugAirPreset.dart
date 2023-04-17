@@ -8,7 +8,6 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Ampsv2.dart';
 
 import '../../NuxDeviceControl.dart';
-import '../../bleMidiHandler.dart';
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';

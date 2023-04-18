@@ -47,6 +47,8 @@
 	<string>The app uses music as backing tracks that are streamed to the connected guitar amplifier</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Bluetooth Low Energy is used to connect to a BLE enabled guitar amplifier</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth Low Energy is used to connect to a BLE enabled guitar amplifier</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app uses camera to scan QR codes that contain preset data for the connected amplifier</string>
 	<key>NSPhotoLibraryUsageDescription</key>

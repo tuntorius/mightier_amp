@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 
 import '../../bluetooth/NuxDeviceControl.dart';
-import '../widgets/ModeControlRegular.dart';
+import '../widgets/common/ModeControlRegular.dart';
 
 //fiber_smart_record looks fine for overdub
 class LooperControl extends StatefulWidget {

@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
-import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 
 class AlbumTracks extends StatefulWidget {
   final String albumName;

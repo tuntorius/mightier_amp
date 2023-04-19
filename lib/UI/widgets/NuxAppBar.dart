@@ -11,7 +11,7 @@ import '../../bluetooth/ble_controllers/BLEController.dart';
 import '../../bluetooth/devices/features/tuner.dart';
 import '../mightierIcons.dart';
 import '../pages/tunerPage.dart';
-import 'blinkWidget.dart';
+import 'common/blinkWidget.dart';
 
 class MAAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double? elevation;

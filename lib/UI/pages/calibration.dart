@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/presets/Preset.dart';

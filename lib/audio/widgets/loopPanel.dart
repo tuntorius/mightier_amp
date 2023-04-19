@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/widgets/numberPicker.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/numberPicker.dart';
 import '../automationController.dart';
 
 class LoopPanel extends StatelessWidget {

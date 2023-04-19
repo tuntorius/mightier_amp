@@ -9,7 +9,7 @@ class ScrollPicker extends StatefulWidget {
   // Constants
   static const double itemHeight = 50.0;
 
-  ScrollPicker({
+  const ScrollPicker({
     Key? key,
     required this.items,
     required this.initialValue,

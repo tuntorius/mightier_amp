@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/modeControlRegular.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 
 import '../../modules/tempo_trainer.dart';
+import 'common/numberPicker.dart';
 
 class TempoTrainerBottomSheet extends StatefulWidget {
   const TempoTrainerBottomSheet({Key? key}) : super(key: key);
@@ -87,7 +89,7 @@ class _TempoTrainerBottomSheetState extends State<TempoTrainerBottomSheet>
       height: 400,
       child: Column(children: [
         ListTile(
-          title: const Center(child: Text("Range")),
+          title: const Center(child: Text("Tempo Range")),
           subtitle: RangeSlider(
               min: device.drumsMinTempo,
               max: device.drumsMaxTempo,
@@ -101,24 +103,29 @@ class _TempoTrainerBottomSheetState extends State<TempoTrainerBottomSheet>
                 setState(() {});
               }),
         ),
-        DropdownButton<TempoChangeMode>(
-            value: _tempoTrainer.changeMode,
-            items: _dropDownValues
-                .asMap()
-                .map((index, value) => MapEntry(
-                    index,
-                    DropdownMenuItem<TempoChangeMode>(
-                      value: TempoChangeMode.values[index],
-                      child: Text(value),
-                    )))
-                .values
-                .toList(),
-            onChanged: (index) {
+        ModeControlRegular(
+            options: _dropDownValues,
+            selected: _tempoTrainer.changeMode.index,
+            onSelected: (index) {
               setState(() {
-                _tempoTrainer.changeMode = index!;
+                _tempoTrainer.changeMode = TempoChangeMode.values[index];
               });
             }),
         ListTile(
+          title: Text("Increase every"),
+          subtitle: NumberPicker(
+            textStyle: const TextStyle(color: Colors.grey),
+            minValue: 2,
+            maxValue: 100,
+            value: _tempoTrainer.changeUnits,
+            axis: Axis.horizontal,
+            onChanged: (value) {
+              _tempoTrainer.changeUnits = value.round();
+              setState(() {});
+            },
+          ),
+        ),
+        /*ListTile(
             title: const Center(child: Text("Increase every")),
             subtitle: Slider(
               min: 2,
@@ -132,7 +139,7 @@ class _TempoTrainerBottomSheetState extends State<TempoTrainerBottomSheet>
                 setState(() {});
               },
               onChangeEnd: (value) {},
-            )),
+            )),*/
         ListTile(
           title: const Center(child: Text("Increase by")),
           subtitle: Slider(

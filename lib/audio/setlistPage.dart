@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/popups/selectTrack.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
-import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/setlist_player/setlistPlayerState.dart';
 import '../UI/pages/jamTracks.dart';
 import 'models/setlist.dart';
@@ -127,7 +127,7 @@ class _SetlistPageState extends State<SetlistPage> {
     if (widget.readOnly) return null;
     if (_multiselectMode) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
         child: Icon(
           selected.containsKey(index)
               ? Icons.check_circle
@@ -139,7 +139,7 @@ class _SetlistPageState extends State<SetlistPage> {
 
     return PopupMenuButton(
       child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
         child: Icon(Icons.more_vert),
       ),
       itemBuilder: (context) {

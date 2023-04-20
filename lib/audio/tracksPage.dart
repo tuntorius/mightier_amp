@@ -5,8 +5,8 @@ import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/fabMenu.dart';
-import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
-import 'package:mighty_plug_manager/UI/widgets/searchTextField.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/searchTextField.dart';
 import 'package:mighty_plug_manager/audio/setlist_player/setlistPlayerState.dart';
 import 'package:mighty_plug_manager/audio/widgets/media_library/media_browse.dart';
 import 'package:path/path.dart';
@@ -230,10 +230,10 @@ class _TracksPageState extends State<TracksPage>
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
         child: Icon(
-        selected.containsKey(index)
-            ? Icons.check_circle
-            : Icons.brightness_1_outlined,
-        color: selected.containsKey(index) ? null : Colors.grey[800],
+          selected.containsKey(index)
+              ? Icons.check_circle
+              : Icons.brightness_1_outlined,
+          color: selected.containsKey(index) ? null : Colors.grey[800],
         ),
       );
     }
@@ -484,8 +484,7 @@ class _TracksPageState extends State<TracksPage>
                 onPress: () {
                   if (PlatformUtils.isIOS && !_showHiddenSources) {
                     addFromFile();
-                  }
-                  else if (multiselectMode) {
+                  } else if (multiselectMode) {
                     deleteSelected(context);
                   } else {
                     _animationController.isCompleted

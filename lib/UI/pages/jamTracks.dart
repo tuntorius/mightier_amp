@@ -15,7 +15,7 @@ import '../../audio/models/setlist.dart';
 import '../../audio/setlist_player/setlistPlayerState.dart';
 import '../../audio/widgets/jamtracksView.dart';
 import '../../platform/platformUtils.dart';
-import '../widgets/nestedWillPopScope.dart';
+import '../widgets/common/nestedWillPopScope.dart';
 
 class JamTracks extends StatefulWidget {
   const JamTracks({Key? key}) : super(key: key);

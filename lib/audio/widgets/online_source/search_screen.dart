@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/online_sources/onlineSource.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:mighty_plug_manager/audio/online_sources/onlineTrack.dart';

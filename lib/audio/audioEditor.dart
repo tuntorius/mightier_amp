@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
-import 'package:mighty_plug_manager/UI/widgets/nestedWillPopScope.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/automationController.dart';
 import 'package:mighty_plug_manager/audio/online_sources/sourceResolver.dart';
 import 'package:mighty_plug_manager/audio/widgets/presetsPanel.dart';
@@ -103,9 +103,10 @@ class _AudioEditorState extends State<AudioEditor> {
   }
 
   Future decodeAudio(String path) async {
-    path = await SourceResolver.getSourceUrl(path);
     print("Audio path $path");
-    await decoder.open(path);
+    var resolvedPath = await SourceResolver.getSourceUrl(path);
+    print("Resolved path $resolvedPath");
+    await decoder.open(resolvedPath);
 
     decoder.decode(() {
       wfData = WaveformData(maxValue: 1, data: decoder.samples);

@@ -94,12 +94,6 @@ class _JamTracksState extends State<JamTracks>
     return Stack(
       children: [
         const Setlists(),
-        TextButton(
-          child: const Center(child: Text("")),
-          onPressed: () {
-            cntrl.index = 1;
-          },
-        ),
       ],
     );
   }

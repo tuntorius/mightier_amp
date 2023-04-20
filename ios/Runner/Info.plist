@@ -6,6 +6,21 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>JSON Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.json</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,14 +37,18 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>The app uses music as backing tracks that are streamed to the connected guitar amplifier</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Bluetooth Low Energy is used to connect to the guitar amplifier</string>
+	<string>Bluetooth Low Energy is used to connect to a BLE enabled guitar amplifier</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bluetooth Low Energy is used to connect to the guitar amplifier</string>
+	<string>Bluetooth Low Energy is used to connect to a BLE enabled guitar amplifier</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app uses camera to scan QR codes that contain preset data for the connected amplifier</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -39,6 +58,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
+		<string>bluetooth-central</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -59,22 +79,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>JSON Document</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.json</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
-		</dict>
-	</array>
 </dict>
 </plist>

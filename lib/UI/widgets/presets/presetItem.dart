@@ -179,6 +179,23 @@ class PresetItem extends StatelessWidget {
       Map<String, dynamic> item, BuildContext context) {
     //create trailing widget based on whether the preset is new
     Widget? trailingWidget;
+    late Widget pmb;
+    if (!simplified) {
+      pmb = PopupMenuButton(
+            child: const Padding(
+              padding:
+                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+              child: Icon(Icons.more_vert),
+            ),
+            itemBuilder: (context) {
+              return _popupSubmenu;
+            },
+            onSelected: (pos) {
+              onPopupMenuTap?.call(pos as PresetItemActions, item);
+            },
+          );
+    }
+
     if (simplified) {
       trailingWidget = null;
     } else if (kDebugMode) {
@@ -192,34 +209,11 @@ class PresetItem extends StatelessWidget {
                 );
               },
               icon: Icon(Icons.adaptive.share)),
-          PopupMenuButton(
-            child: const Padding(
-              padding:
-                  EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
-              child: Icon(Icons.more_vert),
-            ),
-            itemBuilder: (context) {
-              return _popupSubmenu;
-            },
-            onSelected: (pos) {
-              onPopupMenuTap?.call(pos as PresetItemActions, item);
-            },
-          ),
+          pmb
         ],
       );
     } else {
-      trailingWidget = PopupMenuButton(
-        child: const Padding(
-          padding: EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
-          child: Icon(Icons.more_vert),
-        ),
-        itemBuilder: (context) {
-          return _popupSubmenu;
-        },
-        onSelected: (pos) {
-          onPopupMenuTap?.call(pos as PresetItemActions, item);
-        },
-      );
+      trailingWidget = pmb;
     }
 
     return trailingWidget;
@@ -282,7 +276,7 @@ class PresetItem extends StatelessWidget {
       child: ListTile(
           enabled: enabled,
           minLeadingWidth: 0,
-          contentPadding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
+          contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           leading: Container(
             margin: const EdgeInsets.only(left: 4),
             decoration: BoxDecoration(

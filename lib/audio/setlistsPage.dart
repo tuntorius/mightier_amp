@@ -217,7 +217,7 @@ class _SetlistsState extends State<Setlists> {
                                       child: const Padding(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 16,
-                                            vertical: 10),
+                                            vertical: 16),
                                         child: Icon(Icons.more_vert),
                                       ),
                                       itemBuilder: (context) {

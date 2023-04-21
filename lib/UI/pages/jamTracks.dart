@@ -77,29 +77,22 @@ class _JamTracksState extends State<JamTracks>
     setState(() {});
   }
 
-  Widget showSetlists(bool hasTracks) {
+  Widget showSetlists() {
     var innerContext = JamTracks.jamtracksNavigator.currentContext!;
-    if (hasTracks) {
-      return Setlists(
-        onAllTracksSelect: () {
-          Navigator.pushNamed(innerContext, '/setlist',
-              arguments: SetlistArguments(TrackData().allTracks, true));
-        },
-        onSetlistSelect: (setlist) {
-          Navigator.pushNamed(innerContext, '/setlist',
-              arguments: SetlistArguments(setlist, false));
-        },
-      );
-    }
-    return Stack(
-      children: [
-        const Setlists(),
-      ],
+
+    return Setlists(
+      onAllTracksSelect: () {
+        Navigator.pushNamed(innerContext, '/setlist',
+            arguments: SetlistArguments(TrackData().allTracks, true));
+      },
+      onSetlistSelect: (setlist) {
+        Navigator.pushNamed(innerContext, '/setlist',
+            arguments: SetlistArguments(setlist, false));
+      },
     );
   }
 
   Widget mainView() {
-    bool hasTracks = TrackData().tracks.isNotEmpty;
     return Navigator(
       key: JamTracks.jamtracksNavigator,
       onGenerateRoute: (settings) {
@@ -116,7 +109,7 @@ class _JamTracksState extends State<JamTracks>
                     child: TabBarView(
                       controller: cntrl,
                       children: [
-                        showSetlists(hasTracks),
+                        showSetlists(),
                         const TracksPage(),
                       ],
                     ),

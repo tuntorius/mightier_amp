@@ -482,10 +482,11 @@ class _TracksPageState extends State<TracksPage>
 
                 // On pressed change animation state
                 onPress: () {
-                  if (PlatformUtils.isIOS && !_showHiddenSources) {
-                    addFromFile();
-                  } else if (multiselectMode) {
+                  if (multiselectMode) {
                     deleteSelected(context);
+                  }
+                  else if (PlatformUtils.isIOS && !_showHiddenSources) {
+                    addFromFile();
                   } else {
                     _animationController.isCompleted
                         ? _animationController.reverse()

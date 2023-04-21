@@ -215,6 +215,7 @@ class ProgrammaticExpansionTileState extends State<ProgrammaticExpansionTile>
             child: Container(
               color: _titleColor.value,
               child: ListTile(
+                contentPadding: const EdgeInsets.only(left:16,right:0),
                 onTap: toggle,
                 leading: widget.leading ??
                     RotationTransition(

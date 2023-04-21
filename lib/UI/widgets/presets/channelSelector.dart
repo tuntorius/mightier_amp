@@ -133,25 +133,30 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         );
       }
 
-      var button = SizedBox(
-        width: width,
-        height:
-            AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),
-        child: Semantics(
-          selected: widget.device.selectedChannel == i,
-          label: tooltip,
-          child: GestureDetector(
-              onTap: () {
-                widget.device.setSelectedChannel(i,
-                    notifyBT: true, sendFullPreset: false, notifyUI: true);
-                widget.device
-                    .getPreset(widget.device.selectedChannel)
-                    .setupPresetFromNuxData();
-              },
-              onLongPress: () {
-                widget.device.toggleChannelActive(i);
-              },
-              child: ExcludeSemantics(child: buttonBody)),
+      var button = GestureDetector(
+        onTap: () {
+            widget.device.setSelectedChannel(i,
+                notifyBT: true, sendFullPreset: false, notifyUI: true);
+            widget.device
+                .getPreset(widget.device.selectedChannel)
+                .setupPresetFromNuxData();
+          },
+        onLongPress: () {
+            widget.device.toggleChannelActive(i);
+          },
+        child: Container(
+          //use container with color to expand hittest area for the gesture detector
+          //better to use the same as the background color to imitate transparency
+          //than to use translucent hittest (slow)
+          color:Theme.of(context).scaffoldBackgroundColor,
+          width: width,
+          height:
+              AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),
+          child: Semantics(
+            selected: widget.device.selectedChannel == i,
+            label: tooltip,
+            child: ExcludeSemantics(child: buttonBody),
+          ),
         ),
       );
       buttons.add(button);

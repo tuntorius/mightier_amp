@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/toneshare/toneshare_main.dart';
 import 'package:qr_utils/qr_utils.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../audio/setlist_player/setlistPlayerState.dart';
 import '../../../audio/trackdata/trackData.dart';
@@ -158,7 +157,7 @@ class _PresetListState extends State<PresetList>
   Widget _mainPopupMenu() {
     return PopupMenuButton(
       child: const Padding(
-        padding: EdgeInsets.only(left: 12.0, right: 4, bottom: 10, top: 10),
+        padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 16),
         child: Icon(Icons.more_vert),
       ),
       itemBuilder: (context) {
@@ -183,7 +182,7 @@ class _PresetListState extends State<PresetList>
             // shape: RoundedRectangleBorder(
             //     borderRadius: BorderRadius.circular(20),
             //     side: BorderSide(color: Colors.grey)),
-            contentPadding: const EdgeInsets.only(left: 16, right: 12),
+            contentPadding: const EdgeInsets.only(left: 16, right: 0),
             title: const Text("Presets"),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -296,7 +295,7 @@ class _PresetListState extends State<PresetList>
           : PopupMenuButton(
               child: const Padding(
                 padding:
-                    EdgeInsets.only(left: 16.0, right: 0, bottom: 10, top: 10),
+                    EdgeInsets.symmetric(horizontal: 16, vertical:16),
                 child: Icon(Icons.more_vert),
               ),
               itemBuilder: (context) {

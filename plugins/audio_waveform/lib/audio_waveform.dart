@@ -38,7 +38,10 @@ class AudioWaveformDecoder {
       var result = await platform.invokeMethod("next", {"frameCount": 242144});
       return result?.cast<int>() ?? null;
     }
-    return await platform.invokeMethod("next");
+    try {
+      return await platform.invokeMethod("next");
+    } catch (e) {}
+    return null;
   }
 
   Future<int> _duration() async {
@@ -89,7 +92,7 @@ class AudioWaveformDecoder {
       }
 
       _samples.setRange(pos, listEndIndex, list);
-      pos += list.length;
+      pos += listEndIndex - pos;
 
       bufferIndex++;
 

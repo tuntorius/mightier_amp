@@ -18,6 +18,11 @@ class AudioPicker {
     return [];
   }
 
+  static Future<String> pickAudioFile() async {
+    final String absolutePath = await _channel.invokeMethod('pick_audio_file');
+    return absolutePath;
+  }
+
   static Future<Map<String, String>> getMetadata(String assetUrl) async {
     if (!Platform.isIOS)
       throw Exception("getMetadata is only for iOS");

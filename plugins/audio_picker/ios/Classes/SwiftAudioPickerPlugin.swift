@@ -3,7 +3,7 @@ import UIKit
 import AVFoundation
 import MediaPlayer
 
-public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerControllerDelegate {
+public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerControllerDelegate, UIDocumentPickerDelegate {
     
     var _viewController : UIViewController?
     var _audioPickerController : MPMediaPickerController?
@@ -32,6 +32,11 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
 
             _flutterResult = result
             openAudioPicker(multiple:true)
+        }
+        if(call.method == "pick_audio_file"){
+            
+            _flutterResult = result
+            openFilePicker()
         }
         if (call.method=="get_metadata") {
             if let args = call.arguments as? [String: Any],
@@ -68,7 +73,13 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
             let pathList = Array(uniquePaths)
             self._flutterResult?(pathList)
         }
-        
+    }
+
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let selectedURL = urls.first else {
+            return
+        }
+        self._flutterResult?(selectedURL.absoluteString)
     }
     
     public func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController)
@@ -80,23 +91,56 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
     func openAudioPicker(multiple: Bool) {
         _audioPickerController = MPMediaPickerController.self(mediaTypes:MPMediaType.music)
         _audioPickerController?.delegate = self
-        _audioPickerController?.showsCloudItems = false
+        _audioPickerController?.showsCloudItems = true
+        _audioPickerController?.showsItemsWithProtectedAssets = false
         _audioPickerController?.allowsPickingMultipleItems = multiple
         _audioPickerController?.modalPresentationStyle = UIModalPresentationStyle.currentContext
         _viewController?.present(_audioPickerController!, animated: true, completion: nil)
     }
 
-    func getArtistAndTitle(from assetUrl: String) -> [String: String] {
-        
-        let query = MPMediaQuery.songs()
-        let predicate = MPMediaPropertyPredicate(value: assetUrl, forProperty: MPMediaItemPropertyPersistentID)
-        query.addFilterPredicate(predicate)
-        if let result = query.items?.first {
-            let title = result.title ?? ""
-            let artist = result.artist ?? ""
-            return ["artist": artist, "title": title]
-        }
-        
-        return ["artist": "", "title": ""]
+    func openFilePicker() {
+        // Present the UIDocumentPickerViewController
+        let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.audio"], in: .import)
+        documentPicker.delegate = self
+        documentPicker.allowsMultipleSelection = false
+        documentPicker.modalPresentationStyle = .formSheet
+        _viewController?.present(documentPicker, animated: true, completion: nil)
     }
+
+    func getArtistAndTitle(from assetUrl: String) -> [String: String] {
+        if assetUrl.hasPrefix("file:") {
+            guard let url = URL(string: assetUrl) else {
+                return ["artist": "", "title": ""]
+            }
+            
+            let asset = AVAsset(url: url)
+            let metadata = asset.metadata
+            
+            var artist = ""
+            var title = ""
+            for item in metadata {
+                if let key = item.commonKey?.rawValue, let value = item.value {
+                    if key == "title" {
+                        title = value as? String ?? ""
+                    } else if key == "artist" {
+                        artist = value as? String ?? ""
+                    }
+                }
+            }
+            
+            return ["artist": artist, "title": title]
+        } else {
+            let query = MPMediaQuery.songs()
+            let predicate = MPMediaPropertyPredicate(value: assetUrl, forProperty: MPMediaItemPropertyPersistentID)
+            query.addFilterPredicate(predicate)
+            if let result = query.items?.first {
+                let title = result.title ?? ""
+                let artist = result.artist ?? ""
+                return ["artist": artist, "title": title]
+            }
+            
+            return ["artist": "", "title": ""]
+        }
+    }
+
 }

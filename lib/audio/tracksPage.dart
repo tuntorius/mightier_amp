@@ -280,13 +280,37 @@ class _TracksPageState extends State<TracksPage>
     var path = await AudioPicker.pickAudioMultiple();
 
     for (int i = 0; i < path.length; i++) {
-      SongInfo? libSong;
+      await _processFileUrl(path[i]);
+      //clear filter and scroll to bottom
+      searchCtrl.text = "";
+      setState(() {});
+    }
+    if (path.isNotEmpty) {
+      TrackData().saveTracks();
+      _scrollToNewSongs();
+    }
+  }
+
+  void addFromIosFile() async
+  {
+    var path = await AudioPicker.pickAudioFile();
+    await _processFileUrl(path);
+    TrackData().saveTracks();
+    _scrollToNewSongs();
+    setState(() {
+        
+      });
+  }
+
+  Future _processFileUrl(String path) async
+  {
+          SongInfo? libSong;
 
       if (PlatformUtils.isAndroid &&
-          path[i].contains("com.android.providers.media")) {
-        var spl = path[i].split("%3A");
-        if (spl.length < 2) continue;
-        var id = path[i].split("%3A")[1];
+          path.contains("com.android.providers.media")) {
+        var spl = path.split("%3A");
+        if (spl.length < 2) return;
+        var id = path.split("%3A")[1];
         for (var s = 0; s < (songList?.length ?? 0); s++) {
           if (songList![s].id == id) {
             libSong = songList![s];
@@ -295,7 +319,7 @@ class _TracksPageState extends State<TracksPage>
         }
       } else {
         //find song in media library
-        String file = basename(path[i]);
+        String file = basename(path);
 
         for (var s = 0; s < (songList?.length ?? 0); s++) {
           if (songList![s].filePath.contains(file)) {
@@ -314,30 +338,22 @@ class _TracksPageState extends State<TracksPage>
         title = libSong.title;
         url = libSong.uri;
       } else if (PlatformUtils.isIOS) {
-        var meta = await AudioPicker.getMetadata(path[i]);
+        var meta = await AudioPicker.getMetadata(path);
         artist = meta["artist"]?.trim() ?? "";
         title = meta["title"]?.trim() ?? "";
-        url = path[i];
+        url = path;
       }
 
       trackName = artist.isNotEmpty ? "$artist - $title" : title;
 
       if (url.isEmpty) {
-        url = path[i];
+        url = path;
       }
       if (trackName.isEmpty) {
-        trackName = basenameWithoutExtension(path[i]);
+        trackName = basenameWithoutExtension(path);
       }
 
       TrackData().addTrack(url, trackName, false);
-      //clear filter and scroll to bottom
-      searchCtrl.text = "";
-      setState(() {});
-    }
-    if (path.isNotEmpty) {
-      TrackData().saveTracks();
-      _scollToNewSongs();
-    }
   }
 
   void addFromMediaLibrary(BuildContext context) {
@@ -355,7 +371,7 @@ class _TracksPageState extends State<TracksPage>
         //clear filter and scroll to bottom
         searchCtrl.text = "";
         setState(() {});
-        _scollToNewSongs();
+        _scrollToNewSongs();
       }
     });
   }
@@ -375,7 +391,7 @@ class _TracksPageState extends State<TracksPage>
         //clear filter and scroll to bottom
         searchCtrl.text = "";
         setState(() {});
-        _scollToNewSongs();
+        _scrollToNewSongs();
       }
     });
   }
@@ -395,12 +411,12 @@ class _TracksPageState extends State<TracksPage>
         //clear filter and scroll to bottom
         searchCtrl.text = "";
         setState(() {});
-        _scollToNewSongs();
+        _scrollToNewSongs();
       }
     });
   }
 
-  void _scollToNewSongs() async {
+  void _scrollToNewSongs() async {
     await Future.delayed(const Duration(milliseconds: 300));
     scrollController.animateTo(scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300), curve: Curves.easeInCubic);
@@ -546,7 +562,6 @@ class _TracksPageState extends State<TracksPage>
         },
       ),
       //Floating action menu item
-      if (!PlatformUtils.isIOS)
         Bubble(
           title: "File Browser",
           iconColor: Colors.white,
@@ -555,7 +570,11 @@ class _TracksPageState extends State<TracksPage>
           titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
           onPress: () {
             _animationController.reverse();
-            addFromFile();
+            if (PlatformUtils.isAndroid) {
+              addFromFile();
+            } else if (PlatformUtils.isIOS) {
+              addFromIosFile();
+            }
           },
         ),
     ];

@@ -28,14 +28,14 @@ Facebook groups for presets sharing and amps discussion:
 [Mighty Plug/Mighty Air](https://www.facebook.com/groups/nuxmightyplugairgroup/)  
 [Mighty Plug Pro/Mighty Space](https://www.facebook.com/groups/mightyplugpro/)  
 
-## iOS Support
-Coming soon.
-
 ## Download
 
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
      alt="Get it on Google Play"
      height="80">](https://play.google.com/store/apps/details?id=com.tuntori.mightieramp)
+[<img src="docs/ios_web_generic.png"
+     alt="Get it on Google Play"
+     height="82">](https://apps.apple.com/us/app/mightier-amp/id6447451371)
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
      height="80">](https://f-droid.org/packages/com.tuntori.mightieramp/)

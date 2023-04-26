@@ -118,6 +118,7 @@ class _TracksPageState extends State<TracksPage>
             confirmButton: "Delete",
             confirmColor: Colors.red, onConfirm: (delete) {
           if (delete) {
+            SetlistPlayerState.instance().onTrackRemoved(item.uuid);
             TrackData().removeTrack(item).then((value) => setState(() {}));
           }
         });
@@ -266,6 +267,7 @@ class _TracksPageState extends State<TracksPage>
         for (int i = 0; i < selected.length; i++) {
           var item = TrackData().tracks[selected.keys.elementAt(i)];
           delTracks.add(item);
+          SetlistPlayerState.instance().onTrackRemoved(item.uuid);
         }
         await TrackData().removeTracks(delTracks);
         deselectAll();
@@ -316,8 +318,6 @@ class _TracksPageState extends State<TracksPage>
         artist = meta["artist"]?.trim() ?? "";
         title = meta["title"]?.trim() ?? "";
         url = path[i];
-      } else {
-        TrackData().addTrack(path[i], basenameWithoutExtension(path[i]), false);
       }
 
       trackName = artist.isNotEmpty ? "$artist - $title" : title;
@@ -484,8 +484,7 @@ class _TracksPageState extends State<TracksPage>
                 onPress: () {
                   if (multiselectMode) {
                     deleteSelected(context);
-                  }
-                  else if (PlatformUtils.isIOS && !_showHiddenSources) {
+                  } else if (PlatformUtils.isIOS && !_showHiddenSources) {
                     addFromFile();
                   } else {
                     _animationController.isCompleted

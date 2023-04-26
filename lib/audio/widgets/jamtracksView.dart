@@ -10,7 +10,9 @@ class JamtracksView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final SetlistPlayerState playerState = SetlistPlayerState.instance();
-    final bool playerVisible = SetlistPlayerState.instance().setlist != null;
+    final bool playerVisible = SetlistPlayerState.instance().setlist != null &&
+        SetlistPlayerState.instance().currentTrack <
+            SetlistPlayerState.instance().setlist!.items.length;
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [

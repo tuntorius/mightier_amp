@@ -147,6 +147,16 @@ class SetlistPlayerState extends ChangeNotifier {
     return _automation?.dispose();
   }
 
+  void onTrackRemoved(String trackUuld) {
+    if (setlist == null) return;
+    bool hasItem =
+        setlist!.items.any((element) => element.trackUuid == trackUuld);
+    if (hasItem) {
+      clear();
+      notifyListeners();
+    }
+  }
+
   void _onPosition(Duration pos) {
     if (!_inPositionUpdateMode) currentPosition = pos;
     _positionController.add(pos);

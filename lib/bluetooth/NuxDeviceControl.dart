@@ -486,19 +486,23 @@ class NuxDeviceControl extends ChangeNotifier {
     return data;
   }
 
-  void saveNuxPreset() {
+  void saveNuxPreset() async {
     if (!isConnected) return;
     //TODO: This fixes nothing! you must send the original volume
     double vol = 0;
     if (device.fakeMasterVolume) {
       vol = masterVolume;
-      if (vol < 100) masterVolume = 100;
+      if (vol < 100) {
+        _masterVolume = 100;
+        device.sendAmpLevel();
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
     }
 
     device.communication.saveCurrentPreset(device.selectedChannel);
 
     if (device.fakeMasterVolume) {
-      masterVolume = vol;
+      _masterVolume = vol;
     }
     requestPreset(device.selectedChannel);
   }

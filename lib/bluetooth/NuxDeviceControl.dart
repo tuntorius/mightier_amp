@@ -428,9 +428,11 @@ class NuxDeviceControl extends ChangeNotifier {
     send = true; //still buggy, fix it first
 
     //send effect type
-    if (slot != 0 && send && effect.midiCCSelectionValue >= 0) {
+    if (effect.midiCCSelectionValue >= 0) {
       if (distinctCCodes) {
-        device.communication.sendSlotEffect(slot, index);
+        if (device.presets[0].getEffectsForSlot(slot).length > 1) {
+          device.communication.sendSlotEffect(slot, index);
+        }
       } else {
         device.communication.sendSlotEnabledState(slot);
       }

@@ -20,20 +20,18 @@ class QRExportDialog {
     ScreenshotController screenshotController = ScreenshotController();
     return AlertDialog(
         title: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                      icon: Icon(
-                        Icons.adaptive.arrow_back,
-                        color: Colors.white,
-                      ),
-                      onPressed: () => Navigator.of(context).pop()),
-                  const Text("Share QR Code",
-                      style: TextStyle(color: Colors.white)),
-                ],
-              ),
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            IconButton(
+                icon: Icon(
+                  Icons.adaptive.arrow_back,
+                  color: Colors.white,
+                ),
+                onPressed: () => Navigator.of(context).pop()),
+            const Text("Share QR Code", style: TextStyle(color: Colors.white)),
+          ],
+        ),
         insetPadding: EdgeInsets.zero,
-
         contentPadding:
             const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         content: FittedBox(
@@ -50,7 +48,7 @@ class QRExportDialog {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          device.getProductNameVersion(device.productVersion),
+                          device.getProductNameForQR(device.productVersion),
                           style: const TextStyle(
                               color: Colors.black, fontWeight: FontWeight.bold),
                         ),
@@ -69,17 +67,17 @@ class QRExportDialog {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (!PlatformUtils.isIOS)
-                  ElevatedButton.icon(
-                      onPressed: () async {
-                        //var path = '$directory';
-                        //fileSave
-                        var data = await screenshotController.capture();
-                        if (data != null) {
-                          saveFile("image/png", presetName, data);
-                        }
-                      },
-                      icon: const Icon(Icons.save_alt),
-                      label: const Text("Save")),
+                    ElevatedButton.icon(
+                        onPressed: () async {
+                          //var path = '$directory';
+                          //fileSave
+                          var data = await screenshotController.capture();
+                          if (data != null) {
+                            saveFile("image/png", presetName, data);
+                          }
+                        },
+                        icon: const Icon(Icons.save_alt),
+                        label: const Text("Save")),
                   const SizedBox(
                     width: 10,
                   ),

@@ -116,7 +116,7 @@ class _ThickSliderState extends State<ThickSlider> {
 
     scale = 1;
     var posAbs = (details.localPosition.dy - height / 2.0).abs();
-    if (posAbs > height) scale = 0.5;
+    if (posAbs > height * 1.5) scale = 0.5;
     if (posAbs > height * 2.5) scale = 0.25;
     if (posAbs > height * 4) scale = 0.125;
     if (posAbs > height * 5.5) scale = 0.0625;

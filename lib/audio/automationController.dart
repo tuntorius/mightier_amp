@@ -190,12 +190,13 @@ class AutomationController {
         if (_presetChangeBypass) break;
         debugPrint("Changing preset ${event.name}");
         var preset = event.getPreset();
-        if (preset != null && preset["product_id"] == device.productStringId) {
+        if (preset != null && preset["product_id"] == device.presetClass) {
           device.presetFromJson(
               preset,
               event.cabinetLevelOverrideEnable
                   ? event.cabinetLevelOverride
-                  : null);
+                  : null,
+              dontChangeChannel: true);
         }
         break;
       case AutomationEventType.loop:

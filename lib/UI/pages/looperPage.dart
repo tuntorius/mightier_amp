@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightySpace.dart';
 
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/devices/features/looper.dart';
@@ -100,7 +100,7 @@ class _LooperControlState extends State<LooperControl> {
 
   @override
   Widget build(BuildContext context) {
-    var device = (NuxDeviceControl().device as NuxMightyPlugPro);
+    var device = (NuxDeviceControl().device as NuxMightySpace);
 
     return SafeArea(
       child: Padding(

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../NuxDevice.dart';
 import '../NuxFXID.dart';
+import '../NuxMightySpace.dart';
 import '../effects/plug_pro/Cabinet.dart';
 import '../features/tuner.dart';
 import '../presets/PlugProPreset.dart';
@@ -662,7 +663,7 @@ class PlugProCommunication extends DeviceCommunication {
         config.looperData.loopRecordMode = value;
         break;
     }
-    (device as NuxMightyPlugPro).notifyLooperListeners();
+    (device as NuxMightySpace).notifyLooperListeners();
   }
 
   void _handleLooperSysEx(List<int> data) {
@@ -670,7 +671,7 @@ class PlugProCommunication extends DeviceCommunication {
     config.looperData.loopLevel = data[1].toDouble();
     _handleLooperState(data[2]);
     config.looperData.loopRecordMode = data[3];
-    (device as NuxMightyPlugPro).notifyLooperListeners();
+    (device as NuxMightySpace).notifyLooperListeners();
   }
 
   void _handleTuner(int ccNumber, int value) {

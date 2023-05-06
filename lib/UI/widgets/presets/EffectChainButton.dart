@@ -6,6 +6,7 @@ class EffectChainButton extends StatelessWidget {
   final ProcessorInfo effectInfo;
   final bool enabled;
   final bool selected;
+  final bool reorderable;
   final Color color;
   final GestureTapCallback? onTap;
   final GestureTapCallback? onDoubleTap;
@@ -19,7 +20,8 @@ class EffectChainButton extends StatelessWidget {
       required this.color,
       this.onTap,
       this.onDoubleTap,
-      required this.index})
+      required this.index,
+      required this.reorderable})
       : super(key: key);
 
   @override
@@ -36,8 +38,7 @@ class EffectChainButton extends StatelessWidget {
             selected: selected,
             child: GestureDetector(
               onTap: onTap,
-              //onDoubleTap: onDoubleTap,
-              onLongPress: () {},
+              onHorizontalDragStart: reorderable ? null : (details) {},
               onVerticalDragStart: (details) {
                 onDoubleTap?.call();
               },

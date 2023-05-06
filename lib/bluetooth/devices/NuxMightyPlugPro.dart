@@ -56,7 +56,7 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
   TunerData tunerData = TunerData();
 }
 
-class NuxMightyPlugPro extends NuxDevice implements Tuner, Looper {
+class NuxMightyPlugPro extends NuxDevice implements Tuner {
   //NUX's own app source has info about wah, but is it really available?
   static const enableWahExperimental = false;
 
@@ -77,17 +77,21 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner, Looper {
   String versionDate = "";
 
   @override
-  String get productName => "NUX Mighty Plug Pro/Mighty Space";
+  String get productName => "NUX Mighty Plug Pro";
   @override
-  String get productNameShort => "Mighty Plug Pro/Space";
+  String get productNameShort => "Mighty Plug Pro";
   @override
   String get productStringId => "mighty_plug_pro";
+  @override
+  String get presetClass => "mighty_plug_pro";
+  @override
+  String get productNameForQR => "Mighty Plug Pro/Space";
   @override
   int get productVersion => version.index;
   @override
   String get productIconLabel => "MP-3|-|SPACE";
   @override
-  List<String> get productBLENames => ["MIGHTY PLUG PRO", "MIGHTY SPACE"];
+  List<String> get productBLENames => ["MIGHTY PLUG PRO"];
 
   @override
   int get channelsCount => 7;
@@ -155,19 +159,9 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner, Looper {
   double get drumsMaxTempo => 300;
 
   @override
-  int get loopState => config.looperData.loopState;
-  @override
-  int get loopUndoState => config.looperData.loopUndoState;
-  @override
-  int get loopRecordMode => config.looperData.loopRecordMode;
-  @override
-  double get loopLevel => config.looperData.loopLevel;
-
-  @override
   List<ProcessorInfo> get processorList => _processorList;
 
   final tunerController = StreamController<TunerData>.broadcast();
-  final looperController = StreamController<LooperData>.broadcast();
 
   @override
   ProcessorInfo? getProcessorInfoByFXID(NuxFXID fxid) {
@@ -564,50 +558,5 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner, Looper {
 
   void notifyTunerListeners() {
     tunerController.add(_config.tunerData);
-  }
-
-  @override
-  Stream<LooperData> getLooperDataStream() {
-    return looperController.stream;
-  }
-
-  void notifyLooperListeners() {
-    looperController.add(_config.looperData);
-  }
-
-  @override
-  void looperClear() {
-    _communication.looperClear();
-  }
-
-  @override
-  void looperRecordPlay() {
-    _communication.looperRecord();
-  }
-
-  @override
-  void looperStop() {
-    _communication.looperStop();
-  }
-
-  @override
-  void looperUndoRedo() {
-    _communication.looperUndoRedo();
-  }
-
-  @override
-  void looperLevel(int vol) {
-    _communication.looperVolume(vol);
-  }
-
-  @override
-  void looperNrAr(bool auto) {
-    _config.looperData.loopRecordMode = auto ? 1 : 0;
-    _communication.looperNrAr(auto);
-  }
-
-  @override
-  void requestLooperSettings() {
-    _communication.requestLooperSettings();
   }
 }

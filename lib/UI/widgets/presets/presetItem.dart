@@ -5,8 +5,6 @@ import 'package:tinycolor2/tinycolor2.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../../bluetooth/devices/effects/Processor.dart';
-import '../../../bluetooth/devices/presets/Preset.dart';
-import '../../../platform/platformUtils.dart';
 import '../../mightierIcons.dart';
 import '../../theme.dart';
 import '../../toneshare/share_preset.dart';
@@ -23,7 +21,6 @@ enum PresetItemActions {
 
 class PresetItem extends StatelessWidget {
   final Map<String, dynamic> item;
-  final String? customProductId;
   final NuxDevice device;
   final bool simplified;
   final TextStyle? ampTextStyle;
@@ -109,25 +106,24 @@ class PresetItem extends StatelessWidget {
         ],
       ),
     ),
-      PopupMenuItem(
-        value: PresetItemActions.Export,
-        child: Row(
-          children: <Widget>[
-            Icon(
-              Icons.archive,
-              color: AppThemeConfig.contextMenuIconColor,
-            ),
-            const SizedBox(width: 5),
-            const Text("Backup Preset"),
-          ],
-        ),
-      )
+    PopupMenuItem(
+      value: PresetItemActions.Export,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.archive,
+            color: AppThemeConfig.contextMenuIconColor,
+          ),
+          const SizedBox(width: 5),
+          const Text("Backup Preset"),
+        ],
+      ),
+    )
   ];
 
   const PresetItem(
       {Key? key,
       required this.item,
-      this.customProductId,
       required this.device,
       required this.simplified,
       this.onTap,
@@ -182,18 +178,17 @@ class PresetItem extends StatelessWidget {
     late Widget pmb;
     if (!simplified) {
       pmb = PopupMenuButton(
-            child: const Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
-              child: Icon(Icons.more_vert),
-            ),
-            itemBuilder: (context) {
-              return _popupSubmenu;
-            },
-            onSelected: (pos) {
-              onPopupMenuTap?.call(pos as PresetItemActions, item);
-            },
-          );
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+          child: Icon(Icons.more_vert),
+        ),
+        itemBuilder: (context) {
+          return _popupSubmenu;
+        },
+        onSelected: (pos) {
+          onPopupMenuTap?.call(pos as PresetItemActions, item);
+        },
+      );
     }
 
     if (simplified) {
@@ -254,11 +249,7 @@ class PresetItem extends StatelessWidget {
     var pVersion = item["version"] ?? 0;
     var devVersion = device.productVersion;
     bool enabled = true;
-    if (customProductId == null) {
-      enabled = item["product_id"] == device.productStringId;
-    } else {
-      enabled = item["product_id"] == customProductId;
-    }
+    enabled = item["product_id"] == device.presetClass;
 
     bool selected = item["uuid"] == device.deviceControl.presetUUID;
     bool newItem = item.containsKey("new");

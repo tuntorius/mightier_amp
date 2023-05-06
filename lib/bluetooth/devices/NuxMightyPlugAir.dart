@@ -57,6 +57,8 @@ class NuxMightyPlug extends NuxDevice {
   @override
   String get productStringId => "mighty_plug_air";
   @override
+  String get presetClass => productStringId;
+  @override
   int get productVersion => version.index;
   @override
   String get productIconLabel => "PLUG|-|AIR";
@@ -289,6 +291,16 @@ class NuxMightyPlug extends NuxDevice {
         return "$productNameShort v1.x";
       case PlugAirVersion.PlugAir21:
         return "$productNameShort v2.x";
+    }
+  }
+
+  @override
+  String getProductNameForQR(int version) {
+    switch (PlugAirVersion.values[version]) {
+      case PlugAirVersion.PlugAir15:
+        return "$productNameForQR v1.x";
+      case PlugAirVersion.PlugAir21:
+        return "$productNameForQR v2.x";
     }
   }
 

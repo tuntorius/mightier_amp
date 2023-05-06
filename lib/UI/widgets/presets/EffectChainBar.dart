@@ -40,6 +40,7 @@ class EffectChainBar extends StatelessWidget {
         color: preset.effectColor(index),
         enabled: preset.slotEnabled(index),
         selected: selected,
+        reorderable: reorderable,
         key: Key(index.toString()),
         onTap: () => onTap(index),
         onDoubleTap: () => onDoubleTap(index));

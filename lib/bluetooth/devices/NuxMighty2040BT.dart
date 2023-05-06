@@ -43,6 +43,8 @@ class NuxMighty2040BT extends NuxDevice {
   @override
   String get productStringId => "mighty_20_40bt";
   @override
+  String get presetClass => productStringId;
+  @override
   int get productVersion => 0;
   @override
   String get productIconLabel => "20/40|BT";

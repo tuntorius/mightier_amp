@@ -53,6 +53,10 @@ abstract class NuxDevice extends ChangeNotifier {
   String get productNameShort;
   String get productIconLabel;
   String get productStringId;
+
+  String get presetClass;
+  String get productNameForQR => productNameShort;
+
   int get productVersion;
   List<String> get productBLENames;
 
@@ -117,6 +121,10 @@ abstract class NuxDevice extends ChangeNotifier {
 
   String getProductNameVersion(int version) {
     return productNameShort;
+  }
+
+  String getProductNameForQR(int version) {
+    return productNameForQR;
   }
 
   ProcessorInfo? getProcessorInfoByKey(String key) {
@@ -420,7 +428,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
   bool isPresetSupported(dynamic preset) {
     String productId = preset["product_id"];
-    return productStringId == productId;
+    return presetClass == productId;
   }
 
   Widget getSettingsWidget() {
@@ -544,15 +552,17 @@ abstract class NuxDevice extends ChangeNotifier {
   }
 
   Preset? presetFromJson(Map<String, dynamic> preset, double? overrideLevel,
-      {bool qrOnly = false}) {
+      {bool qrOnly = false, bool dontChangeChannel = false}) {
     var pVersion = preset["version"] ?? 0;
 
     var nuxChannel = preset["channel"];
 
     if (!qrOnly) {
       BLEMidiHandler.instance().clearDataQueue();
-      setSelectedChannel(nuxChannel,
-          notifyBT: true, notifyUI: true, sendFullPreset: false);
+      if (!dontChangeChannel) {
+        setSelectedChannel(nuxChannel,
+            notifyBT: true, notifyUI: true, sendFullPreset: false);
+      }
       deviceControl.presetName = preset["name"];
       var category = PresetsStorage().findCategoryOfPreset(preset);
       deviceControl.presetCategory = category!["name"];
@@ -625,7 +635,7 @@ abstract class NuxDevice extends ChangeNotifier {
   Map<String, dynamic> presetToJson() {
     Map<String, dynamic> mainJson = {
       "channel": selectedChannel,
-      "product_id": productStringId,
+      "product_id": presetClass,
       "version": productVersion
     };
 

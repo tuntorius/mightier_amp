@@ -18,6 +18,7 @@ import 'devices/NuxMighty2040BT.dart';
 import 'devices/NuxMightyLite.dart';
 import 'devices/NuxMightyPlugAir.dart';
 import 'devices/NuxMightyPlugPro.dart';
+import 'devices/NuxMightySpace.dart';
 import 'devices/effects/Processor.dart';
 
 enum DeviceConnectionState {
@@ -238,6 +239,7 @@ class NuxDeviceControl extends ChangeNotifier {
     //create all supported devices
     _deviceInstances.add(NuxMightyPlug(this));
     _deviceInstances.add(NuxMightyPlugPro(this));
+    _deviceInstances.add(NuxMightySpace(this));
     _deviceInstances.add(NuxMighty8BT(this));
     _deviceInstances.add(NuxMighty2040BT(this));
     _deviceInstances.add(NuxMightyLite(this));

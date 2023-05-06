@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import '../widgets/presets/presetList.dart';
 
 class SelectPresetDialog {
-  Widget buildDialog(BuildContext context,
-      {required bool noneOption, String? customProduct}) {
+  Widget buildDialog(BuildContext context, {required bool noneOption}) {
     return AlertDialog(
       contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
       title: Row(
@@ -17,7 +16,8 @@ class SelectPresetDialog {
                 Icons.adaptive.arrow_back,
                 color: Colors.white,
               ),
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop()),
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop()),
           const Text('Select preset'),
         ],
       ),
@@ -25,7 +25,6 @@ class SelectPresetDialog {
         body: PresetList(
             simplified: true,
             noneOption: noneOption,
-            customProductId: customProduct,
             onTap: (preset) {
               Navigator.of(context, rootNavigator: true).pop(preset);
             }),

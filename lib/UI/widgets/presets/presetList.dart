@@ -28,14 +28,9 @@ class PresetList extends StatefulWidget {
   final void Function(dynamic)? onTap;
   final bool simplified;
   final bool noneOption;
-  final String? customProductId;
 
   const PresetList(
-      {Key? key,
-      this.onTap,
-      this.simplified = false,
-      this.customProductId,
-      this.noneOption = false})
+      {Key? key, this.onTap, this.simplified = false, this.noneOption = false})
       : super(key: key);
 
   @override
@@ -157,7 +152,7 @@ class _PresetListState extends State<PresetList>
   Widget _mainPopupMenu() {
     return PopupMenuButton(
       child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
         child: Icon(Icons.more_vert),
       ),
       itemBuilder: (context) {
@@ -194,7 +189,7 @@ class _PresetListState extends State<PresetList>
                         Icons.cloud_download,
                         size: 28,
                       )),
-                 _mainPopupMenu()
+                _mainPopupMenu()
               ],
             ),
           );
@@ -294,8 +289,7 @@ class _PresetListState extends State<PresetList>
           ? null
           : PopupMenuButton(
               child: const Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 16, vertical:16),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: Icon(Icons.more_vert),
               ),
               itemBuilder: (context) {
@@ -317,7 +311,6 @@ class _PresetListState extends State<PresetList>
       item: item,
       ampTextStyle: Theme.of(context).textTheme.bodyText1,
       simplified: widget.simplified,
-      customProductId: widget.customProductId,
       onTap: () {
         //remove the new marker if exists
         if (!widget.simplified) {
@@ -476,19 +469,21 @@ class _PresetListState extends State<PresetList>
     if (PlatformUtils.isAndroid) {
       openFileString("application/octet-stream").then(_onFileRead);
     } else {
-        FilePicker().readFile().then((value) { if (value!=null) _onFileRead(value);});
+      FilePicker().readFile().then((value) {
+        if (value != null) _onFileRead(value);
+      });
     }
   }
 
   void _onFileRead(String value) {
     PresetsStorage().presetsFromJson(value).then((value) {
-        setState(() {});
-      }).catchError((error) {
-        AlertDialogs.showInfoDialog(context,
-            title: "Error",
-            description: "The selected file is not a valid preset file!",
-            confirmButton: "OK");
-      });
+      setState(() {});
+    }).catchError((error) {
+      AlertDialogs.showInfoDialog(context,
+          title: "Error",
+          description: "The selected file is not a valid preset file!",
+          confirmButton: "OK");
+    });
   }
 
   void _deletePreset(Map<String, dynamic> preset) {
@@ -583,7 +578,7 @@ class _PresetListState extends State<PresetList>
       if (data != null) {
         if (!PlatformUtils.isIOS) {
           saveFileString(
-            "application/octet-stream", "${preset["name"]}.nuxpreset", data);
+              "application/octet-stream", "${preset["name"]}.nuxpreset", data);
         } else {
           saveFileIos(preset["name"], data);
         }
@@ -650,7 +645,7 @@ class _PresetListState extends State<PresetList>
         },
         validationErrorMessage: "The file name contains invalid characters.",
         confirmColor: Theme.of(context).hintColor,
-        onConfirm: (newName) async{
+        onConfirm: (newName) async {
           await FilePicker().saveFile(newName, data);
         });
   }

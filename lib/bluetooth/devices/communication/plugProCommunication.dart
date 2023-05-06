@@ -424,6 +424,50 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
+  void looperRecord() {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.LOOPSTATE, 1);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void looperStop() {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.LOOPSTATE, 2);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void looperClear() {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.LOOPSTATE, 4);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void looperUndoRedo() {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.LOOPSTATE, 8);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void looperVolume(int volume) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.LOOPLEVEL, volume);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void looperNrAr(bool auto) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.LOOP_ARNR, auto ? 1 : 0);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void requestLooperSettings() {
+    if (!device.deviceControl.isConnected) return;
+    var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_LOOP, SyxDir.kSYXDIR_GET, [0, 0, 0, 0, 0, 0, 0, 0]);
+
+    device.deviceControl.sendBLEData(data);
+  }
+
   List<List<int>> _splitPresetData(List<int> data) {
     List<List<int>> presetData = [];
     int pos = 0;
@@ -601,10 +645,32 @@ class PlugProCommunication extends DeviceCommunication {
   }
 
   void _handleLooperState(int state) {
-    config.loopState = state & 0x0f;
-    config.loopUndoState = (state >> 4) & 0x03;
-    config.loopHasAudio = (state >> 6) & 0x01 != 0;
-    device.deviceControl.forceNotifyListeners();
+    config.looperData.loopState = state & 0x0f;
+    config.looperData.loopUndoState = (state >> 4) & 0x03;
+    config.looperData.loopHasAudio = (state >> 6) & 0x01 != 0;
+  }
+
+  void _handleLooperCC(int ccNumber, int value) {
+    switch (ccNumber) {
+      case MidiCCValuesPro.LOOPLEVEL:
+        config.looperData.loopLevel = value.toDouble();
+        break;
+      case MidiCCValuesPro.LOOPSTATE:
+        _handleLooperState(value);
+        break;
+      case MidiCCValuesPro.LOOP_ARNR:
+        config.looperData.loopRecordMode = value;
+        break;
+    }
+    (device as NuxMightyPlugPro).notifyLooperListeners();
+  }
+
+  void _handleLooperSysEx(List<int> data) {
+    if (data[0] != 2) return;
+    config.looperData.loopLevel = data[1].toDouble();
+    _handleLooperState(data[2]);
+    config.looperData.loopRecordMode = data[3];
+    (device as NuxMightyPlugPro).notifyLooperListeners();
   }
 
   void _handleTuner(int ccNumber, int value) {
@@ -741,14 +807,16 @@ const z = {
             case MidiCCValuesPro.MASTER:
               _handleVolumeData(data[4]);
               break;
-            case MidiCCValuesPro.LOOPSTATE:
-              _handleLooperState(data[4]);
-              break;
             case MidiCCValuesPro.TUNER_State:
             case MidiCCValuesPro.TUNER_Note:
             case MidiCCValuesPro.TUNER_Number:
             case MidiCCValuesPro.TUNER_Cent:
               _handleTuner(data[3], data[4]);
+              break;
+            case MidiCCValuesPro.LOOPLEVEL:
+            case MidiCCValuesPro.LOOPSTATE:
+            case MidiCCValuesPro.LOOP_ARNR:
+              _handleLooperCC(data[3], data[4]);
           }
           bool consumed = false;
           consumed = _handleDrumCCData(data[3], data[4]);
@@ -796,6 +864,9 @@ const z = {
                   return;
                 case SyxMsg.kSYX_TUNER_SETTINGS:
                   _handleTunerSysEx(data.sublist(7));
+                  return;
+                case SyxMsg.kSYX_LOOP:
+                  _handleLooperSysEx(data.sublist(7));
                   return;
                 case SyxMsg.kSYX_SENDCMD:
                   if (data[7] == SyxDir.kSYXDIR_REQ) {

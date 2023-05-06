@@ -1,10 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 
 import '../../bluetooth/NuxDeviceControl.dart';
+import '../../bluetooth/devices/features/looper.dart';
 import '../widgets/common/ModeControlRegular.dart';
 
-//fiber_smart_record looks fine for overdub
 class LooperControl extends StatefulWidget {
   const LooperControl({super.key});
 
@@ -14,23 +17,26 @@ class LooperControl extends StatefulWidget {
 
 class _LooperControlState extends State<LooperControl> {
   static const fontSize = TextStyle(fontSize: 18);
-
-  late int loopState;
-  late int loopUndoState;
+  late Looper _looper;
+  late LooperData _data = LooperData();
+  StreamSubscription? _subscription;
 
   @override
   void initState() {
     super.initState();
-    NuxDeviceControl.instance().addListener(onDeviceUpdated);
+    _looper = NuxDeviceControl().device as Looper;
+    _subscription = _looper.getLooperDataStream().listen(onData);
+    _looper.requestLooperSettings();
   }
 
   @override
   void dispose() {
+    _subscription?.cancel();
     super.dispose();
-    NuxDeviceControl.instance().removeListener(onDeviceUpdated);
   }
 
-  void onDeviceUpdated() {
+  void onData(LooperData data) {
+    _data = data;
     setState(() {});
   }
 
@@ -41,8 +47,8 @@ class _LooperControlState extends State<LooperControl> {
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
         padding: const EdgeInsets.all(20),
-        backgroundColor: backgroundColor, // <-- Button color
-        foregroundColor: Colors.white, // <-- Splash color
+        backgroundColor: backgroundColor,
+        foregroundColor: Colors.white,
       ),
       child: Icon(
         icon,
@@ -52,7 +58,7 @@ class _LooperControlState extends State<LooperControl> {
   }
 
   IconData getRecordButtonIcon() {
-    switch (loopState) {
+    switch (_data.loopState) {
       case 0:
       case 1:
         return Icons.fiber_manual_record;
@@ -69,12 +75,12 @@ class _LooperControlState extends State<LooperControl> {
   }
 
   IconData getUndoButtonIcon() {
-    if (loopUndoState == 2) return Icons.redo;
+    if (_data.loopUndoState == 2) return Icons.redo;
     return Icons.undo;
   }
 
   bool getStopEnabled() {
-    switch (loopState) {
+    switch (_data.loopState) {
       case 2:
       case 3:
         return true;
@@ -84,19 +90,17 @@ class _LooperControlState extends State<LooperControl> {
   }
 
   bool getClearEnabled() {
-    if (loopState > 0 && loopState < 5) return true;
+    if (_data.loopState > 0 && _data.loopState < 5) return true;
     return false;
   }
 
   bool getUndoEnabled() {
-    return loopUndoState > 0;
+    return _data.loopUndoState > 0;
   }
 
   @override
   Widget build(BuildContext context) {
     var device = (NuxDeviceControl().device as NuxMightyPlugPro);
-    loopState = device.loopState;
-    loopUndoState = device.loopUndoState;
 
     return SafeArea(
       child: Padding(
@@ -106,13 +110,14 @@ class _LooperControlState extends State<LooperControl> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                circularButton(getRecordButtonIcon(), Colors.red, () {}),
                 circularButton(
-                    Icons.stop, Colors.green, getStopEnabled() ? () {} : null),
-                circularButton(
-                    Icons.clear, Colors.blue, getClearEnabled() ? () {} : null),
+                    getRecordButtonIcon(), Colors.red, device.looperRecordPlay),
+                circularButton(Icons.stop, Colors.green,
+                    getStopEnabled() ? device.looperStop : null),
+                circularButton(Icons.clear, Colors.blue,
+                    getClearEnabled() ? device.looperClear : null),
                 circularButton(getUndoButtonIcon(), Colors.purple,
-                    getUndoEnabled() ? () {} : null),
+                    getUndoEnabled() ? device.looperUndoRedo : null),
               ]),
           const SizedBox(height: 16),
           Row(
@@ -123,10 +128,33 @@ class _LooperControlState extends State<LooperControl> {
               ModeControlRegular(
                 options: const ["Normal", "Auto"],
                 textStyle: fontSize,
-                selected: 0,
-                onSelected: (index) {},
+                selected: device.loopRecordMode,
+                onSelected: (index) {
+                  device.looperNrAr(index == 1);
+                  setState(() {});
+                },
               ),
             ],
+          ),
+          ThickSlider(
+            min: 0,
+            max: 100,
+            activeColor: Colors.blue,
+            label: "Level",
+            value: device.loopLevel.toDouble(),
+            labelFormatter: (val) => val.toInt().toString(),
+            onChanged: (value, skip) {
+              if (skip) {
+                device.config.looperData.loopLevel = value;
+              } else {
+                device.looperLevel(value.toInt());
+              }
+              setState(() {});
+            },
+            onDragEnd: (value) {
+              device.looperLevel(value.toInt());
+              setState(() {});
+            },
           )
         ]),
       ),

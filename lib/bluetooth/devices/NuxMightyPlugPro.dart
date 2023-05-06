@@ -15,6 +15,7 @@ import 'NuxConstants.dart';
 import 'NuxDevice.dart';
 import 'effects/Processor.dart';
 import 'effects/plug_pro/EQ.dart';
+import 'features/looper.dart';
 import 'features/tuner.dart';
 import 'presets/PlugProPreset.dart';
 import 'presets/Preset.dart';
@@ -50,16 +51,12 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
   int micNGSensitivity = 50;
   int micNGDecay = 50;
 
-  int loopState = 0;
-  int loopUndoState = 0;
-  int loopRecordMode = 0;
-  bool loopHasAudio = false;
-  int loopLevel = 50;
+  LooperData looperData = LooperData();
 
   TunerData tunerData = TunerData();
 }
 
-class NuxMightyPlugPro extends NuxDevice implements Tuner {
+class NuxMightyPlugPro extends NuxDevice implements Tuner, Looper {
   //NUX's own app source has info about wah, but is it really available?
   static const enableWahExperimental = false;
 
@@ -157,12 +154,20 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner {
   @override
   double get drumsMaxTempo => 300;
 
-  int get loopState => config.loopState;
-  int get loopUndoState => config.loopUndoState;
+  @override
+  int get loopState => config.looperData.loopState;
+  @override
+  int get loopUndoState => config.looperData.loopUndoState;
+  @override
+  int get loopRecordMode => config.looperData.loopRecordMode;
+  @override
+  double get loopLevel => config.looperData.loopLevel;
+
   @override
   List<ProcessorInfo> get processorList => _processorList;
 
   final tunerController = StreamController<TunerData>.broadcast();
+  final looperController = StreamController<LooperData>.broadcast();
 
   @override
   ProcessorInfo? getProcessorInfoByFXID(NuxFXID fxid) {
@@ -559,5 +564,50 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner {
 
   void notifyTunerListeners() {
     tunerController.add(_config.tunerData);
+  }
+
+  @override
+  Stream<LooperData> getLooperDataStream() {
+    return looperController.stream;
+  }
+
+  void notifyLooperListeners() {
+    looperController.add(_config.looperData);
+  }
+
+  @override
+  void looperClear() {
+    _communication.looperClear();
+  }
+
+  @override
+  void looperRecordPlay() {
+    _communication.looperRecord();
+  }
+
+  @override
+  void looperStop() {
+    _communication.looperStop();
+  }
+
+  @override
+  void looperUndoRedo() {
+    _communication.looperUndoRedo();
+  }
+
+  @override
+  void looperLevel(int vol) {
+    _communication.looperVolume(vol);
+  }
+
+  @override
+  void looperNrAr(bool auto) {
+    _config.looperData.loopRecordMode = auto ? 1 : 0;
+    _communication.looperNrAr(auto);
+  }
+
+  @override
+  void requestLooperSettings() {
+    _communication.requestLooperSettings();
   }
 }

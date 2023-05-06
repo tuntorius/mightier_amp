@@ -401,7 +401,7 @@ class SyxMsg {
   static const kSYX_CURSTATE = 21;
   static const kSYX_IRDELETE = const SyxMsg._internal(22);
   static const kSYX_CUTOVER = const SyxMsg._internal(23);
-  static const kSYX_LOOP = const SyxMsg._internal(24);
+  static const kSYX_LOOP = 24;
   static const kSYX_DRUM = 25;
   static const kSYX_CABNAME = 26; //const SyxMsg._internal(26);
   static const kSYX_BTSET =
@@ -602,7 +602,7 @@ class MidiCCValuesPro {
   static const DRUMENABLE = 77;
   static const DRUMTYPE = 78; //drum styles - 0 to xx(66?)
   static const DRUMLEVEL = 79;
-  static const LOOPLEVEL = 80;
+  static const LOOPLEVEL = 80; //Looper level - confirmed
   static const LOOPSTATE = 81;
   static const AUXEQENABLE = 82; //aux eq group 0-3
   static const PRESETRANGE = 83; //this sets/receives Active bitfield

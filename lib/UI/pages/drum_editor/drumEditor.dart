@@ -3,20 +3,20 @@
 
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/widgets/DrumStyleBottomSheet.dart';
+import 'package:mighty_plug_manager/UI/pages/drum_editor/drumstyle_scroll_picker.dart';
+import 'package:mighty_plug_manager/UI/pages/drum_editor/tap_buttons.dart';
 import 'package:mighty_plug_manager/UI/widgets/tempoTrainerBottomSheet.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
-import '../../bluetooth/devices/NuxDevice.dart';
-import '../../bluetooth/NuxDeviceControl.dart';
-import '../../bluetooth/devices/utilities/DelayTapTimer.dart';
-import '../widgets/thickSlider.dart';
-import '../widgets/scrollPicker.dart';
+import '../../../bluetooth/devices/NuxDevice.dart';
+import '../../../bluetooth/NuxDeviceControl.dart';
+import '../../widgets/thickSlider.dart';
 
 enum DrumEditorLayout { Standard, PlugPro }
 
 class DrumEditor extends StatefulWidget {
+  static const fontStyle = TextStyle(fontSize: 20);
+
   const DrumEditor({Key? key}) : super(key: key);
   @override
   State createState() => _DrumEditorState();
@@ -27,7 +27,6 @@ class _DrumEditorState extends State<DrumEditor> {
   DrumEditorLayout _layout = DrumEditorLayout.Standard;
   int _selectedDrumPattern = 0;
   late NuxDevice device;
-  static const _fontStyle = TextStyle(fontSize: 20);
 
   @override
   void initState() {
@@ -41,67 +40,15 @@ class _DrumEditorState extends State<DrumEditor> {
     NuxDeviceControl.instance().removeListener(onDeviceChanged);
   }
 
-  String _getComplexListStyle(Map<String, Map> list) {
-    for (String cat in list.keys) {
-      for (String style in list[cat]!.keys) {
-        if (list[cat]![style] == _selectedDrumPattern) return "$cat - $style";
-      }
-    }
-    return "";
-  }
-
   Widget _createScrollPicker() {
-    final mediaQuery = MediaQuery.of(context);
-
-    if (_layout == DrumEditorLayout.Standard) {
-      return SizedBox(
-        height: _getScrollPickerHeight(mediaQuery),
-        child: ScrollPicker(
-          enabled: device.drumsEnabled,
-          initialValue: _selectedDrumPattern,
-          items: _drumStyles,
-          onChanged: _onScrollPickerChanged,
-          onChangedFinal: (value, userGenerated) {
-            _onScrollPickerChangedFinal(value, userGenerated, device);
-          },
-        ),
-      );
-    } else if (_layout == DrumEditorLayout.PlugPro) {
-      return Semantics(
-        label: "Drum style",
-        child: ListTile(
-          enabled: device.drumsEnabled,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
-              side: BorderSide(
-                  width: 1,
-                  color: device.drumsEnabled ? Colors.white : Colors.grey)),
-          title: Text(
-            _getComplexListStyle(_drumStyles),
-            style: _fontStyle,
-          ),
-          trailing: const Icon(Icons.keyboard_arrow_right),
-          onTap: !device.drumsEnabled
-              ? null
-              : () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return DrumStyleBottomSheet(
-                          styleMap: _drumStyles,
-                          selected: _selectedDrumPattern,
-                          onChange: (value) {
-                            _onScrollPickerChangedFinal(value, true, device);
-                          },
-                        );
-                      }).whenComplete(() {
-                    setState(() {});
-                  });
-                },
-        ),
-      );
-    }
-    return const SizedBox();
+    return DrumStyleScrollPicker(
+        selectedDrumPattern: _selectedDrumPattern,
+        layout: _layout,
+        device: device,
+        drumStyles: _drumStyles,
+        onChanged: _onScrollPickerChanged,
+        onChangedFinal: _onScrollPickerChangedFinal,
+        onComplete: () => setState(() {}));
   }
 
   Widget _activeSwitch() {
@@ -109,7 +56,7 @@ class _DrumEditorState extends State<DrumEditor> {
       dense: true,
       title: const Text(
         "Active",
-        style: _fontStyle,
+        style: DrumEditor.fontStyle,
       ),
       value: device.drumsEnabled,
       onChanged: (val) {
@@ -208,105 +155,11 @@ class _DrumEditorState extends State<DrumEditor> {
   }
 
   Widget _tapButton() {
-    bool trainer = kDebugMode;
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: trainer ? 120 : 60),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          //TapOrHoldButton here
-          //https://stackoverflow.com/questions/52128572/flutter-execute-method-so-long-the-button-pressed
-          Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  width: 48,
-                  child: ElevatedButton(
-                    onPressed:
-                        device.drumsEnabled ? () => _modifyTempo(-5) : null,
-                    child: const Text("-5", semanticsLabel: "Tempo -5",
-                      softWrap: false),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: SizedBox(
-                    width: 48,
-                    child: ElevatedButton(
-                      onPressed:
-                          device.drumsEnabled ? () => _modifyTempo(-1) : null,
-                      child: const Text("-1", semanticsLabel: "Tempo -1",
-                      softWrap: false),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: device.drumsEnabled ? _onTapTempo : null,
-                    style: ButtonStyle(
-                      overlayColor: MaterialStateProperty.resolveWith(
-                        (states) {
-                          return states.contains(MaterialState.pressed)
-                              ? Colors.lightBlue[100]
-                              : null;
-                        },
-                      ),
-                    ),
-                    child: const Text(
-                      "Tap Tempo",
-                      style: _fontStyle,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: SizedBox(
-                    width: 48,
-                    child: ElevatedButton(
-                      onPressed:
-                          device.drumsEnabled ? () => _modifyTempo(1) : null,
-                      child: const Text(
-                        "+1",
-                      softWrap: false,
-                        semanticsLabel: "Tempo +1",
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 48,
-                  child: ElevatedButton(
-                    onPressed:
-                        device.drumsEnabled ? () => _modifyTempo(5) : null,
-                    child: const Text(
-                      "+5",
-                      softWrap: false,
-                      semanticsLabel: "Tempo +5",
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          if (trainer)
-            const SizedBox(
-              height: 6,
-            ),
-          if (trainer)
-            Expanded(
-              flex: 1,
-              child: ElevatedButton(
-                onPressed: _showTempoTrainer,
-                child: const Text("Tempo Trainer", style: _fontStyle),
-              ),
-            )
-        ],
-      ),
-    );
+    return TapButtons(
+        device: device,
+        onTempoModified: _modifyTempo,
+        onTempoChanged: _onTempoChanged,
+        showTempoTrainer: _showTempoTrainer);
   }
 
   void _showTempoTrainer() {
@@ -332,39 +185,36 @@ class _DrumEditorState extends State<DrumEditor> {
     _selectedDrumPattern = device.selectedDrumStyle;
 
     if (portrait) {
-      return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          //padding: const EdgeInsets.all(16.0),
-          children: [
-            _activeSwitch(),
-            _createScrollPicker(),
-            const SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ..._sliders(smallSliders),
-                    if (_layout == DrumEditorLayout.PlugPro)
-                      ..._toneSliders(smallSliders),
-                    const SizedBox(height: 6),
-                    _tapButton(),
-                  ],
-                ),
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        //padding: const EdgeInsets.all(16.0),
+        children: [
+          _activeSwitch(),
+          _createScrollPicker(),
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ..._sliders(smallSliders),
+                  if (_layout == DrumEditorLayout.PlugPro)
+                    ..._toneSliders(smallSliders),
+                  const SizedBox(height: 6),
+                  _tapButton(),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     } else {
       if (_layout == DrumEditorLayout.Standard) {
-        return SafeArea(
-            child: Column(
+        return Column(
           children: [
             Card(child: _activeSwitch()),
             Expanded(
@@ -389,20 +239,15 @@ class _DrumEditorState extends State<DrumEditor> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Expanded(child: _createScrollPicker()),
-                          // Container(
-                          //   height: 120,
-                          //   color: Colors.orange,
-                          // )
                         ],
                       ))
                 ],
               ),
             ),
           ],
-        ));
+        );
       } else {
-        return SafeArea(
-            child: Column(
+        return Column(
           children: [
             Card(child: _activeSwitch()),
             Expanded(
@@ -429,32 +274,15 @@ class _DrumEditorState extends State<DrumEditor> {
                         children: [
                           _createScrollPicker(),
                           ..._toneSliders(false),
-                          // Container(
-                          //   height: 120,
-                          //   color: Colors.orange,
-                          // )
                         ],
                       ))
                 ],
               ),
             ),
           ],
-        ));
+        );
       }
     }
-  }
-
-  double _getScrollPickerHeight(MediaQueryData mediaQuery) {
-    Orientation orientation = mediaQuery.orientation;
-    double numOfSelectItems = 3;
-    if (orientation == Orientation.portrait) {
-      if (mediaQuery.size.height < 640) {
-        numOfSelectItems = 3.5;
-      } else {
-        numOfSelectItems = 3.5;
-      }
-    }
-    return ScrollPicker.itemHeight * numOfSelectItems;
   }
 
   void _onScrollPickerChanged(value) {
@@ -481,14 +309,10 @@ class _DrumEditorState extends State<DrumEditor> {
     });
   }
 
-  void _onTapTempo() {
-    DelayTapTimer.addClickTime();
-    var bpm = DelayTapTimer.calculateBpm();
-    if (bpm != false) {
-      setState(() {
-        device.setDrumsTempo(bpm, true);
-      });
-    }
+  void _onTempoChanged(double value) {
+    setState(() {
+      device.setDrumsTempo(value, true);
+    });
   }
 
   void onDeviceChanged() {

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mighty_plug_manager/UI/pages/drumsPage.dart';
 import 'package:mighty_plug_manager/UI/utils.dart';
 import 'package:mighty_plug_manager/UI/widgets/NuxAppBar.dart';
 
@@ -11,7 +12,6 @@ import '../bluetooth/ble_controllers/BLEController.dart';
 import '../main.dart';
 import '../midi/MidiControllerManager.dart';
 import '../platform/platformUtils.dart';
-import 'pages/drumEditor.dart';
 import 'pages/jamTracks.dart';
 import 'pages/presetEditor.dart';
 import 'pages/settings.dart';
@@ -64,7 +64,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     _tabs = const [
       PresetEditor(),
       PresetList(),
-      DrumEditor(),
+      DrumsPage(),
       JamTracks(),
       Settings(),
     ];

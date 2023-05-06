@@ -190,13 +190,16 @@ abstract class BLEController {
             }
           } else {*/
           //any other message
-          if (Platform.isAndroid && data[2] == MidiMessageValues.sysExStart &&
+          if (Platform.isAndroid &&
+              data[2] == MidiMessageValues.sysExStart &&
               data[6] == SyxMsg.kSYX_MODULELINK) {
             noResponse = false;
             await Future.delayed(const Duration(milliseconds: 100));
           }
           await writeToCharacteristic(data, noResponse);
-          if (Platform.isAndroid) await Future.delayed(const Duration(milliseconds: 10));
+          if (Platform.isAndroid) {
+            await Future.delayed(const Duration(milliseconds: 10));
+          }
           noResponse = true;
           dataQueue.removeFirst();
           //}
@@ -205,6 +208,7 @@ abstract class BLEController {
         }
       } catch (e) {
         debugPrint(e.toString());
+
         //noResponse = false;
         //await Future.delayed(const Duration(milliseconds: 50));
       }

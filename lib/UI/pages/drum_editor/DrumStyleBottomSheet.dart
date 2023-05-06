@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'scrollPicker.dart';
+import '../../widgets/scrollPicker.dart';
 
 //direct_select: ^2.0.0
 

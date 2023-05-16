@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 
+import '../UI/widgets/thickRangeSlider.dart';
 import '../bluetooth/devices/NuxDevice.dart';
 
 enum TempoChangeMode { beat, time }
@@ -18,15 +18,14 @@ class TempoTrainer {
     return _tempoTrainer;
   }
 
-  Function()? onTempoChanged;
   Timer? _timer;
 
-  RangeValues tempoRange = const RangeValues(90, 120);
-  double tempoStep = 5;
+  SliderRangeValues tempoRange = SliderRangeValues(80, 200);
+  int tempoStep = 5;
   TempoChangeMode changeMode = TempoChangeMode.beat;
 
   //this how much beats or seconds to the next change
-  int changeUnits = 2;
+  int changeUnits = 8;
   bool _enable = false;
 
   DateTime _expiryTime = DateTime.now();
@@ -36,6 +35,7 @@ class TempoTrainer {
   set enable(enable) {
     _enable = enable;
     _device.setDrumsEnabled(enable);
+    NuxDeviceControl.instance().forceNotifyListeners();
     if (enable) {
       _startTrainer();
     } else {
@@ -69,11 +69,9 @@ class TempoTrainer {
     var tempo = _device.drumsTempo;
     tempo += tempoStep;
     if (tempo > tempoRange.end) tempo = tempoRange.end;
-    print("Stepping up to $tempo bpm");
-    //_device.setDrumsEnabled(false);
+
     _device.setDrumsTempo(tempo, true);
-    //_device.setDrumsEnabled(true);
+    NuxDeviceControl.instance().forceNotifyListeners();
     _setupTimer();
-    onTempoChanged?.call();
   }
 }

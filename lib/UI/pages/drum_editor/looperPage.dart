@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightySpace.dart';
 
-import '../../bluetooth/NuxDeviceControl.dart';
-import '../../bluetooth/devices/features/looper.dart';
-import '../widgets/common/ModeControlRegular.dart';
+import '../../../bluetooth/NuxDeviceControl.dart';
+import '../../../bluetooth/devices/features/looper.dart';
+import '../../widgets/common/ModeControlRegular.dart';
 
 class LooperControl extends StatefulWidget {
   const LooperControl({super.key});
@@ -102,62 +102,59 @@ class _LooperControlState extends State<LooperControl> {
   Widget build(BuildContext context) {
     var device = (NuxDeviceControl().device as NuxMightySpace);
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(children: [
-          Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                circularButton(
-                    getRecordButtonIcon(), Colors.red, device.looperRecordPlay),
-                circularButton(Icons.stop, Colors.green,
-                    getStopEnabled() ? device.looperStop : null),
-                circularButton(Icons.clear, Colors.blue,
-                    getClearEnabled() ? device.looperClear : null),
-                circularButton(getUndoButtonIcon(), Colors.purple,
-                    getUndoEnabled() ? device.looperUndoRedo : null),
-              ]),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("Recording", style: fontSize),
-              ModeControlRegular(
-                options: const ["Normal", "Auto"],
-                textStyle: fontSize,
-                selected: device.loopRecordMode,
-                onSelected: (index) {
-                  device.looperNrAr(index == 1);
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
-          ThickSlider(
-            min: 0,
-            max: 100,
-            activeColor: Colors.blue,
-            label: "Level",
-            value: device.loopLevel.toDouble(),
-            labelFormatter: (val) => val.toInt().toString(),
-            onChanged: (value, skip) {
-              if (skip) {
-                device.config.looperData.loopLevel = value;
-              } else {
-                device.looperLevel(value.toInt());
-              }
-              setState(() {});
-            },
-            onDragEnd: (value) {
-              device.looperLevel(value.toInt());
-              setState(() {});
-            },
-          )
-        ]),
+    return Column(children: [
+      const SizedBox(
+        height: 8,
       ),
-    );
+      Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            circularButton(
+                getRecordButtonIcon(), Colors.red, device.looperRecordPlay),
+            circularButton(Icons.stop, Colors.green,
+                getStopEnabled() ? device.looperStop : null),
+            circularButton(Icons.clear, Colors.blue,
+                getClearEnabled() ? device.looperClear : null),
+            circularButton(getUndoButtonIcon(), Colors.purple,
+                getUndoEnabled() ? device.looperUndoRedo : null),
+          ]),
+      const SizedBox(height: 8),
+      ListTile(
+        title: const Text("Recording", style: fontSize),
+        trailing: ModeControlRegular(
+          options: const ["Normal", "Auto"],
+          textStyle: fontSize,
+          selected: device.loopRecordMode,
+          onSelected: (index) {
+            device.looperNrAr(index == 1);
+            setState(() {});
+          },
+        ),
+      ),
+      const SizedBox(
+        height: 8,
+      ),
+      ThickSlider(
+        min: 0,
+        max: 100,
+        activeColor: Colors.blue,
+        label: "Looper Level",
+        value: device.loopLevel.toDouble(),
+        labelFormatter: (val) => val.toInt().toString(),
+        onChanged: (value, skip) {
+          if (skip) {
+            device.config.looperData.loopLevel = value;
+          } else {
+            device.looperLevel(value.toInt());
+          }
+          setState(() {});
+        },
+        onDragEnd: (value) {
+          device.looperLevel(value.toInt());
+          setState(() {});
+        },
+      )
+    ]);
   }
 }

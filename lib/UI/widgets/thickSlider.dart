@@ -58,6 +58,8 @@ class _ThickSliderState extends State<ThickSlider> {
   double width = 0;
   double height = 0;
 
+  bool ownUpdate = false;
+
   // Returns a number between min and max, proportional to value, which must
   // be between 0.0 and 1.0.
   double _lerp(double value) {
@@ -67,10 +69,10 @@ class _ThickSliderState extends State<ThickSlider> {
   }
 
   //same as above, only with custom min and max
-  double _lerp2(double value, double _min, double _max) {
+  double _lerp2(double value, double min, double max) {
     assert(value >= 0.0);
     assert(value <= 1.0);
-    return value * (_max - _min) + _min;
+    return value * (max - min) + min;
   }
 
   // Returns a number between 0.0 and 1.0, given a value between min and max.
@@ -92,11 +94,6 @@ class _ThickSliderState extends State<ThickSlider> {
     assert(widget.skipEmitting > 0);
     //normalize value to 0-1
     factor = _unlerp(widget.value);
-  }
-
-  void setPercentage(value, width) {
-    pos = max(min(value, width), 0);
-    factor = pos / width;
   }
 
   void addPercentage(value, width) {
@@ -125,6 +122,7 @@ class _ThickSliderState extends State<ThickSlider> {
     emitCounter++;
     bool skip = emitCounter % widget.skipEmitting != 0;
     widget.onChanged?.call(_lerp(factor), skip);
+    ownUpdate = true;
   }
 
   void dragEnd(DragEndDetails details) {
@@ -133,12 +131,13 @@ class _ThickSliderState extends State<ThickSlider> {
     //call the last factor value here
     widget.onChanged?.call(_lerp(factor), false);
     widget.onDragEnd?.call(_lerp(factor));
+    ownUpdate = true;
     SemanticsService.announce(
         widget.labelFormatter(_lerp(factor)), TextDirection.ltr);
   }
 
   void manualValueEnter() {
-    String dialogValue = _lerp(factor).toStringAsFixed(2);
+    String dialogValue = widget.value.toStringAsFixed(2);
     if (widget.parameter != null) {
       dialogValue = widget.parameter!.toHumanInput().toStringAsFixed(2);
     }
@@ -183,10 +182,11 @@ class _ThickSliderState extends State<ThickSlider> {
             //unscale value back
             val = widget.parameter!.fromHumanInput(val);
           }
-
+          factor = _unlerp(val);
           widget.onDragStart?.call(widget.value);
           widget.onChanged?.call(val, false);
           widget.onDragEnd?.call(val);
+          ownUpdate = true;
         });
   }
 
@@ -204,24 +204,16 @@ class _ThickSliderState extends State<ThickSlider> {
             builder: (BuildContext context, BoxConstraints constraints) {
           width = constraints.maxWidth - 1;
           height = constraints.maxHeight;
-          factor = _unlerp(widget.value);
+
+          if (!ownUpdate) {
+            factor = _unlerp(widget.value);
+          }
+          ownUpdate = false;
           pos = factor * width;
 
           return GestureDetector(
             dragStartBehavior: DragStartBehavior.start,
             onDoubleTap: manualValueEnter,
-            //onLongPress: manualValueEnter,
-            onTapDown: (details) {
-              if (!widget.enabled) return;
-
-              //double tap
-              // var now = DateTime.now().millisecondsSinceEpoch;
-              // if (now - lastTapDown < 300) {
-              //   setPercentage(details.localPosition.dx, width);
-              //   widget.onChanged?.call(_lerp(factor));
-              // }
-              // lastTapDown = now;
-            },
             onVerticalDragStart: widget.handleVerticalDrag ? dragStart : null,
             onVerticalDragUpdate: widget.handleVerticalDrag ? dragUpdate : null,
             onVerticalDragEnd: widget.handleVerticalDrag ? dragEnd : null,

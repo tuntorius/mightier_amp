@@ -93,11 +93,6 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
     factor = _unlerp(widget.value);
   }
 
-  void setPercentage(value, height) {
-    pos = max(min(value, height), 0);
-    factor = pos / height;
-  }
-
   void addPercentage(value, height) {
     pos += value;
     pos = max(min(pos, height), 0);

@@ -33,6 +33,7 @@ ThemeData getTheme() {
     unselectedWidgetColor: Colors.white,
     toggleableActiveColor: Colors.white,
     inputDecorationTheme: InputDecorationTheme(
+        labelStyle: const TextStyle(color: Colors.white),
         focusedBorder: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.white)),
         enabledBorder: UnderlineInputBorder(

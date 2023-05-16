@@ -231,8 +231,6 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     final screenWidth = mediaQuery.size.width;
     final layoutMode = getLayoutMode(mediaQuery);
 
-    final device = NuxDeviceControl.instance().device;
-
     //WARNING: Workaround for a flutter bug - if the app is started with screen off,
     //one of the widgets throws an exception and the app scaffold is empty
     if (screenWidth < 10) return const SizedBox();

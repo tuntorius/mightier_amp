@@ -6,13 +6,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/drumstyle_scroll_picker.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/tap_buttons.dart';
-import 'package:mighty_plug_manager/UI/widgets/tempoTrainerBottomSheet.dart';
+import 'package:mighty_plug_manager/UI/widgets/common/modeControlRegular.dart';
+import 'package:mighty_plug_manager/UI/pages/drum_editor/tempoTrainerSheet.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../widgets/thickSlider.dart';
+import 'looperPage.dart';
 
 enum DrumEditorLayout { Standard, PlugPro }
+
+enum DrumEditorMode { regular, trainer, looper }
 
 class DrumEditor extends StatefulWidget {
   static const fontStyle = TextStyle(fontSize: 20);
@@ -25,6 +29,7 @@ class DrumEditor extends StatefulWidget {
 class _DrumEditorState extends State<DrumEditor> {
   final _drumStyles = NuxDeviceControl.instance().device.getDrumStyles();
   DrumEditorLayout _layout = DrumEditorLayout.Standard;
+  DrumEditorMode _mode = DrumEditorMode.regular;
   int _selectedDrumPattern = 0;
   late NuxDevice device;
 
@@ -41,29 +46,45 @@ class _DrumEditorState extends State<DrumEditor> {
   }
 
   Widget _createScrollPicker() {
-    return DrumStyleScrollPicker(
-        selectedDrumPattern: _selectedDrumPattern,
-        layout: _layout,
-        device: device,
-        drumStyles: _drumStyles,
-        onChanged: _onScrollPickerChanged,
-        onChangedFinal: _onScrollPickerChangedFinal,
-        onComplete: () => setState(() {}));
+    return Row(
+      children: [
+        Expanded(
+          child: DrumStyleScrollPicker(
+              selectedDrumPattern: _selectedDrumPattern,
+              layout: _layout,
+              device: device,
+              drumStyles: _drumStyles,
+              onChanged: _onScrollPickerChanged,
+              onChangedFinal: _onScrollPickerChangedFinal,
+              onComplete: () => setState(() {})),
+        ),
+        IconButton(
+            onPressed: () {
+              setState(() {
+                device.setDrumsEnabled(!device.drumsEnabled);
+              });
+            },
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            iconSize: 56,
+            color: device.drumsEnabled ? Colors.amber : Colors.green,
+            icon: Icon(device.drumsEnabled ? Icons.pause : Icons.play_arrow))
+      ],
+    );
   }
 
-  Widget _activeSwitch() {
-    return SwitchListTile(
-      dense: true,
-      title: const Text(
-        "Active",
-        style: DrumEditor.fontStyle,
+  Widget _createModeControl() {
+    return ListTile(
+      title: const Text("Mode"),
+      trailing: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 40),
+        child: ModeControlRegular(
+            options: const ["Regular", "Trainer", "Looper"],
+            selected: _mode.index,
+            onSelected: (index) {
+              _mode = DrumEditorMode.values[index];
+              setState(() {});
+            }),
       ),
-      value: device.drumsEnabled,
-      onChanged: (val) {
-        setState(() {
-          device.setDrumsEnabled(val);
-        });
-      },
     );
   }
 
@@ -73,9 +94,8 @@ class _DrumEditorState extends State<DrumEditor> {
         min: 0,
         max: 100,
         maxHeight: small ? 40 : null,
-        enabled: device.drumsEnabled,
         activeColor: Colors.blue,
-        label: "Volume",
+        label: "Drums Level",
         value: device.drumsVolume.toDouble(),
         labelFormatter: (val) => "${device.drumsVolume.round()} %",
         onChanged: (value, skip) {
@@ -84,22 +104,23 @@ class _DrumEditorState extends State<DrumEditor> {
           });
         },
       ),
-      ThickSlider(
-        min: device.drumsMinTempo,
-        max: device.drumsMaxTempo,
-        enabled: device.drumsEnabled,
-        maxHeight: small ? 40 : null,
-        skipEmitting: 5,
-        activeColor: Colors.blue,
-        label: "Tempo",
-        value: device.drumsTempo,
-        labelFormatter: (val) => "${device.drumsTempo.toStringAsFixed(1)} BPM",
-        onChanged: (val, skip) {
-          setState(() {
-            device.setDrumsTempo(val, !skip);
-          });
-        },
-      ),
+      if (_mode != DrumEditorMode.trainer)
+        ThickSlider(
+          min: device.drumsMinTempo,
+          max: device.drumsMaxTempo,
+          maxHeight: small ? 40 : null,
+          skipEmitting: 5,
+          activeColor: Colors.blue,
+          label: "Tempo",
+          value: device.drumsTempo,
+          labelFormatter: (val) =>
+              "${device.drumsTempo.toStringAsFixed(1)} BPM",
+          onChanged: (val, skip) {
+            setState(() {
+              device.setDrumsTempo(val, !skip);
+            });
+          },
+        ),
     ];
   }
 
@@ -110,7 +131,6 @@ class _DrumEditorState extends State<DrumEditor> {
         min: 0,
         max: 100,
         maxHeight: small ? 40 : null,
-        enabled: device.drumsEnabled,
         skipEmitting: 5,
         activeColor: Colors.blue,
         label: "Bass",
@@ -125,7 +145,6 @@ class _DrumEditorState extends State<DrumEditor> {
         min: 0,
         max: 100,
         maxHeight: small ? 40 : null,
-        enabled: device.drumsEnabled,
         skipEmitting: 5,
         activeColor: Colors.blue,
         label: "Middle",
@@ -140,7 +159,6 @@ class _DrumEditorState extends State<DrumEditor> {
         min: 0,
         max: 100,
         maxHeight: small ? 40 : null,
-        enabled: device.drumsEnabled,
         skipEmitting: 5,
         activeColor: Colors.blue,
         label: "Treble",
@@ -158,16 +176,7 @@ class _DrumEditorState extends State<DrumEditor> {
     return TapButtons(
         device: device,
         onTempoModified: _modifyTempo,
-        onTempoChanged: _onTempoChanged,
-        showTempoTrainer: _showTempoTrainer);
-  }
-
-  void _showTempoTrainer() {
-    showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return const TempoTrainerBottomSheet();
-        });
+        onTempoChanged: _onTempoChanged);
   }
 
   @override
@@ -189,100 +198,96 @@ class _DrumEditorState extends State<DrumEditor> {
         mainAxisSize: MainAxisSize.max,
         //padding: const EdgeInsets.all(16.0),
         children: [
-          _activeSwitch(),
           _createScrollPicker(),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ..._sliders(smallSliders),
-                  if (_layout == DrumEditorLayout.PlugPro)
-                    ..._toneSliders(smallSliders),
-                  const SizedBox(height: 6),
-                  _tapButton(),
-                ],
-              ),
+          _createModeControl(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ..._sliders(smallSliders),
+                if (_mode == DrumEditorMode.regular &&
+                    _layout == DrumEditorLayout.PlugPro)
+                  ..._toneSliders(smallSliders),
+                if (_mode == DrumEditorMode.regular) const SizedBox(height: 6),
+                if (_mode == DrumEditorMode.regular) _tapButton(),
+                if (_mode == DrumEditorMode.trainer) const TempoTrainerSheet(),
+                if (_mode == DrumEditorMode.looper) const LooperControl(),
+              ],
             ),
           ),
         ],
       );
-    } else {
-      if (_layout == DrumEditorLayout.Standard) {
-        return Column(
-          children: [
-            Card(child: _activeSwitch()),
-            Expanded(
-              child: Row(
-                children: [
-                  Flexible(
-                    flex: 4,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ..._sliders(false),
-                          const SizedBox(height: 10),
-                          _tapButton(),
-                        ]),
-                  ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  Flexible(
-                      flex: 3,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Expanded(child: _createScrollPicker()),
-                        ],
-                      ))
-                ],
-              ),
-            ),
-          ],
-        );
-      } else {
-        return Column(
-          children: [
-            Card(child: _activeSwitch()),
-            Expanded(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                      flex: 5,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            ..._sliders(false),
-                            const SizedBox(height: 10),
-                            _tapButton(),
-                          ])),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  Flexible(
-                      flex: 4,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _createScrollPicker(),
-                          ..._toneSliders(false),
-                        ],
-                      ))
-                ],
-              ),
-            ),
-          ],
-        );
-      }
     }
+
+    if (_layout == DrumEditorLayout.Standard) {
+      return Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  flex: 4,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ..._sliders(false),
+                        const SizedBox(height: 10),
+                        _tapButton(),
+                      ]),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Flexible(
+                    flex: 3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(child: _createScrollPicker()),
+                      ],
+                    ))
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      children: [
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                  flex: 5,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ..._sliders(false),
+                        const SizedBox(height: 10),
+                        _tapButton(),
+                      ])),
+              const SizedBox(
+                width: 12,
+              ),
+              Flexible(
+                  flex: 4,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _createScrollPicker(),
+                      ..._toneSliders(false),
+                    ],
+                  ))
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   void _onScrollPickerChanged(value) {

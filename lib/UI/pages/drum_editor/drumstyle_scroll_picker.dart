@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../bluetooth/devices/NuxDevice.dart';
 import 'DrumStyleBottomSheet.dart';
-import '../../widgets/scrollPicker.dart';
 import 'drumEditor.dart';
 
 class DrumStyleScrollPicker extends StatelessWidget {
@@ -28,19 +27,6 @@ class DrumStyleScrollPicker extends StatelessWidget {
       required this.onChangedFinal,
       required this.onComplete});
 
-  double _getScrollPickerHeight(MediaQueryData mediaQuery) {
-    Orientation orientation = mediaQuery.orientation;
-    double numOfSelectItems = 3;
-    if (orientation == Orientation.portrait) {
-      if (mediaQuery.size.height < 640) {
-        numOfSelectItems = 3.5;
-      } else {
-        numOfSelectItems = 3.5;
-      }
-    }
-    return ScrollPicker.itemHeight * numOfSelectItems;
-  }
-
   String _getComplexListStyle(Map<String, Map> list) {
     for (String cat in list.keys) {
       for (String style in list[cat]!.keys) {
@@ -52,56 +38,38 @@ class DrumStyleScrollPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-
-    if (layout == DrumEditorLayout.Standard) {
-      return SizedBox(
-        height: _getScrollPickerHeight(mediaQuery),
-        child: ScrollPicker(
-          enabled: device.drumsEnabled,
-          initialValue: selectedDrumPattern,
-          items: drumStyles,
-          onChanged: onChanged,
-          onChangedFinal: (value, userGenerated) {
-            onChangedFinal(value, userGenerated, device);
-          },
+    return Semantics(
+      label: "Drum style",
+      child: ListTile(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: const BorderSide(width: 1, color: Colors.white)),
+        title: Text(
+          layout == DrumEditorLayout.PlugPro
+              ? _getComplexListStyle(drumStyles)
+              : drumStyles[selectedDrumPattern],
+          style: _fontStyle,
         ),
-      );
-    } else if (layout == DrumEditorLayout.PlugPro) {
-      return Semantics(
-        label: "Drum style",
-        child: ListTile(
-          enabled: device.drumsEnabled,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
-              side: BorderSide(
-                  width: 1,
-                  color: device.drumsEnabled ? Colors.white : Colors.grey)),
-          title: Text(
-            _getComplexListStyle(drumStyles),
-            style: _fontStyle,
-          ),
-          trailing: const Icon(Icons.keyboard_arrow_right),
-          onTap: !device.drumsEnabled
-              ? null
-              : () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return DrumStyleBottomSheet(
-                          styleMap: drumStyles,
-                          selected: selectedDrumPattern,
-                          onChange: (value) {
-                            onChangedFinal(value, true, device);
-                          },
-                        );
-                      }).whenComplete(() {
-                    onComplete();
-                  });
-                },
-        ),
-      );
-    }
-    return const SizedBox();
+        trailing: const Icon(Icons.keyboard_arrow_right),
+        onTap: () {
+          showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return DrumStyleBottomSheet(
+                  styleMap: drumStyles,
+                  mode: layout == DrumEditorLayout.PlugPro
+                      ? DrumStyleMode.categorized
+                      : DrumStyleMode.flat,
+                  selected: selectedDrumPattern,
+                  onChange: (value) {
+                    onChangedFinal(value, true, device);
+                  },
+                );
+              }).whenComplete(() {
+            onComplete();
+          });
+        },
+      ),
+    );
   }
 }

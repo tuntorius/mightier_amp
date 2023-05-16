@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-
 import '../../widgets/scrollPicker.dart';
 
-//direct_select: ^2.0.0
+enum DrumStyleMode { flat, categorized }
 
 class DrumStyleBottomSheet extends StatefulWidget {
-  final Map<String, Map> styleMap;
+  final dynamic styleMap;
+  final DrumStyleMode mode;
   final int selected;
   final Function(int) onChange;
   const DrumStyleBottomSheet(
       {Key? key,
       required this.styleMap,
       required this.selected,
-      required this.onChange})
+      required this.onChange,
+      required this.mode})
       : super(key: key);
 
   @override
@@ -20,7 +21,7 @@ class DrumStyleBottomSheet extends StatefulWidget {
 }
 
 class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
-  late List<String> categoriesList;
+  List<String> categoriesList = [];
   List<String> stylesList = [];
   int categoriesIndex = 0;
   int selectedStyle = 0;
@@ -28,17 +29,20 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
   @override
   void initState() {
     super.initState();
-    categoriesList = widget.styleMap.keys.toList();
-
     selectedStyle = widget.selected;
+    if (widget.mode == DrumStyleMode.categorized) {
+      categoriesList = widget.styleMap.keys.toList();
 
-    for (var key in widget.styleMap.keys) {
-      stylesList.addAll(widget.styleMap[key]!.keys as Iterable<String>);
-      for (var style in widget.styleMap[key]!.keys) {
-        if (widget.styleMap[key]![style] == widget.selected) {
-          categoriesIndex = categoriesList.indexOf(key);
+      for (var key in widget.styleMap.keys) {
+        stylesList.addAll(widget.styleMap[key]!.keys as Iterable<String>);
+        for (var style in widget.styleMap[key]!.keys) {
+          if (widget.styleMap[key]![style] == widget.selected) {
+            categoriesIndex = categoriesList.indexOf(key);
+          }
         }
       }
+    } else {
+      stylesList = widget.styleMap;
     }
   }
 
@@ -56,9 +60,6 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
 
   void _onStyleChanged(int value, bool userGenerated, bool finalChange) {
     selectedStyle = value;
-
-    //print("remote $remote, remoteChangeStyle $remoteChangeStyle");
-
     if (userGenerated) {
       //find category
       for (var cat in widget.styleMap.keys) {
@@ -73,6 +74,11 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
     }
 
     if (finalChange) widget.onChange(selectedStyle);
+  }
+
+  void _onFlatStyleChanged(int value, bool finalChange) {
+    widget.onChange(selectedStyle);
+    if (!finalChange) setState(() {});
   }
 
   @override
@@ -96,31 +102,41 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
             thickness: 1,
           ),
           Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: ScrollPicker(
-                    initialValue: categoriesIndex,
-                    items: categoriesList,
-                    onChanged: (value) {
-                      _onCategoryChanged(value, true);
-                    },
-                    onChangedFinal: _onCategoryChanged,
-                  ),
-                ),
-                Expanded(
-                  child: ScrollPicker(
+            child: widget.mode == DrumStyleMode.flat
+                ? ScrollPicker(
                     initialValue: selectedStyle,
                     items: stylesList,
                     onChanged: (value) {
-                      _onStyleChanged(value, true, false);
+                      _onFlatStyleChanged(value, false);
                     },
                     onChangedFinal: (value, user) =>
-                        _onStyleChanged(value, user, true),
+                        _onFlatStyleChanged(value, true),
+                  )
+                : Row(
+                    children: [
+                      Expanded(
+                        child: ScrollPicker(
+                          initialValue: categoriesIndex,
+                          items: categoriesList,
+                          onChanged: (value) {
+                            _onCategoryChanged(value, true);
+                          },
+                          onChangedFinal: _onCategoryChanged,
+                        ),
+                      ),
+                      Expanded(
+                        child: ScrollPicker(
+                          initialValue: selectedStyle,
+                          items: stylesList,
+                          onChanged: (value) {
+                            _onStyleChanged(value, true, false);
+                          },
+                          onChangedFinal: (value, user) =>
+                              _onStyleChanged(value, user, true),
+                        ),
+                      )
+                    ],
                   ),
-                )
-              ],
-            ),
           ),
         ],
       ),

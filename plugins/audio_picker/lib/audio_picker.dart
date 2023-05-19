@@ -24,15 +24,21 @@ class AudioPicker {
   }
 
   static Future<Map<String, String>> getMetadata(String assetUrl) async {
-    if (!Platform.isIOS)
-      throw Exception("getMetadata is only for iOS");
-
-    if (assetUrl.contains("ipod-library://")) {
-      String url = assetUrl;
-      Uri uri = Uri.parse(url);
-      assetUrl = uri.queryParameters["id"] ?? assetUrl;
+    if (Platform.isIOS) {
+      if (assetUrl.contains("ipod-library://")) {
+        String url = assetUrl;
+        Uri uri = Uri.parse(url);
+        assetUrl = uri.queryParameters["id"] ?? assetUrl;
+      }
+      final result =
+          await _channel.invokeMethod('get_metadata', {'assetUrl': assetUrl});
+      return Map<String, String>.from(result);
+    } else if (Platform.isAndroid) {
+      //BROKEN
+      final result =
+          await _channel.invokeMethod('get_metadata', {'uri': assetUrl});
+      return Map<String, String>.from(result);
     }
-  final result = await _channel.invokeMethod('get_metadata', {'assetUrl': assetUrl});
-  return Map<String, String>.from(result);
-}
+    return Future.error("Unsupported platform");
+  }
 }

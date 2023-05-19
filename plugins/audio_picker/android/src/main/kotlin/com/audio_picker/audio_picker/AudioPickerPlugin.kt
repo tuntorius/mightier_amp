@@ -112,7 +112,7 @@ class AudioPickerPlugin : MethodCallHandler {
         }
     }
 
-    fun getAudioMetadata(uri: Uri, context: Context): Pair<String?, String?> {
+    fun getAudioMetadata(uri: Uri, context: Context) {
         var title: String? = null
         var artist: String? = null
 
@@ -131,7 +131,11 @@ class AudioPickerPlugin : MethodCallHandler {
             }
         }
 
-        return Pair(title, artist)
+        val metadataMap = HashMap<String, String?>()
+        metadataMap["title"] = title
+        metadataMap["artist"] = artist
+        
+        result?.success(metadataMap)
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -141,6 +145,11 @@ class AudioPickerPlugin : MethodCallHandler {
         } else if (call.method == "pick_audio_multiple") {
             AudioPickerPlugin.result = result
             openAudioPicker(true)
+        } else if (call.method == "get_metadata") {
+            AudioPickerPlugin.result = result
+            val uriString = call.argument<String>("uri")
+            val uri = Uri.parse(uriString)
+            instance?.context()?.let { getAudioMetadata(uri, it) }
         } else {
             result.notImplemented()
         }

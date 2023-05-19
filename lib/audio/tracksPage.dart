@@ -1,7 +1,7 @@
 import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/fabMenu.dart';
@@ -50,7 +50,7 @@ class _TracksPageState extends State<TracksPage>
   //menu anim
   late Animation<double> _animation;
   late AnimationController _animationController;
-  static List<SongInfo>? songList;
+  static List<SongModel>? songList;
 
   bool get multiselectMode => _multiselectMode;
   set multiselectMode(value) {
@@ -170,8 +170,8 @@ class _TracksPageState extends State<TracksPage>
   void querySongs() async {
     if (songList != null) return;
     if (PlatformUtils.isAndroid) {
-      final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-      songList = await audioQuery.getSongs();
+      final OnAudioQuery audioQuery = OnAudioQuery();
+      songList = await audioQuery.querySongs();
     }
   }
 
@@ -291,81 +291,80 @@ class _TracksPageState extends State<TracksPage>
     }
   }
 
-  void addFromIosFile() async
-  {
+  void addFromIosFile() async {
     var path = await AudioPicker.pickAudioFile();
     await _processFileUrl(path);
     TrackData().saveTracks();
     _scrollToNewSongs();
-    setState(() {
-        
-      });
+    setState(() {});
   }
 
-  Future _processFileUrl(String path) async
-  {
-          SongInfo? libSong;
+  Future _processFileUrl(String path) async {
+    SongModel? libSong;
 
-      if (PlatformUtils.isAndroid &&
-          path.contains("com.android.providers.media")) {
-        var spl = path.split("%3A");
-        if (spl.length < 2) return;
-        var id = path.split("%3A")[1];
+    if (PlatformUtils.isAndroid &&
+        path.contains("com.android.providers.media")) {
+      var spl = path.split("%3A");
+      if (spl.length < 2) return;
+      var id = int.tryParse(path.split("%3A")[1]);
+      if (id != null) {
         for (var s = 0; s < (songList?.length ?? 0); s++) {
           if (songList![s].id == id) {
             libSong = songList![s];
             break;
           }
         }
-      } else {
-        //find song in media library
-        String file = basename(path);
+      }
+    } else {
+      //find song in media library
+      String file = basename(path);
 
-        for (var s = 0; s < (songList?.length ?? 0); s++) {
-          if (songList![s].filePath.contains(file)) {
-            libSong = songList![s];
-            break;
-          }
+      for (var s = 0; s < (songList?.length ?? 0); s++) {
+        if (songList![s].uri?.contains(file) ?? false) {
+          libSong = songList![s];
+          break;
         }
       }
+    }
 
-      String artist = "";
-      String title = "";
-      String trackName = "";
-      String url = "";
-      if (libSong != null) {
-        artist = libSong.artist == "<unknown>" ? "" : libSong.artist;
-        title = libSong.title;
-        url = libSong.uri;
-      } else if (PlatformUtils.isIOS) {
-        var meta = await AudioPicker.getMetadata(path);
-        artist = meta["artist"]?.trim() ?? "";
-        title = meta["title"]?.trim() ?? "";
-        url = path;
-      }
+    String artist = "";
+    String title = "";
+    String trackName = "";
+    String url = "";
+    if (libSong != null) {
+      artist = libSong.artist != null ? "" : libSong.artist!;
+      title = libSong.title;
+      url = libSong.uri ?? "";
+    } else {
+      var meta = await AudioPicker.getMetadata(path);
+      artist = meta["artist"]?.trim() ?? "";
+      title = meta["title"]?.trim() ?? "";
+      url = path;
+    }
 
-      trackName = artist.isNotEmpty ? "$artist - $title" : title;
+    trackName = artist.isNotEmpty ? "$artist - $title" : title;
 
-      if (url.isEmpty) {
-        url = path;
-      }
-      if (trackName.isEmpty) {
-        trackName = basenameWithoutExtension(path);
-      }
+    if (url.isEmpty) {
+      url = path;
+    }
+    if (trackName.isEmpty) {
+      trackName = basenameWithoutExtension(path);
+    }
 
-      TrackData().addTrack(url, trackName, false);
+    TrackData().addTrack(url, trackName, false);
   }
 
   void addFromMediaLibrary(BuildContext context) {
     Navigator.of(context, rootNavigator: true)
-        .push(MaterialPageRoute(builder: (context) => MediaLibraryBrowser()))
+        .push(MaterialPageRoute(
+            builder: (context) => const MediaLibraryBrowser()))
         .then((value) {
-      if (value is List<SongInfo>) {
+      if (value is List<SongModel>) {
         for (int i = 0; i < value.length; i++) {
           var name = value[i].artist != "<unknown>"
               ? "${value[i].artist} - ${value[i].title}"
               : value[i].title;
-          TrackData().addTrack(value[i].uri, name, false);
+          TrackData().addTrack(value[i].uri ?? "", name, false);
         }
         TrackData().saveTracks();
         //clear filter and scroll to bottom
@@ -562,21 +561,21 @@ class _TracksPageState extends State<TracksPage>
         },
       ),
       //Floating action menu item
-        Bubble(
-          title: "File Browser",
-          iconColor: Colors.white,
-          bubbleColor: Colors.blue,
-          icon: Icons.folder,
-          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-          onPress: () {
-            _animationController.reverse();
-            if (PlatformUtils.isAndroid) {
-              addFromFile();
-            } else if (PlatformUtils.isIOS) {
-              addFromIosFile();
-            }
-          },
-        ),
+      Bubble(
+        title: "File Browser",
+        iconColor: Colors.white,
+        bubbleColor: Colors.blue,
+        icon: Icons.folder,
+        titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+        onPress: () {
+          _animationController.reverse();
+          if (PlatformUtils.isAndroid) {
+            addFromFile();
+          } else if (PlatformUtils.isIOS) {
+            addFromIosFile();
+          }
+        },
+      ),
     ];
   }
 }

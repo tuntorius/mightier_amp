@@ -52,8 +52,8 @@ class _ScrollPickerState extends State<ScrollPicker> {
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
     TextStyle defaultStyle = themeData.textTheme.bodyText2!;
-    TextStyle selectedStyle =
-        themeData.textTheme.headline5!.copyWith(color: themeData.accentColor);
+    TextStyle selectedStyle = themeData.textTheme.headline5!
+        .copyWith(color: themeData.backgroundColor);
 
     if (!_isUserGenerated) {
       selectedValue = widget.initialValue;
@@ -122,9 +122,9 @@ class _ScrollPickerState extends State<ScrollPicker> {
                       decoration: BoxDecoration(
                         border: Border(
                           top: BorderSide(
-                              color: themeData.accentColor, width: 1.0),
+                              color: themeData.backgroundColor, width: 1.0),
                           bottom: BorderSide(
-                              color: themeData.accentColor, width: 1.0),
+                              color: themeData.backgroundColor, width: 1.0),
                         ),
                       ),
                     ),

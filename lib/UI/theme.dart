@@ -18,13 +18,26 @@ class AppThemeConfig {
 ThemeData getTheme() {
   return ThemeData(
     brightness: Brightness.dark,
+    colorScheme: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Colors.blue, //buttons
+      onPrimary: Colors.white, //text on buttons
+      secondary: Colors.white,
+      onSecondary: Colors.grey,
+      error: Colors.red,
+      onError: Colors.white,
+      background: Colors.grey,
+      onBackground: Colors.grey,
+      surface: Colors.grey[700]!, //appbar
+      onSurface: Colors.white, //titlebar text
+    ),
     backgroundColor: Colors.white,
     //canvasColor: Colors.white,
     scaffoldBackgroundColor: Colors.grey[900],
 
     //primary color is AppBar bg color
     primaryColor: Colors.grey[800],
-    accentColor: Colors.white,
+    //accentColor: Colors.white,
 
     //unselected labels
     hintColor: Colors.blue[300],

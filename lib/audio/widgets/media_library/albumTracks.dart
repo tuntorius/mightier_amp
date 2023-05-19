@@ -2,7 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 
 class AlbumTracks extends StatefulWidget {
@@ -18,17 +18,18 @@ class AlbumTracks extends StatefulWidget {
 }
 
 class _AlbumTracksState extends State<AlbumTracks> {
-  final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-  late Future<List<SongInfo>> songs;
-  late List<SongInfo> songList;
+  final OnAudioQuery audioQuery = OnAudioQuery();
+  late Future<List<SongModel>> songs;
+  late List<SongModel> songList;
   bool _multiselectMode = false;
   Map<int, bool> selected = {};
 
   @override
   void initState() {
     super.initState();
-    songs = audioQuery.getSongsFromArtistAlbum(
-        albumId: widget.albumId, artist: widget.artist);
+    songs = audioQuery.queryAudiosFrom(AudiosFromType.ALBUM_ID, widget.albumId);
+    //songs = audioQuery.getSongsFromArtistAlbum(
+    //    albumId: widget.albumId, artist: widget.artist);
   }
 
   void multiselectHandler(int index) {
@@ -77,7 +78,7 @@ class _AlbumTracksState extends State<AlbumTracks> {
       },
       child: Scaffold(
         appBar: AppBar(title: Text("${widget.albumName} tracks")),
-        body: FutureBuilder<List<SongInfo>>(
+        body: FutureBuilder<List<SongModel>>(
           future: songs,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
@@ -125,7 +126,7 @@ class _AlbumTracksState extends State<AlbumTracks> {
         floatingActionButton: _multiselectMode && selected.isNotEmpty
             ? FloatingActionButton(
                 onPressed: () {
-                  List<SongInfo> sel = [];
+                  List<SongModel> sel = [];
                   for (int i = 0; i < selected.length; i++) {
                     var index = selected.keys.elementAt(i);
                     if (selected[index] == true) {

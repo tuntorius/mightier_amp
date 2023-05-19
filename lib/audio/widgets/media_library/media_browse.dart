@@ -4,11 +4,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 import 'artistAlbums.dart';
 
 class MediaLibraryBrowser extends StatefulWidget {
+  const MediaLibraryBrowser({super.key});
+
   @override
   _MediaLibraryBrowserState createState() => _MediaLibraryBrowserState();
 }
@@ -18,7 +20,7 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
       StreamController<String>();
 
   //Future<List<SongInfo>> songs;
-  static List<ArtistInfo> artists = [];
+  static List<ArtistModel> artists = [];
 
   TextEditingController editingController = TextEditingController();
 
@@ -33,8 +35,8 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
   }
 
   Future<void> getArtists({bool refresh = true}) async {
-    final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-    if (artists.isEmpty || refresh) artists = await audioQuery.getArtists();
+    final OnAudioQuery audioQuery = OnAudioQuery();
+    if (artists.isEmpty || refresh) artists = await audioQuery.queryArtists();
     _refreshController.add("");
   }
 
@@ -65,12 +67,12 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
                       break;
                     case ConnectionState.active:
                     case ConnectionState.done:
-                      List<ArtistInfo> _artists;
+                      List<ArtistModel> _artists;
                       var searchText = editingController.text.toLowerCase();
                       if (editingController.text.isNotEmpty) {
-                        _artists = <ArtistInfo>[];
+                        _artists = <ArtistModel>[];
                         artists.forEach((item) {
-                          if (item.name.toLowerCase().contains(searchText)) {
+                          if (item.artist.toLowerCase().contains(searchText)) {
                             _artists.add(item);
                           }
                         });
@@ -92,13 +94,15 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
                                           .push(MaterialPageRoute(
                                               builder: (context) =>
                                                   ArtistAlbums(
-                                                      _artists[index].name)));
+                                                      _artists[index].artist,
+                                                      artistId:
+                                                          _artists[index].id)));
                                       if (result != null) {
                                         Navigator.of(context).pop(result);
                                       }
                                     },
                                     title: Text(
-                                      _artists[index].name,
+                                      _artists[index].artist,
                                     ),
                                     trailing:
                                         const Icon(Icons.keyboard_arrow_right)),

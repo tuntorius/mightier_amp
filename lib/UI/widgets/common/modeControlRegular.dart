@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 class ModeControlRegular extends StatelessWidget {
   final List<String> options;
   final int selected;
-  final Function(int) onSelected;
+  final void Function(int index)? onSelected;
   final TextStyle? textStyle;
   const ModeControlRegular(
       {super.key,
       required this.options,
       required this.selected,
-      required this.onSelected,
+      this.onSelected,
       this.textStyle});
 
   Widget _modeButton(String mode) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Text(mode, style: textStyle),
     );
   }
@@ -26,6 +26,7 @@ class ModeControlRegular extends StatelessWidget {
     return ToggleButtons(
       fillColor: Colors.blue,
       selectedBorderColor: Colors.blue,
+      borderColor: Colors.grey[600],
       color: Colors.grey,
       isSelected: active,
       onPressed: onSelected,

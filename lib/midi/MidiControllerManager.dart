@@ -16,7 +16,7 @@ import 'ControllerConstants.dart';
 import 'controllers/MidiController.dart';
 
 typedef MidiDataOverride = void Function(
-    int code, int? sliderValue, String name);
+    MidiController ctrl, int code, int? sliderValue, String name);
 
 class MidiControllerManager extends ChangeNotifier {
   static final MidiControllerManager _controller = MidiControllerManager._();
@@ -206,7 +206,7 @@ class MidiControllerManager extends ChangeNotifier {
       MidiController ctrl, int code, int? sliderValue, String name) {
     //do whatever you do
     if (dataOverride != null) {
-      dataOverride!.call(code, sliderValue, name);
+      dataOverride!.call(ctrl, code, sliderValue, name);
     } else {
       //execute function
       var hk = ctrl.getHotkeyByCode(code, false);

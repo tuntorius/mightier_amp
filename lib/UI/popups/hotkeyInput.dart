@@ -45,7 +45,9 @@ class HotkeyInputDialog {
     Navigator.of(_context).pop();
   }
 
-  _onControllerData(int code, int? sliderValue, String name) {
+  _onControllerData(
+      MidiController ctrl, int code, int? sliderValue, String name) {
+    if (_midiController.id != ctrl.id) return;
     if (_sliderMode) {
       if (sliderValue == null) return;
       if (_invert) sliderValue = 127 - sliderValue;

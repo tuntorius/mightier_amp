@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../bluetooth/devices/NuxDevice.dart';
@@ -9,12 +8,14 @@ class TapButtons extends StatelessWidget {
   final NuxDevice device;
   final Function(double) onTempoModified;
   final Function(double) onTempoChanged;
+  final bool smallControls;
 
   const TapButtons(
       {super.key,
       required this.device,
       required this.onTempoModified,
-      required this.onTempoChanged});
+      required this.onTempoChanged,
+      required this.smallControls});
 
   void _onTapTempo() {
     DelayTapTimer.addClickTime();
@@ -27,7 +28,7 @@ class TapButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 60),
+      constraints: BoxConstraints(maxHeight: smallControls ? 45 : 60),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -67,6 +68,7 @@ class TapButtons extends StatelessWidget {
               child: const Text(
                 "Tap Tempo",
                 style: DrumEditor.fontStyle,
+                textAlign: TextAlign.center,
               ),
             ),
           ),

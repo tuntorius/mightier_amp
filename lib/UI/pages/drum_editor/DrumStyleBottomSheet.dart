@@ -77,6 +77,7 @@ class _DrumStyleBottomSheetState extends State<DrumStyleBottomSheet> {
   }
 
   void _onFlatStyleChanged(int value, bool finalChange) {
+    selectedStyle = value;
     widget.onChange(selectedStyle);
     if (!finalChange) setState(() {});
   }

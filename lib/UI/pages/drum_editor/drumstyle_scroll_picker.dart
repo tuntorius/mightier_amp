@@ -16,6 +16,7 @@ class DrumStyleScrollPicker extends StatelessWidget {
   final ValueChanged<int> onChanged;
   final Function(int, bool, NuxDevice) onChangedFinal;
   final Function() onComplete;
+  final bool smallControls;
 
   const DrumStyleScrollPicker(
       {super.key,
@@ -25,7 +26,8 @@ class DrumStyleScrollPicker extends StatelessWidget {
       required this.drumStyles,
       required this.onChanged,
       required this.onChangedFinal,
-      required this.onComplete});
+      required this.onComplete,
+      required this.smallControls});
 
   String _getComplexListStyle(Map<String, Map> list) {
     for (String cat in list.keys) {
@@ -41,6 +43,7 @@ class DrumStyleScrollPicker extends StatelessWidget {
     return Semantics(
       label: "Drum style",
       child: ListTile(
+        dense: smallControls,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
             side: const BorderSide(width: 1, color: Colors.white)),

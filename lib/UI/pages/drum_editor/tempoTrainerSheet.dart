@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/drum_editor/drumEditor.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/modeControlRegular.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 
@@ -7,7 +8,9 @@ import '../../widgets/thickRangeSlider.dart';
 import '../../widgets/thickSlider.dart';
 
 class TempoTrainerSheet extends StatefulWidget {
-  const TempoTrainerSheet({Key? key}) : super(key: key);
+  final bool smallControls;
+  const TempoTrainerSheet({Key? key, required this.smallControls})
+      : super(key: key);
 
   @override
   State<TempoTrainerSheet> createState() => _TempoTrainerSheetState();
@@ -40,18 +43,23 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
   static const List<String> _dropDownValues = ['Beats', 'Seconds'];
 
   void _updateBpm() {
+    if (NuxDeviceControl.instance().device.drumsEnabled !=
+        _tempoTrainer.enable) {
+      _tempoTrainer.enable = NuxDeviceControl.instance().device.drumsEnabled;
+    }
     setState(() {});
   }
 
-  Widget _progressPlayPauseButton() {
+  Widget _progressPlayPauseButton(bool small) {
+    double size = small ? 60 : 80;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Stack(
         alignment: Alignment.center,
         children: [
           SizedBox(
-            width: 80,
-            height: 80,
+            width: size,
+            height: size,
             child: AnimatedBuilder(
               animation: _animation,
               builder: (BuildContext context, Widget? child) {
@@ -77,7 +85,7 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
             },
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(small ? 14 : 20),
             ),
             child: Icon(_tempoTrainer.enable ? Icons.stop : Icons.play_arrow),
           ),
@@ -91,6 +99,7 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
     var device = NuxDeviceControl.instance().device;
     return Column(children: [
       ThickRangeSlider(
+          maxHeight: widget.smallControls ? 40 : null,
           min: device.drumsMinTempo,
           max: device.drumsMaxTempo,
           activeColor: Colors.blue,
@@ -101,18 +110,30 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
           },
           label: 'Tempo Range',
           labelFormatter: (ranges) =>
-              "${ranges.start.round()}-${ranges.end.round()}"),
-      ModeControlRegular(
-          options: _dropDownValues,
-          selected: _tempoTrainer.changeMode.index,
-          onSelected: (index) {
-            setState(() {
-              _tempoTrainer.changeMode = TempoChangeMode.values[index];
-            });
-          }),
+              "${ranges.start.round()} - ${ranges.end.round()}"),
+      ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        title: const Text(
+          "Increase Mode",
+          style: DrumEditor.fontStyle,
+        ),
+        trailing: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 40),
+          child: ModeControlRegular(
+              options: _dropDownValues,
+              textStyle: DrumEditor.fontStyle,
+              selected: _tempoTrainer.changeMode.index,
+              onSelected: (index) {
+                setState(() {
+                  _tempoTrainer.changeMode = TempoChangeMode.values[index];
+                });
+              }),
+        ),
+      ),
       ThickSlider(
         min: 2,
         max: 100,
+        maxHeight: widget.smallControls ? 40 : null,
         activeColor: Colors.blue,
         label: "Increase every",
         labelFormatter: (val) {
@@ -127,6 +148,7 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
       ThickSlider(
         min: 1,
         max: 20,
+        maxHeight: widget.smallControls ? 40 : null,
         activeColor: Colors.blue,
         label: "Increase by",
         labelFormatter: (val) {
@@ -138,10 +160,10 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
           setState(() {});
         },
       ),
-      _progressPlayPauseButton(),
+      _progressPlayPauseButton(widget.smallControls),
       Text(
         "${device.drumsTempo.round()} bpm",
-        style: const TextStyle(fontSize: 20),
+        style: const TextStyle(fontSize: 18),
       )
     ]);
   }

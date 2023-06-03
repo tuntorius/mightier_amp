@@ -50,6 +50,7 @@ class _PlugAirSettingsState extends State<PlugAirSettings> {
           leading: const Icon(Icons.bluetooth_audio),
           trailing: const Icon(Icons.keyboard_arrow_right),
           onTap: () {
+            var oldValue = widget.plugAirDevice.btEq;
             var dialog = AlertDialogs.showOptionDialog(context,
                 confirmButton: "OK",
                 cancelButton: "Cancel",
@@ -57,11 +58,15 @@ class _PlugAirSettingsState extends State<PlugAirSettings> {
                 confirmColor: Theme.of(context).hintColor,
                 value: widget.plugAirDevice.btEq,
                 options: _eqOptions, onConfirm: (changed, newValue) {
-              if (changed) {
-                setState(() {
+              setState(() {
+                if (changed) {
                   widget.plugAirDevice.setBtEq(newValue);
-                });
-              }
+                } else {
+                  widget.plugAirDevice.setBtEq(oldValue);
+                }
+              });
+            }, onSelectionChanged: (selected) {
+              widget.plugAirDevice.setBtEq(selected);
             });
             showDialog(
               context: context,

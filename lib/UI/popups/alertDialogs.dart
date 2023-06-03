@@ -169,6 +169,7 @@ class AlertDialogs {
       required List<String> options,
       required int value,
       required Function(bool, int) onConfirm,
+      Function(int)? onSelectionChanged,
       Color? confirmColor}) {
     int selected = value;
     // set up the buttons
@@ -200,6 +201,7 @@ class AlertDialogs {
             onChanged: (currentUser) {
               setState(() {
                 selected = i;
+                onSelectionChanged?.call(selected);
               });
             },
             selected: selected == i,

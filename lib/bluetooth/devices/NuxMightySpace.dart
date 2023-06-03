@@ -67,6 +67,7 @@ class NuxMightySpace extends NuxMightyPlugPro implements Tuner, Looper {
 
   @override
   void looperLevel(int vol) {
+    config.looperData.loopLevel = vol.toDouble();
     _communication.looperVolume(vol);
   }
 

@@ -75,7 +75,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   ValueNotifier presetNameNotifier = ValueNotifier<String>("");
-  ValueNotifier<int> masterVolumeNotifier = ValueNotifier<int>(100);
+  ValueNotifier<double> masterVolumeNotifier = ValueNotifier<double>(100);
 
   double _masterVolume = 100;
 
@@ -93,7 +93,7 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   set masterVolume(double vol) {
-    masterVolumeNotifier.value = vol.toInt();
+    masterVolumeNotifier.value = vol;
     if (device.fakeMasterVolume) {
       _masterVolume = vol;
       if (isConnected) {

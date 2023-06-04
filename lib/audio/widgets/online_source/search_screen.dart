@@ -175,10 +175,8 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                                 return;
                               }
                               //return list of 1 track
-                              if (tracks[index].url == "") {
-                                tracks[index].url = await widget.source
-                                    .getTrackUri(tracks[index]);
-                              }
+                              tracks[index].url = await widget.source
+                                  .getTrackUri(tracks[index]);
                               closeTrack();
                               Navigator.of(context).pop([tracks[index]]);
                             },
@@ -229,10 +227,8 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                   for (int i = 0; i < selected.length; i++) {
                     var index = selected.keys.elementAt(i);
                     if (selected[index] == true) {
-                      if (tracks[index].url == "") {
-                        tracks[index].url =
-                            await widget.source.getTrackUri(tracks[index]);
-                      }
+                      tracks[index].url =
+                          await widget.source.getTrackUri(tracks[index]);
                       sel.add(tracks[index]);
                     }
                   }

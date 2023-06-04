@@ -89,7 +89,6 @@ class _JamTracksState extends State<JamTracks>
         Navigator.pushNamed(innerContext, '/setlist',
                 arguments: SetlistArguments(setlist, false))
             .then((value) => onPlayerStateChange());
-        ;
       },
     );
   }
@@ -132,6 +131,7 @@ class _JamTracksState extends State<JamTracks>
             },
           );
         }
+        return null;
       },
     );
   }

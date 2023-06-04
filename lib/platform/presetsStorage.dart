@@ -35,16 +35,14 @@ class PresetsStorage extends ChangeNotifier {
   File? _presetsFile;
   bool _presetsReady = false;
 
-  List<PresetStorageListener> _changeListeners = [];
+  final List<PresetStorageListener> _changeListeners = [];
 
   List presetsData = [];
   List<String> _categoriesCache = <String>[];
 
-  PresetsStorage._() {
-    _init();
-  }
+  PresetsStorage._();
 
-  _init() async {
+  Future init() async {
     _categoriesCache = <String>[];
     await _getDirectory();
     await _loadPresets();

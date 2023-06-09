@@ -36,6 +36,7 @@ class SysCtrlState {
   static const syscmd_dsprun_battery = 66;
   static const syscmd_usbaudio = 67;
   static const speccmd_auxeqsave = 68;
+  static const speccmd_speakereqsave = 69;
   static const syscmd_midicc_ex = 112;
 }
 
@@ -406,6 +407,7 @@ class SyxMsg {
   static const kSYX_CABNAME = 26; //const SyxMsg._internal(26);
   static const kSYX_BTSET =
       27; //bluetooth eq groups 1-3, however use group 4 to retrieve mute and phase
+  static const kSYX_SPKSET = 28;
   static const kSYX_PARAINIT = const SyxMsg._internal(96);
   static const kSYX_WELCOME = const SyxMsg._internal(97);
   static const kSYX_QTVERSION = const SyxMsg._internal(98);
@@ -635,5 +637,18 @@ class MidiCCValuesPro {
   static const NR_ENABLE = 108;
   static const NR_SENS = 109;
   static const NR_DECAY = 110;
+  static const SPK_EQ_GROUP = 111;
+  static const SPK_EQ_VOL = 112;
+  static const SPK_EQ_1 = 113;
+  static const SPK_EQ_2 = 114;
+  static const SPK_EQ_3 = 115;
+  static const SPK_EQ_4 = 116;
+  static const SPK_EQ_5 = 117;
+  static const SPK_EQ_6 = 118;
+  static const SPK_EQ_7 = 119;
+  static const SPK_EQ_8 = 120;
+  static const SPK_EQ_9 = 121;
+  static const SPK_EQ_10 = 122;
+  static const SPK_EQ_11 = 123;
   static const AUX_SAVE = 125;
 }

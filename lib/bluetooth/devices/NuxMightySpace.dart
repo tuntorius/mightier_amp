@@ -1,13 +1,26 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
 
+import '../../UI/pages/device_specific_settings/PlugProSettings.dart';
 import 'NuxMightyPlugPro.dart';
+import 'effects/plug_pro/EQ.dart';
 import 'features/looper.dart';
 import 'features/tuner.dart';
 
+class NuxMightySpaceConfiguration extends NuxPlugProConfiguration {
+  EQTenBandSpeaker speakerEQ = EQTenBandSpeaker();
+  int speakerEQGroup = 0;
+}
+
 class NuxMightySpace extends NuxMightyPlugPro implements Tuner, Looper {
   NuxMightySpace(super.devControl);
+
+  final NuxMightySpaceConfiguration _config = NuxMightySpaceConfiguration();
+
+  @override
+  NuxMightySpaceConfiguration get config => _config;
 
   PlugProCommunication get _communication =>
       communication as PlugProCommunication;
@@ -35,6 +48,11 @@ class NuxMightySpace extends NuxMightyPlugPro implements Tuner, Looper {
   double get loopLevel => config.looperData.loopLevel;
 
   final looperController = StreamController<LooperData>.broadcast();
+
+  @override
+  Widget getSettingsWidget() {
+    return PlugProSettings(device: this, mightySpace: true);
+  }
 
   @override
   Stream<LooperData> getLooperDataStream() {

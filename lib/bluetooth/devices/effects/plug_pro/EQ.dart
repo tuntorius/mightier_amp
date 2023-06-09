@@ -285,3 +285,109 @@ class EQTenBandBT extends EQ {
   @override
   int get nuxIndex => 0;
 }
+
+class EQTenBandSpeaker extends EQ {
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Vol",
+        handle: "eq_vol",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para1,
+        midiCC: MidiCCValuesPro.SPK_EQ_VOL),
+    Parameter(
+        name: "31",
+        handle: "eq_b1",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para2,
+        midiCC: MidiCCValuesPro.SPK_EQ_1),
+    Parameter(
+        name: "62",
+        handle: "eq_b2",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para3,
+        midiCC: MidiCCValuesPro.SPK_EQ_2),
+    Parameter(
+        name: "125",
+        handle: "eq_b3",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para4,
+        midiCC: MidiCCValuesPro.SPK_EQ_3),
+    Parameter(
+        name: "250",
+        handle: "eq_b4",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para5,
+        midiCC: MidiCCValuesPro.SPK_EQ_4),
+    Parameter(
+        name: "500",
+        handle: "eq_b5",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para6,
+        midiCC: MidiCCValuesPro.SPK_EQ_5),
+    Parameter(
+        name: "1K",
+        handle: "eq_b6",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para7,
+        midiCC: MidiCCValuesPro.SPK_EQ_6),
+    Parameter(
+        name: "2K",
+        handle: "eq_b7",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para8,
+        midiCC: MidiCCValuesPro.SPK_EQ_7),
+    Parameter(
+        name: "4K",
+        handle: "eq_b8",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para9,
+        midiCC: MidiCCValuesPro.SPK_EQ_8),
+    Parameter(
+        name: "8K",
+        handle: "eq_b9",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para10,
+        midiCC: MidiCCValuesPro.SPK_EQ_9),
+    Parameter(
+        name: "16K",
+        handle: "eq_b10",
+        value: 0,
+        formatter: ValueFormatters.decibelEQ,
+        devicePresetIndex: PresetDataIndexPlugPro.EQ_Para11,
+        midiCC: MidiCCValuesPro.SPK_EQ_10),
+  ];
+
+  //TODO: this might not be needed
+  List<int> getNuxCommand() {
+    List<int> data = [];
+
+    for (int i = 0; i < parameters.length; i++) {
+      data.add(parameters[i].midiValue);
+    }
+    return data;
+  }
+
+  @override
+  void setupFromNuxPayload(List<int> nuxData) {
+    for (int i = 0; i < parameters.length; i++) {
+      parameters[i].midiValue = nuxData[i];
+    }
+  }
+
+  @override
+  String get name => "Speaker EQ";
+
+  @override
+  int get nuxIndex => 0;
+}

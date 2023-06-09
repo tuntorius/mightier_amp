@@ -2,13 +2,14 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/device_specific_settings/eq/bt_audio_options.dart';
 import 'package:mighty_plug_manager/UI/widgets/presets/effectEditors/EqualizerEditor.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
-import '../../../bluetooth/NuxDeviceControl.dart';
-import '../../../bluetooth/devices/effects/Processor.dart';
-import '../../../bluetooth/devices/effects/plug_pro/EQ.dart';
-import '../../mightierIcons.dart';
+import '../../../../bluetooth/NuxDeviceControl.dart';
+import '../../../../bluetooth/devices/effects/Processor.dart';
+import '../../../../bluetooth/devices/effects/plug_pro/EQ.dart';
+import 'eq_group.dart';
 
 class PlugProEQSettings extends StatefulWidget {
   const PlugProEQSettings({Key? key}) : super(key: key);
@@ -23,103 +24,42 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
       NuxDeviceControl.instance().device.communication as PlugProCommunication;
   bool _requestInProgress = false;
 
-  static const List<DropdownMenuItem<int>> eqGroups = [
-    DropdownMenuItem<int>(
-      value: 0,
-      child: Text("Group 1"),
-    ),
-    DropdownMenuItem<int>(
-      value: 1,
-      child: Text("Group 2"),
-    ),
-    DropdownMenuItem<int>(
-      value: 2,
-      child: Text("Group 3"),
-    ),
-    DropdownMenuItem<int>(
-      value: 3,
-      child: Text("Group 4"),
-    ),
-  ];
-
   @override
   void initState() {
     super.initState();
-    _requestBTData(device.config.bluetoothGroup);
+    _requestEQData(device.config.bluetoothGroup);
   }
 
-  void _requestBTData(int index) {
+  void _requestEQData(int index) {
     _requestInProgress = true;
     (device.communication as PlugProCommunication).requestBTEQData(index);
   }
 
   List<Widget> _buildGroupWidget() {
     return [
-      Row(
-        children: [
-          const Text(
-            "EQ Group",
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(
-            width: 8,
-          ),
-          DropdownButton(
-            items: eqGroups,
-            onChanged: (int? value) {
-              if (value != null) {
-                //request another
-                device.config.bluetoothGroup = value;
-                communication.setBTEq(value);
-                _requestBTData(device.config.bluetoothGroup);
-                setState(() {});
-              }
-            },
-            value: device.config.bluetoothGroup,
-          )
-        ],
-      ),
-      ToggleButtons(
-        fillColor: Colors.blue,
-        selectedBorderColor: Colors.blue,
-        color: Colors.grey,
-        isSelected: [
-          device.config.bluetoothInvertChannel,
-          device.config.bluetoothEQMute
-        ],
-        onPressed: (index) {
-          switch (index) {
-            case 0:
-              device.config.bluetoothInvertChannel =
-                  !device.config.bluetoothInvertChannel;
-              communication.setBTInvert(device.config.bluetoothInvertChannel);
-              break;
-            case 1:
-              device.config.bluetoothEQMute = !device.config.bluetoothEQMute;
-              communication.setBTMute(device.config.bluetoothEQMute);
-              break;
+      EQGroup(
+        eqGroup: device.config.bluetoothGroup,
+        onChanged: (int? value) {
+          if (value != null) {
+            //request another
+            device.config.bluetoothGroup = value;
+            communication.setBTEq(value);
+            _requestEQData(device.config.bluetoothGroup);
+            setState(() {});
           }
-          setState(() {});
         },
-        children: [
-          const Tooltip(
-            message: "Invert the phase of Bluetooth Audio.",
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.0),
-              child: Icon(MightierIcons.sinewave, size: 40),
-            ),
-          ),
-          Tooltip(
-            message: "Mute Bluetooth audio.",
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Icon(device.config.bluetoothEQMute
-                  ? Icons.volume_off
-                  : Icons.volume_up),
-            ),
-          ),
-        ],
       ),
+      BTAudioOptions(
+          btInvertChannel: device.config.bluetoothInvertChannel,
+          btEQMute: device.config.bluetoothEQMute,
+          onInvert: (invert) {
+            device.config.bluetoothInvertChannel = invert;
+            communication.setBTInvert(device.config.bluetoothInvertChannel);
+          },
+          onMute: (mute) {
+            device.config.bluetoothEQMute = mute;
+            communication.setBTMute(device.config.bluetoothEQMute);
+          })
     ];
   }
 
@@ -138,7 +78,7 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
       ElevatedButton(
           child: const Text("Save"),
           onPressed: () {
-            communication.saveEQGroup(device.config.bluetoothGroup);
+            communication.saveBTEQGroup(device.config.bluetoothGroup);
           })
     ];
   }

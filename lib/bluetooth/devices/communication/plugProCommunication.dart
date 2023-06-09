@@ -20,9 +20,10 @@ class PlugProCommunication extends DeviceCommunication {
       : super(device, config);
 
   StreamController<List<int>>? _bluetoothEQReceived;
-
   Stream<List<int>>? get bluetoothEQStream => _bluetoothEQReceived?.stream;
 
+  StreamController<List<int>>? _speakerEQReceived;
+  Stream<List<int>>? get speakerEQStream => _speakerEQReceived?.stream;
   @override
   int get productVID => 48;
 
@@ -142,6 +143,14 @@ class PlugProCommunication extends DeviceCommunication {
         SyxMsg.kSYX_BTSET, SyxDir.kSYXDIR_REQ, [index]);
     device.deviceControl.sendBLEData(data);
     _bluetoothEQReceived = StreamController<List<int>>();
+  }
+
+  void requestSpeakerEQData(int index) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_SPKSET, SyxDir.kSYXDIR_GET, [index]);
+    device.deviceControl.sendBLEData(data);
+    _speakerEQReceived = StreamController<List<int>>();
   }
 
   @override
@@ -317,13 +326,30 @@ class PlugProCommunication extends DeviceCommunication {
     device.deviceControl.sendBLEData(data);
   }
 
-  void saveEQGroup(int group) {
+  void saveBTEQGroup(int group) {
     if (!device.deviceControl.isConnected) return;
     var data = createSysExMessagePro(
         SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_SPEC_CMD,
         SyxDir.kSYXDIR_SET,
         [SysCtrlState.speccmd_auxeqsave, group]);
+
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void setSpeakerEq(int eq) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createCCMessage(MidiCCValuesPro.SPK_EQ_GROUP, eq);
+    device.deviceControl.sendBLEData(data);
+  }
+
+  void saveSpeakerEQGroup(int group) {
+    if (!device.deviceControl.isConnected) return;
+    var data = createSysExMessagePro(
+        SysexPrivacy.kSYSEX_PRIVATE,
+        SyxMsg.kSYX_SPEC_CMD,
+        SyxDir.kSYXDIR_SET,
+        [SysCtrlState.speccmd_speakereqsave, group]);
 
     device.deviceControl.sendBLEData(data);
   }
@@ -781,6 +807,10 @@ const z = {
       config.micNGSensitivity = data[4];
       config.micNGDecay = data[5];
 
+      if (config is NuxMightySpaceConfiguration) {
+        (config as NuxMightySpaceConfiguration).speakerEQGroup = data[6];
+      }
+
       debugPrint("Mic step ready");
       connectionStepReady();
     }
@@ -790,6 +820,14 @@ const z = {
     if (data[0] == SyxDir.kSYXDIR_REQ) {
       _bluetoothEQReceived?.add(data.sublist(2));
       _bluetoothEQReceived?.close();
+    }
+  }
+
+  void _handleSpeakerEqData(List<int> data) {
+    if (data[0] == SyxDir.kSYXDIR_REQ) {
+      _speakerEQReceived?.add(data.sublist(2));
+      _speakerEQReceived?.close();
+      _speakerEQReceived = null;
     }
   }
 
@@ -862,6 +900,9 @@ const z = {
                   return;
                 case SyxMsg.kSYX_BTSET:
                   _handleBTEqData(data.sublist(7));
+                  return;
+                case SyxMsg.kSYX_SPKSET:
+                  _handleSpeakerEqData(data.sublist(7));
                   return;
                 case SyxMsg.kSYX_TUNER_SETTINGS:
                   _handleTunerSysEx(data.sublist(7));

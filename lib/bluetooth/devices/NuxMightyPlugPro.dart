@@ -492,7 +492,7 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner {
 
   @override
   Widget getSettingsWidget() {
-    return PlugProSettings(device: this);
+    return PlugProSettings(device: this, mightySpace: false);
   }
 
   @override

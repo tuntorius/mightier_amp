@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/device_specific_settings/eq/MightySpaceSpeakerEQ.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 
 import '../../../bluetooth/bleMidiHandler.dart';
@@ -6,11 +7,14 @@ import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../popups/alertDialogs.dart';
 import 'PlugProMicSettings.dart';
 import 'PlugProUsbSettings.dart';
-import 'PlugProEQSettings.dart';
+import 'eq/PlugProEQSettings.dart';
 
 class PlugProSettings extends StatefulWidget {
   final NuxDevice device;
-  const PlugProSettings({Key? key, required this.device}) : super(key: key);
+  final bool mightySpace;
+  const PlugProSettings(
+      {Key? key, required this.device, required this.mightySpace})
+      : super(key: key);
 
   @override
   State<PlugProSettings> createState() => _PlugProSettingsState();
@@ -43,6 +47,17 @@ class _PlugProSettingsState extends State<PlugProSettings> {
                 builder: (context) => const PlugProEQSettings()));
           },
         ),
+        if (widget.mightySpace)
+          ListTile(
+            leading: const Icon(Icons.speaker),
+            enabled: widget.device.deviceControl.isConnected,
+            title: const Text("Speaker EQ"),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const SpaceSpeakerEQSettings()));
+            },
+          ),
         ListTile(
           enabled: widget.device.deviceControl.isConnected,
           leading: const Icon(Icons.mic),

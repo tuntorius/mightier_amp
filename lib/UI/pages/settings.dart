@@ -227,7 +227,7 @@ class _SettingsState extends State<Settings> {
                 ListTile(
                   title: const Text("Remote Control"),
                   subtitle:
-                      const Text("Uses HID/MIDI device to control the amp"),
+                      const Text("Use a MIDI/HID device to control the amp"),
                   trailing: const Icon(Icons.keyboard_arrow_right),
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(

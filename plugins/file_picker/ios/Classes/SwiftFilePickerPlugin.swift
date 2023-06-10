@@ -40,7 +40,7 @@ public class SwiftFilePickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDel
         }
         let tempDirectoryURL = FileManager.default.temporaryDirectory
 
-        let fileURL = tempDirectoryURL.appendingPathComponent(fileName).appendingPathExtension("json")
+        let fileURL = tempDirectoryURL.appendingPathComponent(fileName).appendingPathExtension("nuxpreset")
 
         do {
             try jsonData.write(to: fileURL)
@@ -58,7 +58,7 @@ public class SwiftFilePickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDel
 
   private func readDocument(result: @escaping FlutterResult) {
     isExporting = false
-    let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.json"], in: .import)
+    let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.json", "com.tuntori.nuxpreset"], in: .import)
     documentPicker.delegate = self
     documentPicker.modalPresentationStyle = .formSheet
     UIApplication.shared.keyWindow?.rootViewController?.present(documentPicker, animated: true)

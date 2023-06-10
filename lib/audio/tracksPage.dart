@@ -275,28 +275,28 @@ class _TracksPageState extends State<TracksPage>
     });
   }
 
-  void addFromFile() async {
-    //add track mode
-    var path = await AudioPicker.pickAudioMultiple();
-
-    for (int i = 0; i < path.length; i++) {
-      await _processFileUrl(path[i]);
+  Future _processMediaList(List<String> urls) async {
+    for (int i = 0; i < urls.length; i++) {
+      await _processFileUrl(urls[i]);
       //clear filter and scroll to bottom
       searchCtrl.text = "";
       setState(() {});
     }
-    if (path.isNotEmpty) {
+    if (urls.isNotEmpty) {
       TrackData().saveTracks();
       _scrollToNewSongs();
     }
   }
 
+  void addFromFile() async {
+    //add track mode
+    var path = await AudioPicker.pickAudioMultiple();
+    await _processMediaList(path);
+  }
+
   void addFromIosFile() async {
-    var path = await AudioPicker.pickAudioFile();
-    await _processFileUrl(path);
-    TrackData().saveTracks();
-    _scrollToNewSongs();
-    setState(() {});
+    var path = await AudioPicker.pickAudioFiles();
+    await _processMediaList(path);
   }
 
   Future _processFileUrl(String path) async {
@@ -342,13 +342,13 @@ class _TracksPageState extends State<TracksPage>
       url = path;
     }
 
-    trackName = artist.isNotEmpty ? "$artist - $title" : title;
+    trackName = artist.isEmpty || title.isEmpty ? artist + title : "$artist - $title";
 
     if (url.isEmpty) {
       url = path;
     }
     if (trackName.isEmpty) {
-      trackName = basenameWithoutExtension(path);
+      trackName = Uri.decodeComponent(basenameWithoutExtension(path));
     }
 
     TrackData().addTrack(url, trackName, false);

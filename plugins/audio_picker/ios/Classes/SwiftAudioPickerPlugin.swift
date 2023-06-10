@@ -36,7 +36,12 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
         if(call.method == "pick_audio_file"){
             
             _flutterResult = result
-            openFilePicker()
+            openFilePicker(multiple:false)
+        }
+        if(call.method == "pick_audio_file_multiple"){
+            
+            _flutterResult = result
+            openFilePicker(multiple:true)
         }
         if (call.method=="get_metadata") {
             if let args = call.arguments as? [String: Any],
@@ -76,10 +81,8 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
     }
 
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let selectedURL = urls.first else {
-            return
-        }
-        self._flutterResult?(selectedURL.absoluteString)
+        let absoluteStrings = urls.map { $0.absoluteString }
+        self._flutterResult?(absoluteStrings)
     }
     
     public func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController)
@@ -98,11 +101,11 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
         _viewController?.present(_audioPickerController!, animated: true, completion: nil)
     }
 
-    func openFilePicker() {
+    func openFilePicker(multiple: Bool) {
         // Present the UIDocumentPickerViewController
         let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.audio"], in: .import)
         documentPicker.delegate = self
-        documentPicker.allowsMultipleSelection = false
+        documentPicker.allowsMultipleSelection = multiple
         documentPicker.modalPresentationStyle = .formSheet
         _viewController?.present(documentPicker, animated: true, completion: nil)
     }

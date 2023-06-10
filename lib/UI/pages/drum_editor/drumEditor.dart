@@ -2,6 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/drum_editor/drum_eq_bottom_sheet.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/drumstyle_scroll_picker.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/tap_buttons.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/modeControlRegular.dart';
@@ -239,7 +240,18 @@ class _DrumEditorState extends State<DrumEditor> {
                     _tapButton(smallControls),
                   if (_mode == DrumEditorMode.regular &&
                       _layout == DrumEditorLayout.PlugPro)
-                    ..._toneSliders(smallControls),
+                    ElevatedButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                              showDragHandle: true,
+                              context: context,
+                              builder: (context) {
+                                return const DrumEQBottomSheet();
+                              });
+                        },
+                        child: const Text("Tone controls")),
+
+                  ///..._toneSliders(smallControls),
                   if (_mode == DrumEditorMode.trainer)
                     TempoTrainerSheet(smallControls: smallControls),
                   if (_mode == DrumEditorMode.looper)
@@ -257,6 +269,17 @@ class _DrumEditorState extends State<DrumEditor> {
 
     return Column(
       children: [
+        Row(children: [
+          Expanded(
+            child: Center(child: _createModeControl(looper: hasLooper)),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: _createScrollPicker(smallControls),
+            ),
+          )
+        ]),
         Expanded(
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -266,9 +289,7 @@ class _DrumEditorState extends State<DrumEditor> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _createScrollPicker(smallControls),
                         _drumLevelSlider(smallControls),
-                        _createModeControl(looper: hasLooper),
                         _tempoSlider(smallControls),
                         const SizedBox(height: 10),
                         if (_mode == DrumEditorMode.regular)

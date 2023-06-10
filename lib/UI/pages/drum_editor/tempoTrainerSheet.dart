@@ -114,8 +114,8 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
       ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 8),
         title: const Text(
-          "Increase Mode",
-          style: DrumEditor.fontStyle,
+          "Mode",
+          style: TextStyle(fontSize: 20),
         ),
         trailing: ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 40),
@@ -160,11 +160,22 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
           setState(() {});
         },
       ),
-      _progressPlayPauseButton(widget.smallControls),
-      Text(
-        "${device.drumsTempo.round()} bpm",
-        style: const TextStyle(fontSize: 18),
-      )
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Expanded(child: SizedBox.shrink()),
+          _progressPlayPauseButton(widget.smallControls),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                "${device.drumsTempo.round()} bpm",
+                style: DrumEditor.fontStyle,
+              ),
+            ),
+          )
+        ],
+      ),
     ]);
   }
 }

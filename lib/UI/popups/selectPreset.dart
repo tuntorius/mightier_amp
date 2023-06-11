@@ -2,7 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import '../widgets/presets/presetList.dart';
+import '../widgets/presets/preset_list/presetList.dart';
 
 class SelectPresetDialog {
   Widget buildDialog(BuildContext context, {required bool noneOption}) {

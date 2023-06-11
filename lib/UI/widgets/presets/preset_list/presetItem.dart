@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/widgets/presets/preset_list/presetEffectPreview.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 
-import '../../../bluetooth/NuxDeviceControl.dart';
-import '../../../bluetooth/devices/NuxDevice.dart';
-import '../../../bluetooth/devices/effects/Processor.dart';
-import '../../mightierIcons.dart';
-import '../../theme.dart';
-import '../../toneshare/share_preset.dart';
+import '/UI/mightierIcons.dart';
+import '/bluetooth/NuxDeviceControl.dart';
+import '/bluetooth/devices/NuxDevice.dart';
+import '/UI/theme.dart';
+import '/UI/toneshare/share_preset.dart';
 
 enum PresetItemActions {
   Delete,
@@ -23,6 +23,7 @@ class PresetItem extends StatelessWidget {
   final Map<String, dynamic> item;
   final NuxDevice device;
   final bool simplified;
+  final bool hideNotApplicable;
   final TextStyle? ampTextStyle;
   final void Function()? onTap;
   final void Function(PresetItemActions, Map<String, dynamic>)? onPopupMenuTap;
@@ -128,48 +129,9 @@ class PresetItem extends StatelessWidget {
       required this.simplified,
       this.onTap,
       this.ampTextStyle,
-      this.onPopupMenuTap})
+      this.onPopupMenuTap,
+      required this.hideNotApplicable})
       : super(key: key);
-
-  List<Widget> _buildEffectsPreview(Map<String, dynamic> preset) {
-    var widgets = <Widget>[];
-    NuxDevice? dev =
-        NuxDeviceControl.instance().getDeviceFromId(item["product_id"]);
-    //int presetVersion = preset["version"] ?? 0;
-
-    if (dev != null) {
-      var pVersion = item["version"] ?? 0;
-      for (int i = 0; i < dev.processorList.length; i++) {
-        ProcessorInfo pi = dev.processorList[i];
-        if (preset.containsKey(pi.keyName)) {
-          //special case for amp
-          if (pi.keyName == "amp") {
-            var name = dev.getAmpNameByNuxIndex(
-                preset[pi.keyName]["fx_type"], pVersion);
-            widgets.insert(
-                0,
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Text(
-                    name,
-                    style: ampTextStyle,
-                  ),
-                ));
-          } else if (pi.keyName == "cabinet") {
-            continue;
-          } else {
-            bool enabled = preset[pi.keyName]["enabled"];
-            widgets.add(Icon(
-              pi.icon,
-              color: enabled ? pi.color : Colors.grey,
-              size: 16,
-            ));
-          }
-        }
-      }
-    }
-    return widgets;
-  }
 
   Widget? _createPresetTrailingWidget(
       Map<String, dynamic> item, BuildContext context) {
@@ -193,7 +155,7 @@ class PresetItem extends StatelessWidget {
 
     if (simplified) {
       trailingWidget = null;
-    } else if (kDebugMode) {
+    } else if (kDebugMode && false) {
       trailingWidget = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -251,12 +213,13 @@ class PresetItem extends StatelessWidget {
     bool enabled = true;
     enabled = item["product_id"] == device.presetClass;
 
+    if (!enabled && hideNotApplicable) return const SizedBox.shrink();
     bool selected = item["uuid"] == device.deviceControl.presetUUID;
     bool newItem = item.containsKey("new");
 
-    var d = NuxDeviceControl.instance().getDeviceFromId(item["product_id"]) ??
+    var dev = NuxDeviceControl.instance().getDeviceFromId(item["product_id"]) ??
         device;
-    Color color = d.getPreset(0).channelColorsList[item["channel"]];
+    Color color = dev.getPreset(0).channelColorsList[item["channel"]];
 
     if (!enabled) color = TinyColor.fromColor(color).desaturate(90).color;
 
@@ -282,11 +245,7 @@ class PresetItem extends StatelessWidget {
                   fit: BoxFit.fitWidth,
                   child: Padding(
                     padding: const EdgeInsets.all(3.0),
-                    child: _iconLabel(
-                        NuxDeviceControl.instance()
-                            .getDeviceFromId(item["product_id"])!
-                            .productIconLabel,
-                        color),
+                    child: _iconLabel(dev.productIconLabel, color),
                   ),
                 ),
                 if (newItem)
@@ -315,9 +274,8 @@ class PresetItem extends StatelessWidget {
                   TextStyle(color: enabled ? Colors.white : Colors.grey[600])),
           subtitle: Opacity(
             opacity: enabled ? 1 : 0.5,
-            child: Row(
-              children: _buildEffectsPreview(item),
-            ),
+            child: PresetEffectPreview(
+                device: dev, preset: item, ampTextStyle: ampTextStyle),
           ),
           trailing: _createPresetTrailingWidget(item, context),
           onTap: onTap),

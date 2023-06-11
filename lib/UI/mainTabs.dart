@@ -21,7 +21,7 @@ import 'widgets/VolumeDrawer.dart';
 import 'widgets/app_drawer.dart';
 import 'widgets/bottomBar.dart';
 import 'widgets/common/nestedWillPopScope.dart';
-import 'widgets/presets/presetList.dart';
+import 'widgets/presets/preset_list/presetList.dart';
 
 class MainTabs extends StatefulWidget {
   final MidiControllerManager midiMan = MidiControllerManager();

@@ -19,6 +19,7 @@ import 'DebugConsolePage.dart';
 import 'calibration.dart';
 import 'developerPage.dart';
 import 'midiControllers.dart';
+import 'settings_advanced.dart';
 import 'tunerPage.dart';
 
 enum TimeUnit { BPM, Seconds }
@@ -214,16 +215,6 @@ class _SettingsState extends State<Settings> {
                   ),
                 device.getSettingsWidget(),
                 const Divider(),
-                //const Divider(),
-                ListTile(
-                  enabled: device.deviceControl.isConnected,
-                  title: const Text("Calibrate BT Audio Latency"),
-                  trailing: const Icon(Icons.keyboard_arrow_right),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const Calibration()));
-                  },
-                ),
                 ListTile(
                   title: const Text("Remote Control"),
                   subtitle:
@@ -313,6 +304,14 @@ class _SettingsState extends State<Settings> {
               },
             ),
           const Divider(),
+          ListTile(
+            title: const Text("Advanced Settings"),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const AdvancedSettings()));
+            },
+          ),
           ListTile(
             title: const Text("App Version"),
             trailing: Text(_version),

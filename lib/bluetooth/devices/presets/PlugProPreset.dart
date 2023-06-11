@@ -2,7 +2,6 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:convert/convert.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
@@ -124,8 +123,7 @@ class PlugProPreset extends Preset {
       STSinger(),
     ]);
 
-    bool showHiddenAmps =
-        SharedPrefs().getInt(SettingsKeys.hiddenAmps, 0) != 0 || kDebugMode;
+    bool showHiddenAmps = SharedPrefs().getInt(SettingsKeys.hiddenAmps, 0) != 0;
     amplifierList.addAll([
       JazzClean(),
       DeluxeRvb(),
@@ -156,7 +154,6 @@ class PlugProPreset extends Preset {
       MLD(),
       OptimaAir(),
       Stageman(),
-      if (showHiddenAmps) Unknown30()
     ]);
 
     eqList.addAll([EQSixBand(), EQTenBand()]);

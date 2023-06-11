@@ -6,7 +6,6 @@ import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 
 class SliderRangeValues {
@@ -144,13 +143,6 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
     var midPoint = factor.start + (factor.end - factor.start) / 2;
     handleIndex = startFactor < midPoint ? 0 : 1;
     return;
-    if (startFactor < factor.start + 0.2) {
-      handleIndex = 0;
-    } else if (startFactor > factor.end - 0.2) {
-      handleIndex = 1;
-    } else {
-      handleIndex = 2;
-    }
   }
 
   void dragUpdate(DragUpdateDetails details) {

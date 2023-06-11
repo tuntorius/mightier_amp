@@ -4,7 +4,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:wakelock/wakelock.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
 import 'platformUtils.dart';
@@ -20,6 +19,7 @@ class SettingsKeys {
   static const String customCabinets = "customCabinets";
   static const String hiddenAmps = "hiddenAmps";
   static const String hiddenSources = "hiddenSources";
+  static const String hideNotApplicablePresets = "hideNotApplicablePresets";
 }
 
 class SharedPrefs {

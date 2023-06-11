@@ -4,21 +4,21 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/toneshare/toneshare_main.dart';
-import 'package:qr_utils/qr_utils.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 
-import '../../../audio/setlist_player/setlistPlayerState.dart';
-import '../../../audio/trackdata/trackData.dart';
-import '../../../bluetooth/NuxDeviceControl.dart';
-import '../../../bluetooth/devices/NuxDevice.dart';
-import '../../../platform/presetsStorage.dart';
-import '../../../platform/fileSaver.dart';
-import '../../../platform/platformUtils.dart';
-import '../../popups/alertDialogs.dart';
-import '../../popups/changeCategory.dart';
-import '../../popups/exportQRCode.dart';
-import '../../theme.dart';
+import '/audio/setlist_player/setlistPlayerState.dart';
+import '/audio/trackdata/trackData.dart';
+import '/bluetooth/NuxDeviceControl.dart';
+import '/bluetooth/devices/NuxDevice.dart';
+import '/platform/presetsStorage.dart';
+import '/platform/fileSaver.dart';
+import '/platform/platformUtils.dart';
+import '/UI/popups/alertDialogs.dart';
+import '/UI/popups/changeCategory.dart';
+import '/UI/theme.dart';
 import 'presetItem.dart';
-import 'trackEventsBlockInfo.dart';
+import '../trackEventsBlockInfo.dart';
+import 'presetListMethods.dart';
 
 enum PresetsTopMenuActions { ExportAll, Import }
 
@@ -168,8 +168,10 @@ class _PresetListState extends State<PresetList>
   Widget build(BuildContext context) {
     super.build(context);
 
-    List<DragAndDropListInterface> list =
-        List.generate(_lists.length, (index) => _buildList(index));
+    bool hideNonApplicable =
+        SharedPrefs().getInt(SettingsKeys.hideNotApplicablePresets, 0) == 1;
+    List<DragAndDropListInterface> list = List.generate(
+        _lists.length, (index) => _buildList(index, hideNonApplicable));
 
     var header = widget.simplified
         ? null
@@ -276,7 +278,7 @@ class _PresetListState extends State<PresetList>
     }
   }
 
-  _buildList(int outerIndex) {
+  _buildList(int outerIndex, bool hideNonApplicable) {
     Map category = _lists[outerIndex];
     List presets = category["presets"];
     return DragAndDropListExpansion(
@@ -299,17 +301,18 @@ class _PresetListState extends State<PresetList>
                 _categoryMenu(pos as CategoryMenuActions, category["name"]);
               },
             ),
-      children: List.generate(
-          presets.length, (index) => _buildPresetItem(presets[index])),
+      children: List.generate(presets.length,
+          (index) => _buildPresetItem(presets[index], hideNonApplicable)),
       listKey: ObjectKey(category),
     );
   }
 
-  Widget _presetWidget(Map<String, dynamic> item) {
+  Widget _presetWidget(Map<String, dynamic> item, bool hideNonApplicable) {
     return PresetItem(
       device: device,
       item: item,
-      ampTextStyle: Theme.of(context).textTheme.bodyText1,
+      hideNotApplicable: hideNonApplicable,
+      ampTextStyle: Theme.of(context).textTheme.bodyLarge,
       simplified: widget.simplified,
       onTap: () {
         //remove the new marker if exists
@@ -348,21 +351,21 @@ class _PresetListState extends State<PresetList>
             _changePresetCategory(item);
             break;
           case PresetItemActions.ExportQR:
-            _exportQR(item);
+            PresetListMethods.exportQR(item, context);
             break;
         }
       },
     );
   }
 
-  _buildPresetItem(Map<String, dynamic> item) {
+  _buildPresetItem(Map<String, dynamic> item, bool hideNonApplicable) {
     return DragAndDropItem(
       canDrag: !widget.simplified,
       feedbackWidget: ListTile(
         tileColor: const Color.fromARGB(127, 127, 127, 127),
         title: Text(item["name"]),
       ),
-      child: _presetWidget(item),
+      child: _presetWidget(item, hideNonApplicable),
     );
   }
 
@@ -406,6 +409,10 @@ class _PresetListState extends State<PresetList>
     }
   }
 
+  ///
+  /// Preset actions
+  ///
+  ///
   void _deleteCategory(String category) {
     AlertDialogs.showConfirmDialog(context,
         title: "Confirm",
@@ -452,7 +459,7 @@ class _PresetListState extends State<PresetList>
       if (!PlatformUtils.isIOS) {
         saveFileString("application/octet-stream", "$category.nuxpreset", data);
       } else {
-        saveFileIos(category, data);
+        PresetListMethods.saveFileIos(category, data, context);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -473,17 +480,6 @@ class _PresetListState extends State<PresetList>
         if (value != null) _onFileRead(value);
       });
     }
-  }
-
-  void _onFileRead(String value) {
-    PresetsStorage().presetsFromJson(value).then((value) {
-      setState(() {});
-    }).catchError((error) {
-      AlertDialogs.showInfoDialog(context,
-          title: "Error",
-          description: "The selected file is not a valid preset file!",
-          confirmButton: "OK");
-    });
   }
 
   void _deletePreset(Map<String, dynamic> preset) {
@@ -580,7 +576,7 @@ class _PresetListState extends State<PresetList>
           saveFileString(
               "application/octet-stream", "${preset["name"]}.nuxpreset", data);
         } else {
-          saveFileIos(preset["name"], data);
+          PresetListMethods.saveFileIos(preset["name"], data, context);
         }
       }
     }
@@ -606,47 +602,14 @@ class _PresetListState extends State<PresetList>
     }
   }
 
-  void _exportQR(Map<String, dynamic> preset) {
-    var dev = NuxDeviceControl.instance().getDeviceFromId(preset["product_id"]);
-    var pVersion = preset["version"] ?? 0;
-    if (dev != null) {
-      int? originalVersion;
-      if (dev.productVersion != pVersion) {
-        originalVersion = dev.productVersion;
-        dev.setFirmwareVersionByIndex(pVersion);
-      }
-      var qr = dev.jsonToQR(preset);
-      if (qr != null) {
-        QrUtils.generateQR(qr).then((Image img) {
-          var qrExport = QRExportDialog(img, preset["name"], dev);
-          showDialog(
-            context: context,
-            builder: (BuildContext context) => qrExport.buildDialog(context),
-          ).then((value) {
-            if (originalVersion != null) {
-              dev.setFirmwareVersionByIndex(originalVersion);
-            }
-          });
-        });
-      }
-    }
-  }
-
-  void saveFileIos(String name, String data) {
-    AlertDialogs.showInputDialog(context,
-        title: "Backup",
-        description: "Enter backup name:",
-        cancelButton: "Cancel",
-        confirmButton: "Backup",
-        value: name,
-        validation: (String newName) {
-          RegExp regex = RegExp(r'[<>:"/\\|?*\x00-\x1F\x7F]+');
-          return !regex.hasMatch(newName);
-        },
-        validationErrorMessage: "The file name contains invalid characters.",
-        confirmColor: Theme.of(context).hintColor,
-        onConfirm: (newName) async {
-          await FilePicker().saveFile(newName, data);
-        });
+  void _onFileRead(String value) {
+    PresetsStorage().presetsFromJson(value).then((value) {
+      setState(() {});
+    }).catchError((error) {
+      AlertDialogs.showInfoDialog(context,
+          title: "Error",
+          description: "The selected file is not a valid preset file!",
+          confirmButton: "OK");
+    });
   }
 }

@@ -58,7 +58,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<false/>
+	<true/>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>The app uses music as backing tracks that are streamed to the connected guitar amplifier</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
@@ -76,6 +76,8 @@
 		<string>audio</string>
 		<string>bluetooth-central</string>
 	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

@@ -5,6 +5,7 @@ import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/features/looper.dart';
+import '../../../modules/tempo_trainer.dart';
 import '../../widgets/circular_button.dart';
 import '../../widgets/common/ModeControlRegular.dart';
 
@@ -138,7 +139,14 @@ class _LooperControlState extends State<LooperControl> {
               CircularButton(
                   icon: getRecordButtonIcon(),
                   backgroundColor: _getRecordButtonColor(),
-                  onPressed: connected ? looper.looperRecordPlay : null),
+                  onPressed: connected
+                      ? () {
+                          if (TempoTrainer.instance().enable == true) {
+                            TempoTrainer.instance().enable = false;
+                          }
+                          looper.looperRecordPlay();
+                        }
+                      : null),
               CircularButton(
                   icon: Icons.stop,
                   backgroundColor: Colors.amber,

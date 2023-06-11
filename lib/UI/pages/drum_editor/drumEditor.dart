@@ -47,7 +47,8 @@ class _DrumEditorState extends State<DrumEditor> {
     NuxDeviceControl.instance().removeListener(_onStateChanged);
   }
 
-  Widget _createScrollPicker(bool smallControls, bool showPlay) {
+  Widget _createScrollPicker(
+      bool smallControls, bool showPlay, bool playEnabled) {
     var picker = DrumStyleScrollPicker(
         smallControls: smallControls,
         selectedDrumPattern: _selectedDrumPattern,
@@ -63,13 +64,15 @@ class _DrumEditorState extends State<DrumEditor> {
       children: [
         Expanded(child: picker),
         IconButton(
-            onPressed: () {
-              device.setDrumsEnabled(!device.drumsEnabled);
-              if (device.drumsEnabled == false) {
-                TempoTrainer.instance().enable = false;
-              }
-              NuxDeviceControl.instance().forceNotifyListeners();
-            },
+            onPressed: !playEnabled
+                ? null
+                : () {
+                    device.setDrumsEnabled(!device.drumsEnabled);
+                    if (device.drumsEnabled == false) {
+                      TempoTrainer.instance().enable = false;
+                    }
+                    NuxDeviceControl.instance().forceNotifyListeners();
+                  },
             padding: const EdgeInsets.only(left: 12, right: 4),
             iconSize: smallControls ? 44 : 56,
             color: device.drumsEnabled ? Colors.orange : Colors.green,
@@ -78,9 +81,9 @@ class _DrumEditorState extends State<DrumEditor> {
     );
   }
 
-  Widget _landscapePlayControl() {
+  Widget _landscapePlayControl(bool enabled) {
     return CircularButton(
-        onPressed: TempoTrainer.instance().enable
+        onPressed: TempoTrainer.instance().enable || !enabled
             ? null
             : () {
                 device.setDrumsEnabled(!device.drumsEnabled);
@@ -258,7 +261,7 @@ class _DrumEditorState extends State<DrumEditor> {
     device = NuxDeviceControl.instance().device;
 
     final bool hasLooper = device is Looper;
-
+    final bool looperEnabled = (device as Looper).loopState != 0;
     _layout = _drumStyles is List<String>
         ? DrumEditorLayout.Standard
         : DrumEditorLayout.PlugPro;
@@ -275,7 +278,7 @@ class _DrumEditorState extends State<DrumEditor> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(children: [
-                _createScrollPicker(smallControls, true),
+                _createScrollPicker(smallControls, true, !looperEnabled),
                 const SizedBox(height: 6),
                 _drumLevelSlider(smallControls),
               ]),
@@ -303,7 +306,9 @@ class _DrumEditorState extends State<DrumEditor> {
                   ///..._toneSliders(smallControls),
                   if (_mode == DrumEditorMode.trainer)
                     TempoTrainerSheet(
-                        smallControls: smallControls, overtakeDrums: true),
+                        smallControls: smallControls,
+                        overtakeDrums: true,
+                        enabled: !looperEnabled),
                   if (_mode == DrumEditorMode.looper)
                     LooperControl(
                       onStateChanged: _onStateChanged,
@@ -331,7 +336,7 @@ class _DrumEditorState extends State<DrumEditor> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _createScrollPicker(smallControls, false),
+                      _createScrollPicker(smallControls, false, false),
                       const SizedBox(height: 6),
                       _drumLevelSlider(smallControls),
                       _tempoSlider(smallControls, true),
@@ -352,7 +357,7 @@ class _DrumEditorState extends State<DrumEditor> {
                                         return const DrumEQBottomSheet();
                                       });
                                 }),
-                          _landscapePlayControl()
+                          _landscapePlayControl(!looperEnabled)
                         ],
                       )),
                     ]),
@@ -382,7 +387,8 @@ class _DrumEditorState extends State<DrumEditor> {
                         smallControls: smallControls,
                         overtakeDrums: false,
                         enabled: device.drumsEnabled ==
-                            TempoTrainer.instance().enable,
+                                TempoTrainer.instance().enable &&
+                            !looperEnabled,
                       ),
                     if (mode == DrumEditorMode.looper)
                       LooperControl(
@@ -429,5 +435,9 @@ class _DrumEditorState extends State<DrumEditor> {
 
   void _onStateChanged() {
     setState(() {});
+    if (device.drumsEnabled == false &&
+        TempoTrainer.instance().enable == true) {
+      TempoTrainer.instance().enable = false;
+    }
   }
 }

@@ -2,8 +2,6 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 //
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/popups/exportQRCode.dart';
@@ -135,20 +133,21 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
       var button = GestureDetector(
         onTap: () {
-            widget.device.setSelectedChannel(i,
-                notifyBT: true, sendFullPreset: false, notifyUI: true);
-            widget.device
-                .getPreset(widget.device.selectedChannel)
-                .setupPresetFromNuxData();
-          },
+          if (widget.device.selectedChannel == i) return;
+          widget.device.setSelectedChannel(i,
+              notifyBT: true, sendFullPreset: false, notifyUI: true);
+          widget.device
+              .getPreset(widget.device.selectedChannel)
+              .setupPresetFromNuxData();
+        },
         onLongPress: () {
-            widget.device.toggleChannelActive(i);
-          },
+          widget.device.toggleChannelActive(i);
+        },
         child: Container(
           //use container with color to expand hittest area for the gesture detector
           //better to use the same as the background color to imitate transparency
           //than to use translucent hittest (slow)
-          color:Theme.of(context).scaffoldBackgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
           width: width,
           height:
               AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),

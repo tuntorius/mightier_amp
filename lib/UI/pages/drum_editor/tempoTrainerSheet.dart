@@ -9,7 +9,13 @@ import '../../widgets/thickSlider.dart';
 
 class TempoTrainerSheet extends StatefulWidget {
   final bool smallControls;
-  const TempoTrainerSheet({Key? key, required this.smallControls})
+  final bool overtakeDrums;
+  final bool enabled;
+  const TempoTrainerSheet(
+      {Key? key,
+      required this.smallControls,
+      required this.overtakeDrums,
+      this.enabled = true})
       : super(key: key);
 
   @override
@@ -43,8 +49,9 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
   static const List<String> _dropDownValues = ['Beats', 'Seconds'];
 
   void _updateBpm() {
-    if (NuxDeviceControl.instance().device.drumsEnabled !=
-        _tempoTrainer.enable) {
+    if (widget.overtakeDrums &&
+        NuxDeviceControl.instance().device.drumsEnabled !=
+            _tempoTrainer.enable) {
       _tempoTrainer.enable = NuxDeviceControl.instance().device.drumsEnabled;
     }
     setState(() {});
@@ -76,14 +83,18 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
             ),
           ),
           ElevatedButton(
-            onPressed: () async {
-              NuxDeviceControl.instance().device.setDrumsEnabled(false);
-              await Future.delayed(const Duration(milliseconds: 50));
-              setState(() {
-                _tempoTrainer.enable = !_tempoTrainer.enable;
-              });
-            },
+            onPressed: !widget.enabled
+                ? null
+                : () async {
+                    NuxDeviceControl.instance().device.setDrumsEnabled(false);
+                    await Future.delayed(const Duration(milliseconds: 50));
+                    setState(() {
+                      _tempoTrainer.enable = !_tempoTrainer.enable;
+                    });
+                  },
             style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  _tempoTrainer.enable ? Colors.orange : Colors.green,
               shape: const CircleBorder(),
               padding: EdgeInsets.all(small ? 14 : 20),
             ),
@@ -102,6 +113,7 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
           maxHeight: widget.smallControls ? 40 : null,
           min: device.drumsMinTempo,
           max: device.drumsMaxTempo,
+          enabled: widget.enabled,
           activeColor: Colors.blue,
           values: _tempoTrainer.tempoRange,
           onChanged: (range, skip) {
@@ -112,10 +124,15 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
           labelFormatter: (ranges) =>
               "${ranges.start.round()} - ${ranges.end.round()}"),
       ListTile(
+        enabled: widget.enabled,
         contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-        title: const Text(
-          "Mode",
-          style: TextStyle(fontSize: 20),
+        title: const FittedBox(
+          alignment: Alignment.centerLeft,
+          fit: BoxFit.none,
+          child: Text(
+            "Mode",
+            style: TextStyle(fontSize: 20),
+          ),
         ),
         trailing: ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 40),
@@ -123,16 +140,20 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
               options: _dropDownValues,
               textStyle: DrumEditor.fontStyle,
               selected: _tempoTrainer.changeMode.index,
-              onSelected: (index) {
-                setState(() {
-                  _tempoTrainer.changeMode = TempoChangeMode.values[index];
-                });
-              }),
+              onSelected: !widget.enabled
+                  ? null
+                  : (index) {
+                      setState(() {
+                        _tempoTrainer.changeMode =
+                            TempoChangeMode.values[index];
+                      });
+                    }),
         ),
       ),
       ThickSlider(
         min: 2,
         max: 100,
+        enabled: widget.enabled,
         maxHeight: widget.smallControls ? 40 : null,
         activeColor: Colors.blue,
         label: "Increase every",
@@ -148,6 +169,7 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
       ThickSlider(
         min: 1,
         max: 20,
+        enabled: widget.enabled,
         maxHeight: widget.smallControls ? 40 : null,
         activeColor: Colors.blue,
         label: "Increase by",
@@ -170,7 +192,8 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
               padding: const EdgeInsets.only(left: 8.0),
               child: Text(
                 "${device.drumsTempo.round()} bpm",
-                style: DrumEditor.fontStyle,
+                style: DrumEditor.fontStyle.copyWith(
+                    color: widget.enabled ? Colors.white : Colors.grey[600]),
               ),
             ),
           )

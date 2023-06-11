@@ -9,13 +9,15 @@ class TapButtons extends StatelessWidget {
   final Function(double) onTempoModified;
   final Function(double) onTempoChanged;
   final bool smallControls;
+  final bool enabled;
 
   const TapButtons(
       {super.key,
       required this.device,
       required this.onTempoModified,
       required this.onTempoChanged,
-      required this.smallControls});
+      required this.smallControls,
+      this.enabled = true});
 
   void _onTapTempo() {
     DelayTapTimer.addClickTime();
@@ -37,7 +39,7 @@ class TapButtons extends StatelessWidget {
           SizedBox(
             width: 48,
             child: ElevatedButton(
-              onPressed: () => onTempoModified(-5),
+              onPressed: enabled ? () => onTempoModified(-5) : null,
               child:
                   const Text("-5", semanticsLabel: "Tempo -5", softWrap: false),
             ),
@@ -47,7 +49,7 @@ class TapButtons extends StatelessWidget {
             child: SizedBox(
               width: 48,
               child: ElevatedButton(
-                onPressed: () => onTempoModified(-1),
+                onPressed: enabled ? () => onTempoModified(-1) : null,
                 child: const Text("-1",
                     semanticsLabel: "Tempo -1", softWrap: false),
               ),
@@ -55,7 +57,7 @@ class TapButtons extends StatelessWidget {
           ),
           Expanded(
             child: ElevatedButton(
-              onPressed: _onTapTempo,
+              onPressed: enabled ? _onTapTempo : null,
               style: ButtonStyle(
                 overlayColor: MaterialStateProperty.resolveWith(
                   (states) {
@@ -77,7 +79,7 @@ class TapButtons extends StatelessWidget {
             child: SizedBox(
               width: 48,
               child: ElevatedButton(
-                onPressed: () => onTempoModified(1),
+                onPressed: enabled ? () => onTempoModified(1) : null,
                 child: const Text(
                   "+1",
                   softWrap: false,
@@ -89,7 +91,7 @@ class TapButtons extends StatelessWidget {
           SizedBox(
             width: 48,
             child: ElevatedButton(
-              onPressed: () => onTempoModified(5),
+              onPressed: enabled ? () => onTempoModified(5) : null,
               child: const Text(
                 "+5",
                 softWrap: false,

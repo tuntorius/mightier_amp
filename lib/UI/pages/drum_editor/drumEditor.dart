@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/drum_eq_bottom_sheet.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/drumstyle_scroll_picker.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/tap_buttons.dart';
+import 'package:mighty_plug_manager/UI/widgets/circular_button.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/modeControlRegular.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/tempoTrainerSheet.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
@@ -46,20 +47,21 @@ class _DrumEditorState extends State<DrumEditor> {
     NuxDeviceControl.instance().removeListener(_onStateChanged);
   }
 
-  Widget _createScrollPicker(bool smallControls) {
+  Widget _createScrollPicker(bool smallControls, bool showPlay) {
+    var picker = DrumStyleScrollPicker(
+        smallControls: smallControls,
+        selectedDrumPattern: _selectedDrumPattern,
+        layout: _layout,
+        device: device,
+        drumStyles: _drumStyles,
+        onChanged: _onScrollPickerChanged,
+        onChangedFinal: _onScrollPickerChangedFinal,
+        onComplete: () => setState(() {}));
+
+    if (!showPlay) return picker;
     return Row(
       children: [
-        Expanded(
-          child: DrumStyleScrollPicker(
-              smallControls: smallControls,
-              selectedDrumPattern: _selectedDrumPattern,
-              layout: _layout,
-              device: device,
-              drumStyles: _drumStyles,
-              onChanged: _onScrollPickerChanged,
-              onChangedFinal: _onScrollPickerChangedFinal,
-              onComplete: () => setState(() {})),
-        ),
+        Expanded(child: picker),
         IconButton(
             onPressed: () {
               device.setDrumsEnabled(!device.drumsEnabled);
@@ -70,13 +72,60 @@ class _DrumEditorState extends State<DrumEditor> {
             },
             padding: const EdgeInsets.only(left: 12, right: 4),
             iconSize: smallControls ? 44 : 56,
-            color: device.drumsEnabled ? Colors.amber : Colors.green,
-            icon: Icon(device.drumsEnabled ? Icons.pause : Icons.play_arrow))
+            color: device.drumsEnabled ? Colors.orange : Colors.green,
+            icon: Icon(device.drumsEnabled ? Icons.stop : Icons.play_arrow))
       ],
     );
   }
 
-  Widget _createModeControl({required bool looper}) {
+  Widget _landscapePlayControl() {
+    return CircularButton(
+        onPressed: TempoTrainer.instance().enable
+            ? null
+            : () {
+                device.setDrumsEnabled(!device.drumsEnabled);
+                if (device.drumsEnabled == false) {
+                  TempoTrainer.instance().enable = false;
+                }
+                NuxDeviceControl.instance().forceNotifyListeners();
+              },
+        backgroundColor: device.drumsEnabled ? Colors.orange : Colors.green,
+        icon: device.drumsEnabled ? Icons.stop : Icons.play_arrow);
+  }
+
+  Widget _createModeControl(
+      {required bool looper,
+      required bool landscape,
+      required bool smallControls}) {
+    double height = smallControls ? 48 : 56;
+
+    if (landscape && !looper) {
+      return SizedBox(
+        height: height,
+        child: const Center(
+            child: Text(
+          "Trainer",
+          style: TextStyle(fontSize: 20),
+        )),
+      );
+    }
+
+    if (landscape) {
+      var controls = ["Trainer", "Looper"];
+      var mode = _mode;
+      if (mode == DrumEditorMode.regular) mode = DrumEditorMode.trainer;
+      return ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: height),
+        child: ModeControlRegular(
+            options: controls,
+            textStyle: DrumEditor.fontStyle,
+            selected: mode.index - 1,
+            onSelected: (index) {
+              _mode = DrumEditorMode.values[index + 1];
+              setState(() {});
+            }),
+      );
+    }
     var controls = ["Regular", "Trainer"];
     if (looper) controls.add("Looper");
     return Padding(
@@ -112,11 +161,16 @@ class _DrumEditorState extends State<DrumEditor> {
     );
   }
 
-  Widget _tempoSlider(bool small) {
-    if (_mode != DrumEditorMode.trainer) {
+  bool _tempoControlsEnabled() {
+    return !TempoTrainer.instance().enable &&
+        (device is! Looper ||
+            (device is Looper && (device as Looper).loopState == 0));
+  }
+
+  Widget _tempoSlider(bool small, bool landscape) {
+    if (_mode != DrumEditorMode.trainer || landscape) {
       return ThickSlider(
-        enabled: device is! Looper ||
-            (device is Looper && (device as Looper).loopState == 0),
+        enabled: _tempoControlsEnabled(),
         min: device.drumsMinTempo,
         max: device.drumsMaxTempo,
         maxHeight: small ? 40 : null,
@@ -132,7 +186,7 @@ class _DrumEditorState extends State<DrumEditor> {
         },
       );
     }
-    return const SizedBox();
+    return const SizedBox.shrink();
   }
 
   List<Widget> _toneSliders(bool small) {
@@ -190,7 +244,8 @@ class _DrumEditorState extends State<DrumEditor> {
           smallControls: smallControls,
           device: device,
           onTempoModified: _modifyTempo,
-          onTempoChanged: _onTempoChanged),
+          onTempoChanged: _onTempoChanged,
+          enabled: _tempoControlsEnabled()),
     );
   }
 
@@ -220,13 +275,16 @@ class _DrumEditorState extends State<DrumEditor> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(children: [
-                _createScrollPicker(smallControls),
+                _createScrollPicker(smallControls, true),
                 const SizedBox(height: 6),
                 _drumLevelSlider(smallControls),
               ]),
             ),
           ),
-          _createModeControl(looper: hasLooper),
+          _createModeControl(
+              looper: hasLooper,
+              landscape: false,
+              smallControls: smallControls),
           Card(
             color: Colors.grey[850],
             child: Padding(
@@ -235,25 +293,17 @@ class _DrumEditorState extends State<DrumEditor> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _tempoSlider(smallControls),
+                  _tempoSlider(smallControls, false),
                   if (_mode == DrumEditorMode.regular)
                     _tapButton(smallControls),
                   if (_mode == DrumEditorMode.regular &&
                       _layout == DrumEditorLayout.PlugPro)
-                    ElevatedButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                              showDragHandle: true,
-                              context: context,
-                              builder: (context) {
-                                return const DrumEQBottomSheet();
-                              });
-                        },
-                        child: const Text("Tone controls")),
+                    ..._toneSliders(smallControls),
 
                   ///..._toneSliders(smallControls),
                   if (_mode == DrumEditorMode.trainer)
-                    TempoTrainerSheet(smallControls: smallControls),
+                    TempoTrainerSheet(
+                        smallControls: smallControls, overtakeDrums: true),
                   if (_mode == DrumEditorMode.looper)
                     LooperControl(
                       onStateChanged: _onStateChanged,
@@ -267,58 +317,82 @@ class _DrumEditorState extends State<DrumEditor> {
       );
     }
 
-    return Column(
+    var mode = _mode;
+    if (mode == DrumEditorMode.regular) mode = DrumEditorMode.trainer;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(children: [
-          Expanded(
-            child: Center(child: _createModeControl(looper: hasLooper)),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: _createScrollPicker(smallControls),
-            ),
-          )
-        ]),
         Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                  flex: 1,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _drumLevelSlider(smallControls),
-                        _tempoSlider(smallControls),
-                        const SizedBox(height: 10),
-                        if (_mode == DrumEditorMode.regular)
-                          _tapButton(smallControls),
-                      ])),
-              const SizedBox(
-                width: 12,
-              ),
-              Expanded(
-                  flex: 1,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+            flex: 1,
+            child: Card(
+              color: Colors.grey[850],
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      if (_mode == DrumEditorMode.regular &&
-                          _layout == DrumEditorLayout.PlugPro)
-                        ..._toneSliders(false),
-                      if (_mode == DrumEditorMode.trainer)
-                        TempoTrainerSheet(smallControls: smallControls),
-                      if (_mode == DrumEditorMode.looper)
-                        LooperControl(
-                          onStateChanged: _onStateChanged,
-                          smallControls: smallControls,
-                        ),
-                    ],
-                  ))
-            ],
-          ),
+                      _createScrollPicker(smallControls, false),
+                      const SizedBox(height: 6),
+                      _drumLevelSlider(smallControls),
+                      _tempoSlider(smallControls, true),
+                      _tapButton(smallControls),
+                      Expanded(
+                          child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          if (_layout == DrumEditorLayout.PlugPro)
+                            CircularButton(
+                                icon: Icons.equalizer,
+                                backgroundColor: Colors.blue,
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      showDragHandle: true,
+                                      context: context,
+                                      builder: (context) {
+                                        return const DrumEQBottomSheet();
+                                      });
+                                }),
+                          _landscapePlayControl()
+                        ],
+                      )),
+                    ]),
+              ),
+            )),
+        const SizedBox(
+          width: 6,
         ),
+        Expanded(
+            flex: 1,
+            child: Card(
+              color: Colors.grey[850],
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                        child: _createModeControl(
+                            looper: hasLooper,
+                            landscape: true,
+                            smallControls: smallControls)),
+                    const SizedBox(height: 6),
+                    if (!hasLooper || mode == DrumEditorMode.trainer)
+                      TempoTrainerSheet(
+                        smallControls: smallControls,
+                        overtakeDrums: false,
+                        enabled: device.drumsEnabled ==
+                            TempoTrainer.instance().enable,
+                      ),
+                    if (mode == DrumEditorMode.looper)
+                      LooperControl(
+                        onStateChanged: _onStateChanged,
+                        smallControls: smallControls,
+                      ),
+                  ],
+                ),
+              ),
+            ))
       ],
     );
   }

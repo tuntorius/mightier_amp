@@ -18,19 +18,15 @@ class _DrumEQBottomSheetState extends State<DrumEQBottomSheet> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          "Drum Tone Controls",
-        ),
-        SizedBox(
-          height: 16,
-        ),
         ThickSlider(
           min: 0,
           max: 100,
+          maxHeight: 45,
           skipEmitting: 5,
           activeColor: Colors.blue,
           label: "Bass",
           value: dev.drumsBass,
+          handleVerticalDrag: false,
           labelFormatter: (val) => "${dev.drumsBass.round()} %",
           onChanged: (val, skip) {
             dev.setDrumsTone(val, DrumsToneControl.Bass, !skip);
@@ -40,10 +36,12 @@ class _DrumEQBottomSheetState extends State<DrumEQBottomSheet> {
         ThickSlider(
           min: 0,
           max: 100,
+          maxHeight: 45,
           skipEmitting: 5,
           activeColor: Colors.blue,
           label: "Middle",
           value: dev.drumsMiddle,
+          handleVerticalDrag: false,
           labelFormatter: (val) => "${dev.drumsMiddle.round()} %",
           onChanged: (val, skip) {
             dev.setDrumsTone(val, DrumsToneControl.Middle, !skip);
@@ -53,10 +51,12 @@ class _DrumEQBottomSheetState extends State<DrumEQBottomSheet> {
         ThickSlider(
           min: 0,
           max: 100,
+          maxHeight: 45,
           skipEmitting: 5,
           activeColor: Colors.blue,
           label: "Treble",
           value: dev.drumsTreble,
+          handleVerticalDrag: false,
           labelFormatter: (val) => "${dev.drumsTreble.round()} %",
           onChanged: (val, skip) {
             dev.setDrumsTone(val, DrumsToneControl.Treble, !skip);
@@ -64,7 +64,7 @@ class _DrumEQBottomSheetState extends State<DrumEQBottomSheet> {
           },
         ),
         const SizedBox(
-          height: 50,
+          height: 15,
         )
       ],
     );

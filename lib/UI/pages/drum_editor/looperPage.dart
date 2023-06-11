@@ -5,6 +5,7 @@ import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/features/looper.dart';
+import '../../widgets/circular_button.dart';
 import '../../widgets/common/ModeControlRegular.dart';
 
 class LooperControl extends StatefulWidget {
@@ -51,23 +52,6 @@ class _LooperControlState extends State<LooperControl> {
   void _onBlink(timer) {
     _blinkOn = !_blinkOn;
     setState(() {});
-  }
-
-  Widget circularButton(
-      IconData icon, Color backgroundColor, Function()? onPressed) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        shape: const CircleBorder(),
-        padding: const EdgeInsets.all(20),
-        backgroundColor: backgroundColor,
-        foregroundColor: Colors.white,
-      ),
-      child: Icon(
-        icon,
-        size: 28,
-      ),
-    );
   }
 
   IconData getRecordButtonIcon() {
@@ -151,14 +135,22 @@ class _LooperControlState extends State<LooperControl> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              circularButton(getRecordButtonIcon(), _getRecordButtonColor(),
-                  connected ? looper.looperRecordPlay : null),
-              circularButton(Icons.stop, Colors.amber,
-                  getStopEnabled() ? looper.looperStop : null),
-              circularButton(Icons.clear, Colors.amber,
-                  getClearEnabled() ? looper.looperClear : null),
-              circularButton(getUndoButtonIcon(), _getUndoButtonColor(),
-                  getUndoEnabled() ? looper.looperUndoRedo : null),
+              CircularButton(
+                  icon: getRecordButtonIcon(),
+                  backgroundColor: _getRecordButtonColor(),
+                  onPressed: connected ? looper.looperRecordPlay : null),
+              CircularButton(
+                  icon: Icons.stop,
+                  backgroundColor: Colors.amber,
+                  onPressed: getStopEnabled() ? looper.looperStop : null),
+              CircularButton(
+                  icon: Icons.clear,
+                  backgroundColor: Colors.amber,
+                  onPressed: getClearEnabled() ? looper.looperClear : null),
+              CircularButton(
+                  icon: getUndoButtonIcon(),
+                  backgroundColor: _getUndoButtonColor(),
+                  onPressed: getUndoEnabled() ? looper.looperUndoRedo : null),
             ]),
       ),
       const SizedBox(height: 8),

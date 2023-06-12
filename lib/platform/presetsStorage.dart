@@ -524,6 +524,7 @@ class PresetsStorage extends ChangeNotifier {
   bool _presetsEquivalent(Map<String, dynamic> p1, Map<String, dynamic> p2) {
     for (String k in p1.keys) {
       if (k == "uuid") continue;
+      if (k == "inactiveEffects") continue;
       if (!p2.containsKey(k)) return false;
 
       //check sub-maps

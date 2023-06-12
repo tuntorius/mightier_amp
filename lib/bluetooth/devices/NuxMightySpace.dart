@@ -47,6 +47,8 @@ class NuxMightySpace extends NuxMightyPlugPro implements Tuner, Looper {
   @override
   double get loopLevel => config.looperData.loopLevel;
 
+  bool get speakerAvailable => versionDate.compareTo("20230101") > 0;
+
   final looperController = StreamController<LooperData>.broadcast();
 
   @override

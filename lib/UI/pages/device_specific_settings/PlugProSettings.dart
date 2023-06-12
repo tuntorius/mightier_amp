@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/device_specific_settings/eq/MightySpaceSpeakerEQ.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/NuxMightySpace.dart';
 
 import '../../../bluetooth/bleMidiHandler.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
@@ -47,7 +48,9 @@ class _PlugProSettingsState extends State<PlugProSettings> {
                 builder: (context) => const PlugProEQSettings()));
           },
         ),
-        if (widget.mightySpace)
+        if (!widget.device.deviceControl.isConnected ||
+            (widget.mightySpace &&
+                (widget.device as NuxMightySpace).speakerAvailable))
           ListTile(
             leading: const Icon(Icons.speaker),
             enabled: widget.device.deviceControl.isConnected,
@@ -58,16 +61,17 @@ class _PlugProSettingsState extends State<PlugProSettings> {
                   builder: (context) => const SpaceSpeakerEQSettings()));
             },
           ),
-        ListTile(
-          enabled: widget.device.deviceControl.isConnected,
-          leading: const Icon(Icons.mic),
-          title: const Text("Microphone Settings"),
-          trailing: const Icon(Icons.keyboard_arrow_right),
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const PlugProMicSettings()));
-          },
-        ),
+        if (!widget.mightySpace)
+          ListTile(
+            enabled: widget.device.deviceControl.isConnected,
+            leading: const Icon(Icons.mic),
+            title: const Text("Microphone Settings"),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const PlugProMicSettings()));
+            },
+          ),
         ListTile(
           enabled: widget.device.deviceControl.isConnected,
           leading: const Icon(Icons.restart_alt),

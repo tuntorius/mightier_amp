@@ -556,7 +556,8 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner {
     return tunerController.stream;
   }
 
+  @override
   void notifyTunerListeners() {
-    tunerController.add(_config.tunerData);
+    tunerController.add(config.tunerData);
   }
 }

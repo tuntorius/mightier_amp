@@ -32,6 +32,7 @@ abstract class Tuner {
   void tunerSetReferencePitch(int refPitch);
   void tunerMute(bool enable);
   Stream<TunerData> getTunerDataStream();
+  void notifyTunerListeners();
 }
 
 class TunerData {

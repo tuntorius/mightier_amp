@@ -715,7 +715,7 @@ class PlugProCommunication extends DeviceCommunication {
         config.tunerData.stringNumber = value;
         break;
     }
-    (device as NuxMightyPlugPro).notifyTunerListeners();
+    (device as Tuner).notifyTunerListeners();
   }
 
   void _handleTunerSysEx(List<int> data) {

@@ -411,7 +411,7 @@ class PresetsStorage extends ChangeNotifier {
     return null;
   }
 
-  Future presetsFromJson(String jsonData) async {
+  Future<int> presetsFromJson(String jsonData) async {
     try {
       Map<String, dynamic> data = json.decode(jsonData);
 
@@ -419,20 +419,26 @@ class PresetsStorage extends ChangeNotifier {
       if (data["type"] == presetsSingle) {
         //single preset
         Map<String, dynamic> pr = data["data"];
-        _presetFromJson(pr["category"], pr["name"], pr);
+        bool loaded = await _presetFromJson(pr["category"], pr["name"], pr);
+        return loaded ? 1 : 0;
       } else if (data["type"] == presetsMultiple) {
+        int count = 0;
         //this is array of presets
         List<dynamic> pr = data["data"];
         for (Map<String, dynamic> item in pr) {
-          _presetFromJson(item["category"], item["name"], item);
+          bool loaded =
+              await _presetFromJson(item["category"], item["name"], item);
+          if (loaded) count++;
         }
+        return count;
       }
     } on FormatException {
       return Future.error("Wrong File");
     }
+    return 0;
   }
 
-  _presetFromJson(
+  Future<bool> _presetFromJson(
       String category, String name, Map<String, dynamic> presetData) async {
     var p = findPreset(name, category);
 
@@ -442,7 +448,7 @@ class PresetsStorage extends ChangeNotifier {
     String? _name = name;
     //check if exists
     if (p != null) {
-      if (_presetsEquivalent(presetData, p)) return;
+      if (_presetsEquivalent(presetData, p)) return false;
 
       //difference - find free name and save as that
       _name = _findFreeName(name, category);
@@ -453,6 +459,7 @@ class PresetsStorage extends ChangeNotifier {
 
     //save preset
     if (_name != null) savePreset(presetData, _name, category);
+    return true;
   }
 
   dynamic _getAdjacentPreset(int catIndex, int pIndex,

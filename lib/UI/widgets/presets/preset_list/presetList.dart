@@ -605,6 +605,15 @@ class _PresetListState extends State<PresetList>
   void _onFileRead(String value) {
     PresetsStorage().presetsFromJson(value).then((value) {
       setState(() {});
+      String label =
+          value == 1 ? "Imported 1 preset" : "Imported $value presets";
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.green,
+          content: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+          )));
     }).catchError((error) {
       AlertDialogs.showInfoDialog(context,
           title: "Error",

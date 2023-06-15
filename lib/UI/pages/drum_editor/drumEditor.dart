@@ -256,12 +256,13 @@ class _DrumEditorState extends State<DrumEditor> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final bool portrait = mediaQuery.orientation == Orientation.portrait;
-    final bool smallControls = mediaQuery.size.height < 640;
+    final bool smallControls =
+        portrait ? mediaQuery.size.height < 640 : mediaQuery.size.height < 400;
 
     device = NuxDeviceControl.instance().device;
 
     final bool hasLooper = device is Looper;
-    final bool looperEnabled = (device as Looper).loopState != 0;
+    final bool looperEnabled = hasLooper && (device as Looper).loopState != 0;
     _layout = _drumStyles is List<String>
         ? DrumEditorLayout.Standard
         : DrumEditorLayout.PlugPro;

@@ -7,32 +7,47 @@ class DebugConsole extends StatelessWidget {
   const DebugConsole({Key? key}) : super(key: key);
 
   static void print(Object? value) {
-    output += value.toString();
+    output += "$value\n";
   }
 
   static void printString(Object? value) {
-    output += value.toString();
+    output += "$value\n";
   }
 
   @override
   Widget build(BuildContext context) {
     TextEditingController c = TextEditingController(text: DebugConsole.output);
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: TextField(
-              maxLines: null,
-              readOnly: true,
-              controller: c,
+      appBar: AppBar(title: const Text("Debug console")),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: TextField(
+                maxLines: null,
+                readOnly: true,
+                controller: c,
+              ),
             ),
-          ),
-          ElevatedButton(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: output));
-              },
-              child: const Text("Copy to Clipboard"))
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: output));
+                    },
+                    child: const Text("Copy to Clipboard")),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                    onPressed: () {
+                      output = "";
+                      c.clear();
+                    },
+                    child: const Text("Clear")),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

@@ -257,7 +257,7 @@ class _DrumEditorState extends State<DrumEditor> {
     final mediaQuery = MediaQuery.of(context);
     final bool portrait = mediaQuery.orientation == Orientation.portrait;
     final bool smallControls =
-        portrait ? mediaQuery.size.height < 640 : mediaQuery.size.height < 400;
+        portrait ? mediaQuery.size.height < 690 : mediaQuery.size.height < 400;
 
     device = NuxDeviceControl.instance().device;
 

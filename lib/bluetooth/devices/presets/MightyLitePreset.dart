@@ -3,6 +3,10 @@
 
 import 'dart:ui';
 
+import 'package:convert/convert.dart';
+
+import '../../NuxDeviceControl.dart';
+import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
@@ -167,5 +171,25 @@ class MLitePreset extends Preset {
   setFirmwareVersion(int ver) {}
 
   @override
-  void setupPresetFromNuxDataArray(List<int> nuxData) {}
+  void setupPresetFromNuxDataArray(List<int> nuxData) {
+    if (nuxData.length < 10) return;
+
+    var loadedPreset = hex.encode(nuxData);
+
+    NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
+    NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
+
+    for (int i = 0; i < device.effectsChainLength; i++) {
+      //set proper effect
+      int effectIndex = nuxData[PresetDataIndexLite.effectTypesIndex[i]];
+      setSelectedEffectForSlot(i, effectIndex, false);
+
+      //enable/disable effect
+      setSlotEnabled(
+          i, nuxData[PresetDataIndexLite.effectEnabledIndex[i]] != 0, false);
+
+      getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
+          .setupFromNuxPayload(nuxData);
+    }
+  }
 }

@@ -9,9 +9,9 @@ import '../Processor.dart';
 abstract class Delay extends Processor {
   //TODO: check if correct
   @override
-  int? get nuxEffectTypeIndex => PresetDataIndexLite.delaytype;
+  int? get nuxEffectTypeIndex => PresetDataIndex2040BT.dly_type;
   @override
-  int? get nuxEnableIndex => PresetDataIndexLite.delayenable;
+  int? get nuxEnableIndex => PresetDataIndex2040BT.dly_enable;
   @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   @override
@@ -47,7 +47,7 @@ class AnalogDelay extends Delay {
         handle: "repeat",
         value: 34,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
+        devicePresetIndex: PresetDataIndex2040BT.dly_feedback,
         midiCC: MidiCCValues.bCC_DelayRepeat,
         midiControllerHandle: MidiControllerHandles.delayRepeat),
     Parameter(
@@ -55,7 +55,7 @@ class AnalogDelay extends Delay {
         handle: "mix",
         value: 45,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.delaymix,
+        devicePresetIndex: PresetDataIndex2040BT.dly_mix,
         midiCC: MidiCCValues.bCC_DelayLevel,
         midiControllerHandle: MidiControllerHandles.delayLevel),
     Parameter(
@@ -63,7 +63,7 @@ class AnalogDelay extends Delay {
         handle: "time",
         value: 52,
         formatter: ValueFormatters.tempo,
-        devicePresetIndex: PresetDataIndexPlugAir.delaytime,
+        devicePresetIndex: PresetDataIndex2040BT.dly_time,
         midiCC: MidiCCValues.bCC_DelayTime,
         midiControllerHandle: MidiControllerHandles.delayTime),
   ];
@@ -82,7 +82,7 @@ class ModulationDelay extends Delay {
         handle: "repeat",
         value: 56,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
+        devicePresetIndex: PresetDataIndex2040BT.dly_feedback,
         midiCC: MidiCCValues.bCC_DelayRepeat,
         midiControllerHandle: MidiControllerHandles.delayRepeat),
     Parameter(
@@ -90,7 +90,7 @@ class ModulationDelay extends Delay {
         handle: "mix",
         value: 43,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.delaymix,
+        devicePresetIndex: PresetDataIndex2040BT.dly_mix,
         midiCC: MidiCCValues.bCC_DelayLevel,
         midiControllerHandle: MidiControllerHandles.delayLevel),
     Parameter(
@@ -98,7 +98,7 @@ class ModulationDelay extends Delay {
         handle: "time",
         value: 61,
         formatter: ValueFormatters.tempo,
-        devicePresetIndex: PresetDataIndexPlugAir.delaytime,
+        devicePresetIndex: PresetDataIndex2040BT.dly_time,
         midiCC: MidiCCValues.bCC_DelayTime,
         midiControllerHandle: MidiControllerHandles.delayTime),
   ];
@@ -117,7 +117,7 @@ class DigitalDelay extends Delay {
         handle: "repeat",
         value: 49,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.delayfeedback,
+        devicePresetIndex: PresetDataIndex2040BT.dly_feedback,
         midiCC: MidiCCValues.bCC_DelayRepeat,
         midiControllerHandle: MidiControllerHandles.delayRepeat),
     Parameter(
@@ -125,7 +125,7 @@ class DigitalDelay extends Delay {
         handle: "mix",
         value: 68,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.delaymix,
+        devicePresetIndex: PresetDataIndex2040BT.dly_mix,
         midiCC: MidiCCValues.bCC_DelayLevel,
         midiControllerHandle: MidiControllerHandles.delayLevel),
     Parameter(
@@ -133,7 +133,7 @@ class DigitalDelay extends Delay {
         handle: "time",
         value: 48,
         formatter: ValueFormatters.tempo,
-        devicePresetIndex: PresetDataIndexPlugAir.delaytime,
+        devicePresetIndex: PresetDataIndex2040BT.dly_time,
         midiCC: MidiCCValues.bCC_DelayTime,
         midiControllerHandle: MidiControllerHandles.delayTime),
   ];

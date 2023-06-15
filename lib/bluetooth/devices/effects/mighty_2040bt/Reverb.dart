@@ -6,9 +6,9 @@ import '../Processor.dart';
 abstract class Reverb extends Processor {
   //TODO: check if correct
   @override
-  int? get nuxEffectTypeIndex => PresetDataIndexLite.reverbtype;
+  int? get nuxEffectTypeIndex => PresetDataIndex2040BT.rvb_type;
   @override
-  int? get nuxEnableIndex => PresetDataIndexLite.reverbenable;
+  int? get nuxEnableIndex => PresetDataIndex2040BT.rvb_enable;
   @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   @override
@@ -43,7 +43,7 @@ class HallReverb extends Reverb {
         handle: "decay",
         value: 70,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.reverbdecay,
+        devicePresetIndex: PresetDataIndex2040BT.rvb_decay,
         midiCC: MidiCCValues.bCC_ReverbDecay,
         midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
@@ -51,7 +51,7 @@ class HallReverb extends Reverb {
         handle: "mix",
         value: 65,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.reverbmix,
+        devicePresetIndex: PresetDataIndex2040BT.rvb_mix,
         midiCC: MidiCCValues.bCC_ReverbLevel,
         midiControllerHandle: MidiControllerHandles.reverbMix)
   ];
@@ -70,7 +70,7 @@ class PlateReverb extends Reverb {
         handle: "decay",
         value: 81,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.reverbdecay,
+        devicePresetIndex: PresetDataIndex2040BT.rvb_decay,
         midiCC: MidiCCValues.bCC_ReverbDecay,
         midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
@@ -78,7 +78,7 @@ class PlateReverb extends Reverb {
         handle: "mix",
         value: 66,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.reverbmix,
+        devicePresetIndex: PresetDataIndex2040BT.rvb_mix,
         midiCC: MidiCCValues.bCC_ReverbLevel,
         midiControllerHandle: MidiControllerHandles.reverbMix)
   ];
@@ -97,7 +97,7 @@ class SpringReverb extends Reverb {
         handle: "decay",
         value: 32,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.reverbdecay,
+        devicePresetIndex: PresetDataIndex2040BT.rvb_decay,
         midiCC: MidiCCValues.bCC_ReverbDecay,
         midiControllerHandle: MidiControllerHandles.reverbDecay),
     Parameter(
@@ -105,7 +105,7 @@ class SpringReverb extends Reverb {
         handle: "mix",
         value: 50,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.reverbmix,
+        devicePresetIndex: PresetDataIndex2040BT.rvb_mix,
         midiCC: MidiCCValues.bCC_ReverbLevel,
         midiControllerHandle: MidiControllerHandles.reverbMix)
   ];

@@ -9,9 +9,9 @@ import '../Processor.dart';
 abstract class Modulation extends Processor {
   //TODO: check if correct
   @override
-  int? get nuxEffectTypeIndex => PresetDataIndexLite.modfxtype;
+  int? get nuxEffectTypeIndex => PresetDataIndex2040BT.mod_type;
   @override
-  int? get nuxEnableIndex => PresetDataIndexLite.modfxenable;
+  int? get nuxEnableIndex => PresetDataIndex2040BT.mod_enable;
   @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   @override
@@ -46,7 +46,7 @@ class Phaser extends Modulation {
         handle: "depth",
         value: 60,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxdepth,
+        devicePresetIndex: PresetDataIndex2040BT.mod_depth,
         midiCC: MidiCCValues.bCC_ModfxDepth,
         midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
@@ -54,7 +54,7 @@ class Phaser extends Modulation {
         handle: "rate",
         value: 39,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxrate,
+        devicePresetIndex: PresetDataIndex2040BT.mod_rate,
         midiCC: MidiCCValues.bCC_ModfxRate,
         midiControllerHandle: MidiControllerHandles.modRate)
   ];
@@ -73,7 +73,7 @@ class Chorus extends Modulation {
         handle: "depth",
         value: 88,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxdepth,
+        devicePresetIndex: PresetDataIndex2040BT.mod_depth,
         midiCC: MidiCCValues.bCC_ModfxDepth,
         midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
@@ -81,7 +81,7 @@ class Chorus extends Modulation {
         handle: "rate",
         value: 60,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxrate,
+        devicePresetIndex: PresetDataIndex2040BT.mod_rate,
         midiCC: MidiCCValues.bCC_ModfxRate,
         midiControllerHandle: MidiControllerHandles.modRate),
   ];
@@ -100,7 +100,7 @@ class Tremolo extends Modulation {
         handle: "depth",
         value: 63,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxdepth,
+        devicePresetIndex: PresetDataIndex2040BT.mod_depth,
         midiCC: MidiCCValues.bCC_ModfxDepth,
         midiControllerHandle: MidiControllerHandles.modDepth),
     Parameter(
@@ -108,7 +108,7 @@ class Tremolo extends Modulation {
         handle: "rate",
         value: 59,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.modfxrate,
+        devicePresetIndex: PresetDataIndex2040BT.mod_rate,
         midiCC: MidiCCValues.bCC_ModfxRate,
         midiControllerHandle: MidiControllerHandles.modRate)
   ];

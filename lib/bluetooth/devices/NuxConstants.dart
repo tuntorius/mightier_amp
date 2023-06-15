@@ -144,6 +144,53 @@ class PresetDataIndex8BT {
   //use PresetDataIndexLite for most of the constants
 }
 
+class PresetDataIndex2040BT {
+  static const effectTypesIndex = [
+    0, //not used but there must be a value here
+    amp_type,
+    mod_type,
+    dly_type,
+    rvb_type
+  ];
+
+  static const effectEnabledIndex = [
+    ngenable,
+    mod_enable,
+    dly_enable,
+    rvb_enable
+  ];
+
+  static const ngenable = 0;
+  static const ngthresold = 1;
+
+  static const wah_enable = 2;
+  static const wah_pedal = 3;
+  static const amp_type = 4;
+  static const amp_gain = 5;
+  static const amp_level = 6;
+  static const amp_bass = 7;
+  static const amp_mid = 8;
+  static const amp_high = 9;
+  static const mod_enable = 10;
+  static const mod_type = 11;
+  static const mod_rate = 12;
+  static const mod_depth = 13;
+  static const mod_mix = 14;
+  static const dly_enable = 15;
+  static const dly_type = 16;
+  static const dly_time = 17;
+  static const dly_feedback = 18;
+  static const dly_mix = 19;
+  static const rvb_enable = 20;
+  static const rvb_type = 21;
+  static const rvb_decay = 22;
+  static const rvb_damp = 23;
+  static const rvb_mix = 24;
+  static const tap_time_flag = 25;
+  static const tap_time_value_h = 26;
+  static const tap_time_value_l = 27;
+}
+
 class PresetDataIndexLite {
   static const effectTypesIndex = [
     0, //not used but there must be a value here

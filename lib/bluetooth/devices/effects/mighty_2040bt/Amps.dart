@@ -7,9 +7,8 @@ import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
 abstract class MXXBTAmplifier extends Amplifier {
-  //TODO: check if correct
   @override
-  int? get nuxEffectTypeIndex => PresetDataIndexLite.drivetype;
+  int? get nuxEffectTypeIndex => PresetDataIndex2040BT.amp_type;
   @override
   int? get nuxEnableIndex => null;
   @override
@@ -52,7 +51,7 @@ class Amp1 extends MXXBTAmplifier {
         handle: "gain",
         value: 50,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivegain,
+        devicePresetIndex: PresetDataIndex2040BT.amp_gain,
         midiCC: MidiCCValues.bCC_AmpDrive,
         midiControllerHandle: MidiControllerHandles.ampGain),
     Parameter(
@@ -61,7 +60,7 @@ class Amp1 extends MXXBTAmplifier {
         value: 50,
         formatter: ValueFormatters.percentage,
         masterVolume: true,
-        devicePresetIndex: PresetDataIndexLite.drivetone,
+        devicePresetIndex: PresetDataIndex2040BT.amp_level,
         midiCC: MidiCCValues.bCC_AmpMaster,
         midiControllerHandle: MidiControllerHandles.ampVolume),
     Parameter(
@@ -69,7 +68,7 @@ class Amp1 extends MXXBTAmplifier {
         handle: "bass",
         value: 50,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivelevel,
+        devicePresetIndex: PresetDataIndex2040BT.amp_bass,
         midiCC: MidiCCValues.bCC_AmpBass,
         midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
@@ -77,7 +76,7 @@ class Amp1 extends MXXBTAmplifier {
         handle: "mid",
         value: 50,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.miclevel,
+        devicePresetIndex: PresetDataIndex2040BT.amp_mid,
         midiCC: MidiCCValues.bCC_AmpMid,
         midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
@@ -85,351 +84,8 @@ class Amp1 extends MXXBTAmplifier {
         handle: "high",
         value: 50,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.micambsend,
+        devicePresetIndex: PresetDataIndex2040BT.amp_high,
         midiCC: MidiCCValues.bCC_AmpHigh,
         midiControllerHandle: MidiControllerHandles.ampTreble),
   ];
 }
-/*
-class AmpDrive2 extends MXXBTAmplifier {
-  final name = "Amp - OverDrive 2";
-
-  int get nuxIndex => 5;
-
-  bool isSeparator = false;
-  String category = "";
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_AmpBass),
-    Parameter(
-        name: "Mid",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.miclevel,
-        midiCC: MidiCCValues.bCC_AmpMid),
-    Parameter(
-        name: "High",
-        handle: "high",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.micambsend,
-        midiCC: MidiCCValues.bCC_AmpHigh),
-  ];
-}
-
-class AmpClean1 extends MXXBTAmplifier {
-  final name = "Amp - Clean 1";
-
-  int get nuxIndex => 0;
-
-  bool isSeparator = false;
-  String category = "";
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_AmpBass),
-    Parameter(
-        name: "Mid",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.miclevel,
-        midiCC: MidiCCValues.bCC_AmpMid),
-    Parameter(
-        name: "High",
-        handle: "high",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.micambsend,
-        midiCC: MidiCCValues.bCC_AmpHigh),
-  ];
-}
-
-class AmpClean2 extends MXXBTAmplifier {
-  final name = "Amp - Clean 2";
-
-  int get nuxIndex => 4;
-
-  bool isSeparator = false;
-  String category = "";
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_AmpBass),
-    Parameter(
-        name: "Mid",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.miclevel,
-        midiCC: MidiCCValues.bCC_AmpMid),
-    Parameter(
-        name: "High",
-        handle: "high",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.micambsend,
-        midiCC: MidiCCValues.bCC_AmpHigh),
-  ];
-}
-
-class AmpMetal1 extends MXXBTAmplifier {
-  final name = "Amp - Metal 1";
-
-  int get nuxIndex => 2;
-
-  bool isSeparator = false;
-  String category = "";
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_AmpBass),
-    Parameter(
-        name: "Mid",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.miclevel,
-        midiCC: MidiCCValues.bCC_AmpMid),
-    Parameter(
-        name: "High",
-        handle: "high",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.micambsend,
-        midiCC: MidiCCValues.bCC_AmpHigh),
-  ];
-}
-
-class AmpMetal2 extends MXXBTAmplifier {
-  final name = "Amp - Metal 2";
-
-  int get nuxIndex => 6;
-
-  bool isSeparator = false;
-  String category = "";
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_AmpBass),
-    Parameter(
-        name: "Mid",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.miclevel,
-        midiCC: MidiCCValues.bCC_AmpMid),
-    Parameter(
-        name: "High",
-        handle: "high",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.micambsend,
-        midiCC: MidiCCValues.bCC_AmpHigh),
-  ];
-}
-
-class AmpLead1 extends MXXBTAmplifier {
-  final name = "Amp - Lead 1";
-
-  int get nuxIndex => 3;
-
-  bool isSeparator = false;
-  String category = "";
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_AmpBass),
-    Parameter(
-        name: "Mid",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.miclevel,
-        midiCC: MidiCCValues.bCC_AmpMid),
-    Parameter(
-        name: "High",
-        handle: "high",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.micambsend,
-        midiCC: MidiCCValues.bCC_AmpHigh),
-  ];
-}
-
-class AmpLead2 extends MXXBTAmplifier {
-  final name = "Amp - Lead 2";
-
-  int get nuxIndex => 7;
-
-  bool isSeparator = false;
-  String category = "";
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivegain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
-    Parameter(
-        name: "Level",
-        handle: "level",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexLite.drivetone,
-        midiCC: MidiCCValues.bCC_AmpMaster),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.drivelevel,
-        midiCC: MidiCCValues.bCC_AmpBass),
-    Parameter(
-        name: "Mid",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.miclevel,
-        midiCC: MidiCCValues.bCC_AmpMid),
-    Parameter(
-        name: "High",
-        handle: "high",
-        value: 50,
-        formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexLite.micambsend,
-        midiCC: MidiCCValues.bCC_AmpHigh),
-  ];
-}
-*/

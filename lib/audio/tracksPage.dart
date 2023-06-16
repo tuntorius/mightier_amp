@@ -342,7 +342,8 @@ class _TracksPageState extends State<TracksPage>
       url = path;
     }
 
-    trackName = artist.isEmpty || title.isEmpty ? artist + title : "$artist - $title";
+    trackName =
+        artist.isEmpty || title.isEmpty ? artist + title : "$artist - $title";
 
     if (url.isEmpty) {
       url = path;
@@ -499,8 +500,6 @@ class _TracksPageState extends State<TracksPage>
                 onPress: () {
                   if (multiselectMode) {
                     deleteSelected(context);
-                  } else if (PlatformUtils.isIOS && !_showHiddenSources) {
-                    addFromFile();
                   } else {
                     _animationController.isCompleted
                         ? _animationController.reverse()

@@ -94,7 +94,7 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
     func openAudioPicker(multiple: Bool) {
         _audioPickerController = MPMediaPickerController.self(mediaTypes:MPMediaType.music)
         _audioPickerController?.delegate = self
-        _audioPickerController?.showsCloudItems = false
+        _audioPickerController?.showsCloudItems = true
         _audioPickerController?.showsItemsWithProtectedAssets = false
         _audioPickerController?.allowsPickingMultipleItems = multiple
         _audioPickerController?.modalPresentationStyle = UIModalPresentationStyle.currentContext

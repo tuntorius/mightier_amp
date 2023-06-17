@@ -252,7 +252,7 @@ class ControllerHotkey {
     }
 
     DelayTapTimer.addClickTime();
-    var bpm = DelayTapTimer.calculateBpm();
+    var bpm = DelayTapTimer.calculate();
     if (bpm != false) {
       var selectedFX = p.getSelectedEffectForSlot(_cachedSlot!);
       var effect = p.getEffectsForSlot(_cachedSlot!)[selectedFX];

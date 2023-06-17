@@ -203,6 +203,12 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
         widgets.add(buildWidget(title, icon, color, HotkeyControl.ParameterSet,
             handle.id.index, 0, true,
             infoButton: () => _displayParameterInfo(effects, handle.id)));
+
+        if (handle.id == ControllerHandleId.delayTime) {
+          widgets.add(buildWidget("$name Tap Tempo", icon, color,
+              HotkeyControl.DelayTapTempo, handle.id.index, 0, false,
+              infoButton: null));
+        }
       }
     }
 

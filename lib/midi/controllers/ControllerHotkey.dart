@@ -5,7 +5,9 @@ import 'package:mighty_plug_manager/bluetooth/devices/utilities/DelayTapTimer.da
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/effects/MidiControllerHandles.dart';
 import '../../bluetooth/devices/effects/Processor.dart';
+import '../../bluetooth/devices/presets/Preset.dart';
 import '../../bluetooth/devices/utilities/MathEx.dart';
+import '../../bluetooth/devices/value_formatters/TempoFormatter.dart';
 import '../ControllerConstants.dart';
 
 class ControllerHotkey {
@@ -120,7 +122,10 @@ class ControllerHotkey {
         if (index >= ControllerHandleId.values.length) return;
         _hotkeyParameterSet(value, device);
         break;
-
+      case HotkeyControl.DelayTapTempo:
+        if (index >= ControllerHandleId.values.length) return;
+        _delayTapTempo(device);
+        break;
       case HotkeyControl.DrumsStartStop:
         device.setDrumsEnabled(!device.drumsEnabled);
         NuxDeviceControl.instance().forceNotifyListeners();
@@ -239,7 +244,50 @@ class ControllerHotkey {
     }
   }
 
+  void _delayTapTempo(NuxDevice device) {
+    var p = _getEffectCached(device);
+
+    if (_cachedSlot == null || _cachedSlot! >= device.effectsChainLength) {
+      return;
+    }
+
+    DelayTapTimer.addClickTime();
+    var bpm = DelayTapTimer.calculateBpm();
+    if (bpm != false) {
+      var selectedFX = p.getSelectedEffectForSlot(_cachedSlot!);
+      var effect = p.getEffectsForSlot(_cachedSlot!)[selectedFX];
+      var param = effect.parameters[_cachedParameter!];
+      var newValue =
+          (param.formatter as TempoFormatter).timeToPercentage(bpm / 1000);
+      p.setParameterValue(param, newValue);
+
+      NuxDeviceControl.instance().forceNotifyListeners();
+    }
+  }
+
   void _hotkeyParameterSet(int? value, NuxDevice device) {
+    var p = _getEffectCached(device);
+
+    if (_cachedSlot == null || _cachedSlot! >= device.effectsChainLength) {
+      return;
+    }
+    var selectedFX = p.getSelectedEffectForSlot(_cachedSlot!);
+    var effect = p.getEffectsForSlot(_cachedSlot!)[selectedFX];
+
+    double val = midiToPercentage(value);
+
+    //Translate the 0-100 value into the range of the parameter
+    val = MathEx.map(
+        val,
+        0,
+        100,
+        effect.parameters[_cachedParameter!].formatter.min.toDouble(),
+        effect.parameters[_cachedParameter!].formatter.max.toDouble());
+    p.setParameterValue(effect.parameters[_cachedParameter!], val);
+    NuxDeviceControl.instance().forceNotifyListeners();
+  }
+
+  Preset _getEffectCached(NuxDevice device) {
     ControllerHandleId id = ControllerHandleId.values[index];
 
     bool deviceChanged = device != _cachedDevice;
@@ -266,24 +314,7 @@ class ControllerHotkey {
         }
       }
     }
-
-    if (_cachedSlot == null || _cachedSlot! >= device.effectsChainLength) {
-      return;
-    }
-    var selectedFX = p.getSelectedEffectForSlot(_cachedSlot!);
-    var effect = p.getEffectsForSlot(_cachedSlot!)[selectedFX];
-
-    double val = midiToPercentage(value);
-
-    //Translate the 0-100 value into the range of the parameter
-    val = MathEx.map(
-        val,
-        0,
-        100,
-        effect.parameters[_cachedParameter!].formatter.min.toDouble(),
-        effect.parameters[_cachedParameter!].formatter.max.toDouble());
-    p.setParameterValue(effect.parameters[_cachedParameter!], val);
-    NuxDeviceControl.instance().forceNotifyListeners();
+    return p;
   }
 
   int? _findSlotByFunction(HotkeyControl func) {

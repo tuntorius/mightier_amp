@@ -290,12 +290,12 @@ class _TracksPageState extends State<TracksPage>
 
   void addFromFile() async {
     //add track mode
-    var path = await AudioPicker.pickAudioMultiple();
+    var path = await AudioPicker().pickAudioMultiple();
     await _processMediaList(path);
   }
 
   void addFromIosFile() async {
-    var path = await AudioPicker.pickAudioFiles();
+    var path = await AudioPicker().pickAudioFiles();
     await _processMediaList(path);
   }
 
@@ -336,7 +336,7 @@ class _TracksPageState extends State<TracksPage>
       title = libSong.title;
       url = libSong.uri ?? "";
     } else {
-      var meta = await AudioPicker.getMetadata(path);
+      var meta = await AudioPicker().getMetadata(path);
       artist = meta["artist"]?.trim() ?? "";
       title = meta["title"]?.trim() ?? "";
       url = path;

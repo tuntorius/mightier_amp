@@ -1,3 +1,4 @@
+import 'package:audio_picker/audio_picker.dart';
 import 'package:mighty_plug_manager/audio/online_sources/YoutubeSource.dart';
 
 class SourceResolver {
@@ -10,6 +11,10 @@ class SourceResolver {
       //this is youtube source, parse the url
       String url = await YoutubeSource.getYoutubeUrlFromId(id);
       _pathCache[id] = url;
+      return url;
+    }
+    else if (sourceUri.startsWith("iosbm:")) {
+      var url = await AudioPicker().iosBookmarkToUrl(sourceUri);
       return url;
     }
     return sourceUri;

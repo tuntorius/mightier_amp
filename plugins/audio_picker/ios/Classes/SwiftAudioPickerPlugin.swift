@@ -5,14 +5,18 @@ import MediaPlayer
 
 public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerControllerDelegate, UIDocumentPickerDelegate {
     
+    let bookmarkPrefix = "iosbm://"
+
     var _viewController : UIViewController?
     var _audioPickerController : MPMediaPickerController?
     var _flutterResult : FlutterResult?
+    var _channel : FlutterMethodChannel?
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "audio_picker", binaryMessenger: registrar.messenger())
         let viewController = UIApplication.shared.delegate?.window??.rootViewController
         let instance = SwiftAudioPickerPlugin(viewController: viewController)
+        instance._channel = channel
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
     
@@ -42,6 +46,17 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
             
             _flutterResult = result
             openFilePicker(multiple:true)
+        }
+        if (call.method=="pick_audio_bookmark_to_url")
+        {
+            _flutterResult = result;
+            if let args = call.arguments as? [String: Any],
+            let bookmark = args["bookmark"] as? String {
+                bookmarkToUrl(from: bookmark)
+            } else {
+                result(FlutterError(code: "invalid_argument", message: "Invalid arguments", details: nil))
+            }
+            
         }
         if (call.method=="get_metadata") {
             if let args = call.arguments as? [String: Any],
@@ -80,11 +95,6 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
         }
     }
 
-    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        let absoluteStrings = urls.map { $0.absoluteString }
-        self._flutterResult?(absoluteStrings)
-    }
-    
     public func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController)
     {   _flutterResult?(nil)
         _flutterResult = nil
@@ -103,35 +113,75 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
 
     func openFilePicker(multiple: Bool) {
         // Present the UIDocumentPickerViewController
-        let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.audio"], in: .import)
+        let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.audio"], in: .open)
         documentPicker.delegate = self
         documentPicker.allowsMultipleSelection = multiple
         documentPicker.modalPresentationStyle = .formSheet
         _viewController?.present(documentPicker, animated: true, completion: nil)
     }
 
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+
+        var bookmarkURLs: [String] = []
+        
+        for url in urls {
+            do {
+                // Start accessing the security-scoped resource
+                if url.startAccessingSecurityScopedResource() {
+                    // Create a bookmark data for the URL
+                    let bookmarkData = try url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
+                    // Convert the bookmark data to a base64 encoded string
+                    let bookmarkString = bookmarkPrefix + bookmarkData.base64EncodedString()
+                    // Append the bookmark string to the array
+                    bookmarkURLs.append(bookmarkString)
+                    
+                    // Stop accessing the security-scoped resource
+                    url.stopAccessingSecurityScopedResource()
+                } else {
+                    // Handle the case where access to the security-scoped resource is denied
+                    // You can choose to skip this URL or handle the error accordingly
+                }
+            } catch {
+                // Handle error
+                print(error.localizedDescription)
+            }
+        }
+
+        self._flutterResult?(bookmarkURLs)
+    }
+
     func getArtistAndTitle(from assetUrl: String) -> [String: String] {
-        if assetUrl.hasPrefix("file:") {
-            guard let url = URL(string: assetUrl) else {
+        if assetUrl.hasPrefix("iosbm://") {
+            guard let url = getUrlFromBookmark(from: assetUrl) else {
                 return ["artist": "", "title": ""]
             }
             
-            let asset = AVAsset(url: url)
-            let metadata = asset.metadata
-            
-            var artist = ""
-            var title = ""
-            for item in metadata {
-                if let key = item.commonKey?.rawValue, let value = item.value {
-                    if key == "title" {
-                        title = value as? String ?? ""
-                    } else if key == "artist" {
-                        artist = value as? String ?? ""
+            if url.startAccessingSecurityScopedResource() {
+                let asset = AVAsset(url: url)
+                let metadata = asset.metadata
+                
+                var artist = ""
+                var title = ""
+                for item in metadata {
+                    if let key = item.commonKey?.rawValue, let value = item.value {
+                        if key == "title" {
+                            title = value as? String ?? ""
+                        } else if key == "artist" {
+                            artist = value as? String ?? ""
+                        }
                     }
                 }
+                
+                url.stopAccessingSecurityScopedResource()
+                if artist.isEmpty, title.isEmpty {
+                    //if the track has no metadata - return the filename
+                    //cause flutter can't access it and would use the bookmark b64 data
+                    let fileName = url.deletingPathExtension().lastPathComponent
+                    return ["artist": fileName, "title": ""]
+                } else {
+                    return ["artist": artist, "title": title]
+                }
             }
-            
-            return ["artist": artist, "title": title]
         } else {
             let query = MPMediaQuery.songs()
             let predicate = MPMediaPropertyPredicate(value: assetUrl, forProperty: MPMediaItemPropertyPersistentID)
@@ -141,9 +191,41 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
                 let artist = result.artist ?? ""
                 return ["artist": artist, "title": title]
             }
-            
-            return ["artist": "", "title": ""]
         }
+        return ["artist": "", "title": ""]
     }
 
+    func getUrlFromBookmark(from bookmarkB64: String) -> URL? {
+        var bookmarkString = bookmarkB64
+            bookmarkString = bookmarkString.replacingOccurrences(of: bookmarkPrefix, with: "")
+        if let bookmarkData = Data(base64Encoded: bookmarkString) {
+            do {
+                var isStale = false
+                let url = try URL(resolvingBookmarkData: bookmarkData, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
+                
+                if isStale {
+                    let newBookmark = try url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
+                    let newBookmarkString = bookmarkPrefix + newBookmark.base64EncodedString()
+                    _channel?.invokeMethod("updateBookmark", arguments: [bookmarkB64, newBookmarkString])
+                }
+                
+                return url
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        
+        return nil
+    }
+
+    func bookmarkToUrl(from bookmarkString: String) {
+        guard let url = getUrlFromBookmark(from: bookmarkString) else {
+            return
+        }
+        
+        if url.startAccessingSecurityScopedResource() {
+            self._flutterResult?(url.absoluteString)
+            url.stopAccessingSecurityScopedResource()
+        }
+    }
 }

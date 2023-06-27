@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 
 import '../../../UI/pages/DebugConsolePage.dart';
@@ -18,7 +16,6 @@ class LiteCommunication extends DeviceCommunication {
 
   int _readyPresetsCount = 0;
 
-  Timer? _safetyTimer;
 
   @override
   void performNextConnectionStep() {
@@ -28,12 +25,11 @@ class LiteCommunication extends DeviceCommunication {
         device.deviceControl.sendBLEData(requestPresetByIndex(0));
         break;
     }
-    _safetyTimer = Timer(const Duration(seconds: 5), () {
-      connectionStepReady();
-    });
+    
+    connectionStepReady();
 
-    device.setSelectedChannel(0,
-        notifyBT: true, notifyUI: true, sendFullPreset: true);
+    //device.setSelectedChannel(0,
+    //    notifyBT: true, notifyUI: true, sendFullPreset: true);
   }
 
   @override
@@ -141,8 +137,7 @@ class LiteCommunication extends DeviceCommunication {
 
         if (_readyPresetsCount == device.channelsCount) {
           device.onPresetsReady();
-          connectionStepReady();
-          _safetyTimer?.cancel();
+          //connectionStepReady();
         } else {
           device.deviceControl.sendBLEData(requestPresetByIndex(data[2] + 1));
         }

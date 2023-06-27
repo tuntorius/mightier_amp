@@ -184,6 +184,8 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             if (content != null) {
               setupFromQRData(content);
               setState(() {});
+            } else {
+              showQRError();
             }
           });
         } else if (PlatformUtils.isIOS) {
@@ -191,6 +193,8 @@ class _ChannelSelectorState extends State<ChannelSelector> {
           if (content != null) {
             setupFromQRData(content);
             setState(() {});
+          } else {
+            showQRError();
           }
         }
         break;
@@ -216,6 +220,16 @@ class _ChannelSelectorState extends State<ChannelSelector> {
       context: context,
       builder: (BuildContext context) => qrExport.buildDialog(context),
     );
+  }
+
+  void showQRError() {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          "Error decoding QR code!",
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        )));
   }
 
   void setupFromQRData(String qrData) {
@@ -259,10 +273,10 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                       return qrMenu;
                     },
                     onSelected: qrPopupSelection,
-                    child: SizedBox(
+                    child: const SizedBox(
                       width: 60,
                       child: Column(
-                        children: const [
+                        children: [
                           Icon(
                             Icons.qr_code_2,
                             size: 32,

@@ -20,6 +20,11 @@ class SettingsKeys {
   static const String hiddenAmps = "hiddenAmps";
   static const String hiddenSources = "hiddenSources";
   static const String hideNotApplicablePresets = "hideNotApplicablePresets";
+  static const String tempoTrainerTempoMin = "trainerTempoMin";
+  static const String tempoTrainerTempoMax = "trainerTempoMax";
+  static const String tempoTrainerStep = "trainerStep";
+  static const String tempoTrainerChangeMode = "trainerChangeMode";
+  static const String tempoTrainerChangeUnits = "trainerChangeUnits";
 }
 
 class SharedPrefs {
@@ -86,7 +91,7 @@ class SharedPrefs {
     }
   }
 
-  setInt(String key, int value) {
+  void setInt(String key, int value) {
     _prefsData[key] = value;
     _savePrefs();
   }

@@ -83,7 +83,7 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
             ),
           ),
           ElevatedButton(
-            onPressed: !widget.enabled
+            onPressed: !widget.enabled || !NuxDeviceControl().isConnected
                 ? null
                 : () async {
                     NuxDeviceControl.instance().device.setDrumsEnabled(false);
@@ -120,6 +120,9 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
             _tempoTrainer.tempoRange = range;
             setState(() {});
           },
+          onDragEnd: (value) {
+            _tempoTrainer.saveConfig();
+          },
           label: 'Tempo Range',
           labelFormatter: (ranges) =>
               "${ranges.start.round()} - ${ranges.end.round()}"),
@@ -146,42 +149,47 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
                       setState(() {
                         _tempoTrainer.changeMode =
                             TempoChangeMode.values[index];
+                        _tempoTrainer.saveConfig();
                       });
                     }),
         ),
       ),
       ThickSlider(
-        min: 2,
-        max: 100,
-        enabled: widget.enabled,
-        maxHeight: widget.smallControls ? 40 : null,
-        activeColor: Colors.blue,
-        label: "Increase every",
-        labelFormatter: (val) {
-          return "${val.round()} ${_tempoTrainer.changeMode == TempoChangeMode.beat ? "beats" : "seconds"}";
-        },
-        value: _tempoTrainer.changeUnits.toDouble(),
-        onChanged: (value, skip) {
-          _tempoTrainer.changeUnits = value.round();
-          setState(() {});
-        },
-      ),
+          min: 2,
+          max: 100,
+          enabled: widget.enabled,
+          maxHeight: widget.smallControls ? 40 : null,
+          activeColor: Colors.blue,
+          label: "Increase every",
+          labelFormatter: (val) {
+            return "${val.round()} ${_tempoTrainer.changeMode == TempoChangeMode.beat ? "beats" : "seconds"}";
+          },
+          value: _tempoTrainer.changeUnits.toDouble(),
+          onChanged: (value, skip) {
+            _tempoTrainer.changeUnits = value.round();
+            setState(() {});
+          },
+          onDragEnd: (value) {
+            _tempoTrainer.saveConfig();
+          }),
       ThickSlider(
-        min: 1,
-        max: 20,
-        enabled: widget.enabled,
-        maxHeight: widget.smallControls ? 40 : null,
-        activeColor: Colors.blue,
-        label: "Increase by",
-        labelFormatter: (val) {
-          return "${val.round()} bpm";
-        },
-        value: _tempoTrainer.tempoStep.toDouble(),
-        onChanged: (value, skip) {
-          _tempoTrainer.tempoStep = value.round();
-          setState(() {});
-        },
-      ),
+          min: 1,
+          max: 20,
+          enabled: widget.enabled,
+          maxHeight: widget.smallControls ? 40 : null,
+          activeColor: Colors.blue,
+          label: "Increase by",
+          labelFormatter: (val) {
+            return "${val.round()} bpm";
+          },
+          value: _tempoTrainer.tempoStep.toDouble(),
+          onChanged: (value, skip) {
+            _tempoTrainer.tempoStep = value.round();
+            setState(() {});
+          },
+          onDragEnd: (value) {
+            _tempoTrainer.saveConfig();
+          }),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -191,7 +199,7 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
             child: Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: Text(
-                "${device.drumsTempo.round()} bpm",
+                _tempoTrainer.enable ? "${device.drumsTempo.round()} bpm" : "",
                 style: DrumEditor.fontStyle.copyWith(
                     color: widget.enabled ? Colors.white : Colors.grey[600]),
               ),

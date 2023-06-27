@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 
 import '../UI/widgets/thickRangeSlider.dart';
 import '../bluetooth/devices/NuxDevice.dart';
@@ -10,7 +11,9 @@ enum TempoChangeMode { beat, time }
 class TempoTrainer {
   static final TempoTrainer _tempoTrainer = TempoTrainer._();
 
-  TempoTrainer._();
+  TempoTrainer._() {
+    _loadConfig();
+  }
 
   NuxDevice get _device => NuxDeviceControl.instance().device;
 
@@ -73,5 +76,24 @@ class TempoTrainer {
     _device.setDrumsTempo(tempo, true);
     NuxDeviceControl.instance().forceNotifyListeners();
     _setupTimer();
+  }
+
+  void _loadConfig() {
+    tempoRange.start =
+        SharedPrefs().getValue(SettingsKeys.tempoTrainerTempoMin, 80);
+    tempoRange.end =
+        SharedPrefs().getValue(SettingsKeys.tempoTrainerTempoMax, 200);
+    tempoStep = SharedPrefs().getInt(SettingsKeys.tempoTrainerStep, 5);
+    changeMode = TempoChangeMode
+        .values[SharedPrefs().getInt(SettingsKeys.tempoTrainerChangeMode, 0)];
+    changeUnits = SharedPrefs().getInt(SettingsKeys.tempoTrainerChangeUnits, 5);
+  }
+
+  void saveConfig() {
+    SharedPrefs().setValue(SettingsKeys.tempoTrainerTempoMin, tempoRange.start);
+    SharedPrefs().setValue(SettingsKeys.tempoTrainerTempoMax, tempoRange.end);
+    SharedPrefs().setInt(SettingsKeys.tempoTrainerStep, tempoStep);
+    SharedPrefs().setInt(SettingsKeys.tempoTrainerChangeMode, changeMode.index);
+    SharedPrefs().setInt(SettingsKeys.tempoTrainerChangeUnits, changeUnits);
   }
 }

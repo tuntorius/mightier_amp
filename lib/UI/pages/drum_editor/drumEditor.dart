@@ -28,7 +28,8 @@ class DrumEditor extends StatefulWidget {
   State createState() => _DrumEditorState();
 }
 
-class _DrumEditorState extends State<DrumEditor> {
+class _DrumEditorState extends State<DrumEditor>
+    with AutomaticKeepAliveClientMixin<DrumEditor> {
   final _drumStyles = NuxDeviceControl.instance().device.getDrumStyles();
   DrumEditorLayout _layout = DrumEditorLayout.Standard;
   DrumEditorMode _mode = DrumEditorMode.regular;
@@ -64,7 +65,7 @@ class _DrumEditorState extends State<DrumEditor> {
       children: [
         Expanded(child: picker),
         IconButton(
-            onPressed: !playEnabled
+            onPressed: !playEnabled || !NuxDeviceControl().isConnected
                 ? null
                 : () {
                     device.setDrumsEnabled(!device.drumsEnabled);
@@ -441,4 +442,7 @@ class _DrumEditorState extends State<DrumEditor> {
       TempoTrainer.instance().enable = false;
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

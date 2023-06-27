@@ -58,6 +58,16 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
             }
             
         }
+        if (call.method=="pick_audio_release_security_scope")
+        {
+            if let args = call.arguments as? [String: Any],
+            let url = args["url"] as? String {
+                releaseUrlSecurityScopedAccess(from: url)
+                result(true)
+            } else {
+                result(FlutterError(code: "invalid_argument", message: "Invalid arguments", details: nil))
+            }
+        }
         if (call.method=="get_metadata") {
             if let args = call.arguments as? [String: Any],
             let assetUrl = args["assetUrl"] as? String {
@@ -204,6 +214,7 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
                 let url = try URL(resolvingBookmarkData: bookmarkData, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
                 
                 if isStale {
+                    print("it's stale - update it")
                     let newBookmark = try url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
                     let newBookmarkString = bookmarkPrefix + newBookmark.base64EncodedString()
                     _channel?.invokeMethod("updateBookmark", arguments: [bookmarkB64, newBookmarkString])
@@ -224,8 +235,19 @@ public class SwiftAudioPickerPlugin: NSObject, FlutterPlugin, MPMediaPickerContr
         }
         
         if url.startAccessingSecurityScopedResource() {
+            print("Obtaining a security scoped access for URL: \(url.absoluteString)")
             self._flutterResult?(url.absoluteString)
-            url.stopAccessingSecurityScopedResource()
+            //url.stopAccessingSecurityScopedResource()
         }
+    }
+    
+    func releaseUrlSecurityScopedAccess(from urlString: String) {
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL string")
+            return
+        }
+        
+        url.stopAccessingSecurityScopedResource()
+        print("Released security scoped access for URL: \(urlString)")
     }
 }

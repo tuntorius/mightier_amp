@@ -61,6 +61,8 @@ class _AudioEditorState extends State<AudioEditor> {
 
   AutomationEventType showType = AutomationEventType.preset;
 
+  String _resolvedPath = "";
+
   @override
   void initState() {
     super.initState();
@@ -104,14 +106,17 @@ class _AudioEditorState extends State<AudioEditor> {
 
   Future decodeAudio(String path) async {
     print("Audio path $path");
-    var resolvedPath = await SourceResolver.getSourceUrl(path);
-    print("Resolved path $resolvedPath");
-    await decoder.open(resolvedPath);
+    _resolvedPath = await SourceResolver.getSourceUrl(path);
+    print("Resolved path $_resolvedPath");
+    await decoder.open(_resolvedPath);
 
     decoder.decode(() {
       wfData = WaveformData(maxValue: 1, data: decoder.samples);
     }, () {
-      if (pageLeft) return false;
+      if (pageLeft) {
+        freeDecoder();
+        return false;
+      }
       wfData!.setUpdate();
       setState(() {});
       return true;
@@ -119,7 +124,13 @@ class _AudioEditorState extends State<AudioEditor> {
       //final update
       wfData!.setReady();
       setState(() {});
+      freeDecoder();
     });
+  }
+
+  void freeDecoder()
+  {
+    SourceResolver.releaseUrl(widget.track.path, _resolvedPath);
   }
 
   int sampleToMs(int sample) {

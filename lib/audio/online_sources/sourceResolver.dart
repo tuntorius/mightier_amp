@@ -1,5 +1,6 @@
 import 'package:audio_picker/audio_picker.dart';
 import 'package:mighty_plug_manager/audio/online_sources/YoutubeSource.dart';
+import 'package:mighty_plug_manager/platform/platformUtils.dart';
 
 class SourceResolver {
   static final Map<String, String> _pathCache = {};
@@ -18,6 +19,15 @@ class SourceResolver {
       return url;
     }
     return sourceUri;
+  }
+
+  static void releaseUrl(String sourceUrl, String resolvedUrl) {
+    if (PlatformUtils.isIOS) {
+      if (sourceUrl.startsWith("iosbm:")) {
+        AudioPicker().iosReleaseSecurityScope(resolvedUrl);
+        return;
+      }
+    }
   }
 
   static void addToCache(String id, String url) {

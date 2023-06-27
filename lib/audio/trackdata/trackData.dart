@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mighty_plug_manager/audio/models/jamTrack.dart';
 import 'package:mighty_plug_manager/audio/models/setlist.dart';
@@ -46,6 +47,7 @@ class TrackData {
     _tracksData = <JamTrack>[];
     await _getDirectory();
     await _loadTracks();
+    AudioPicker().regusterOnStaleBookmark(_onBookmarkUpdated);
   }
 
   _getDirectory() async {
@@ -259,5 +261,17 @@ class TrackData {
       }
     } while (unique == false);
     return id;
+  }
+
+  void _onBookmarkUpdated(String oldBookmark, String newBookmark)
+  {
+    for (var track in _tracksData)
+    {
+      if (track.path == oldBookmark) {
+        track.path = newBookmark;
+        saveTracks();
+      }
+
+    }
   }
 }

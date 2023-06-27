@@ -96,9 +96,12 @@ class AutomationController {
   //editor use only. don't serialize
   AutomationEvent? selectedEvent;
 
+  String _sourceUrl = "", _resolvedUrl = "";
+
   Future setAudioFile(String path, int positionEventSkips) async {
-    path = await SourceResolver.getSourceUrl(path);
-    var source = ProgressiveAudioSource(Uri.parse(path));
+    _sourceUrl = path;
+    _resolvedUrl = await SourceResolver.getSourceUrl(_sourceUrl);
+    var source = ProgressiveAudioSource(Uri.parse(_resolvedUrl));
     await player.setAudioSource(source);
 
     if (NuxDeviceControl.instance().isConnected) {
@@ -404,6 +407,7 @@ class AutomationController {
     await player.stop();
     await player.dispose();
     _positionController.close();
+    SourceResolver.releaseUrl(_sourceUrl, _resolvedUrl);
     //_eventController.close();
   }
 }

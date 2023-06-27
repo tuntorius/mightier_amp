@@ -3,9 +3,14 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
+typedef StaleBookmarkCallback = void Function(String old, String updated);
+
 class AudioPicker {
   static const MethodChannel _channel = MethodChannel('audio_picker');
   static AudioPicker? _instance;
+
+  
+  StaleBookmarkCallback? _onStaleBookmark;
 
   factory AudioPicker() {
     _instance ??= AudioPicker._();
@@ -21,6 +26,7 @@ class AudioPicker {
         var oldBookmark = call.arguments[0] as String;
         var newBookmark = call.arguments[1] as String;
 
+        _onStaleBookmark?.call(oldBookmark, newBookmark);
         //TODO: call the track for updating the playlist
         // Find the index of the old bookmark data in the list
         //var index = bookmarks.indexOf(oldBookmark);
@@ -29,6 +35,10 @@ class AudioPicker {
     });
   }
 
+  void regusterOnStaleBookmark(StaleBookmarkCallback callback)
+  {
+    _onStaleBookmark = callback;
+  }
   Future<String> pickAudio() async {
     final String absolutePath = await _channel.invokeMethod('pick_audio');
     return absolutePath;
@@ -52,6 +62,11 @@ class AudioPicker {
   {
     var url = await _channel.invokeMethod('pick_audio_bookmark_to_url', {'bookmark': bookmark});
     return url;
+  }
+
+  void iosReleaseSecurityScope(String url)
+  {
+    _channel.invokeMethod('pick_audio_release_security_scope', {'url':url});
   }
 
   Future<Map<String, String>> getMetadata(String assetUrl) async {

@@ -39,6 +39,7 @@ class JamTrack {
 
   String get name => _name;
   String get path => _path;
+  set path(val) => _path = val;
   String get uuid => _uuid;
 
   set name(value) => _name = value;

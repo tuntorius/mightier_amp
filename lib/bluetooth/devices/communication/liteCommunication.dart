@@ -23,9 +23,6 @@ class LiteCommunication extends DeviceCommunication {
     }
 
     connectionStepReady();
-
-    //device.setSelectedChannel(0,
-    //    notifyBT: true, notifyUI: true, sendFullPreset: true);
   }
 
   @override
@@ -116,10 +113,11 @@ class LiteCommunication extends DeviceCommunication {
   void saveCurrentPreset(int index) {}
 
   void _handlePresetDataPiece(List<int> data) {
-    DebugConsole.print(data);
-
     var total = (data[3] & 0xf0) >> 4;
     var current = data[3] & 0x0f;
+
+    print('preset ${data[2] + 1}, piece ${current + 1} of $total');
+    print(data);
 
     var preset = device.getPreset(data[2]);
     if (current == 0) preset.resetNuxData();

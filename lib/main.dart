@@ -1,9 +1,12 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/DebugConsolePage.dart';
 import 'package:mighty_plug_manager/platform/presetsStorage.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 
@@ -34,7 +37,15 @@ void main() {
 
 mainRunApp() {
   if (kDebugMode) CloudManager.instance.initialize();
-  runApp(const App());
+
+  // Run the app within a zone
+  runZoned(() {
+    runApp(const App());
+  }, zoneSpecification: ZoneSpecification(
+      print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
+    parent.print(zone, line);
+    DebugConsole.print(line);
+  }));
 }
 
 class App extends StatefulWidget {

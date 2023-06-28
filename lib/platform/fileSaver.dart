@@ -12,7 +12,7 @@ Future<String> saveFileString(String mime, String name, String data) async {
     }); //name in native code
 
     return result;
-  } on PlatformException catch (e) {
+  } on PlatformException {
     return Future.error("Error saving file");
   }
 }
@@ -29,7 +29,7 @@ Future<String> saveFile(String mime, String name, List<int> data) async {
     }); //name in native code
 
     return result;
-  } on PlatformException catch (e) {
+  } on PlatformException {
     return Future.error("Error saving file");
   }
 }

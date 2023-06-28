@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/hotkeysSetup.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/midi/ControllerConstants.dart';
 import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
+
+import '../../bluetooth/devices/features/looper.dart';
 
 class HotkeysMainPage extends StatelessWidget {
   final MidiController controller;
@@ -49,6 +52,15 @@ class HotkeysMainPage extends StatelessWidget {
                         controller: controller,
                         category: HotkeyCategory.Drums,
                       )))),
+          if (NuxDeviceControl.instance().device is Looper)
+            ListTile(
+                title: const Text("Looper Hotkeys"),
+                trailing: const Icon(Icons.keyboard_arrow_right),
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => HotkeysSetup(
+                          controller: controller,
+                          category: HotkeyCategory.Looper,
+                        )))),
           ListTile(
               title: const Text("JamTracks Hotkeys"),
               trailing: const Icon(Icons.keyboard_arrow_right),

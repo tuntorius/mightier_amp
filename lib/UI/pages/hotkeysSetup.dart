@@ -257,6 +257,11 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
         widgetList = _buildWidgetsRange(
             HotkeyControl.DrumsStartStop, HotkeyControl.DrumsNextStyle);
         break;
+      case HotkeyCategory.Looper:
+        title = "Looper Hotkeys";
+        widgetList = _buildWidgetsRange(
+            HotkeyControl.LooperRecord, HotkeyControl.LooperLevel);
+        break;
       case HotkeyCategory.JamTracks:
         title = "JamTracks Hotkeys";
         widgetList = _buildWidgetsRange(

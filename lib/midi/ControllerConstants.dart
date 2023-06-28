@@ -30,6 +30,11 @@ enum HotkeyControl {
   DrumsTempoTap,
   DrumsPreviousStyle,
   DrumsNextStyle,
+  LooperRecord,
+  LooperStop,
+  LooperClear,
+  LooperUndoRedo,
+  LooperLevel,
   JamTracksPlayPause,
   JamTracksPreviousTrack,
   JamTracksNextTrack,
@@ -63,6 +68,18 @@ extension HotkeyLabel on HotkeyControl {
         return "Previous Style";
       case HotkeyControl.DrumsNextStyle:
         return "Next Style";
+
+      case HotkeyControl.LooperRecord:
+        return 'Record/Play/Overdub';
+      case HotkeyControl.LooperStop:
+        return "Stop";
+      case HotkeyControl.LooperClear:
+        return "Clear";
+      case HotkeyControl.LooperUndoRedo:
+        return "Undo/Redo";
+      case HotkeyControl.LooperLevel:
+        return "Level";
+
       case HotkeyControl.JamTracksPlayPause:
         return "Play/Pause";
       case HotkeyControl.JamTracksPreviousTrack:
@@ -100,6 +117,16 @@ extension HotkeyLabel on HotkeyControl {
         return Icons.keyboard_arrow_up;
       case HotkeyControl.DrumsNextStyle:
         return Icons.keyboard_arrow_down;
+      case HotkeyControl.LooperRecord:
+        return Icons.fiber_manual_record;
+      case HotkeyControl.LooperStop:
+        return Icons.stop;
+      case HotkeyControl.LooperClear:
+        return Icons.clear;
+      case HotkeyControl.LooperUndoRedo:
+        return Icons.undo;
+      case HotkeyControl.LooperLevel:
+        return Icons.volume_up;
       case HotkeyControl.JamTracksPlayPause:
         return Icons.play_arrow;
       case HotkeyControl.JamTracksPreviousTrack:
@@ -121,6 +148,7 @@ extension HotkeyLabel on HotkeyControl {
     switch (this) {
       case HotkeyControl.ParameterSet:
       case HotkeyControl.DrumsVolume:
+      case HotkeyControl.LooperLevel:
         return true;
       default:
         return false;
@@ -133,5 +161,6 @@ enum HotkeyCategory {
   EffectSlots,
   EffectParameters,
   Drums,
-  JamTracks
+  JamTracks,
+  Looper
 }

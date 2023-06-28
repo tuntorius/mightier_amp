@@ -5,9 +5,11 @@ import 'package:mighty_plug_manager/bluetooth/devices/utilities/DelayTapTimer.da
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/effects/MidiControllerHandles.dart';
 import '../../bluetooth/devices/effects/Processor.dart';
+import '../../bluetooth/devices/features/looper.dart';
 import '../../bluetooth/devices/presets/Preset.dart';
 import '../../bluetooth/devices/utilities/MathEx.dart';
 import '../../bluetooth/devices/value_formatters/TempoFormatter.dart';
+import '../../modules/tempo_trainer.dart';
 import '../ControllerConstants.dart';
 
 class ControllerHotkey {
@@ -127,6 +129,7 @@ class ControllerHotkey {
         _delayTapTempo(device);
         break;
       case HotkeyControl.DrumsStartStop:
+        if (!device.deviceControl.isConnected) return;
         device.setDrumsEnabled(!device.drumsEnabled);
         NuxDeviceControl.instance().forceNotifyListeners();
         break;
@@ -163,6 +166,34 @@ class ControllerHotkey {
           ds = 0;
         }
         device.setDrumsStyle(ds);
+        NuxDeviceControl.instance().forceNotifyListeners();
+        break;
+      case HotkeyControl.LooperRecord:
+        if (device is! Looper || !device.deviceControl.isConnected) return;
+        if (TempoTrainer.instance().enable == true) {
+          TempoTrainer.instance().enable = false;
+        }
+        (device as Looper).looperRecordPlay();
+        NuxDeviceControl.instance().forceNotifyListeners();
+        break;
+      case HotkeyControl.LooperStop:
+        if (device is! Looper || !device.deviceControl.isConnected) return;
+        (device as Looper).looperStop();
+        NuxDeviceControl.instance().forceNotifyListeners();
+        break;
+      case HotkeyControl.LooperClear:
+        if (device is! Looper || !device.deviceControl.isConnected) return;
+        (device as Looper).looperClear();
+        NuxDeviceControl.instance().forceNotifyListeners();
+        break;
+      case HotkeyControl.LooperUndoRedo:
+        if (device is! Looper || !device.deviceControl.isConnected) return;
+        (device as Looper).looperUndoRedo();
+        NuxDeviceControl.instance().forceNotifyListeners();
+        break;
+      case HotkeyControl.LooperLevel:
+        if (device is! Looper || !device.deviceControl.isConnected) return;
+        (device as Looper).looperLevel(midiToPercentage(value).toInt());
         NuxDeviceControl.instance().forceNotifyListeners();
         break;
       case HotkeyControl.JamTracksPlayPause:

@@ -9,9 +9,6 @@ class PlugAirCommunication extends DeviceCommunication {
       : super(device, config);
 
   @override
-  int get productVID => 48;
-
-  @override
   int get connectionSteps => 3;
 
   int _readyPresetsCount = 0;
@@ -30,10 +27,10 @@ class PlugAirCommunication extends DeviceCommunication {
       0x80,
       MidiMessageValues.sysExStart,
       0,
-      vendorID & 255,
-      vendorID >> 8 & 255,
-      productVID & 255,
-      productVID >> 8 & 255,
+      device.vendorID & 255,
+      (device.vendorID >> 8) & 255,
+      device.productVID & 255,
+      (device.productVID >> 8) & 255,
       0
     ]);
 

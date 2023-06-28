@@ -9,13 +9,9 @@ class LiteCommunication extends DeviceCommunication {
       : super(device, config);
 
   @override
-  int get productVID => 48;
-
-  @override
   int get connectionSteps => 1;
 
   int _readyPresetsCount = 0;
-
 
   @override
   void performNextConnectionStep() {
@@ -25,7 +21,7 @@ class LiteCommunication extends DeviceCommunication {
         device.deviceControl.sendBLEData(requestPresetByIndex(0));
         break;
     }
-    
+
     connectionStepReady();
 
     //device.setSelectedChannel(0,
@@ -39,7 +35,7 @@ class LiteCommunication extends DeviceCommunication {
 
   @override
   List<int> requestPresetByIndex(int index) {
-    return [];
+    return createSysExMessage(DeviceMessageID.devReqPresetMsgID, index);
   }
 
   @override

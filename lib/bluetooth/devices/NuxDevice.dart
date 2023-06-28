@@ -35,9 +35,7 @@ class NuxDeviceConfiguration {
 abstract class NuxDevice extends ChangeNotifier {
   final NuxDeviceControl deviceControl;
 
-  int get productVID {
-    throw ("Not implemented exception");
-  }
+  int get productVID;
 
   int get vendorID {
     return 8721;

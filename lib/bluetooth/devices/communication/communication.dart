@@ -4,11 +4,6 @@ import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 
 abstract class DeviceCommunication {
-  int get productVID;
-  int get vendorID {
-    return 8721;
-  }
-
   @protected
   NuxDevice device;
   NuxDeviceConfiguration config;
@@ -117,10 +112,10 @@ abstract class DeviceCommunication {
       0x80,
       MidiMessageValues.sysExStart,
       0,
-      vendorID & 255,
-      vendorID >> 8 & 255,
-      productVID & 255,
-      productVID >> 8 & 255,
+      device.vendorID & 255,
+      (device.vendorID >> 8) & 255,
+      device.productVID & 255,
+      (device.productVID >> 8) & 255,
       (7 & sysExMsgId) << 4,
       deviceMessageId
     ]);

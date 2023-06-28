@@ -18,7 +18,7 @@ enum MLiteChannel { Clean, Overdrive, Distortion }
 
 class NuxMightyLite extends NuxDevice {
   @override
-  int get productVID => 48;
+  int get productVID => 64;
 
   late final LiteCommunication _communication = LiteCommunication(this, config);
   @override

@@ -19,6 +19,7 @@ enum M8BTChannel { Clean, Overdrive, Distortion }
 class NuxMighty8BT extends NuxDevice {
   @override
   int get productVID => 48;
+
   late final LiteCommunication _communication = LiteCommunication(this, config);
   @override
   DeviceCommunication get communication => _communication;

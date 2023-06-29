@@ -139,6 +139,7 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
                 ),
               ),
             SpeedPanel(
+              compact: true,
               onSemitonesChanged: (val) {
                 playerState.pitch = val;
                 playerState.automation?.setPitch(val);

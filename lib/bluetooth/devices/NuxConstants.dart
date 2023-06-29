@@ -155,6 +155,7 @@ class PresetDataIndex2040BT {
 
   static const effectEnabledIndex = [
     ngenable,
+    0,
     mod_enable,
     dly_enable,
     rvb_enable

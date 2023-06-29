@@ -21,8 +21,6 @@ class LiteCommunication extends DeviceCommunication {
         device.deviceControl.sendBLEData(requestPresetByIndex(0));
         break;
     }
-
-    connectionStepReady();
   }
 
   @override
@@ -122,7 +120,7 @@ class LiteCommunication extends DeviceCommunication {
     var preset = device.getPreset(data[2]);
     if (current == 0) preset.resetNuxData();
 
-    preset.addNuxPayloadPiece(data.sublist(4, 16), current, total);
+    preset.addNuxPayloadPiece(data.sublist(4, data.length - 2), current, total);
 
     if (preset.payloadPiecesReady()) {
       preset.setupPresetFromNuxData();
@@ -131,7 +129,7 @@ class LiteCommunication extends DeviceCommunication {
 
         if (_readyPresetsCount == device.channelsCount) {
           device.onPresetsReady();
-          //connectionStepReady();
+          connectionStepReady();
         } else {
           device.deviceControl.sendBLEData(requestPresetByIndex(data[2] + 1));
         }

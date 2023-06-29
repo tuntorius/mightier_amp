@@ -121,7 +121,7 @@ class BLEMidiHandler {
         } while (!pStatus.isGranted);
       }
     }
-    debugPrint("Location permission granted!");
+    debugPrint("BLE permissions granted!");
     _granted = true;
     _permanentlyDenied = false;
 

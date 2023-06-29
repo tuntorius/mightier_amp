@@ -24,8 +24,6 @@ class PlugProCommunication extends DeviceCommunication {
 
   StreamController<List<int>>? _speakerEQReceived;
   Stream<List<int>>? get speakerEQStream => _speakerEQReceived?.stream;
-  @override
-  int get productVID => 48;
 
   @override
   get connectionSteps => 6;

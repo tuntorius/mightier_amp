@@ -64,7 +64,7 @@ class NuxMightyLite extends NuxDevice {
   @override
   int get cabinetSlotIndex => 0;
   @override
-  bool get presetSaveSupport => false;
+  bool get presetSaveSupport => true;
   @override
   bool get reorderableFXChain => false;
   @override

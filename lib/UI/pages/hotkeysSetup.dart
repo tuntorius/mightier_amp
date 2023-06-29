@@ -178,6 +178,11 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     List<Widget> widgets = [];
     var dev = NuxDeviceControl.instance().device;
 
+    //add master volume
+    widgets.add(buildWidget("Volume", Icons.volume_up, Colors.white,
+        HotkeyControl.MasterVolumeSet, 0, 0, true,
+        infoButton: null));
+
     List<MidiControllerHandle> effectHandles = [];
     //enumerate all the slots in the signal chain
     for (int i = 0; i < dev.processorList.length; i++) {

@@ -19,6 +19,7 @@ enum HotkeyControl {
   EffectSlotToggle,
   ParameterSet,
   DelayTapTempo,
+  MasterVolumeSet,
   EffectDecrement,
   EffectIncrement,
   DrumsStartStop,

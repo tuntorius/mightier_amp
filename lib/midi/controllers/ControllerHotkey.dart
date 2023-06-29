@@ -120,6 +120,9 @@ class ControllerHotkey {
           NuxDeviceControl.instance().forceNotifyListeners();
         }
         break;
+      case HotkeyControl.MasterVolumeSet:
+        NuxDeviceControl.instance().masterVolume = midiToPercentage(value);
+        break;
       case HotkeyControl.ParameterSet:
         if (index >= ControllerHandleId.values.length) return;
         _hotkeyParameterSet(value, device);

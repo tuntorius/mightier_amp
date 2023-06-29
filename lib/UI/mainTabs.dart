@@ -194,10 +194,11 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         debugPrint("presets loaded");
         break;
       case DeviceConnectionState.connectionComplete:
-        debugPrint("config loaded");
         dialogSetState = null;
-        _timeout.cancel();
-        Navigator.pop(context);
+        if (_timeout.isActive) {
+          _timeout.cancel();
+          Navigator.pop(context);
+        }
         break;
       case DeviceConnectionState.disconnected:
         break;

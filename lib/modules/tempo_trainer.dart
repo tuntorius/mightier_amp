@@ -80,9 +80,9 @@ class TempoTrainer {
 
   void _loadConfig() {
     tempoRange.start =
-        SharedPrefs().getValue(SettingsKeys.tempoTrainerTempoMin, 80);
-    tempoRange.end =
-        SharedPrefs().getValue(SettingsKeys.tempoTrainerTempoMax, 200);
+        SharedPrefs().getValue(SettingsKeys.tempoTrainerTempoMin, 80.0);
+    tempoRange.end = SharedPrefs()
+        .getValue(SettingsKeys.tempoTrainerTempoMax, 200.0) as double;
     tempoStep = SharedPrefs().getInt(SettingsKeys.tempoTrainerStep, 5);
     changeMode = TempoChangeMode
         .values[SharedPrefs().getInt(SettingsKeys.tempoTrainerChangeMode, 0)];

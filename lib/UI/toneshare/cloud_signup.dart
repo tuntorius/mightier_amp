@@ -46,10 +46,11 @@ class _SignUpFormState extends State<SignUpForm> {
         } else {
           Map data = e.response["data"];
           if (data.containsKey("email") &&
-              data["email"]["code"] == "validation_invalid_email")
+              data["email"]["code"] == "validation_invalid_email") {
             _errorMessage = data["email"]["message"];
-          else
+          } else {
             _errorMessage = e.response["message"];
+          }
           //"Wrong credentials or account not verified";
         }
         setState(() {});
@@ -59,7 +60,7 @@ class _SignUpFormState extends State<SignUpForm> {
     }
   }
 
-  void _SignUpWithGoogle() async {
+  void _signUpWithGoogle() async {
     // try {
     //   // Trigger the authentication flow
     //   final GoogleSignUpAccount? googleUser = await GoogleSignUp().SignUp();
@@ -126,7 +127,7 @@ class _SignUpFormState extends State<SignUpForm> {
             child: const Text('Sign Up'),
           ),
           ElevatedButton(
-            onPressed: _SignUpWithGoogle,
+            onPressed: _signUpWithGoogle,
             child: const Text('Sign in with Google'),
           ),
           ElevatedButton(

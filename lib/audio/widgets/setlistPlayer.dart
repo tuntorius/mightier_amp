@@ -153,7 +153,7 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
               semitones: playerState.pitch,
               speed: playerState.speed,
             ),
-            VolumeSlider(label: "Amp Volume")
+            const VolumeSlider(label: "Amp Volume")
           ],
         ),
       );

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
@@ -140,9 +139,9 @@ abstract class BLEController {
   VoidCallback? _onQueueEmpty;
 
   void onDataQueueEmpty(VoidCallback onQueueEmpty) {
-    if (dataQueue.isEmpty)
+    if (dataQueue.isEmpty) {
       onQueueEmpty.call();
-    else {
+    } else {
       _onQueueEmpty = onQueueEmpty;
     }
   }

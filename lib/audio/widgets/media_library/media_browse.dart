@@ -71,11 +71,11 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
                       var searchText = editingController.text.toLowerCase();
                       if (editingController.text.isNotEmpty) {
                         _artists = <ArtistModel>[];
-                        artists.forEach((item) {
+                        for (var item in artists) {
                           if (item.artist.toLowerCase().contains(searchText)) {
                             _artists.add(item);
                           }
-                        });
+                        }
                       } else {
                         _artists = artists;
                       }

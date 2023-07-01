@@ -16,7 +16,6 @@ import '../../platform/simpleSharedPrefs.dart';
 import '../mightierIcons.dart';
 import '../widgets/deviceList.dart';
 import 'DebugConsolePage.dart';
-import 'calibration.dart';
 import 'developerPage.dart';
 import 'midiControllers.dart';
 import 'settings_advanced.dart';

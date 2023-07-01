@@ -69,7 +69,7 @@ class BottomDrawer extends StatelessWidget {
 
 class VolumeSlider extends StatelessWidget {
   final String label;
-  VolumeSlider({Key? key, this.label = "Volume"}) : super(key: key);
+  const VolumeSlider({Key? key, this.label = "Volume"}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

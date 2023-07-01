@@ -53,7 +53,6 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -66,8 +65,6 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
     double fitted = endPosition * _scale;
 
     _offset = canvasSize - fitted;
-    print(_scale);
-    print(_offset);
     layoutBuilt = true;
   }
 
@@ -82,11 +79,9 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
       _position = widget.sampleData!.data.length - 1 - _extent;
     }
     startPosition = _position - _extent;
-      endPosition = _position + _extent;
+    endPosition = _position + _extent;
     _offset = -_scale * startPosition;
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   void zoomViewOnTapUp(TapUpDetails e) {
@@ -155,56 +150,57 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
     });
   }
 
-  Widget _eventPointer(AutomationEvent event, double msPerSample, double samplesPerPixel)
-  {
+  Widget _eventPointer(
+      AutomationEvent event, double msPerSample, double samplesPerPixel) {
     bool empty = event.type == AutomationEventType.preset &&
-            event.getPresetUuid().isEmpty;
+        event.getPresetUuid().isEmpty;
 
     return Positioned(
-          left: (((event.eventTime.inMilliseconds * msPerSample) -
-                          startPosition) /
-                      (endPosition - startPosition)) *
-                  canvasSize -
-              widget.dragHandlesheight / 2 - 9,
-          child: GestureDetector(
-            onHorizontalDragUpdate: (d) {
-              widget.automation.selectedEvent = event;
-              //get samples per pixel
+      left: (((event.eventTime.inMilliseconds * msPerSample) - startPosition) /
+                  (endPosition - startPosition)) *
+              canvasSize -
+          widget.dragHandlesheight / 2 -
+          9,
+      child: GestureDetector(
+        onHorizontalDragUpdate: (d) {
+          widget.automation.selectedEvent = event;
+          //get samples per pixel
 
-              setState(() {
-                event.eventTime += Duration(
-                    milliseconds:
-                        (d.delta.dx * (samplesPerPixel / msPerSample)).round());
-              });
-            },
-            onHorizontalDragEnd: (d) {
-              widget.automation.selectedEvent = event;
-              widget.onEventSelectionChanged();
-              widget.automation.sortEvents();
-              //update automation
-              setState(() {});
-            },
-            child: ClipPath(
-              clipper: GuitarPickClipper(),
-              child: ElevatedButton(
-                  onPressed: () {
-                    widget.automation.selectedEvent = event;
-                    widget.onEventSelectionChanged();
-                    setState(() {});
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    padding: const EdgeInsets.fromLTRB(24,20,24,15),
-                    backgroundColor: empty ? Colors.grey : widget.channelColors[event.channel], // <-- Button color
-                    foregroundColor: Colors.black, // <-- Splash color
-                  ),
-                  child: Icon(widget.automation.selectedEvent ==
-                          event
-                      ? Icons.circle
-                      : null)),
-            ),
-          ),
-        );
+          setState(() {
+            event.eventTime += Duration(
+                milliseconds:
+                    (d.delta.dx * (samplesPerPixel / msPerSample)).round());
+          });
+        },
+        onHorizontalDragEnd: (d) {
+          widget.automation.selectedEvent = event;
+          widget.onEventSelectionChanged();
+          widget.automation.sortEvents();
+          //update automation
+          setState(() {});
+        },
+        child: ClipPath(
+          clipper: GuitarPickClipper(),
+          child: ElevatedButton(
+              onPressed: () {
+                widget.automation.selectedEvent = event;
+                widget.onEventSelectionChanged();
+                setState(() {});
+              },
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 15),
+                backgroundColor: empty
+                    ? Colors.grey
+                    : widget.channelColors[event.channel], // <-- Button color
+                foregroundColor: Colors.black, // <-- Splash color
+              ),
+              child: Icon(widget.automation.selectedEvent == event
+                  ? Icons.circle
+                  : null)),
+        ),
+      ),
+    );
   }
 
   @override
@@ -224,12 +220,11 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
 
       for (int i = 0; i < widget.automation.events.length; i++) {
         var element = widget.automation.events[i];
-        
+
         if (element.type != widget.showType) continue;
         Widget w = _eventPointer(element, msPerSample, samplesPerPixel);
 
         automationEventButtons.add(w);
-        
       }
     }
     return ColoredBox(
@@ -317,9 +312,11 @@ class GuitarPickClipper extends CustomClipper<Path> {
   @override
   getClip(Size size) {
     var path = Path();
-    path.moveTo(size.width*0.5, 0);
-    path.cubicTo(size.width*0.9, size.height*0.5, size.width*0.9, size.height*0.9, size.width*0.5, size.height*0.9);
-    path.cubicTo(size.width*0.1, size.height*0.9,size.width*0.1, size.height*0.5, size.width*0.5, 0);
+    path.moveTo(size.width * 0.5, 0);
+    path.cubicTo(size.width * 0.9, size.height * 0.5, size.width * 0.9,
+        size.height * 0.9, size.width * 0.5, size.height * 0.9);
+    path.cubicTo(size.width * 0.1, size.height * 0.9, size.width * 0.1,
+        size.height * 0.5, size.width * 0.5, 0);
     return path;
   }
 

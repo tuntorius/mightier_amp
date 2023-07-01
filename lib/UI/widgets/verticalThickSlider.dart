@@ -213,7 +213,7 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
                 Container(
                   height: max(factor * height, 0),
                   color: widget.enabled
-                      ? TinyColor(widget.activeColor).darken(15).color
+                      ? TinyColor.fromColor(widget.activeColor).darken(15).color
                       : Colors.grey[800],
                   width: width * 0.5,
                 ),

@@ -33,7 +33,7 @@ class _PresetFormState extends State<PresetForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create Preset"),
+        title: const Text("Create Preset"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -43,7 +43,7 @@ class _PresetFormState extends State<PresetForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Name",
                   hintText: "Enter preset name",
                 ),
@@ -55,18 +55,18 @@ class _PresetFormState extends State<PresetForm> {
                 },
                 onChanged: (value) => _name = value,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Description",
                   hintText: "Enter preset description",
                 ),
                 maxLines: 3,
                 onChanged: (value) => _description = value,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Instrument",
                 ),
                 value: _instrument,
@@ -78,9 +78,9 @@ class _PresetFormState extends State<PresetForm> {
                     .toList(),
                 onChanged: (value) => setState(() => _instrument = value ?? ""),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Genre",
                 ),
                 value: _genre,
@@ -92,11 +92,11 @@ class _PresetFormState extends State<PresetForm> {
                     .toList(),
                 onChanged: (value) => setState(() => _genre = value ?? ""),
               ),
-              SizedBox(height: 32.0),
+              const SizedBox(height: 32.0),
               Center(
                 child: ElevatedButton(
                   onPressed: _submitForm,
-                  child: Text("Upload"),
+                  child: const Text("Upload"),
                 ),
               ),
             ],

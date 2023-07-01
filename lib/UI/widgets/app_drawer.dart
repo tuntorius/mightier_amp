@@ -126,7 +126,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   onExpandChange: (val) => setState(() {
                     isBottomDrawerOpen = val;
                   }),
-                  child: VolumeSlider(),
+                  child: const VolumeSlider(),
                 ),
             ],
           ),

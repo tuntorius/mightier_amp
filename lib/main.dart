@@ -25,27 +25,27 @@ final navigatorKey = GlobalKey<NavigatorState>();
 final bucketGlobal = PageStorageBucket();
 
 void main() {
-  //configuration data is needed before start of the app
-  WidgetsFlutterBinding.ensureInitialized();
-  SharedPrefs prefs = SharedPrefs();
+  runZoned(() {
+    //configuration data is needed before start of the app
+    WidgetsFlutterBinding.ensureInitialized();
+    SharedPrefs prefs = SharedPrefs();
 
-  prefs.waitLoading().then((value) {
-    PresetsStorage storage = PresetsStorage();
-    storage.init().then((value) => mainRunApp());
-  });
+    prefs.waitLoading().then((value) {
+      PresetsStorage storage = PresetsStorage();
+      storage.init().then((value) => mainRunApp());
+    });
+  }, zoneSpecification: ZoneSpecification(
+      print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
+    parent.print(zone, line);
+    DebugConsole.print(line);
+  }));
 }
 
 mainRunApp() {
   if (kDebugMode) CloudManager.instance.initialize();
 
   // Run the app within a zone
-  runZoned(() {
-    runApp(const App());
-  }, zoneSpecification: ZoneSpecification(
-      print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
-    parent.print(zone, line);
-    DebugConsole.print(line);
-  }));
+  runApp(const App());
 }
 
 class App extends StatefulWidget {

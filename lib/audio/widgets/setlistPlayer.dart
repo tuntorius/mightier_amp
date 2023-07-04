@@ -26,7 +26,7 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
   void initState() {
     super.initState();
     playerState.addListener(_onPlayerStateChange);
-    _positionSub = playerState.positionStream.listen(_opPlayerPosition);
+    _positionSub = playerState.positionStream.listen(_onPlayerPosition);
     NuxDeviceControl().addListener(_onPlayerStateChange);
   }
 
@@ -38,7 +38,7 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
     _positionSub?.cancel();
   }
 
-  void _opPlayerPosition(Duration position) {
+  void _onPlayerPosition(Duration position) {
     setState(() {});
   }
 
@@ -63,7 +63,7 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
 
   Widget createPlayerView(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      return Container(
+      return Material(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: ListView(
           //crossAxisAlignment: CrossAxisAlignment.stretch,

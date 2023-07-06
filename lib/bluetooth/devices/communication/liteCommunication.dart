@@ -17,8 +17,17 @@ class LiteCommunication extends DeviceCommunication {
     switch (currentConnectionStep) {
       case 0:
         _readyPresetsCount = 0;
-        device.deviceControl.sendBLEData(requestPresetByIndex(0));
+        //device.deviceControl.sendBLEData(requestPresetByIndex(0));
+        requestAllPresets();
         break;
+    }
+    connectionStepReady();
+  }
+
+  void requestAllPresets() async {
+    for (int i = 0; i < device.channelsCount; i++) {
+      device.deviceControl.sendBLEData(requestPresetByIndex(i));
+      await Future.delayed(const Duration(milliseconds: 80));
     }
   }
 
@@ -128,9 +137,10 @@ class LiteCommunication extends DeviceCommunication {
 
         if (_readyPresetsCount == device.channelsCount) {
           device.onPresetsReady();
-          connectionStepReady();
+          device.deviceControl.forceNotifyListeners();
+          //connectionStepReady();
         } else {
-          device.deviceControl.sendBLEData(requestPresetByIndex(data[2] + 1));
+          //device.deviceControl.sendBLEData(requestPresetByIndex(data[2] + 1));
         }
       }
     }

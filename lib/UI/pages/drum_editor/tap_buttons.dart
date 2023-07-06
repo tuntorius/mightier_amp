@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../bluetooth/devices/NuxDevice.dart';
-import '../../../bluetooth/devices/utilities/DelayTapTimer.dart';
+import '../../../utilities/DelayTapTimer.dart';
 import 'drumEditor.dart';
 
 class TapButtons extends StatelessWidget {
@@ -39,9 +39,7 @@ class TapButtons extends StatelessWidget {
           SizedBox(
             width: 48,
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.zero
-              ),
+              style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
               onPressed: enabled ? () => onTempoModified(-5) : null,
               child:
                   const Text("-5", semanticsLabel: "Tempo -5", softWrap: false),
@@ -52,9 +50,7 @@ class TapButtons extends StatelessWidget {
             child: SizedBox(
               width: 48,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.zero
-              ),
+                style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
                 onPressed: enabled ? () => onTempoModified(-1) : null,
                 child: const Text("-1",
                     semanticsLabel: "Tempo -1", softWrap: false),
@@ -85,9 +81,7 @@ class TapButtons extends StatelessWidget {
             child: SizedBox(
               width: 48,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.zero
-              ),
+                style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
                 onPressed: enabled ? () => onTempoModified(1) : null,
                 child: const Text(
                   "+1",
@@ -100,9 +94,7 @@ class TapButtons extends StatelessWidget {
           SizedBox(
             width: 48,
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.zero
-              ),
+              style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
               onPressed: enabled ? () => onTempoModified(5) : null,
               child: const Text(
                 "+5",

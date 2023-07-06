@@ -6,7 +6,7 @@ import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueFormatter.dart';
 
 import '../NuxFXID.dart';
-import '../utilities/MathEx.dart';
+import '../../../utilities/MathEx.dart';
 import '../value_formatters/SwitchFormatters.dart';
 import 'MidiControllerHandles.dart';
 

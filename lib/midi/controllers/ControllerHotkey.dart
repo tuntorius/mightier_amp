@@ -1,13 +1,13 @@
 import 'package:mighty_plug_manager/audio/setlist_player/setlistPlayerState.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/presetsStorage.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/utilities/DelayTapTimer.dart';
+import 'package:mighty_plug_manager/utilities/DelayTapTimer.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/effects/MidiControllerHandles.dart';
 import '../../bluetooth/devices/effects/Processor.dart';
 import '../../bluetooth/devices/features/looper.dart';
 import '../../bluetooth/devices/presets/Preset.dart';
-import '../../bluetooth/devices/utilities/MathEx.dart';
+import '../../utilities/MathEx.dart';
 import '../../bluetooth/devices/value_formatters/TempoFormatter.dart';
 import '../../modules/tempo_trainer.dart';
 import '../ControllerConstants.dart';

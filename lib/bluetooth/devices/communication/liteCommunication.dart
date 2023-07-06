@@ -1,6 +1,5 @@
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 
-import '../../../UI/pages/DebugConsolePage.dart';
 import '../NuxConstants.dart';
 import 'communication.dart';
 

@@ -7,7 +7,7 @@ import '../../../../bluetooth/NuxDeviceControl.dart';
 import '../../../../bluetooth/devices/NuxConstants.dart';
 import '../../../../bluetooth/devices/effects/Processor.dart';
 import '../../../../bluetooth/devices/presets/Preset.dart';
-import '../../../../bluetooth/devices/utilities/DelayTapTimer.dart';
+import '../../../../utilities/DelayTapTimer.dart';
 import '../../../../bluetooth/devices/value_formatters/TempoFormatter.dart';
 import '../../../../bluetooth/devices/value_formatters/ValueFormatter.dart';
 import '../../../popups/alertDialogs.dart';

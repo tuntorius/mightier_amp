@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:qr_utils/qr_utils.dart';
 
 import '../../../../bluetooth/NuxDeviceControl.dart';
+import '../../../../platform/fileSaver.dart';
+import '../../../../platform/platformUtils.dart';
+import '../../../../platform/presetsStorage.dart';
 import '../../../popups/alertDialogs.dart';
 import '../../../popups/exportQRCode.dart';
 
@@ -49,5 +52,22 @@ class PresetListMethods {
         onConfirm: (newName) async {
           await FilePicker().saveFile(newName, data);
         });
+  }
+
+  static void exportPreset(Map<String, dynamic> preset, BuildContext context) {
+    var category = PresetsStorage().findCategoryOfPreset(preset);
+    if (category != null) {
+      String? data =
+          PresetsStorage().presetToJson(category["name"], preset["name"]);
+
+      if (data != null) {
+        if (!PlatformUtils.isIOS) {
+          saveFileString(
+              "application/octet-stream", "${preset["name"]}.nuxpreset", data);
+        } else {
+          PresetListMethods.saveFileIos(preset["name"], data, context);
+        }
+      }
+    }
   }
 }

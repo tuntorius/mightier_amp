@@ -2,125 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/presets/preset_list/presetEffectPreview.dart';
 import 'package:tinycolor2/tinycolor2.dart';
-
-import '/UI/mightierIcons.dart';
 import '/bluetooth/NuxDeviceControl.dart';
 import '/bluetooth/devices/NuxDevice.dart';
-import '/UI/theme.dart';
 import '/UI/toneshare/share_preset.dart';
-
-enum PresetItemActions {
-  Delete,
-  Rename,
-  ChangeChannel,
-  Duplicate,
-  Export,
-  ChangeCategory,
-  ExportQR
-}
+import 'presets_popup_menus.dart';
 
 class PresetItem extends StatelessWidget {
   final Map<String, dynamic> item;
   final NuxDevice device;
   final bool simplified;
   final bool hideNotApplicable;
-  final TextStyle? ampTextStyle;
   final void Function()? onTap;
   final void Function(PresetItemActions, Map<String, dynamic>)? onPopupMenuTap;
-
-  static final List<PopupMenuEntry> _popupSubmenu = <PopupMenuEntry>[
-    PopupMenuItem(
-      value: PresetItemActions.Delete,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.delete,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Delete"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.ChangeChannel,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.circle,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Change Channel"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.ChangeCategory,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            MightierIcons.tag,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Change Category"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.Rename,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.drive_file_rename_outline,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Rename"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.Duplicate,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.copy,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Duplicate"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.ExportQR,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.qr_code_2,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Share as QR Code"),
-        ],
-      ),
-    ),
-    PopupMenuItem(
-      value: PresetItemActions.Export,
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.archive,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Backup Preset"),
-        ],
-      ),
-    )
-  ];
 
   const PresetItem(
       {Key? key,
@@ -128,7 +21,6 @@ class PresetItem extends StatelessWidget {
       required this.device,
       required this.simplified,
       this.onTap,
-      this.ampTextStyle,
       this.onPopupMenuTap,
       required this.hideNotApplicable})
       : super(key: key);
@@ -145,7 +37,7 @@ class PresetItem extends StatelessWidget {
           child: Icon(Icons.more_vert),
         ),
         itemBuilder: (context) {
-          return _popupSubmenu;
+          return PresetsPopupMenus.popupMenuPreset;
         },
         onSelected: (pos) {
           onPopupMenuTap?.call(pos as PresetItemActions, item);
@@ -272,11 +164,8 @@ class PresetItem extends StatelessWidget {
           title: Text(item["name"],
               style:
                   TextStyle(color: enabled ? Colors.white : Colors.grey[600])),
-          subtitle: PresetEffectPreview(
-              device: dev,
-              preset: item,
-              ampTextStyle: ampTextStyle,
-              enabled: enabled),
+          subtitle:
+              PresetEffectPreview(device: dev, preset: item, enabled: enabled),
           trailing: _createPresetTrailingWidget(item, context),
           onTap: onTap),
     );

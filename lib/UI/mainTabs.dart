@@ -29,13 +29,14 @@ class MainTabs extends StatefulWidget {
   MainTabs({Key? key}) : super(key: key);
 
   @override
-  State<MainTabs> createState() => _MainTabsState();
+  State<MainTabs> createState() => MainTabsState();
 }
 
-class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
+class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   int _currentIndex = 0;
   late BuildContext dialogContext;
   late TabController controller;
+  late TabVisibilityController _visibilityController;
   late final List<Widget> _tabs;
 
   bool isBottomDrawerOpen = false;
@@ -60,23 +61,27 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
     super.initState();
 
+    _visibilityController = TabVisibilityController(5);
+
     //add 5 pages widgets
-    _tabs = const [
-      PresetEditor(),
-      PresetList(),
-      DrumsPage(),
-      JamTracks(),
-      Settings(),
+    _tabs = [
+      const PresetEditor(),
+      PresetList(
+          visibilityEventHandler: _visibilityController.getEventHandler(1)),
+      const DrumsPage(),
+      const JamTracks(),
+      const Settings(),
     ];
 
     controller =
         TabController(initialIndex: 0, length: _tabs.length, vsync: this);
 
-    controller.addListener(() {
-      setState(() {
-        _currentIndex = controller.index;
-      });
-    });
+    // controller.addListener(() {
+    //   setState(() {
+    //     _visibilityController.onTabChanged(_currentIndex, controller.index);
+    //     _currentIndex = controller.index;
+    //   });
+    // });
 
     NuxDeviceControl.instance().connectStatus.listen(connectionStateListener);
     NuxDeviceControl.instance().addListener(onDeviceChanged);
@@ -249,7 +254,7 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         child: NestedWillPopScope(
           onWillPop: _willPopCallback,
           child: Scaffold(
-            resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomInset: controller.index == 1,
             appBar: layoutMode != LayoutMode.navBar ? null : const MAAppBar(),
             body: Stack(
               alignment: Alignment.bottomCenter,
@@ -314,8 +319,31 @@ class _MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
   void _onSwitchPageIndex(int index) {
     setState(() {
+      _visibilityController.onTabChanged(_currentIndex, index);
       _currentIndex = index;
       controller.animateTo(_currentIndex);
     });
+  }
+}
+
+class TabVisibilityEventHandler {
+  void Function()? onTabSelected;
+  void Function()? onTabDeselected;
+}
+
+class TabVisibilityController {
+  late List<TabVisibilityEventHandler> eventHandlers;
+  TabVisibilityController(int tabAmount) {
+    eventHandlers =
+        List.generate(tabAmount, (index) => TabVisibilityEventHandler());
+  }
+
+  TabVisibilityEventHandler getEventHandler(int tab) {
+    return eventHandlers[tab];
+  }
+
+  void onTabChanged(int oldTab, int newTab) {
+    eventHandlers[oldTab].onTabDeselected?.call();
+    eventHandlers[newTab].onTabSelected?.call();
   }
 }

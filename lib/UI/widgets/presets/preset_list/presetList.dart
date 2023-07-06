@@ -46,7 +46,7 @@ class _PresetListState extends State<PresetList>
   Map<String, NuxDevice> devices = <String, NuxDevice>{};
   bool _showSearch = false;
   final TextEditingController _searchText = TextEditingController(text: "");
-
+  late ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
@@ -57,6 +57,8 @@ class _PresetListState extends State<PresetList>
     }
     _registerListeners();
     _searchText.addListener(refreshPresets);
+
+    _scrollController = ScrollController();
   }
 
   @override
@@ -165,55 +167,68 @@ class _PresetListState extends State<PresetList>
         _lists.length, (index) => _buildList(index, hideNonApplicable));
 
     return SafeArea(
-      child: DragAndDropLists(
-        key: const PageStorageKey<String>("presets"),
-        children: list,
-        headerWidget: header,
-        lastListTargetSize: 60,
-        contentsWhenEmpty: const SizedBox(
-          height: 50,
-          child: Center(
-            child: Text("Empty"),
-          ),
-        ),
-        onItemReorder: _onItemReorder,
-        onListReorder: _onListReorder,
-        itemGhost: (item) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.keyboard_arrow_right,
-                size: 30,
-                color: Colors.grey,
+      child: CustomScrollView(
+        slivers: [
+          if (header != null)
+            SliverAppBar(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              title: header,
+              titleSpacing: 0,
+              floating: true,
+              snap: true,
+            ),
+          DragAndDropLists(
+            scrollController: _scrollController,
+            sliverList: true,
+            key: const PageStorageKey<String>("presets"),
+            children: list,
+            headerWidget: header,
+            lastListTargetSize: 60,
+            contentsWhenEmpty: const SliverFillRemaining(
+              child: Center(
+                child: Text("Empty"),
               ),
-              Expanded(child: Opacity(opacity: 0.4, child: item))
-            ],
-          );
-        },
-        itemGhostOpacity: 1,
-        itemDragOffset: const Offset(30, 0),
-        // listGhost is mandatory when using expansion tiles to prevent multiple widgets using the same globalkey
-        listGhost: Container(
-          color: Colors.blue,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 100.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white),
-                  borderRadius: BorderRadius.circular(7.0),
-                ),
-                child: const Icon(
-                  Icons.add_box,
-                  color: Colors.white,
+            ),
+            onItemReorder: _onItemReorder,
+            onListReorder: _onListReorder,
+            itemGhost: (item) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.keyboard_arrow_right,
+                    size: 30,
+                    color: Colors.grey,
+                  ),
+                  Expanded(child: Opacity(opacity: 0.4, child: item))
+                ],
+              );
+            },
+            itemGhostOpacity: 1,
+            itemDragOffset: const Offset(30, 0),
+            // listGhost is mandatory when using expansion tiles to prevent multiple widgets using the same globalkey
+            listGhost: Container(
+              color: Colors.blue,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 100.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                    child: const Icon(
+                      Icons.add_box,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -230,25 +245,32 @@ class _PresetListState extends State<PresetList>
       }
     }
     presetList.sort((a, b) => a["name"].compareTo(b["name"]));
-    return Column(
-      children: [
-        header!,
-        if (presetList.isEmpty)
-          const Padding(
-              padding: EdgeInsets.only(top: 20), child: Text("No Results")),
-        if (presetList.isNotEmpty)
-          Expanded(
-            child: ListView.builder(
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            title: header,
+            titleSpacing: 0,
+            floating: true,
+            snap: true,
+          ),
+          if (presetList.isEmpty)
+            const SliverFillRemaining(
+              child: Center(child: Text("No Results")),
+            ),
+          if (presetList.isNotEmpty)
+            SliverList.builder(
               itemBuilder: (context, index) {
                 return _presetWidget(presetList[index], hideNonApplicable);
               },
               itemCount: presetList.length,
-              prototypeItem: const ListTile(
-                subtitle: SizedBox.shrink(),
-              ),
-            ),
-          )
-      ],
+              // prototypeItem: const ListTile(
+              //   subtitle: SizedBox.shrink(),
+              // ),
+            )
+        ],
+      ),
     );
   }
 

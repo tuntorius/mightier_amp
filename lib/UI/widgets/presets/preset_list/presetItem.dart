@@ -272,11 +272,11 @@ class PresetItem extends StatelessWidget {
           title: Text(item["name"],
               style:
                   TextStyle(color: enabled ? Colors.white : Colors.grey[600])),
-          subtitle: Opacity(
-            opacity: enabled ? 1 : 0.5,
-            child: PresetEffectPreview(
-                device: dev, preset: item, ampTextStyle: ampTextStyle),
-          ),
+          subtitle: PresetEffectPreview(
+              device: dev,
+              preset: item,
+              ampTextStyle: ampTextStyle,
+              enabled: enabled),
           trailing: _createPresetTrailingWidget(item, context),
           onTap: onTap),
     );

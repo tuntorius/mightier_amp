@@ -193,8 +193,10 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         //just a reset, not connect
         if (NuxDeviceControl.instance().isConnectionComplete()) {
           dialogSetState = null;
-          _timeout.cancel();
-          Navigator.pop(context);
+          if (_timeout.isActive) {
+            _timeout.cancel();
+            Navigator.pop(context);
+          }
         }
         debugPrint("presets loaded");
         break;

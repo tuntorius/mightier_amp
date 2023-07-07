@@ -147,7 +147,7 @@ class PresetDataIndex8BT {
 class PresetDataIndex2040BT {
   static const effectTypesIndex = [
     0, //not used but there must be a value here
-    amp_type,
+    0,
     mod_type,
     dly_type,
     rvb_type

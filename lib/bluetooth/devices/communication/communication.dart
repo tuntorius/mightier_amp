@@ -159,4 +159,6 @@ abstract class DeviceCommunication {
   int percentageTo7Bit(double val) {
     return (val / 100 * 127).floor();
   }
+
+  void fillTestData() {}
 }

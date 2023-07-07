@@ -9,7 +9,7 @@ import '../Processor.dart';
 abstract class LiteAmplifier extends Amplifier {
   //TODO: check if correct
   @override
-  int? get nuxEffectTypeIndex => PresetDataIndexLite.drivetype;
+  int? get nuxEffectTypeIndex => null;
   @override
   int? get nuxEnableIndex => null;
 

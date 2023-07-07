@@ -37,7 +37,6 @@ class MLitePreset extends Preset {
   bool delayEnabled = true;
   bool reverbEnabled = true;
 
-  int selectedAmp = 0;
   int selectedMod = 0;
   int selectedAmbience = 0;
 
@@ -131,7 +130,7 @@ class MLitePreset extends Preset {
       case 0:
         return 0;
       case 1:
-        return selectedAmp;
+        return 0;
       case 2:
         return selectedMod;
       case 3:
@@ -145,9 +144,6 @@ class MLitePreset extends Preset {
   @override
   void setSelectedEffectForSlot(int slot, int index, bool notifyBT) {
     switch (slot) {
-      case 1:
-        selectedAmp = index;
-        break;
       case 2:
         selectedMod = index;
         break;

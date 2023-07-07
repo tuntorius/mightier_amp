@@ -9,7 +9,7 @@ import '../Processor.dart';
 abstract class M8BTAmplifier extends Amplifier {
   //TODO: check if correct
   @override
-  int? get nuxEffectTypeIndex => PresetDataIndexLite.drivetype;
+  int? get nuxEffectTypeIndex => null;
   @override
   int? get nuxEnableIndex => null;
 

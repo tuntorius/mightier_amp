@@ -168,4 +168,75 @@ class LiteCommunication extends DeviceCommunication {
     super.onDisconnect();
     _readyPresetsCount = 0;
   }
+
+  @override
+  void fillTestData() {
+    //Data for Mighty 20/40 BT
+    _handlePresetDataPiece(
+        [240, 7, 0, 48, 0, 0, 0, 50, 0, 20, 41, 40, 30, 55, 0, 2, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 0, 49, 52, 24, 100, 0, 0, 50, 34, 14, 1, 0, 30, 50, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 0, 50, 20, 1, 3, 116, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 1, 48, 0, 0, 0, 50, 1, 70, 23, 30, 30, 20, 0, 1, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 1, 49, 78, 41, 100, 0, 0, 50, 39, 19, 1, 0, 28, 50, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 1, 50, 35, 1, 3, 116, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 2, 48, 1, 70, 0, 50, 2, 80, 20, 50, 50, 50, 0, 2, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 2, 49, 55, 39, 100, 0, 0, 50, 52, 19, 1, 0, 20, 50, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 2, 50, 35, 1, 3, 116, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 3, 48, 0, 45, 0, 50, 3, 100, 21, 50, 50, 35, 0, 1, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 3, 49, 50, 50, 100, 0, 2, 50, 50, 40, 1, 0, 40, 50, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 3, 50, 25, 1, 5, 71, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 4, 48, 0, 0, 0, 50, 4, 50, 50, 40, 90, 0, 1, 1, 128, 247]);
+    _handlePresetDataPiece([
+      240,
+      7,
+      4,
+      49,
+      50,
+      100,
+      100,
+      1,
+      1,
+      50,
+      30,
+      20,
+      0,
+      0,
+      11,
+      50,
+      128,
+      247
+    ]);
+    _handlePresetDataPiece(
+        [240, 7, 4, 50, 26, 1, 3, 119, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 5, 48, 0, 0, 0, 50, 5, 80, 12, 30, 100, 15, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 5, 49, 27, 50, 100, 0, 1, 50, 35, 20, 1, 0, 15, 50, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 5, 50, 25, 1, 3, 119, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 6, 48, 1, 70, 0, 50, 6, 80, 25, 40, 50, 50, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 6, 49, 2, 27, 100, 0, 0, 50, 50, 24, 0, 0, 11, 50, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 6, 50, 70, 1, 3, 116, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 7, 48, 0, 49, 0, 50, 7, 100, 17, 50, 50, 50, 0, 0, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 7, 49, 2, 49, 100, 1, 0, 50, 60, 34, 1, 0, 60, 50, 128, 247]);
+    _handlePresetDataPiece(
+        [240, 7, 7, 50, 20, 1, 3, 119, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
+  }
 }

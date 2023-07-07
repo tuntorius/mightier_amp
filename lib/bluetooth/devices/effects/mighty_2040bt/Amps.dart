@@ -8,7 +8,7 @@ import '../Processor.dart';
 
 abstract class MXXBTAmplifier extends Amplifier {
   @override
-  int? get nuxEffectTypeIndex => PresetDataIndex2040BT.amp_type;
+  int? get nuxEffectTypeIndex => null;
   @override
   int? get nuxEnableIndex => null;
   @override

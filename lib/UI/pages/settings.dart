@@ -328,6 +328,10 @@ class _SettingsState extends State<Settings> {
             },
           ),
           if (Settings.devMode)
+            ElevatedButton(
+                onPressed: () => device.communication.fillTestData(),
+                child: const Text("Fill test data")),
+          if (Settings.devMode)
             ListTile(
                 title: const Text("Debug Console"),
                 trailing: const Icon(Icons.keyboard_arrow_right),

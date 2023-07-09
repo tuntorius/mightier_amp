@@ -37,7 +37,7 @@ class Amp1 extends MXXBTAmplifier {
   final name = "Amplifier";
 
   @override
-  int get nuxIndex => 1;
+  int get nuxIndex => 0;
 
   @override
   bool isSeparator = false;

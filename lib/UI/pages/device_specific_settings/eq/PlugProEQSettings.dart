@@ -55,10 +55,12 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
           onInvert: (invert) {
             device.config.bluetoothInvertChannel = invert;
             communication.setBTInvert(device.config.bluetoothInvertChannel);
+            setState(() {});
           },
           onMute: (mute) {
             device.config.bluetoothEQMute = mute;
             communication.setBTMute(device.config.bluetoothEQMute);
+            setState(() {});
           })
     ];
   }

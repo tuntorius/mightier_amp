@@ -25,6 +25,7 @@ class SettingsKeys {
   static const String tempoTrainerStep = "trainerStep";
   static const String tempoTrainerChangeMode = "trainerChangeMode";
   static const String tempoTrainerChangeUnits = "trainerChangeUnits";
+  static const String trackGain = "jamTracksGain";
 }
 
 class SharedPrefs {

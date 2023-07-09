@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -15,7 +16,9 @@ enum ABRepeatState { off, addedA, addedB }
 class AutomationController {
   final TrackAutomation automation;
   final JamTrack track;
-  final player = AudioPlayer();
+  late AudioPlayer player;
+  late AudioPipeline _pipeline;
+  final _enhancer = AndroidLoudnessEnhancer();
 
   final StreamController<Duration> _positionController =
       StreamController<Duration>();
@@ -46,7 +49,20 @@ class AutomationController {
   ABRepeatState _abRepeatState = ABRepeatState.off;
   ABRepeatState get abRepeatState => _abRepeatState;
 
-  AutomationController(this.track, this.automation);
+  AutomationController(this.track, this.automation) {
+    if (Platform.isAndroid) {
+      _pipeline = AudioPipeline(androidAudioEffects: [_enhancer]);
+      player = AudioPlayer(audioPipeline: _pipeline);
+      _pipeline.androidAudioEffects.add(_enhancer);
+      _enhancer.setEnabled(true);
+    } else {
+      player = AudioPlayer();
+    }
+  }
+
+  void setGain(double gain) {
+    _enhancer.setTargetGain(gain / 10);
+  }
 
   Stream<Duration> get positionStream => _positionController.stream;
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../platform/simpleSharedPrefs.dart';
 import '../automationController.dart';
 import '../models/setlist.dart';
 
@@ -10,7 +11,9 @@ enum PlayerState { idle, play, pause }
 class SetlistPlayerState extends ChangeNotifier {
   static final SetlistPlayerState _setlistPlayerState = SetlistPlayerState._();
 
-  SetlistPlayerState._();
+  SetlistPlayerState._() {
+    gain = SharedPrefs().getValue(SettingsKeys.trackGain, 0.0);
+  }
 
   factory SetlistPlayerState.instance() {
     return _setlistPlayerState;
@@ -32,6 +35,7 @@ class SetlistPlayerState extends ChangeNotifier {
 
   int _pitch = 1;
   double _speed = 1;
+  double _gain = 0;
 
   ABRepeatState get abRepeat => automation?.abRepeatState ?? ABRepeatState.off;
 
@@ -45,6 +49,12 @@ class SetlistPlayerState extends ChangeNotifier {
   set speed(val) {
     _speed = val;
     notifyListeners();
+  }
+
+  double get gain => _gain;
+  set gain(double val) {
+    _gain = val;
+    automation?.setGain(_gain);
   }
 
   AutomationController? get automation => _automation;
@@ -82,6 +92,7 @@ class SetlistPlayerState extends ChangeNotifier {
       await _automation?.setAudioFile(track.path, 70);
       _automation?.setTrackCompleteEvent(_onTrackComplete);
       _automation?.positionStream.listen(_onPosition);
+      automation?.setGain(_gain);
       pitch = _automation?.pitch ?? 1;
       speed = _automation?.speed ?? 1;
     }

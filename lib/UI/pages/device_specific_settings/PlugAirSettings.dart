@@ -104,6 +104,7 @@ class _PlugAirSettingsState extends State<PlugAirSettings> {
                     );
                   }
                 : null),
+        const Divider()
       ],
     );
   }

@@ -89,6 +89,7 @@ class _PlugProSettingsState extends State<PlugProSettings> {
             }
           },
         ),
+        const Divider()
       ],
     );
   }

@@ -213,7 +213,6 @@ class _SettingsState extends State<Settings> {
                     },
                   ),
                 device.getSettingsWidget(),
-                const Divider(),
                 ListTile(
                   title: const Text("Remote Control"),
                   subtitle:

@@ -48,8 +48,8 @@ class _PlugProSettingsState extends State<PlugProSettings> {
                 builder: (context) => const PlugProEQSettings()));
           },
         ),
-        if (!widget.device.deviceControl.isConnected ||
-            (widget.mightySpace &&
+        if (widget.mightySpace &&
+            (!widget.device.deviceControl.isConnected ||
                 (widget.device as NuxMightySpace).speakerAvailable))
           ListTile(
             leading: const Icon(Icons.speaker),

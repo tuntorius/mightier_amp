@@ -30,7 +30,7 @@ class DrumEditor extends StatefulWidget {
 
 class _DrumEditorState extends State<DrumEditor>
     with AutomaticKeepAliveClientMixin<DrumEditor> {
-  final _drumStyles = NuxDeviceControl.instance().device.getDrumStyles();
+  late dynamic _drumStyles;
   DrumEditorLayout _layout = DrumEditorLayout.Standard;
   DrumEditorMode _mode = DrumEditorMode.regular;
   int _selectedDrumPattern = 0;
@@ -39,6 +39,7 @@ class _DrumEditorState extends State<DrumEditor>
   @override
   void initState() {
     super.initState();
+    _drumStyles = NuxDeviceControl.instance().device.getDrumStyles();
     NuxDeviceControl.instance().addListener(_onStateChanged);
   }
 
@@ -255,6 +256,7 @@ class _DrumEditorState extends State<DrumEditor>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final mediaQuery = MediaQuery.of(context);
     final bool portrait = mediaQuery.orientation == Orientation.portrait;
     final bool smallControls =
@@ -436,11 +438,12 @@ class _DrumEditorState extends State<DrumEditor>
   }
 
   void _onStateChanged() {
-    setState(() {});
+    _drumStyles = NuxDeviceControl.instance().device.getDrumStyles();
     if (device.drumsEnabled == false &&
         TempoTrainer.instance().enable == true) {
       TempoTrainer.instance().enable = false;
     }
+    setState(() {});
   }
 
   @override

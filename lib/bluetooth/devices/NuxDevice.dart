@@ -199,6 +199,7 @@ abstract class NuxDevice extends ChangeNotifier {
   //drum stuff
   double get drumsMinTempo => 40;
   double get drumsMaxTempo => 240;
+  bool get drumToneControls => false;
   bool get drumsEnabled => config.drumsEnabled;
   int get selectedDrumStyle => config.selectedDrumStyle;
   double get drumsVolume => config.drumsVolume;

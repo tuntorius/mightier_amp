@@ -156,6 +156,9 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner {
   double get drumsTreble => config.drumsTreble;
 
   @override
+  bool get drumToneControls => true;
+
+  @override
   double get drumsMaxTempo => 300;
 
   @override

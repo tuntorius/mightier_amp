@@ -195,6 +195,7 @@ class _DrumEditorState extends State<DrumEditor>
   }
 
   List<Widget> _toneSliders(bool small) {
+    if (device.drumToneControls) return [];
     var dev = device as NuxMightyPlugPro;
     return [
       ThickSlider(

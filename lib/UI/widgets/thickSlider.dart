@@ -24,6 +24,7 @@ class ThickSlider extends StatefulWidget {
   final bool handleVerticalDrag;
   final Parameter? parameter;
   final double? maxHeight;
+  final bool snapToCenter;
 
   const ThickSlider(
       {Key? key,
@@ -32,6 +33,7 @@ class ThickSlider extends StatefulWidget {
       this.min = 0,
       this.max = 1,
       required this.value,
+      this.snapToCenter = false,
       this.onDragStart,
       this.onChanged,
       this.onDragEnd,
@@ -84,6 +86,22 @@ class _ThickSliderState extends State<ThickSlider> {
         : 0.0;
   }
 
+  //lerp with an optional snap to center
+  double _lerpSnap(double value) {
+    if (widget.snapToCenter) {
+      if (value >= 0.475 && value <= 0.525) return _lerp(0.5);
+    }
+    return _lerp(value);
+  }
+
+  //lerp with an optional snap to center with min & max
+  double _lerpSnap2(double value, double min, double max) {
+    if (widget.snapToCenter) {
+      if (value >= 0.475 && value <= 0.525) return _lerp2(0.5, min, max);
+    }
+    return _lerp2(value, min, max);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -118,10 +136,12 @@ class _ThickSliderState extends State<ThickSlider> {
     if (posAbs > height * 4) scale = 0.125;
     if (posAbs > height * 5.5) scale = 0.0625;
     if (!widget.enabled) return;
+
     addPercentage(delta.dx * scale, width);
     emitCounter++;
+
     bool skip = emitCounter % widget.skipEmitting != 0;
-    widget.onChanged?.call(_lerp(factor), skip);
+    widget.onChanged?.call(_lerpSnap(factor), skip);
     ownUpdate = true;
   }
 
@@ -129,11 +149,11 @@ class _ThickSliderState extends State<ThickSlider> {
     if (!widget.enabled) return;
     scale = 1;
     //call the last factor value here
-    widget.onChanged?.call(_lerp(factor), false);
-    widget.onDragEnd?.call(_lerp(factor));
+    widget.onChanged?.call(_lerpSnap(factor), false);
+    widget.onDragEnd?.call(_lerpSnap(factor));
     ownUpdate = true;
     SemanticsService.announce(
-        widget.labelFormatter(_lerp(factor)), TextDirection.ltr);
+        widget.labelFormatter(_lerpSnap(factor)), TextDirection.ltr);
   }
 
   void manualValueEnter() {
@@ -197,7 +217,7 @@ class _ThickSliderState extends State<ThickSlider> {
       child: Semantics(
         slider: true,
         label: widget.label,
-        value: widget.labelFormatter(_lerp(factor)),
+        value: widget.labelFormatter(_lerpSnap(factor)),
         enabled: widget.enabled,
         excludeSemantics: true,
         child: LayoutBuilder(
@@ -236,7 +256,7 @@ class _ThickSliderState extends State<ThickSlider> {
                     width: max(factor * width, 0),
                   ),
                   Positioned(
-                      left: _lerp2(factor, 10, width - 10) - 10,
+                      left: _lerpSnap2(factor, 10, width - 10) - 10,
                       width: 20,
                       height: height * 0.9,
                       child: Container(
@@ -258,7 +278,7 @@ class _ThickSliderState extends State<ThickSlider> {
                                 fontSize: 20),
                           ),
                           Text(
-                            widget.labelFormatter(_lerp(factor)),
+                            widget.labelFormatter(_lerpSnap(factor)),
                             style: TextStyle(
                                 color: widget.enabled
                                     ? Colors.white

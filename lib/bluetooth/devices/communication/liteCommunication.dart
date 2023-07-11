@@ -116,7 +116,10 @@ class LiteCommunication extends DeviceCommunication {
   @override
   void setUsbOutputVolume(int vol) {}
   @override
-  void saveCurrentPreset(int index) {}
+  void saveCurrentPreset(int index) {
+    var data = createCCMessage(MidiCCValues.bCC_CtrlCmd, 0x7e);
+    device.deviceControl.sendBLEData(data);
+  }
 
   void _handlePresetDataPiece(List<int> data) {
     var total = (data[3] & 0xf0) >> 4;
@@ -142,6 +145,8 @@ class LiteCommunication extends DeviceCommunication {
         } else {
           //device.deviceControl.sendBLEData(requestPresetByIndex(data[2] + 1));
         }
+      } else {
+        device.deviceControl.forceNotifyListeners();
       }
     }
   }

@@ -490,7 +490,6 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void saveNuxPreset() async {
     if (!isConnected) return;
-    //TODO: This fixes nothing! you must send the original volume
     double vol = 0;
     if (device.fakeMasterVolume) {
       vol = masterVolume;

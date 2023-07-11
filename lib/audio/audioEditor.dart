@@ -6,7 +6,6 @@ import 'dart:math';
 import 'package:audio_waveform/audio_waveform.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/audio/automationController.dart';
@@ -17,6 +16,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:page_view_indicators/circle_page_indicator.dart';
 
+import 'lib_adapters/audio_player_adapter.dart';
 import 'models/jamTrack.dart';
 import 'models/trackAutomation.dart';
 import 'models/waveform_data.dart';
@@ -128,8 +128,7 @@ class _AudioEditorState extends State<AudioEditor> {
     });
   }
 
-  void freeDecoder()
-  {
+  void freeDecoder() {
     SourceResolver.releaseUrl(widget.track.path, _resolvedPath);
   }
 
@@ -152,7 +151,7 @@ class _AudioEditorState extends State<AudioEditor> {
     });
   }
 
-  void playerStateUpdate(PlayerState state) {
+  void playerStateUpdate(AudioPlayerState state) {
     //just refresh state so the play button is correct
     setState(() {});
   }
@@ -334,11 +333,7 @@ class _AudioEditorState extends State<AudioEditor> {
                 },
                 height: 70,
                 child: Icon(
-                  automation.playerState.playing == false ||
-                          automation.playerState.processingState ==
-                              ProcessingState.completed
-                      ? Icons.play_arrow
-                      : Icons.pause,
+                  automation.playing == false ? Icons.play_arrow : Icons.pause,
                   color: Colors.white,
                   size: 50,
                 ),

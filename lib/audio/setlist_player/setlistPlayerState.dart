@@ -108,7 +108,7 @@ class SetlistPlayerState extends ChangeNotifier {
     if (setlist == null) return;
     if (_automation == null) await _openTrack(currentTrack);
     await _automation?.playPause();
-    if (_automation!.player.playerState.playing == false) {
+    if (_automation!.player.playing == false) {
       state = PlayerState.pause;
     } else {
       state = PlayerState.play;

@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import 'lib_adapters/audio_player_adapter.dart';
 import 'models/jamTrack.dart';
 import 'online_sources/sourceResolver.dart';
 import '../platform/platformUtils.dart';
@@ -16,9 +15,7 @@ enum ABRepeatState { off, addedA, addedB }
 class AutomationController {
   final TrackAutomation automation;
   final JamTrack track;
-  late AudioPlayer player;
-  late AudioPipeline _pipeline;
-  final _enhancer = AndroidLoudnessEnhancer();
+  late AudioPlayerAdapter player;
 
   final StreamController<Duration> _positionController =
       StreamController<Duration>();
@@ -50,25 +47,18 @@ class AutomationController {
   ABRepeatState get abRepeatState => _abRepeatState;
 
   AutomationController(this.track, this.automation) {
-    if (Platform.isAndroid) {
-      _pipeline = AudioPipeline(androidAudioEffects: [_enhancer]);
-      player = AudioPlayer(audioPipeline: _pipeline);
-      _pipeline.androidAudioEffects.add(_enhancer);
-      _enhancer.setEnabled(true);
-    } else {
-      player = AudioPlayer();
-    }
+    player = AudioPlayerAdapterFactory.create();
   }
 
   void setGain(double gain) {
-    _enhancer.setTargetGain(gain / 10);
+    player.setGain(gain);
   }
 
   Stream<Duration> get positionStream => _positionController.stream;
 
-  Duration get duration => player.duration ?? const Duration();
-  PlayerState get playerState => player.playerState;
-  Stream<PlayerState> get playerStateStream => player.playerStateStream;
+  Duration get duration => player.duration;
+  AudioPlayerState get playerState => player.playerState;
+  Stream<AudioPlayerState> get playerStateStream => player.playerStateStream;
   bool get playing => player.playing;
 
   Function? onTrackComplete;
@@ -117,8 +107,7 @@ class AutomationController {
   Future setAudioFile(String path, int positionEventSkips) async {
     _sourceUrl = path;
     _resolvedUrl = await SourceResolver.getSourceUrl(_sourceUrl);
-    var source = ProgressiveAudioSource(Uri.parse(_resolvedUrl));
-    await player.setAudioSource(source);
+    await player.setAudioFile(_resolvedUrl);
 
     if (NuxDeviceControl.instance().isConnected) {
       _latency = SharedPrefs().getInt(SettingsKeys.latency, 0);
@@ -130,12 +119,8 @@ class AutomationController {
     setPitch(pitch);
 
     //force 10ms precision. It's needed for accurate event switch
-    _positionSubscription = player
-        .createPositionStream(
-            steps: 1,
-            minPeriod: const Duration(milliseconds: 5),
-            maxPeriod: const Duration(milliseconds: 5))
-        .listen(playPositionUpdate);
+    _positionSubscription =
+        player.createPositionStream().listen(playPositionUpdate);
 
     _positionResolution = max(1, positionEventSkips);
   }
@@ -237,7 +222,7 @@ class AutomationController {
   }
 
   Future play() async {
-    if (playerState.processingState == ProcessingState.completed) {
+    if (playerState == AudioPlayerState.reachedEnd) {
       await player.seek(const Duration(seconds: 0));
     }
     player.play();
@@ -245,8 +230,7 @@ class AutomationController {
   }
 
   Future playPause() async {
-    if (playerState.playing == false ||
-        playerState.processingState == ProcessingState.completed) {
+    if (playing == false) {
       await play();
     } else {
       await player.pause();
@@ -254,7 +238,7 @@ class AutomationController {
   }
 
   Future stop() async {
-    if (playerState.playing) {
+    if (playing) {
       await player.stop();
     }
   }
@@ -420,9 +404,9 @@ class AutomationController {
 
   Future dispose() async {
     _positionSubscription?.cancel();
+    _positionController.close();
     await player.stop();
     await player.dispose();
-    _positionController.close();
     SourceResolver.releaseUrl(_sourceUrl, _resolvedUrl);
     //_eventController.close();
   }

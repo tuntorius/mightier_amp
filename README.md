@@ -7,17 +7,17 @@ This app aims to cover all the functionality of the original app plus many enhan
 - Remote control using a MIDI controller or a HID device. Both USB and Bluetooth MIDI controllers are supported.
 - Landscape mode.
 - Improved Jam Tracks functionality. Select any audio file in your device, add events like loop points, preset changes and others at any point and play along.
+- Tempo/Beat Trainer
 - Various other enhancements.
 
 ## Supported Amps
 
 1.Mighty Plug / Mighty Air  
-2.Mighty Plug Pro / Mighty Space\*  
+2.Mighty Plug Pro / Mighty Space  
 3.Mighty 8 BT\*\*  
-4.Mighty 20 BT\*\* / Mighty 40 BT\*\*  
+4.Mighty 20 BT / Mighty 40 BT  
 5.Mighty BT Lite\*\* / AirBorne Go\*\* / GUO AN\*\*  
 
-\* Mighty Space looper controls are not supported.  
 \*\* These amps are not tested and might not work.  
 
 ## Helpful Resources

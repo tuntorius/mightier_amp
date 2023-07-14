@@ -402,6 +402,61 @@ class CaliCrunch extends PlugProAmplifier {
   ];
 }
 
+class ClassA15 extends PlugProAmplifier {
+  @override
+  final name = "Class A15";
+
+  @override
+  int get nuxIndex => 8;
+  @override
+  int get defaultCab => A112.cabIndex;
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Gain",
+        handle: "gain",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
+        midiCC: MidiCCValuesPro.AMP_Para1,
+        midiControllerHandle: MidiControllerHandles.ampGain),
+    Parameter(
+        name: "Master",
+        handle: "master",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        masterVolume: true,
+        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
+        midiCC: MidiCCValuesPro.AMP_Para2,
+        midiControllerHandle: MidiControllerHandles.ampVolume),
+    Parameter(
+        name: "Bass",
+        handle: "bass",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
+        midiCC: MidiCCValuesPro.AMP_Para3,
+        midiControllerHandle: MidiControllerHandles.ampBass),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
+        midiCC: MidiCCValuesPro.AMP_Para5,
+        midiControllerHandle: MidiControllerHandles.ampTreble),
+    Parameter(
+        name: "Cut",
+        handle: "cut",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
+        midiCC: MidiCCValuesPro.AMP_Para6,
+        midiControllerHandle: MidiControllerHandles.ampTone),
+  ];
+}
+
 class ClassA30 extends PlugProAmplifier {
   @override
   final name = "Class A30";
@@ -1396,69 +1451,6 @@ class TwinRvb extends PlugProAmplifier {
   ];
 }
 
-class ClassA15 extends PlugProAmplifier {
-  @override
-  final name = "Class A15";
-
-  @override
-  int get nuxIndex => 8;
-  @override
-  int get defaultCab => A112.cabIndex;
-
-  @override
-  List<Parameter> parameters = [
-    Parameter(
-        name: "Gain",
-        handle: "gain",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para1,
-        midiCC: MidiCCValuesPro.AMP_Para1,
-        midiControllerHandle: MidiControllerHandles.ampGain),
-    Parameter(
-        name: "Master",
-        handle: "master",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        masterVolume: true,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para2,
-        midiCC: MidiCCValuesPro.AMP_Para2,
-        midiControllerHandle: MidiControllerHandles.ampVolume),
-    Parameter(
-        name: "Bass",
-        handle: "bass",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para3,
-        midiCC: MidiCCValuesPro.AMP_Para3,
-        midiControllerHandle: MidiControllerHandles.ampBass),
-    Parameter(
-        name: "Middle",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4,
-        midiControllerHandle: MidiControllerHandles.ampMiddle),
-    Parameter(
-        name: "Treble",
-        handle: "treble",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para5,
-        midiCC: MidiCCValuesPro.AMP_Para5,
-        midiControllerHandle: MidiControllerHandles.ampTreble),
-    Parameter(
-        name: "Presence",
-        handle: "presence",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
-        midiCC: MidiCCValuesPro.AMP_Para6,
-        midiControllerHandle: MidiControllerHandles.ampTone),
-  ];
-}
-
 class VibroKing extends PlugProAmplifier {
   @override
   final name = "Vibro King";
@@ -1575,8 +1567,8 @@ class Budda extends PlugProAmplifier {
         midiCC: MidiCCValuesPro.AMP_Para5,
         midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
-        name: "Presence",
-        handle: "presence",
+        name: "Cut",
+        handle: "cut",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
@@ -1685,14 +1677,6 @@ class MatchD30 extends PlugProAmplifier {
         midiCC: MidiCCValuesPro.AMP_Para3,
         midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
-        name: "Middle",
-        handle: "mid",
-        value: 50,
-        formatter: ValueFormatters.percentageMPPro,
-        devicePresetIndex: PresetDataIndexPlugPro.AMP_Para4,
-        midiCC: MidiCCValuesPro.AMP_Para4,
-        midiControllerHandle: MidiControllerHandles.ampMiddle),
-    Parameter(
         name: "Treble",
         handle: "treble",
         value: 50,
@@ -1701,8 +1685,8 @@ class MatchD30 extends PlugProAmplifier {
         midiCC: MidiCCValuesPro.AMP_Para5,
         midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
-        name: "Presence",
-        handle: "presence",
+        name: "Cut",
+        handle: "cut",
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,

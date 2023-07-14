@@ -8,6 +8,7 @@ import 'package:convert/convert.dart';
 import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
+import '../NuxFXID.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
 import '../effects/lite/Amps.dart';
@@ -152,6 +153,16 @@ class MLitePreset extends Preset {
         break;
     }
     super.setSelectedEffectForSlot(slot, index, notifyBT);
+  }
+
+  @override
+  int getEffectArrayIndexFromNuxIndex(NuxFXID fxid, int nuxIndex) {
+    if (fxid == LiteFXID.ambience) {
+      for (int i = 0; i < ambiList.length; i++) {
+        if (ambiList[i].nuxIndex == nuxIndex) return i;
+      }
+    }
+    return nuxIndex;
   }
 
   @override

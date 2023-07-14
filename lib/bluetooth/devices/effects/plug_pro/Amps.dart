@@ -1333,14 +1333,14 @@ class Stageman extends PlugProAmplifier {
   ];
 }
 
-class Unknown5 extends PlugProAmplifier {
+class TwinRvb extends PlugProAmplifier {
   @override
-  final name = "Unknown 5";
+  final name = "Twin Reverb";
 
   @override
   int get nuxIndex => 5;
   @override
-  int get defaultCab => JZ120Pro.cabIndex;
+  int get defaultCab => TR212Pro.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -1396,14 +1396,14 @@ class Unknown5 extends PlugProAmplifier {
   ];
 }
 
-class Unknown8 extends PlugProAmplifier {
+class ClassA15 extends PlugProAmplifier {
   @override
-  final name = "Unknown 8";
+  final name = "Class A15";
 
   @override
   int get nuxIndex => 8;
   @override
-  int get defaultCab => JZ120Pro.cabIndex;
+  int get defaultCab => A112.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -1459,14 +1459,14 @@ class Unknown8 extends PlugProAmplifier {
   ];
 }
 
-class Unknown18 extends PlugProAmplifier {
+class VibroKing extends PlugProAmplifier {
   @override
-  final name = "Unknown 18";
+  final name = "Vibro King";
 
   @override
   int get nuxIndex => 18;
   @override
-  int get defaultCab => JZ120Pro.cabIndex;
+  int get defaultCab => VIBROKING310.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -1522,14 +1522,14 @@ class Unknown18 extends PlugProAmplifier {
   ];
 }
 
-class Unknown19 extends PlugProAmplifier {
+class Budda extends PlugProAmplifier {
   @override
-  final name = "Unknown 19";
+  final name = "Budda";
 
   @override
   int get nuxIndex => 19;
   @override
-  int get defaultCab => JZ120Pro.cabIndex;
+  int get defaultCab => BUDDA112.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -1585,9 +1585,9 @@ class Unknown19 extends PlugProAmplifier {
   ];
 }
 
-class Unknown22 extends PlugProAmplifier {
+class BritBlues extends PlugProAmplifier {
   @override
-  final name = "Unknown 22";
+  final name = "Brit Blues";
 
   @override
   int get nuxIndex => 22;
@@ -1648,14 +1648,14 @@ class Unknown22 extends PlugProAmplifier {
   ];
 }
 
-class Unknown23 extends PlugProAmplifier {
+class MatchD30 extends PlugProAmplifier {
   @override
-  final name = "Unknown 23";
+  final name = "Match D30";
 
   @override
   int get nuxIndex => 23;
   @override
-  int get defaultCab => JZ120Pro.cabIndex;
+  int get defaultCab => MATCH212.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -1711,9 +1711,9 @@ class Unknown23 extends PlugProAmplifier {
   ];
 }
 
-class Unknown24 extends PlugProAmplifier {
+class Brit2000 extends PlugProAmplifier {
   @override
-  final name = "Unknown 24";
+  final name = "Brit 2000";
 
   @override
   int get nuxIndex => 24;
@@ -1774,14 +1774,14 @@ class Unknown24 extends PlugProAmplifier {
   ];
 }
 
-class Unknown25 extends PlugProAmplifier {
+class UberHiGain extends PlugProAmplifier {
   @override
-  final name = "Unknown 25";
+  final name = "Uber HiGain";
 
   @override
   int get nuxIndex => 25;
   @override
-  int get defaultCab => JZ120Pro.cabIndex;
+  int get defaultCab => UBER412.cabIndex;
 
   @override
   List<Parameter> parameters = [

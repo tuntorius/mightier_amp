@@ -225,7 +225,7 @@ class BassMate extends PlugProAmplifier {
         name: "Presence",
         handle: "presence",
         value: 100,
-        formatter: ValueFormatters.brightModePro,
+        formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.AMP_Para6,
         midiCC: MidiCCValuesPro.AMP_Para6,
         midiControllerHandle: MidiControllerHandles.ampTone),

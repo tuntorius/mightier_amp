@@ -65,6 +65,9 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
     }
     do {
       let audioFile = try AVAudioFile(forReading: url)
+      let duration = Double(audioFile.length) / audioFile.fileFormat.sampleRate * 1000
+    
+
       player = AVAudioPlayerNode()
       audioEngine = AVAudioEngine()
       audioEngine?.attach(player!)
@@ -76,7 +79,7 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
         self?.stopPositionTimer()
       })
       
-      result(nil)
+      result(duration)
     } catch {
       result(FlutterError(code: "SET_AUDIO_FILE_ERROR", message: "Error setting audio file", details: nil))
     }

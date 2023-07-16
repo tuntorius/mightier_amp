@@ -2,15 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-typedef StaleBookmarkCallback = void Function(String old, String updated);
-
 class AVPlayer {
   static const MethodChannel _channel = MethodChannel('av_player');
   static const EventChannel _playerStateStreamChannel =
       EventChannel('av_player/playerStateStream');
 
+  Duration _duration = Duration();
+  Duration get duration => _duration;
+
   Future<void> setAudioFile(String path) async {
-    await _channel.invokeMethod('setAudioFile', path);
+    int durationMs = await _channel.invokeMethod('setAudioFile', path);
+
+    _duration = Duration(milliseconds: durationMs);
   }
 
   Future<void> play() async {

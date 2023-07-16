@@ -1,9 +1,9 @@
-name: av_picker
+name: av_player
 description: iOS Audio Player Plugin based on AVFoundation.
 version: 1.0.0
 
 environment:
-  sdk: ">=2.12.0 <=3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:

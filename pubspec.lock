@@ -47,6 +47,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  av_player:
+    dependency: "direct main"
+    description:
+      path: "plugins/av_player"
+      relative: true
+    source: path
+    version: "1.0.0"
   boolean_selector:
     dependency: transitive
     description:

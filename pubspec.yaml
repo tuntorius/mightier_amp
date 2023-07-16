@@ -54,6 +54,10 @@ dependencies:
     path: ./plugins/audio_picker
   file_picker:
     path: ./plugins/file_picker
+
+  av_player:
+    path: ./plugins/av_player
+    
   #modified to work on ios but not tested
   on_audio_query: ^2.9.0
 

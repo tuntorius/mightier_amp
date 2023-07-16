@@ -12,13 +12,15 @@ class JustAudioAdapter implements AudioPlayerAdapter {
   late StreamSubscription<Duration> _positionSubscription;
   late StreamSubscription<PlayerState> _stateSubscription;
 
-  final StreamController<Duration> _positionController =
-      StreamController<Duration>();
+  //final StreamController<Duration> _positionController =
+  //    StreamController<Duration>();
 
   final StreamController<AudioPlayerState> _stateController =
       StreamController<AudioPlayerState>();
+
   @override
   Stream<AudioPlayerState> get playerStateStream => _stateController.stream;
+
   JustAudioAdapter() {
     if (Platform.isAndroid) {
       _pipeline = AudioPipeline(androidAudioEffects: [_enhancer]);
@@ -29,10 +31,10 @@ class JustAudioAdapter implements AudioPlayerAdapter {
       _player = AudioPlayer();
     }
 
-    _positionSubscription = _player.positionStream.listen((position) {
-      // Notify the position stream listener
-      _positionController.add(position);
-    });
+    //_positionSubscription = _player.positionStream.listen((position) {
+    // Notify the position stream listener
+    //_positionController.add(position);
+    //});
 
     _stateSubscription = _player.playerStateStream.listen((event) {
       AudioPlayerState event = AudioPlayerState.idle;
@@ -116,7 +118,7 @@ class JustAudioAdapter implements AudioPlayerAdapter {
     await _player.dispose();
     await _positionSubscription.cancel();
     await _stateSubscription.cancel();
-    _positionController.close();
+    //_positionController.close();
     _stateController.close();
   }
 }

@@ -1,6 +1,8 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
@@ -22,7 +24,7 @@ class _CalibrationState extends State<Calibration> {
   bool toggled = false;
   Color presetColor = Preset.channelColors[0];
   NuxDeviceControl devControl = NuxDeviceControl.instance();
-
+  StreamSubscription? _playerSub;
   @override
   void initState() {
     super.initState();
@@ -30,7 +32,7 @@ class _CalibrationState extends State<Calibration> {
     player.setAsset("assets/audio/calibration.wav");
     player.setLoopMode(LoopMode.one);
     player.play();
-    player
+    _playerSub = player
         .createPositionStream(
             steps: 99999999,
             minPeriod: const Duration(milliseconds: 1),
@@ -63,6 +65,7 @@ class _CalibrationState extends State<Calibration> {
     return NestedWillPopScope(
       onWillPop: () async {
         await player.stop();
+        _playerSub?.cancel();
         await player.dispose();
 
         //reset to prevent device losing sync

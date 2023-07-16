@@ -9,7 +9,6 @@ class AudioPicker {
   static const MethodChannel _channel = MethodChannel('audio_picker');
   static AudioPicker? _instance;
 
-  
   StaleBookmarkCallback? _onStaleBookmark;
 
   factory AudioPicker() {
@@ -27,18 +26,14 @@ class AudioPicker {
         var newBookmark = call.arguments[1] as String;
 
         _onStaleBookmark?.call(oldBookmark, newBookmark);
-        //TODO: call the track for updating the playlist
-        // Find the index of the old bookmark data in the list
-        //var index = bookmarks.indexOf(oldBookmark);
-        //bookmarks[index] = newBookmark;
       }
     });
   }
 
-  void regusterOnStaleBookmark(StaleBookmarkCallback callback)
-  {
+  void regusterOnStaleBookmark(StaleBookmarkCallback callback) {
     _onStaleBookmark = callback;
   }
+
   Future<String> pickAudio() async {
     final String absolutePath = await _channel.invokeMethod('pick_audio');
     return absolutePath;
@@ -52,21 +47,21 @@ class AudioPicker {
   }
 
   Future<List<String>> pickAudioFiles() async {
-    final absolutePath = await _channel.invokeMethod('pick_audio_file_multiple');
+    final absolutePath =
+        await _channel.invokeMethod('pick_audio_file_multiple');
 
     if (absolutePath != null) return List<String>.from(absolutePath);
     return absolutePath;
   }
 
-  Future<String> iosBookmarkToUrl(String bookmark) async 
-  {
-    var url = await _channel.invokeMethod('pick_audio_bookmark_to_url', {'bookmark': bookmark});
+  Future<String> iosBookmarkToUrl(String bookmark) async {
+    var url = await _channel
+        .invokeMethod('pick_audio_bookmark_to_url', {'bookmark': bookmark});
     return url;
   }
 
-  void iosReleaseSecurityScope(String url)
-  {
-    _channel.invokeMethod('pick_audio_release_security_scope', {'url':url});
+  void iosReleaseSecurityScope(String url) {
+    _channel.invokeMethod('pick_audio_release_security_scope', {'url': url});
   }
 
   Future<Map<String, String>> getMetadata(String assetUrl) async {

@@ -98,12 +98,10 @@ class SpeedPanel extends StatelessWidget {
         if (compact)
           Row(
               mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: PlatformUtils.isIOS
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _speedControl(),
-                if (!PlatformUtils.isIOS) _pitchControl(),
+                _pitchControl(),
               ]),
         if (!compact)
           ListTile(

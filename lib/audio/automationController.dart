@@ -248,7 +248,6 @@ class AutomationController {
   }
 
   void setPitch(int pitch) {
-    if (PlatformUtils.isIOS) return;
     double lPitch = pow(2, pitch / 12).toDouble();
     player.setPitch(lPitch);
   }

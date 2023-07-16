@@ -53,12 +53,12 @@ class AVFoundationAdapter implements AudioPlayerAdapter {
   }
 
   @override
-  Future<void> dispose() {
+  Future<void> dispose() async {
+    await stop();
     _positionController.close();
     _stateController.close();
     _positionSub?.cancel();
     _playing = false;
-    return stop();
   }
 
   @override

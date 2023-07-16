@@ -7,7 +7,7 @@ class AVPlayer {
   static const EventChannel _playerStateStreamChannel =
       EventChannel('av_player/playerStateStream');
 
-  Duration _duration = Duration();
+  Duration _duration = const Duration();
   Duration get duration => _duration;
 
   Future<void> setAudioFile(String path) async {
@@ -33,7 +33,7 @@ class AVPlayer {
   }
 
   void setPitch(double pitch) {
-    _channel.invokeMethod('setPitch', pitch);
+    _channel.invokeMethod('setPitch', pitch * 1200 - 1200);
   }
 
   Future<void> seek(Duration position) async {
@@ -44,7 +44,14 @@ class AVPlayer {
     return _playerStateStreamChannel
         .receiveBroadcastStream()
         .map<Duration>((position) {
-      return Duration(milliseconds: position);
+          print(position);
+          if (position is int) {
+            return Duration(milliseconds: position);
+          }
+          else {
+            print(position);
+            return Duration();
+          }
     });
   }
 }

@@ -1,5 +1,5 @@
 #import "AVPlayerPlugin.h"
-#import <audio_picker/audio_picker-Swift.h>
+#import <av_player/av_player-Swift.h>
 
 @implementation AVPlayerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {

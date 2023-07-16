@@ -1,5 +1,6 @@
 import 'package:mighty_plug_manager/platform/platformUtils.dart';
 
+import 'avfoundation_adapter.dart';
 import 'just_audio_adapter.dart';
 
 enum AudioPlayerState { idle, reachedEnd }
@@ -24,7 +25,7 @@ abstract class AudioPlayerAdapter {
 
 class AudioPlayerAdapterFactory {
   static AudioPlayerAdapter create() {
-    if (PlatformUtils.isIOS) return JustAudioAdapter();
+    if (PlatformUtils.isIOS) return AVFoundationAdapter();
     return JustAudioAdapter();
   }
 }

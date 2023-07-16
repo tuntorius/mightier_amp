@@ -1,5 +1,5 @@
 import AVFoundation
-
+/*
 class CustomGainEffect: AVAudioUnitEffect {
     private var gain: Float = 0.0
     
@@ -36,4 +36,4 @@ class CustomGainEffect: AVAudioUnitEffect {
         
         return noErr
     }
-}
+}*/

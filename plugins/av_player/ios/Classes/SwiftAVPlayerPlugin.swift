@@ -9,14 +9,16 @@ enum AudioPlayerState: String {
 
 public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
   private var player: AVAudioPlayerNode?
-  private var audioEngine: AVAudioEngine? 
+  private var audioFile: AVAudioFile?
+  private var audioEngine: AVAudioEngine?
+    private var rateEffect: AVAudioUnitTimePitch?
   private var playerStateStreamHandler: FlutterEventSink?
   private var positionTimer: Timer?
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "av_player", binaryMessenger: registrar.messenger())
     let eventChannel = FlutterEventChannel(name: "av_player/playerStateStream", binaryMessenger: registrar.messenger())
-    let instance = YourPlugin()
+    let instance = SwiftAVPlayerPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
     eventChannel.setStreamHandler(instance)
   }
@@ -64,22 +66,38 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
       return
     }
     do {
-      let audioFile = try AVAudioFile(forReading: url)
-      let duration = Double(audioFile.length) / audioFile.fileFormat.sampleRate * 1000
+      // Initialize the AVAudioSession
+      let audioSession = AVAudioSession.sharedInstance()
+
+      // Set the category for background audio playback
+      try audioSession.setCategory(.playback, mode: .default, options: [.duckOthers, .allowAirPlay])
+
+      // Activate the AVAudioSession
+      try audioSession.setActive(true)
+
+      audioFile = try AVAudioFile(forReading: url)
+      let durationSeconds = Double(audioFile!.length) / audioFile!.fileFormat.sampleRate
+      let durationMilliseconds = Int(durationSeconds * 1000)
     
 
       player = AVAudioPlayerNode()
       audioEngine = AVAudioEngine()
       audioEngine?.attach(player!)
-      audioEngine?.connect(player!, to: audioEngine!.outputNode, format: audioFile.processingFormat)
+        rateEffect = AVAudioUnitTimePitch()
+        rateEffect!.rate = 1
+        rateEffect!.pitch = 0
+        audioEngine?.attach(rateEffect!)
+        audioEngine?.connect(player!, to: rateEffect!, format: audioFile!.processingFormat)
+      audioEngine?.connect(rateEffect!, to: audioEngine!.outputNode, format: audioFile!.processingFormat)
       try audioEngine?.start()
       
-      player?.scheduleFile(audioFile, at: nil, completionHandler: { [weak self] in
+      player?.scheduleFile(audioFile!, at: nil, completionHandler: { [weak self] in
         self?.playerStateStreamHandler?(AudioPlayerState.reachedEnd.rawValue)
         self?.stopPositionTimer()
+        self?.deactivateAudioSession()
       })
       
-      result(duration)
+      result(durationMilliseconds)
     } catch {
       result(FlutterError(code: "SET_AUDIO_FILE_ERROR", message: "Error setting audio file", details: nil))
     }
@@ -88,45 +106,49 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
   private func play(result: FlutterResult) {
     player?.play()
     startPositionTimer()
+    activateAudioSession()
     result(nil)
   }
 
   private func pause(result: FlutterResult) {
     player?.pause()
     stopPositionTimer()
+    deactivateAudioSession()
     result(nil)
   }
 
   private func stop(result: FlutterResult) {
     player?.stop()
-    player?.currentTime = 0
+    //player?.currentTime = 0
     stopPositionTimer()
+    deactivateAudioSession()
     result(nil)
   }
 
   private func setSpeed(_ speed: Double, result: FlutterResult) {
-    player?.rate = Float(speed)
+      rateEffect?.rate = Float(speed)
     result(nil)
   }
 
   private func setPitch(_ pitch: Double, result: FlutterResult) {
-    guard let player = player else {
-      result(FlutterError(code: "INVALID_STATE", message: "Audio player not initialized", details: nil))
-      return
-    }
-    let pitchEffect = AVAudioUnitTimePitch()
-    pitchEffect.pitch = Float(pitch)
-    audioEngine?.attach(pitchEffect)
-    audioEngine?.connect(player, to: pitchEffect, format: player.outputFormat(forBus: 0))
-    audioEngine?.connect(pitchEffect, to: audioEngine!.outputNode, format: player.outputFormat(forBus: 0))
-    result(nil)
+      rateEffect?.pitch = Float(pitch)
+      result(nil)
   }
 
   private func seek(position: Int, result: FlutterResult) {
+    guard let player = player, let audioFile = audioFile else {
+      result(FlutterError(code: "INVALID_STATE", message: "Audio player or audio file not initialized", details: nil))
+      return
+    }
+
     let time = Double(position) / 1000.0
-    player?.stop()
-    player?.scheduleSegment(AVAudioFileBuffer(from: player!.file!, position: AVAudioFramePosition(time * player!.file!.fileFormat.sampleRate), length: 0), startingFrame: AVAudioFramePosition(0), frameCount: AVAudioFrameCount(player!.file!.length))
-    player?.play()
+    let sampleTime = AVAudioFramePosition(time * audioFile.fileFormat.sampleRate)
+
+    // Seek to the desired position
+    player.stop()
+    player.scheduleSegment(audioFile, startingFrame: sampleTime, frameCount: AVAudioFrameCount(audioFile.length - sampleTime), at: nil)
+    player.play()
+
     result(nil)
   }
 
@@ -149,19 +171,25 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
     let position = Double(currentTime) / Double(sampleRate) * 1000.0
     playerStateStreamHandler?(Int(position))
   }
-  extension SwiftAVPlayerPlugin: AVAudioPlayerDelegate {
-	  public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-	    playerStateStreamHandler?(AudioPlayerState.reachedEnd.rawValue)
-	    stopPositionTimer()
-	  }
-	
-	  public func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-	    print("Audio player decode error: \(error?.localizedDescription ?? "Unknown error")")
-	  }
-	}
+
+  func activateAudioSession() {
+    do {
+        let audioSession = AVAudioSession.sharedInstance()
+        try audioSession.setActive(true)
+    } catch {
+        print("Error activating AVAudioSession: \(error)")
+    }
+  }
+
+  func deactivateAudioSession() {
+    do {
+        let audioSession = AVAudioSession.sharedInstance()
+        try audioSession.setActive(false)
+    } catch {
+        print("Error deactivating AVAudioSession: \(error)")
+    }
+  }
 }
-
-
 
 extension SwiftAVPlayerPlugin: FlutterStreamHandler {
   public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {

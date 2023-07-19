@@ -332,7 +332,7 @@ class _TracksPageState extends State<TracksPage>
     String trackName = "";
     String url = "";
     if (libSong != null) {
-      artist = libSong.artist != null ? "" : libSong.artist!;
+      artist = libSong.artist == null ? "" : libSong.artist!;
       title = libSong.title;
       url = libSong.uri ?? "";
     } else {

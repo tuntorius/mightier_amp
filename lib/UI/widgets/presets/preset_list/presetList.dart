@@ -285,9 +285,6 @@ class _PresetListState extends State<PresetList>
 
     Widget ui;
     if (_searchText.text.isEmpty) {
-      List<DragAndDropListInterface> list = List.generate(
-          _lists.length, (index) => _buildList(index, hideNonApplicable));
-
       ui = _createPresetTree(header, hideNonApplicable);
     } else {
       ui = _createSearchResultsList(header, hideNonApplicable);

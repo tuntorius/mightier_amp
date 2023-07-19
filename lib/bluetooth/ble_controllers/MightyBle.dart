@@ -129,12 +129,13 @@ class MightyBLEController extends BLEController {
     mightyBle.stopScan();
   }
 
+/*
   @override
   Future setNotificationEnabled(bool enabled) async {
     if (_connectedDevice == null) return;
     return mightyBle.setNotificationEnabled(_connectedDevice!.id, enabled);
   }
-
+*/
   _notifyCallback(String id, List<int> data) {
     if (_connectedDevice != null) {
       if (_connectedDevice!.id == id) {

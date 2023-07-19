@@ -64,7 +64,7 @@ class AudioPicker {
     _channel.invokeMethod('pick_audio_release_security_scope', {'url': url});
   }
 
-  Future<Map<String, String>> getMetadata(String assetUrl) async {
+  Future<Map<String, String?>> getMetadata(String assetUrl) async {
     if (Platform.isIOS) {
       if (assetUrl.contains("ipod-library://")) {
         String url = assetUrl;
@@ -78,7 +78,7 @@ class AudioPicker {
       //BROKEN
       final result =
           await _channel.invokeMethod('get_metadata', {'uri': assetUrl});
-      return Map<String, String>.from(result);
+      return Map<String, String?>.from(result);
     }
     return Future.error("Unsupported platform");
   }

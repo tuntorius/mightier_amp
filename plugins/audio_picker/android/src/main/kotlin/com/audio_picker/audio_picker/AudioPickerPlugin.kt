@@ -24,6 +24,7 @@ import android.content.ContentUris
 import android.text.TextUtils
 import android.annotation.TargetApi
 import android.database.Cursor
+import android.media.MediaMetadataRetriever
 
 
 
@@ -113,29 +114,26 @@ class AudioPickerPlugin : MethodCallHandler {
     }
 
     fun getAudioMetadata(uri: Uri, context: Context) {
-        var title: String? = null
-        var artist: String? = null
-
-        val projection = arrayOf(
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ARTIST
-        )
-
-        context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
-            val titleIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
-            val artistIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
-
-            if (cursor.moveToFirst()) {
-                title = cursor.getString(titleIndex)
-                artist = cursor.getString(artistIndex)
-            }
-        }
-
+        val metadataRetriever = MediaMetadataRetriever()
         val metadataMap = HashMap<String, String?>()
-        metadataMap["title"] = title
-        metadataMap["artist"] = artist
-        
-        result?.success(metadataMap)
+
+        try {
+            metadataRetriever.setDataSource(context, uri)
+            val title = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+            val artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+
+            metadataMap["title"] = title
+            metadataMap["artist"] = artist
+
+        } catch (e: Exception) {
+            // Handle any exceptions here (e.g., invalid Uri or missing permissions)
+            // You can log the error or handle it as needed.
+            e.printStackTrace()
+            Log.e("getAudioMetadata", "Error retrieving audio metadata: ${e.message}")
+        } finally {
+            metadataRetriever.release()
+            result?.success(metadataMap)
+        }
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {

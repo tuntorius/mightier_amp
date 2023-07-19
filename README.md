@@ -7,6 +7,7 @@ This app aims to cover all the functionality of the original app plus many enhan
 - Remote control using a MIDI controller or a HID device. Both USB and Bluetooth MIDI controllers are supported.
 - Landscape mode.
 - Improved Jam Tracks functionality. Select any audio file in your device, add events like loop points, preset changes and others at any point and play along.
+- The app unlocks 8 secret amp models in Mighty Plug Pro and Mighty Space: Twin Rvb, Class A15, Vibro King, Budda, Brit Blues, Match D30, Brit 2000 and Uber HiGain
 - Tempo/Beat Trainer
 - Various other enhancements.
 

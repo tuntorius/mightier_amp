@@ -1,5 +1,4 @@
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/toneshare/cloud_login.dart';
 import 'package:mighty_plug_manager/UI/toneshare/cloud_signup.dart';
 

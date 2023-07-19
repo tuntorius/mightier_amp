@@ -126,7 +126,7 @@ class _LooperControlState extends State<LooperControl> {
   Widget build(BuildContext context) {
     var looper = (NuxDeviceControl().device as Looper);
     var connected = NuxDeviceControl().isConnected;
-    var screenWidth = MediaQuery.of(context).size.width;
+
     return Column(children: [
       const SizedBox(
         height: 8,
@@ -136,39 +136,40 @@ class _LooperControlState extends State<LooperControl> {
         child: LayoutBuilder(
           builder: (content, constraints) {
             double width = constraints.maxWidth;
-            double size = min((width - 28*4)/8, 20);
+            double size = min((width - 28 * 4) / 8, 20);
             return Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircularButton(
-                    icon: getRecordButtonIcon(),
-                    iconPadding: size,
-                    backgroundColor: _getRecordButtonColor(),
-                    onPressed: connected
-                        ? () {
-                            if (TempoTrainer.instance().enable == true) {
-                              TempoTrainer.instance().enable = false;
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CircularButton(
+                      icon: getRecordButtonIcon(),
+                      iconPadding: size,
+                      backgroundColor: _getRecordButtonColor(),
+                      onPressed: connected
+                          ? () {
+                              if (TempoTrainer.instance().enable == true) {
+                                TempoTrainer.instance().enable = false;
+                              }
+                              looper.looperRecordPlay();
                             }
-                            looper.looperRecordPlay();
-                          }
-                        : null),
-                CircularButton(
-                    icon: Icons.stop,
-                    iconPadding: size,
-                    backgroundColor: Colors.amber,
-                    onPressed: getStopEnabled() ? looper.looperStop : null),
-                CircularButton(
-                    icon: Icons.clear,
-                    iconPadding: size,
-                    backgroundColor: Colors.amber,
-                    onPressed: getClearEnabled() ? looper.looperClear : null),
-                CircularButton(
-                    iconPadding: size,
-                    icon: getUndoButtonIcon(),
-                    backgroundColor: _getUndoButtonColor(),
-                    onPressed: getUndoEnabled() ? looper.looperUndoRedo : null),
-              ]);
+                          : null),
+                  CircularButton(
+                      icon: Icons.stop,
+                      iconPadding: size,
+                      backgroundColor: Colors.amber,
+                      onPressed: getStopEnabled() ? looper.looperStop : null),
+                  CircularButton(
+                      icon: Icons.clear,
+                      iconPadding: size,
+                      backgroundColor: Colors.amber,
+                      onPressed: getClearEnabled() ? looper.looperClear : null),
+                  CircularButton(
+                      iconPadding: size,
+                      icon: getUndoButtonIcon(),
+                      backgroundColor: _getUndoButtonColor(),
+                      onPressed:
+                          getUndoEnabled() ? looper.looperUndoRedo : null),
+                ]);
           },
         ),
       ),

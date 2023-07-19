@@ -44,8 +44,11 @@ class DummyBLEController extends BLEController {
     return Future.delayed(const Duration(milliseconds: 100));
   }
 
+/*
   @override
   Future setNotificationEnabled(bool enabled) {
     return Future.delayed(const Duration(milliseconds: 100));
   }
+  
+*/
 }

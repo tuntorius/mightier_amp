@@ -43,6 +43,7 @@ class _PresetFormState extends State<PresetForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                initialValue: _name,
                 decoration: const InputDecoration(
                   labelText: "Name",
                   hintText: "Enter preset name",
@@ -57,6 +58,7 @@ class _PresetFormState extends State<PresetForm> {
               ),
               const SizedBox(height: 16.0),
               TextFormField(
+                initialValue: _description,
                 decoration: const InputDecoration(
                   labelText: "Description",
                   hintText: "Enter preset description",

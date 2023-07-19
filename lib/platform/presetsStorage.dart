@@ -329,8 +329,6 @@ class PresetsStorage extends ChangeNotifier {
   }
 
   Future<List<String>> deleteCategory(String category) async {
-    bool modified = false;
-
     var cat = _findCategory(category);
 
     if (cat != null) {
@@ -579,7 +577,6 @@ class PresetsStorage extends ChangeNotifier {
 
   Map<String, dynamic> _convertOldToNewFormat(List<dynamic> oldFormat) {
     _buildCategoryCache();
-    var old = json.encode(presetsData);
 
     //build categories list
     List<String> categoriesList = [];

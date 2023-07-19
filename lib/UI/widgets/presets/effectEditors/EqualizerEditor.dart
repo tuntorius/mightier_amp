@@ -29,8 +29,6 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      var isPortrait =
-          MediaQuery.of(context).orientation == Orientation.portrait;
       var screenWidth = constraints.maxWidth;
       var layout = getEditorLayoutMode(MediaQuery.of(context));
 

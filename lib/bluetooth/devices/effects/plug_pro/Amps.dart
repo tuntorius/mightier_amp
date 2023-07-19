@@ -1584,7 +1584,7 @@ class BritBlues extends PlugProAmplifier {
   @override
   int get nuxIndex => 22;
   @override
-  int get defaultCab => JZ120Pro.cabIndex;
+  int get defaultCab => GB412Pro.cabIndex;
 
   @override
   List<Parameter> parameters = [
@@ -1702,7 +1702,7 @@ class Brit2000 extends PlugProAmplifier {
   @override
   int get nuxIndex => 24;
   @override
-  int get defaultCab => JZ120Pro.cabIndex;
+  int get defaultCab => M1960AV.cabIndex;
 
   @override
   List<Parameter> parameters = [

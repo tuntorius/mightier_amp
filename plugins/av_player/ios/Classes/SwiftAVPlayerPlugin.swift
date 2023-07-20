@@ -14,6 +14,7 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
     private var rateEffect: AVAudioUnitTimePitch?
   private var playerStateStreamHandler: FlutterEventSink?
   private var positionTimer: Timer?
+    private var segmentStartFrame: AVAudioFramePosition?
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "av_player", binaryMessenger: registrar.messenger())
@@ -68,9 +69,9 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
     do {
       // Initialize the AVAudioSession
       let audioSession = AVAudioSession.sharedInstance()
-
+        
       // Set the category for background audio playback
-      try audioSession.setCategory(.playback, mode: .default, options: [.duckOthers, .allowAirPlay])
+      try audioSession.setCategory(.playback, options: [.duckOthers])
 
       // Activate the AVAudioSession
       try audioSession.setActive(true)
@@ -91,15 +92,24 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
       audioEngine?.connect(rateEffect!, to: audioEngine!.outputNode, format: audioFile!.processingFormat)
       try audioEngine?.start()
       
-      player?.scheduleFile(audioFile!, at: nil, completionHandler: { [weak self] in
-        self?.playerStateStreamHandler?(AudioPlayerState.reachedEnd.rawValue)
-        self?.stopPositionTimer()
-        self?.deactivateAudioSession()
-      })
+//      player?.scheduleFile(audioFile!, at: nil, completionCallbackType: .dataPlayedBack, completionHandler: { [weak self] in
+//        self?.playerStateStreamHandler?(AudioPlayerState.reachedEnd.rawValue)
+//        self?.stopPositionTimer()
+//        self?.deactivateAudioSession()
+//      })
+        
+        player?.scheduleFile(audioFile!, at: nil, completionCallbackType: .dataPlayedBack) { _ in
+            print("Done playing")
+          //self.playerStateStreamHandler?(AudioPlayerState.reachedEnd.rawValue)
+          //self.stopPositionTimer()
+          //self.deactivateAudioSession()
+        }
       
       result(durationMilliseconds)
     } catch {
-      result(FlutterError(code: "SET_AUDIO_FILE_ERROR", message: "Error setting audio file", details: nil))
+        let errorMessage = "Error setting up audio: \(error.localizedDescription)"
+        result(FlutterError(code: "SET_AUDIO_FILE_ERROR", message: errorMessage, details: nil))
+
     }
   }
 
@@ -143,6 +153,9 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
 
     let time = Double(position) / 1000.0
     let sampleTime = AVAudioFramePosition(time * audioFile.fileFormat.sampleRate)
+      
+      // Remember the start frame position for calculating elapsed time
+          segmentStartFrame = sampleTime
 
     // Seek to the desired position
     player.stop()
@@ -165,11 +178,33 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
   }
 
   private func sendPosition() {
-    guard let player = player else { return }
-    let currentTime = player.playerTime(forNodeTime: player.lastRenderTime!)!.sampleTime
-    let sampleRate = player.outputFormat(forBus: 0).sampleRate
-    let position = Double(currentTime) / Double(sampleRate) * 1000.0
-    playerStateStreamHandler?(Int(position))
+//    guard let player = player else { return }
+//    let currentTime = player.playerTime(forNodeTime: player.lastRenderTime!)!.sampleTime
+//    let sampleRate = player.outputFormat(forBus: 0).sampleRate
+//    let position = Double(currentTime) / Double(sampleRate) * 1000.0
+//    playerStateStreamHandler?(Int(position))
+      
+      guard let player = player, let audioFile = audioFile else { return }
+
+      // Get the current frame position within the audio file
+      let currentFramePosition = player.playerTime(forNodeTime: player.lastRenderTime!)!.sampleTime
+
+      // Calculate the elapsed frames within the segment
+      let elapsedFrames: AVAudioFramePosition
+      if let segmentStartFrame = segmentStartFrame {
+          elapsedFrames = currentFramePosition + segmentStartFrame
+      } else {
+          elapsedFrames = currentFramePosition
+      }
+      
+      // Calculate the elapsed time in seconds
+      let elapsedTimeSeconds = Double(elapsedFrames) / audioFile.fileFormat.sampleRate
+
+      // Convert elapsed time to milliseconds
+      let position = Int(elapsedTimeSeconds * 1000)
+
+      playerStateStreamHandler?(position)
+      
   }
 
   func activateAudioSession() {

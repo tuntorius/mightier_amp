@@ -156,7 +156,6 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
               semitones: playerState.pitch,
               speed: playerState.speed,
             ),
-            if (PlatformUtils.isAndroid)
               ThickSlider(
                 activeColor: playerState.gain <= 0
                     ? Colors.blue

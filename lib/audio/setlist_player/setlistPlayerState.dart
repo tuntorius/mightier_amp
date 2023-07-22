@@ -89,7 +89,7 @@ class SetlistPlayerState extends ChangeNotifier {
       print("Opening track ${track.name}");
       print("Track path: ${track.path}");
       _automation = AutomationController(track, track.automation);
-      await _automation?.setAudioFile(track.path, 70);
+      await _automation?.setAudioFile(track.path, 35);
       _automation?.setTrackCompleteEvent(_onTrackComplete);
       _automation?.positionStream.listen(_onPosition);
       automation?.setGain(_gain);

@@ -90,8 +90,8 @@ class JustAudioAdapter implements AudioPlayerAdapter {
   Stream<Duration> createPositionStream() {
     return _player.createPositionStream(
         steps: 1,
-        minPeriod: const Duration(milliseconds: 5),
-        maxPeriod: const Duration(milliseconds: 5));
+        minPeriod: const Duration(milliseconds: 10),
+        maxPeriod: const Duration(milliseconds: 10));
   }
 
   @override

@@ -36,6 +36,10 @@ class AVPlayer {
     _channel.invokeMethod('setPitch', pitch * 1200 - 1200);
   }
 
+  void setGain(double gain) {
+    _channel.invokeMethod('setGain', gain);
+  }
+
   Future<void> seek(Duration position) async {
     await _channel.invokeMethod('seek', position.inMilliseconds);
   }
@@ -44,7 +48,6 @@ class AVPlayer {
     return _playerStateStreamChannel
         .receiveBroadcastStream()
         .map<Duration>((position) {
-          print(position);
           if (position is int) {
             return Duration(milliseconds: position);
           }

@@ -11,10 +11,12 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
   private var player: AVAudioPlayerNode?
   private var audioFile: AVAudioFile?
   private var audioEngine: AVAudioEngine?
-    private var rateEffect: AVAudioUnitTimePitch?
+  private var rateEffect: AVAudioUnitTimePitch?
+  private var eqGain: AVAudioUnitEQ?
   private var playerStateStreamHandler: FlutterEventSink?
   private var positionTimer: Timer?
-    private var segmentStartFrame: AVAudioFramePosition?
+  private var segmentStartFrame: AVAudioFramePosition?
+  private var durationMilliseconds: Int = 0
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "av_player", binaryMessenger: registrar.messenger())
@@ -50,6 +52,12 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
           return
         }
         setPitch(pitch, result: result)
+      case "setGain":
+        guard let gain = call.arguments as? Double else {
+          result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid pitch value", details: nil))
+          return
+        }
+        setGain(gain, result: result)
       case "seek":
         guard let position = call.arguments as? Int else {
           result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid position value", details: nil))
@@ -78,26 +86,28 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
 
       audioFile = try AVAudioFile(forReading: url)
       let durationSeconds = Double(audioFile!.length) / audioFile!.fileFormat.sampleRate
-      let durationMilliseconds = Int(durationSeconds * 1000)
+      durationMilliseconds = Int(durationSeconds * 1000)
     
 
       player = AVAudioPlayerNode()
       audioEngine = AVAudioEngine()
       audioEngine?.attach(player!)
-        rateEffect = AVAudioUnitTimePitch()
-        rateEffect!.rate = 1
-        rateEffect!.pitch = 0
+
+      rateEffect = AVAudioUnitTimePitch()
+      rateEffect!.rate = 1
+      rateEffect!.pitch = 0
         audioEngine?.attach(rateEffect!)
-        audioEngine?.connect(player!, to: rateEffect!, format: audioFile!.processingFormat)
-      audioEngine?.connect(rateEffect!, to: audioEngine!.outputNode, format: audioFile!.processingFormat)
+        
+      eqGain = AVAudioUnitEQ(numberOfBands: 0) // Passing 0 sets it to a global equalizer (overall gain)
+      eqGain!.globalGain = 0
+        audioEngine?.attach(eqGain!)
+      
+      audioEngine?.connect(player!, to: rateEffect!, format: audioFile!.processingFormat)
+      audioEngine?.connect(rateEffect!, to: eqGain!, format: audioFile!.processingFormat)
+      audioEngine?.connect(eqGain!, to: audioEngine!.outputNode, format: audioFile!.processingFormat)
+
       try audioEngine?.start()
       
-//      player?.scheduleFile(audioFile!, at: nil, completionCallbackType: .dataPlayedBack, completionHandler: { [weak self] in
-//        self?.playerStateStreamHandler?(AudioPlayerState.reachedEnd.rawValue)
-//        self?.stopPositionTimer()
-//        self?.deactivateAudioSession()
-//      })
-        
         player?.scheduleFile(audioFile!, at: nil, completionCallbackType: .dataPlayedBack) { _ in
             print("Done playing")
           //self.playerStateStreamHandler?(AudioPlayerState.reachedEnd.rawValue)
@@ -114,9 +124,9 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
   }
 
   private func play(result: FlutterResult) {
+    activateAudioSession()
     player?.play()
     startPositionTimer()
-    activateAudioSession()
     result(nil)
   }
 
@@ -145,6 +155,11 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
       result(nil)
   }
 
+  private func setGain(_ gain: Double, result: FlutterResult) {
+      eqGain?.globalGain = Float(gain)
+      result(nil)
+  }
+
   private func seek(position: Int, result: FlutterResult) {
     guard let player = player, let audioFile = audioFile else {
       result(FlutterError(code: "INVALID_STATE", message: "Audio player or audio file not initialized", details: nil))
@@ -167,7 +182,7 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
 
   private func startPositionTimer() {
     stopPositionTimer()
-    positionTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+    positionTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
       self?.sendPosition()
     }
   }
@@ -178,11 +193,6 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
   }
 
   private func sendPosition() {
-//    guard let player = player else { return }
-//    let currentTime = player.playerTime(forNodeTime: player.lastRenderTime!)!.sampleTime
-//    let sampleRate = player.outputFormat(forBus: 0).sampleRate
-//    let position = Double(currentTime) / Double(sampleRate) * 1000.0
-//    playerStateStreamHandler?(Int(position))
       
       guard let player = player, let audioFile = audioFile else { return }
 
@@ -201,16 +211,25 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
       let elapsedTimeSeconds = Double(elapsedFrames) / audioFile.fileFormat.sampleRate
 
       // Convert elapsed time to milliseconds
-      let position = Int(elapsedTimeSeconds * 1000)
+      var position = Int(elapsedTimeSeconds * 1000)
 
+      if (position>=durationMilliseconds) { onEndReached() }
+
+      position = max(0,min(position, durationMilliseconds))
       playerStateStreamHandler?(position)
-      
+  }
+
+  func onEndReached() {
+    playerStateStreamHandler?(AudioPlayerState.reachedEnd.rawValue)
+    stopPositionTimer()
+    deactivateAudioSession()
   }
 
   func activateAudioSession() {
     do {
         let audioSession = AVAudioSession.sharedInstance()
         try audioSession.setActive(true)
+        try audioEngine?.start()
     } catch {
         print("Error activating AVAudioSession: \(error)")
     }
@@ -218,6 +237,7 @@ public class SwiftAVPlayerPlugin: NSObject, FlutterPlugin {
 
   func deactivateAudioSession() {
     do {
+        audioEngine?.stop()
         let audioSession = AVAudioSession.sharedInstance()
         try audioSession.setActive(false)
     } catch {

@@ -6,8 +6,7 @@ import 'package:mighty_plug_manager/audio/lib_adapters/audio_player_adapter.dart
 class AVFoundationAdapter implements AudioPlayerAdapter {
   final AVPlayer _player = AVPlayer();
 
-  final StreamController<Duration> _positionController =
-      StreamController<Duration>();
+  StreamController<Duration>? _positionController;
 
   final StreamController<AudioPlayerState> _stateController =
       StreamController<AudioPlayerState>();
@@ -40,12 +39,13 @@ class AVFoundationAdapter implements AudioPlayerAdapter {
   }
   @override
   Stream<Duration> createPositionStream() {
-    return _positionController.stream;
+    _positionController = StreamController<Duration>();
+    return _positionController!.stream;
   }
 
   void _onPosition(Duration position) {
     _position = position;
-    _positionController.add(position);
+    _positionController?.add(position);
     if (position == _player.duration) {
       _state = AudioPlayerState.reachedEnd;
       _stateController.add(_state);
@@ -55,7 +55,7 @@ class AVFoundationAdapter implements AudioPlayerAdapter {
   @override
   Future<void> dispose() async {
     await stop();
-    _positionController.close();
+    _positionController?.close();
     _stateController.close();
     _positionSub?.cancel();
     _playing = false;
@@ -102,7 +102,7 @@ class AVFoundationAdapter implements AudioPlayerAdapter {
 
   @override
   void setGain(double gain) {
-    // TODO: implement setGain
+    _player.setGain(gain);
   }
 
   @override

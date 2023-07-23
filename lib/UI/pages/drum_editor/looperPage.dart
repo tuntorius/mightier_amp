@@ -8,7 +8,7 @@ import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/features/looper.dart';
 import '../../../modules/tempo_trainer.dart';
 import '../../widgets/circular_button.dart';
-import '../../widgets/common/ModeControlRegular.dart';
+import '../../widgets/common/modeControlRegular.dart';
 
 class LooperControl extends StatefulWidget {
   final VoidCallback onStateChanged;

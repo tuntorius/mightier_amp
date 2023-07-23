@@ -75,7 +75,6 @@ class AudioPicker {
           await _channel.invokeMethod('get_metadata', {'assetUrl': assetUrl});
       return Map<String, String>.from(result);
     } else if (Platform.isAndroid) {
-      //BROKEN
       final result =
           await _channel.invokeMethod('get_metadata', {'uri': assetUrl});
       return Map<String, String?>.from(result);

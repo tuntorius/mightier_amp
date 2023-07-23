@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
-import '../../widgets/common/ModeControlRegular.dart';
+import '../../widgets/common/modeControlRegular.dart';
 
 class RouteModel {
   final String name;

@@ -195,7 +195,7 @@ class _DrumEditorState extends State<DrumEditor>
   }
 
   List<Widget> _toneSliders(bool small) {
-    if (device.drumToneControls) return [];
+    if (!device.drumToneControls) return [];
     var dev = device as NuxMightyPlugPro;
     return [
       ThickSlider(
@@ -305,10 +305,8 @@ class _DrumEditorState extends State<DrumEditor>
                   if (_mode == DrumEditorMode.regular)
                     _tapButton(smallControls),
                   if (_mode == DrumEditorMode.regular &&
-                      _layout == DrumEditorLayout.PlugPro)
+                      device.drumToneControls)
                     ..._toneSliders(smallControls),
-
-                  ///..._toneSliders(smallControls),
                   if (_mode == DrumEditorMode.trainer)
                     TempoTrainerSheet(
                         smallControls: smallControls,
@@ -350,7 +348,7 @@ class _DrumEditorState extends State<DrumEditor>
                           child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          if (_layout == DrumEditorLayout.PlugPro)
+                          if (device.drumToneControls)
                             CircularButton(
                                 icon: Icons.equalizer,
                                 backgroundColor: Colors.blue,

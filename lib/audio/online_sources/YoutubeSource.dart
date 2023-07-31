@@ -51,8 +51,19 @@ class YoutubeSource extends OnlineSource {
   static Future<String> getYoutubeUrlFromId(String id) async {
     var yt = YoutubeExplode();
     var manifest = await yt.videos.streamsClient.getManifest(id);
-    var stream = manifest.audioOnly.withHighestBitrate();
+    var stream = getHighestBitrateMP4(manifest);
     SourceResolver.addToCache(id, stream.url.toString());
     return stream.url.toString();
+  }
+
+  static  AudioOnlyStreamInfo getHighestBitrateMP4(StreamManifest manifest) {
+    AudioOnlyStreamInfo? stream;
+
+    for (var s in manifest.audioOnly) {
+      if (stream == null || (s.codec.mimeType == "audio/mp4" && s.size.totalBytes > stream.size.totalBytes)) {
+        stream = s;
+      }
+    }
+    return stream ?? manifest.audioOnly.withHighestBitrate();
   }
 }

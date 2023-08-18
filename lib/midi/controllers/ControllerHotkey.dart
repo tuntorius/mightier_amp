@@ -7,6 +7,7 @@ import '../../bluetooth/devices/effects/MidiControllerHandles.dart';
 import '../../bluetooth/devices/effects/Processor.dart';
 import '../../bluetooth/devices/features/looper.dart';
 import '../../bluetooth/devices/presets/Preset.dart';
+import '../../bluetooth/devices/value_formatters/ValueFormatter.dart';
 import '../../utilities/MathEx.dart';
 import '../../bluetooth/devices/value_formatters/TempoFormatter.dart';
 import '../../modules/tempo_trainer.dart';
@@ -121,7 +122,12 @@ class ControllerHotkey {
         }
         break;
       case HotkeyControl.MasterVolumeSet:
-        NuxDeviceControl.instance().masterVolume = midiToPercentage(value);
+        var val = midiToPercentage(value);
+        if (device.fakeMasterVolume) {
+          NuxDeviceControl.instance().masterVolume = val;
+        } else {
+          NuxDeviceControl.instance().masterVolume = _mapValueToFormatter(val, device.decibelFormatter!);
+        }
         break;
       case HotkeyControl.ParameterSet:
         if (index >= ControllerHandleId.values.length) return;
@@ -311,14 +317,18 @@ class ControllerHotkey {
     double val = midiToPercentage(value);
 
     //Translate the 0-100 value into the range of the parameter
-    val = MathEx.map(
-        val,
-        0,
-        100,
-        effect.parameters[_cachedParameter!].formatter.min.toDouble(),
-        effect.parameters[_cachedParameter!].formatter.max.toDouble());
+    val = _mapValueToFormatter(val, effect.parameters[_cachedParameter!].formatter);
     p.setParameterValue(effect.parameters[_cachedParameter!], val);
     NuxDeviceControl.instance().forceNotifyListeners();
+  }
+
+  double _mapValueToFormatter(double value, ValueFormatter formatter) {
+    return MathEx.map(
+        value,
+        0,
+        100,
+        formatter.min.toDouble(),
+        formatter.max.toDouble());
   }
 
   Preset _getEffectCached(NuxDevice device) {

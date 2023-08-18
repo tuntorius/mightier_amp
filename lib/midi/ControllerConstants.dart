@@ -149,6 +149,7 @@ extension HotkeyLabel on HotkeyControl {
     switch (this) {
       case HotkeyControl.ParameterSet:
       case HotkeyControl.DrumsVolume:
+      case HotkeyControl.MasterVolumeSet:
       case HotkeyControl.LooperLevel:
         return true;
       default:

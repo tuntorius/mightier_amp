@@ -4,6 +4,7 @@
 import 'dart:ui';
 
 import 'package:convert/convert.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/presets/preset_constants.dart';
 
 import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
@@ -26,7 +27,7 @@ class MXXBTPreset extends Preset {
   @override
   int get qrDataLength => 40;
   @override
-  Color get channelColor => Preset.channelColors[channel];
+  Color get channelColor => PresetConstants.channelColorsPlug[channel];
   final NoiseGate1Param noiseGate = NoiseGate1Param();
   @override
   final List<MXXBTAmplifier> amplifierList = <MXXBTAmplifier>[];

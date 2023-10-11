@@ -23,17 +23,9 @@ import '../effects/plug_pro/Delay.dart';
 import '../effects/plug_pro/Reverb.dart';
 import '../effects/plug_pro/EQ.dart';
 import 'Preset.dart';
+import 'preset_constants.dart';
 
 class PlugProPreset extends Preset {
-  static const List<Color> channelColors = [
-    Color.fromARGB(255, 0, 255, 0),
-    Color.fromARGB(255, 240, 160, 10),
-    Color.fromARGB(255, 220, 0, 0),
-    Colors.blue,
-    Color.fromARGB(255, 130, 225, 255),
-    Color.fromARGB(255, 231, 120, 215),
-    Color(0xFFE1BEE7),
-  ];
   @override
   NuxDevice device;
   @override
@@ -41,7 +33,7 @@ class PlugProPreset extends Preset {
   @override
   String channelName;
   @override
-  List<Color> get channelColorsList => PlugProPreset.channelColors;
+  List<Color> get channelColorsList => PresetConstants.channelColorsPro;
 
   @override
   int get qrDataLength => 113;
@@ -49,11 +41,11 @@ class PlugProPreset extends Preset {
   final WahDummyPro wahDummy = WahDummyPro();
   final NoiseGatePro noiseGate = NoiseGatePro();
 
-  final List<Compressor> compressorList = <Compressor>[];
+  final List<Compressor> _compressorList = <Compressor>[];
   final List<EFX> efxList = <EFX>[];
   final List<CabinetPro> cabinetList = <CabinetPro>[];
   final List<Modulation> modulationList = <Modulation>[];
-  final List<Reverb> reverbList = <Reverb>[];
+  final List<Reverb> _reverbList = <Reverb>[];
   @override
   final List<Amplifier> amplifierList = <Amplifier>[];
   final List<Delay> delayList = <Delay>[];
@@ -89,7 +81,7 @@ class PlugProPreset extends Preset {
   PlugProPreset(
       {required this.device, required this.channel, required this.channelName})
       : super(channel: channel, channelName: channelName, device: device) {
-    compressorList.addAll([RoseComp(), KComp(), StudioComp()]);
+    _compressorList.addAll([RoseComp(), KComp(), StudioComp()]);
 
     modulationList.addAll([
       ModCE1(),
@@ -209,7 +201,7 @@ class PlugProPreset extends Preset {
     delayList.addAll(
         [AnalogDelay(), DigitalDelay(), ModDelay(), TapeEcho(), PanDelay()]);
 
-    reverbList.addAll([
+    _reverbList.addAll([
       RoomReverb(),
       HallReverb(),
       PlateReverb(),
@@ -360,7 +352,7 @@ class PlugProPreset extends Preset {
       case PresetDataIndexPlugPro.Head_iNG:
         return [noiseGate];
       case PresetDataIndexPlugPro.Head_iCMP:
-        return compressorList;
+        return _compressorList;
       case PresetDataIndexPlugPro.Head_iEFX:
         return efxList;
       case PresetDataIndexPlugPro.Head_iAMP:
@@ -374,7 +366,7 @@ class PlugProPreset extends Preset {
       case PresetDataIndexPlugPro.Head_iDLY:
         return delayList;
       case PresetDataIndexPlugPro.Head_iRVB:
-        return reverbList;
+        return _reverbList;
     }
     return <Processor>[];
   }
@@ -456,7 +448,7 @@ class PlugProPreset extends Preset {
       case PresetDataIndexPlugPro.Head_iNG:
         return 0;
       case PresetDataIndexPlugPro.Head_iCMP:
-        list = compressorList;
+        list = _compressorList;
         break;
       case PresetDataIndexPlugPro.Head_iEFX:
         list = efxList;
@@ -477,7 +469,7 @@ class PlugProPreset extends Preset {
         list = delayList;
         break;
       case PresetDataIndexPlugPro.Head_iRVB:
-        list = reverbList;
+        list = _reverbList;
         break;
     }
     for (int i = 0; i < list.length; i++) {

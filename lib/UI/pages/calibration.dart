@@ -8,7 +8,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import '../../bluetooth/NuxDeviceControl.dart';
-import '../../bluetooth/devices/presets/Preset.dart';
+import '../../bluetooth/devices/presets/preset_constants.dart';
 
 class Calibration extends StatefulWidget {
   const Calibration({Key? key}) : super(key: key);
@@ -22,7 +22,7 @@ class _CalibrationState extends State<Calibration> {
   late AudioPlayer player;
   int nuxMode = 0;
   bool toggled = false;
-  Color presetColor = Preset.channelColors[0];
+  Color presetColor = PresetConstants.channelColorsPlug[0];
   NuxDeviceControl devControl = NuxDeviceControl.instance();
   StreamSubscription? _playerSub;
   @override
@@ -50,7 +50,7 @@ class _CalibrationState extends State<Calibration> {
         devControl.changeDeviceChannel(nuxMode);
 
         setState(() {
-          presetColor = Preset.channelColors[nuxMode];
+          presetColor = PresetConstants.channelColorsPlug[nuxMode];
         });
 
         toggled = true;

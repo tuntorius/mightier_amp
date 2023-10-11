@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
 import '../../bluetooth/devices/presets/Preset.dart';
+import '../../bluetooth/devices/presets/preset_constants.dart';
 import '../automationController.dart';
 import '../models/waveform_data.dart';
 
@@ -43,9 +44,9 @@ class WaveformPainter extends CustomPainter {
       ..strokeWidth = strokeWidth
       ..isAntiAlias = true;
 
-    for (int i = 0; i < Preset.channelColors.length; i++) {
+    for (int i = 0; i < PresetConstants.channelColorsPlug.length; i++) {
       var _paint = Paint()
-        ..color = Preset.channelColors[i]
+        ..color = PresetConstants.channelColorsPlug[i]
         ..strokeWidth = 1
         ..style = PaintingStyle.stroke;
       channelPaints.add(_paint);
@@ -112,8 +113,8 @@ class WaveformPainter extends CustomPainter {
       //add labels
       if (!overallWaveform) {
         var paragraphBuilder = ui.ParagraphBuilder(ui.ParagraphStyle())
-          ..pushStyle(
-              ui.TextStyle(color: Preset.channelColors[element.channel]))
+          ..pushStyle(ui.TextStyle(
+              color: PresetConstants.channelColorsPlug[element.channel]))
           ..addText(element.name);
         final ui.Paragraph paragraph = paragraphBuilder.build()
           ..layout(ui.ParagraphConstraints(width: size.width - 12.0 - 12.0));

@@ -15,6 +15,7 @@ import '../effects/lite/Amps.dart';
 import '../effects/lite/Modulation.dart';
 import '../effects/lite/Ambience.dart';
 import 'Preset.dart';
+import 'preset_constants.dart';
 
 class MLitePreset extends Preset {
   @override
@@ -26,7 +27,7 @@ class MLitePreset extends Preset {
   @override
   int get qrDataLength => 40;
   @override
-  Color get channelColor => Preset.channelColors[channel];
+  Color get channelColor => PresetConstants.channelColorsPlug[channel];
   final NoiseGate2Param noiseGate = NoiseGate2Param();
   @override
   final List<LiteAmplifier> amplifierList = <LiteAmplifier>[];

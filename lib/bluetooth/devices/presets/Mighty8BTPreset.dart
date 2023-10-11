@@ -15,6 +15,7 @@ import '../effects/mighty_8bt/Modulation.dart';
 import '../effects/mighty_8bt/Delay.dart';
 import '../effects/mighty_8bt/Reverb.dart';
 import 'Preset.dart';
+import 'preset_constants.dart';
 
 class M8BTPreset extends Preset {
   @override
@@ -26,7 +27,7 @@ class M8BTPreset extends Preset {
   @override
   int get qrDataLength => 40;
   @override
-  Color get channelColor => Preset.channelColors[channel];
+  Color get channelColor => PresetConstants.channelColorsPlug[channel];
   final NoiseGate2Param noiseGate = NoiseGate2Param();
   @override
   final List<M8BTAmplifier> amplifierList = <M8BTAmplifier>[];

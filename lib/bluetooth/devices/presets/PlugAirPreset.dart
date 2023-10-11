@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:convert/convert.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_air/Ampsv2.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/presets/preset_constants.dart';
 
 import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
@@ -29,22 +30,12 @@ class PlugAirPreset extends Preset {
   @override
   String channelName;
 
-  static const List<Color> channelColors = [
-    Color.fromARGB(255, 0, 255, 0),
-    Color.fromARGB(255, 212, 202, 0),
-    Color.fromARGB(255, 255, 0, 0),
-    Color.fromARGB(220, 255, 0, 255),
-    Color.fromARGB(255, 0, 191, 255),
-    Color.fromARGB(255, 224, 142, 0),
-    Color.fromARGB(255, 20, 125, 255),
-  ];
-
   @override
   List<Color> get channelColorsList {
     if ((device as NuxMightyPlug).ampVariant == PlugAirVariant.MightyAir) {
-      return channelColors;
+      return PresetConstants.channelColorsAir;
     }
-    return Preset.channelColors;
+    return PresetConstants.channelColorsPlug;
   }
 
   @override

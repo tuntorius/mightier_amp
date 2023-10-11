@@ -9,26 +9,16 @@ import 'package:undo/undo.dart';
 import '../NuxDevice.dart';
 import '../NuxFXID.dart';
 import '../effects/Processor.dart';
+import 'preset_constants.dart';
 
 abstract class Preset {
-  static const List<Color> channelColors = [
-    Color.fromARGB(255, 0, 255, 0),
-    Color.fromARGB(255, 240, 160, 10),
-    Color.fromARGB(255, 255, 0, 0),
-    Color.fromARGB(220, 230, 230, 255),
-    Color.fromARGB(255, 130, 225, 255),
-    Color.fromARGB(255, 210, 140, 250),
-    Color.fromARGB(255, 71, 167, 245),
-    Color.fromARGB(230, 230, 230, 255),
-  ];
-
   int get qrDataLength;
 
   NuxDevice device;
   int channel;
   String channelName;
   Color get channelColor => channelColorsList[channel];
-  List<Color> get channelColorsList => channelColors;
+  List<Color> get channelColorsList => PresetConstants.channelColorsPlug;
   List<Amplifier> get amplifierList;
 
   final _changeStack = ChangeStack();

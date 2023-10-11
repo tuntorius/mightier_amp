@@ -3,6 +3,7 @@ import 'package:mighty_plug_manager/UI/popups/selectPreset.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/presets/preset_constants.dart';
 import 'package:mighty_plug_manager/platform/presetsStorage.dart';
 import '../models/trackAutomation.dart';
 
@@ -14,8 +15,9 @@ class EventEditor {
       context, dynamic preset, StateSetter setState) {
     var tiles = <Widget>[];
 
-    Color color =
-        preset != null ? Preset.channelColors[preset["channel"]] : Colors.white;
+    Color color = preset != null
+        ? PresetConstants.channelColorsPlug[preset["channel"]]
+        : Colors.white;
     String category = preset != null
         ? PresetsStorage().findCategoryOfPreset(preset)!["name"]
         : "";

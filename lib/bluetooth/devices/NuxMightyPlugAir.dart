@@ -235,16 +235,6 @@ class NuxMightyPlug extends NuxDevice {
   dynamic getDrumStyles() => drumStyles;
 
   @override
-  List<Preset> getPresetsList() {
-    return presets;
-  }
-
-  @override
-  String channelName(int channel) {
-    return channelNames[channel];
-  }
-
-  @override
   void onConnect() {
     var name = BLEMidiHandler.instance().connectedDevice?.name;
     if (name == mightyAirBLEName) {

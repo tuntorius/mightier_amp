@@ -132,8 +132,6 @@ class NuxMighty2040BT extends NuxDevice {
   List<Preset> presets1 = <Preset>[];
   List<Preset> presets2 = <Preset>[];
 
-  final List<String> _channelNames = [];
-
   final List<String> drumStyles = [
     "Metronome",
     "Rock",
@@ -157,7 +155,7 @@ class NuxMighty2040BT extends NuxDevice {
   NuxMighty2040BT(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
     for (var element in M2040BTChannel.values) {
-      _channelNames.add(element.toString().split('.')[1]);
+      channelNames.add(element.toString().split('.')[1]);
     }
 
     //clean
@@ -213,16 +211,6 @@ class NuxMighty2040BT extends NuxDevice {
 
   @override
   dynamic getDrumStyles() => drumStyles;
-
-  @override
-  List<Preset> getPresetsList() {
-    return presets;
-  }
-
-  @override
-  String channelName(int channel) {
-    return _channelNames[channel];
-  }
 
   @override
   void setFirmwareVersion(int ver) {}

@@ -159,16 +159,6 @@ class NuxMighty8BT extends NuxDevice {
   dynamic getDrumStyles() => drumStyles;
 
   @override
-  List<Preset> getPresetsList() {
-    return presets;
-  }
-
-  @override
-  String channelName(int channel) {
-    return channelNames[channel];
-  }
-
-  @override
   void setFirmwareVersion(int ver) {}
 
   @override

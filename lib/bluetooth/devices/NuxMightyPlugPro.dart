@@ -18,7 +18,6 @@ import 'effects/plug_pro/EQ.dart';
 import 'features/looper.dart';
 import 'features/tuner.dart';
 import 'presets/PlugProPreset.dart';
-import 'presets/Preset.dart';
 import 'value_formatters/ValueFormatter.dart';
 
 enum PlugProChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
@@ -423,16 +422,6 @@ class NuxMightyPlugPro extends NuxDevice implements Tuner {
       }
     }
     return _drumStylesCount!;
-  }
-
-  @override
-  List<Preset> getPresetsList() {
-    return presets;
-  }
-
-  @override
-  String channelName(int channel) {
-    return channelNames[channel];
   }
 
   @override

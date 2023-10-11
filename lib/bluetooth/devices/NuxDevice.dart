@@ -80,8 +80,8 @@ abstract class NuxDevice extends ChangeNotifier {
   int get deviceQRVersion;
   int get channelChangeCC;
 
+  List<String> channelNames = [];
   List<String> groupsName = <String>[];
-  String channelName(int channel);
 
   //Notifies when an effect is switched on and off
   final StreamController<int> effectSwitched = StreamController<int>();
@@ -293,7 +293,13 @@ abstract class NuxDevice extends ChangeNotifier {
     }
   }
 
-  List<Preset> getPresetsList();
+  List<Preset> getPresetsList() {
+    return presets;
+  }
+
+  String channelName(int channel) {
+    return channelNames[channel];
+  }
 
   void onPresetsReady() {
     if (!activeChannelRetrieval) {

@@ -47,6 +47,7 @@ class _PresetListState extends State<PresetList>
   bool _showSearch = false;
   final TextEditingController _searchText = TextEditingController(text: "");
   late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
@@ -68,17 +69,19 @@ class _PresetListState extends State<PresetList>
     _searchText.removeListener(refreshPresets);
   }
 
-  void _onTabSelected() {
-    _registerListeners();
-    setState(() {});
-  }
-
   void _registerListeners() {
     NuxDeviceControl.instance().addListener(refreshPresets);
     PresetsStorage().addListener(refreshPresets);
     NuxDeviceControl.instance().presetNameNotifier.addListener(refreshPresets);
     if (!widget.simplified) {
       SetlistPlayerState.instance().addListener(refreshPresets);
+    }
+  }
+
+  void _onTabSelected() {
+    _registerListeners();
+    if (mounted) {
+      setState(() {});
     }
   }
 

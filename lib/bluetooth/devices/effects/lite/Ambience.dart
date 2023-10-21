@@ -9,9 +9,9 @@ import '../Processor.dart';
 abstract class Ambience extends Processor {
   //TODO: check if correct
   @override
-  int? get nuxEffectTypeIndex => PresetDataIndexLite.delaytype;
+  int? get nuxEffectTypeIndex => PresetDataIndexLite.efxtype;
   @override
-  int? get nuxEnableIndex => PresetDataIndexLite.delayenable;
+  int? get nuxEnableIndex => PresetDataIndexLite.efxenable;
   @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
 

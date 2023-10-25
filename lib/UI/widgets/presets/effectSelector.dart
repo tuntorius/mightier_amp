@@ -1,6 +1,7 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -49,14 +50,17 @@ class _EffectSelectorState extends State<EffectSelector> {
       var device = NuxDeviceControl.instance().device;
 
       //put new effect in stack
-      var oldEffect = _preset.getSelectedEffectForSlot(_selectedSlot);
-      List<Change<int>> totalChanges = [];
+      var oldEffect = (
+        slot: _selectedSlot,
+        index: _preset.getSelectedEffectForSlot(_selectedSlot)
+      );
+      List<Change<({int slot, int index})>> totalChanges = [];
 
-      totalChanges.add(Change<int>(
+      totalChanges.add(Change(
           oldEffect,
           () => _preset.setSelectedEffectForSlot(_selectedSlot, index, true),
-          (oldVal) =>
-              _preset.setSelectedEffectForSlot(_selectedSlot, oldVal, true)));
+          (oldVal) => _preset.setSelectedEffectForSlot(
+              oldVal.slot, oldVal.index, true)));
 
       if (device.cabinetSupport &&
           SharedPrefs().getInt(SettingsKeys.changeCabs, 1) == 1) {
@@ -67,14 +71,16 @@ class _EffectSelectorState extends State<EffectSelector> {
             var proc = _preset.getFXIDFromSlot(device.cabinetSlotIndex);
             var cabIndex =
                 _preset.getEffectArrayIndexFromNuxIndex(proc, amp.defaultCab);
-            var oldEffect =
-                _preset.getSelectedEffectForSlot(device.cabinetSlotIndex);
-            totalChanges.add(Change<int>(
+            var oldEffect = (
+              slot: device.cabinetSlotIndex,
+              index: _preset.getSelectedEffectForSlot(device.cabinetSlotIndex)
+            );
+            totalChanges.add(Change(
                 oldEffect,
                 () => _preset.setSelectedEffectForSlot(
                     device.cabinetSlotIndex, cabIndex, true),
                 (oldVal) => _preset.setSelectedEffectForSlot(
-                    device.cabinetSlotIndex, oldVal, true)));
+                    oldVal.slot, oldVal.index, true)));
           }
         }
       }
@@ -183,14 +189,7 @@ class _EffectSelectorState extends State<EffectSelector> {
             reorderable: widget.device.reorderableFXChain,
             onTap: (i) {
               setState(() {
-                var old = _selectedSlot;
                 _selectedSlot = i;
-
-                NuxDeviceControl.instance().changes.add(Change<int>(
-                    old,
-                    () => _selectedSlot = i,
-                    (oldVal) => _selectedSlot = oldVal));
-                NuxDeviceControl.instance().undoStackChanged();
               });
             },
             onDoubleTap: (int i) {

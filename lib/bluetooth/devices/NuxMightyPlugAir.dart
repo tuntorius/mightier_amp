@@ -3,15 +3,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/device_specific_settings/PlugAirSettings.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/device_data/processors_list.dart';
 import '../bleMidiHandler.dart';
-import 'NuxFXID.dart';
 import 'communication/communication.dart';
 import 'communication/plugAirCommunication.dart';
-import '../../UI/mightierIcons.dart';
 
 import '../NuxDeviceControl.dart';
 import 'NuxConstants.dart';
 import 'NuxDevice.dart';
+import 'device_data/drumstyles.dart';
 import 'effects/Processor.dart';
 import 'presets/PlugAirPreset.dart';
 import 'presets/Preset.dart';
@@ -115,78 +115,12 @@ class NuxMightyPlug extends NuxDevice {
   int get deviceQRVersion => version == PlugAirVersion.PlugAir21 ? 2 : 0;
 
   @override
-  List<ProcessorInfo> get processorList => _processorList;
-
-  final List<ProcessorInfo> _processorList = [
-    ProcessorInfo(
-        shortName: "Gate",
-        longName: "Noise Gate",
-        keyName: "gate",
-        nuxFXID: PlugAirFXID.gate,
-        color: Colors.green,
-        icon: MightierIcons.gate),
-    ProcessorInfo(
-        shortName: "EFX",
-        longName: "EFX",
-        keyName: "efx",
-        nuxFXID: PlugAirFXID.efx,
-        color: Colors.deepPurpleAccent[100]!,
-        icon: MightierIcons.pedal),
-    ProcessorInfo(
-        shortName: "Amp",
-        longName: "Amplifier",
-        keyName: "amp",
-        nuxFXID: PlugAirFXID.amp,
-        color: Colors.green,
-        icon: MightierIcons.amp),
-    ProcessorInfo(
-        shortName: "IR",
-        longName: "Cabinet",
-        keyName: "cabinet",
-        nuxFXID: PlugAirFXID.cab,
-        color: Colors.blue,
-        icon: MightierIcons.cabinet),
-    ProcessorInfo(
-        shortName: "Mod",
-        longName: "Modulation",
-        keyName: "mod",
-        nuxFXID: PlugAirFXID.mod,
-        color: Colors.cyan[300]!,
-        icon: Icons.waves),
-    ProcessorInfo(
-        shortName: "Delay",
-        longName: "Delay",
-        keyName: "delay",
-        nuxFXID: PlugAirFXID.delay,
-        color: Colors.blueAccent,
-        icon: Icons.blur_linear),
-    ProcessorInfo(
-        shortName: "Reverb",
-        longName: "Reverb",
-        keyName: "reverb",
-        nuxFXID: PlugAirFXID.reverb,
-        color: Colors.orange,
-        icon: Icons.blur_on),
-  ];
+  List<ProcessorInfo> get processorList => ProcessorsList.plugAirList;
 
   List<Preset> guitarPresets = <Preset>[];
   List<Preset> bassPresets = <Preset>[];
 
   List<String> channelNames = [];
-
-  final List<String> drumStyles = [
-    "Metronome",
-    "Pop",
-    "Metal",
-    "Blues",
-    "Swing",
-    "Rock",
-    "Ballad Rock",
-    "Funk",
-    "R&B",
-    "Latin",
-    "Dance"
-  ];
 
   NuxMightyPlug(NuxDeviceControl devControl) : super(devControl) {
     //clean
@@ -232,7 +166,7 @@ class NuxMightyPlug extends NuxDevice {
   }
 
   @override
-  dynamic getDrumStyles() => drumStyles;
+  dynamic getDrumStyles() => DrumStyles.drumStylesPlug;
 
   @override
   void onConnect() {

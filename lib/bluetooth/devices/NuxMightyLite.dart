@@ -1,18 +1,16 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'package:flutter/material.dart';
-import '../../UI/mightierIcons.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/device_data/processors_list.dart';
 import 'NuxConstants.dart';
-import 'NuxFXID.dart';
 import 'communication/communication.dart';
 import 'communication/liteCommunication.dart';
+import 'device_data/drumstyles.dart';
 import 'presets/MightyLitePreset.dart';
 
 import '../NuxDeviceControl.dart';
 import 'NuxDevice.dart';
 import 'effects/Processor.dart';
-import 'presets/Preset.dart';
 
 enum MLiteChannel { Clean, Overdrive, Distortion }
 
@@ -38,7 +36,7 @@ class NuxMightyLite extends NuxDevice {
   @override
   int get productVersion => 0;
   @override
-  String get productIconLabel => "PLUG|LITE";
+  String get productIconLabel => "LITE";
 
   @override
   List<String> get productBLENames =>
@@ -81,53 +79,9 @@ class NuxMightyLite extends NuxDevice {
   @override
   List<String> get groupsName => ["Default"];
   @override
-  List<ProcessorInfo> get processorList => _processorList;
-
-  final List<ProcessorInfo> _processorList = [
-    ProcessorInfo(
-        shortName: "Gate",
-        longName: "Noise Gate",
-        keyName: "gate",
-        nuxFXID: LiteFXID.gate,
-        color: Colors.green,
-        icon: MightierIcons.gate),
-    ProcessorInfo(
-        shortName: "Amp",
-        longName: "Amplifier",
-        keyName: "amp",
-        nuxFXID: LiteFXID.amp,
-        color: Colors.green,
-        icon: MightierIcons.amp),
-    ProcessorInfo(
-        shortName: "Mod",
-        longName: "Modulation",
-        keyName: "mod",
-        nuxFXID: LiteFXID.mod,
-        color: Colors.cyan[300]!,
-        icon: Icons.waves),
-    ProcessorInfo(
-        shortName: "Ambience",
-        longName: "Ambience",
-        keyName: "ambience",
-        nuxFXID: LiteFXID.ambience,
-        color: Colors.orange,
-        icon: Icons.blur_on),
-  ];
+  List<ProcessorInfo> get processorList => ProcessorsList.liteList;
 
   List<String> channelNames = [];
-
-  final List<String> drumStyles = [
-    "Metronome",
-    "Pop",
-    "Metal",
-    "Blues",
-    "Country",
-    "Rock",
-    "Ballad Rock",
-    "Funk",
-    "R&B",
-    "Latin"
-  ];
 
   NuxMightyLite(NuxDeviceControl devControl) : super(devControl) {
     //get channel names
@@ -153,7 +107,7 @@ class NuxMightyLite extends NuxDevice {
   }
 
   @override
-  dynamic getDrumStyles() => drumStyles;
+  dynamic getDrumStyles() => DrumStyles.drumStyles8BT;
 
   @override
   void setFirmwareVersion(int ver) {}

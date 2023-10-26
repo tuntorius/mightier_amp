@@ -47,13 +47,13 @@ class Parameter {
 }
 
 class ProcessorInfo {
-  String shortName;
-  String longName;
-  String keyName;
-  NuxFXID nuxFXID;
-  Color color;
-  IconData icon;
-  ProcessorInfo(
+  final String shortName;
+  final String longName;
+  final String keyName;
+  final NuxFXID nuxFXID;
+  final Color color;
+  final IconData icon;
+  const ProcessorInfo(
       {required this.shortName,
       required this.longName,
       required this.keyName,

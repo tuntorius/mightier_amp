@@ -75,26 +75,6 @@ class DeviceMessageID {
 }
 
 class PresetDataIndexPlugAir {
-  static const effectTypesIndex = [
-    0, //not used but there must be a value here
-    efxtype,
-    amptype,
-    cabtype,
-    modfxtype,
-    delaytype,
-    reverbtype
-  ];
-
-  static const effectEnabledIndex = [
-    ngenable,
-    efxenable,
-    ampenable,
-    cabenable,
-    modfxenable,
-    delayenable,
-    reverbenable
-  ];
-
   static const ngenable = 0;
   static const ngthresold = 1;
   static const ngsustain = 2;
@@ -145,22 +125,6 @@ class PresetDataIndex8BT {
 }
 
 class PresetDataIndex2040BT {
-  static const effectTypesIndex = [
-    0, //not used but there must be a value here
-    0,
-    mod_type,
-    dly_type,
-    rvb_type
-  ];
-
-  static const effectEnabledIndex = [
-    ngenable,
-    0,
-    mod_enable,
-    dly_enable,
-    rvb_enable
-  ];
-
   static const ngenable = 0;
   static const ngthresold = 1;
 
@@ -193,15 +157,6 @@ class PresetDataIndex2040BT {
 }
 
 class PresetDataIndexLite {
-  static const effectTypesIndex = [
-    0, //not used but there must be a value here
-    drivetype,
-    modfxtype,
-    efxtype,
-  ];
-
-  static const effectEnabledIndex = [ngenable, modfxenable, efxenable];
-
   static const ngenable = 0;
   static const ngthresold = 1;
   static const ngsustain = 2;

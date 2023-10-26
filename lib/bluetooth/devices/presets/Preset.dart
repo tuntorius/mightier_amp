@@ -4,8 +4,10 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:convert/convert.dart';
 import 'package:qr_utils/qr_utils.dart';
 import 'package:undo/undo.dart';
+import '../../NuxDeviceControl.dart';
 import '../NuxDevice.dart';
 import '../NuxFXID.dart';
 import '../effects/Processor.dart';
@@ -45,7 +47,41 @@ abstract class Preset {
     return fxid.toInt();
   }
 
-  void setupPresetFromNuxDataArray(List<int> nuxData);
+  void setupPresetFromNuxDataArray(List<int> nuxData) {
+    if (nuxData.length < 10) return;
+
+    var loadedPreset = hex.encode(nuxData);
+
+    NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
+    NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
+
+    for (int i = 0; i < device.effectsChainLength; i++) {
+      var effects = getEffectsForSlot(i);
+
+      if (effects.isEmpty) continue;
+      //set proper effect
+      if (effects[0].nuxEffectTypeIndex != null) {
+        int effectIndex = nuxData[effects[0].nuxEffectTypeIndex!];
+
+        //find array index by nux index
+        for (int j = 0; j < effects.length; j++) {
+          if (effects[j].nuxIndex == effectIndex) {
+            effectIndex = j;
+            break;
+          }
+        }
+        setSelectedEffectForSlot(i, effectIndex, false);
+      }
+
+      //enable/disable effect
+      if (effects[0].nuxEnableIndex != null) {
+        setSlotEnabled(i, nuxData[effects[0].nuxEnableIndex!] != 0, false);
+      }
+
+      getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
+          .setupFromNuxPayload(nuxData);
+    }
+  }
 
   void setFXIDAtSlot(int slot, NuxFXID fxid) {}
   void swapProcessorSlots(int from, int to, bool notifyBT) {

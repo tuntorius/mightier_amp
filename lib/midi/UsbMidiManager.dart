@@ -11,12 +11,13 @@ import 'controllers/MidiController.dart';
 class UsbMidiManager {
   List<MidiDevice> _devices = [];
   final Function(HotkeyControl) onHotkeyReceived;
+  final Function() onMidiDeviceFound;
 
   final List<UsbMidiController> _controllers = [];
 
   bool usbMidiSupported = false;
 
-  UsbMidiManager(this.onHotkeyReceived) {
+  UsbMidiManager(this.onHotkeyReceived, this.onMidiDeviceFound) {
     _init();
   }
 
@@ -57,11 +58,14 @@ class UsbMidiManager {
     //deviceOpened - for connect
     //onDeviceStatusChanged - for connect probably
     var ctls = MidiControllerManager().controllers;
+
     if (data == "deviceLost") {
       for (var ctl in ctls) {
         if (ctl is UsbMidiController) ctl.checkForDisconnection();
       }
-    }
+    } else if (data == "deviceFound") {
+      onMidiDeviceFound();
+    } else if (data == "deviceOpened") {}
     debugPrint("OnMidiSetupChanged: $data");
   }
 

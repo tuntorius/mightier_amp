@@ -28,7 +28,10 @@ class UsbMidiController extends MidiController {
         }
       }
       await Future.delayed(const Duration(milliseconds: 500));
-      if (device.connected) return true;
+      if (device.connected) {
+        onStatus?.call(this, ControllerStatus.Connected);
+        return true;
+      }
     }
 
     return device.connected;

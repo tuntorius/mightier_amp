@@ -51,11 +51,16 @@ class MidiControllerManager extends ChangeNotifier {
 
   MidiControllerManager._() {
     _bleMidiManager = BleMidiManager(_onHotkeyReceived);
-    _usbMidiManager = UsbMidiManager(_onHotkeyReceived);
+    _usbMidiManager = UsbMidiManager(_onHotkeyReceived, scanUsb);
     _hidController = HidController(_onHotkeyReceived);
     _controllers.add(_hidController);
     _bleMidiManager.addListener(_onBleMidiManagerChanged);
-    loadConfig();
+    loadConfig().then(
+      (_) async {
+        await Future.delayed(const Duration(seconds: 1));
+        scanUsb();
+      },
+    );
 
     BLEMidiHandler.instance().status.listen(_statusListener);
   }
@@ -81,22 +86,34 @@ class MidiControllerManager extends ChangeNotifier {
     //add the hid controller by default
     _controllers.add(_hidController);
     _loadControllerHotkeys(_hidController);
+
     //scan for usb midi devices
-    _usbMidiManager.getDevices().then((value) {
-      _controllers.addAll(value);
-      for (var dev in value) {
-        dev.setOnStatus(onControllerStatus);
-        dev.setOnDataReceived(onControllerData);
-        _loadControllerHotkeys(dev);
-      }
-      notifyListeners();
-    });
+    scanUsb();
 
     _bleMidiManager.startScan();
   }
 
+  scanUsb() {
+    _usbMidiManager.getDevices().then(_connectAvailableUsbDevices);
+  }
+
   stopScan() {
     _bleMidiManager.stopScan();
+    notifyListeners();
+  }
+
+  _connectAvailableUsbDevices(List<MidiController> devices) {
+    for (var dev in devices) {
+      if (_controllers.contains(dev)) {
+        _controllers.remove(dev);
+      }
+      _controllers.add(dev);
+      dev.setOnStatus(onControllerStatus);
+      dev.setOnDataReceived(onControllerData);
+      if (_loadControllerHotkeys(dev) == true && !dev.connected) {
+        dev.connect();
+      }
+    }
     notifyListeners();
   }
 
@@ -122,7 +139,7 @@ class MidiControllerManager extends ChangeNotifier {
   }
 
   onControllerStatus(MidiController ctrl, ControllerStatus status) {
-    if (status == ControllerStatus.Disconnected) notifyListeners();
+    notifyListeners();
   }
 
   onControllerData(MidiController ctrl, List<int> data) {
@@ -222,7 +239,7 @@ class MidiControllerManager extends ChangeNotifier {
     dataOverride = null;
   }
 
-  loadConfig() async {
+  Future<void> loadConfig() async {
     await _getDirectory();
 
     try {
@@ -257,14 +274,16 @@ class MidiControllerManager extends ChangeNotifier {
     _controllersFile = File(filePath);
   }
 
-  _loadControllerHotkeys(MidiController ctrl) {
+  bool _loadControllerHotkeys(MidiController ctrl) {
     for (var config in _controllersData) {
       if (config is Map<String, dynamic>) {
         if (config["name"] == ctrl.name) {
           ctrl.fromJson(config, _onHotkeyReceived);
+          return true;
         }
       }
     }
+    return false;
   }
 
   void _onHotkeyReceived(HotkeyControl hotkey) {

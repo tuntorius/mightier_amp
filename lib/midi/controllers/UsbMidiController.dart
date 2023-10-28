@@ -10,8 +10,18 @@ class UsbMidiController extends MidiController {
   @override
   String get id => device.id;
 
+  String? _name;
+
   @override
-  String get name => device.name;
+  String get name {
+    if (_name == null) {
+      //custom fix for https://github.com/tuntorius/mightier_amp/issues/81
+      _name = device.name;
+      if (_name!.startsWith("Arduino LLC Arduino Leonardo") &&
+          _name!.endsWith("MIDI 1.0")) _name = "Arduino Leonardo MIDI 1.0";
+    }
+    return device.name;
+  }
 
   @override
   bool get connected => device.connected;

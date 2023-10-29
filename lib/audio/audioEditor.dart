@@ -128,8 +128,7 @@ class _AudioEditorState extends State<AudioEditor> {
     });
   }
 
-  void freeDecoder()
-  {
+  void freeDecoder() {
     SourceResolver.releaseUrl(widget.track.path, _resolvedPath);
   }
 
@@ -193,8 +192,8 @@ class _AudioEditorState extends State<AudioEditor> {
     setState(() {});
   }
 
-  void editEvent(AutomationEvent event) {
-    var editor = EventEditor(event: event);
+  void editEvent(AutomationEvent event, bool noneOption) {
+    var editor = EventEditor(event: event, noneOption: noneOption);
     editor.buildDialog(context).then((value) {
       setState(() {});
     });

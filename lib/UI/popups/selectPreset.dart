@@ -21,13 +21,25 @@ class SelectPresetDialog {
           const Text('Select preset'),
         ],
       ),
+      actions: [],
       content: Scaffold(
-        body: PresetList(
-            simplified: true,
-            noneOption: noneOption,
-            onTap: (preset) {
-              Navigator.of(context, rootNavigator: true).pop(preset);
-            }),
+        body: ListView(
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            children: [
+              if (noneOption)
+                ListTile(
+                  title: const Center(child: Text("None")),
+                  onTap: () =>
+                      Navigator.of(context, rootNavigator: true).pop(false),
+                ),
+              PresetList(
+                  simplified: true,
+                  noneOption: noneOption,
+                  onTap: (preset) {
+                    Navigator.of(context, rootNavigator: true).pop(preset);
+                  }),
+            ]),
       ),
     );
   }

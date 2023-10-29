@@ -25,13 +25,11 @@ import 'presets_popup_menus.dart';
 class PresetList extends StatefulWidget {
   final void Function(dynamic)? onTap;
   final bool simplified;
-  final bool noneOption;
   final TabVisibilityEventHandler? visibilityEventHandler;
   const PresetList(
       {Key? key,
       this.onTap,
       this.simplified = false,
-      this.noneOption = false,
       this.visibilityEventHandler})
       : super(key: key);
 
@@ -165,6 +163,63 @@ class _PresetListState extends State<PresetList>
     return null;
   }
 
+  Widget _createDragDropList(
+      List<DragAndDropListInterface> list, Widget? header, bool sliverList,
+      {bool disableScrolling = false}) {
+    return DragAndDropLists(
+      scrollController: _scrollController,
+      sliverList: sliverList,
+      key: const PageStorageKey<String>("presets"),
+      children: list,
+      disableScrolling: disableScrolling,
+      headerWidget: header,
+      lastListTargetSize: 60,
+      contentsWhenEmpty: const SliverFillRemaining(
+        child: Center(
+          child: Text("Empty"),
+        ),
+      ),
+      onItemReorder: _onItemReorder,
+      onListReorder: _onListReorder,
+      itemGhost: (item) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.keyboard_arrow_right,
+              size: 30,
+              color: Colors.grey,
+            ),
+            Expanded(child: Opacity(opacity: 0.4, child: item))
+          ],
+        );
+      },
+      itemGhostOpacity: 1,
+      itemDragOffset: const Offset(30, 0),
+      // listGhost is mandatory when using expansion tiles to prevent multiple widgets using the same globalkey
+      listGhost: Container(
+        color: Colors.blue,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Center(
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 100.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(7.0),
+              ),
+              child: const Icon(
+                Icons.add_box,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _createPresetTree(Widget? header, bool hideNonApplicable) {
     List<DragAndDropListInterface> list = List.generate(
         _lists.length, (index) => _buildList(index, hideNonApplicable));
@@ -180,60 +235,16 @@ class _PresetListState extends State<PresetList>
               floating: true,
               snap: true,
             ),
-          DragAndDropLists(
-            scrollController: _scrollController,
-            sliverList: true,
-            key: const PageStorageKey<String>("presets"),
-            children: list,
-            headerWidget: header,
-            lastListTargetSize: 60,
-            contentsWhenEmpty: const SliverFillRemaining(
-              child: Center(
-                child: Text("Empty"),
-              ),
-            ),
-            onItemReorder: _onItemReorder,
-            onListReorder: _onListReorder,
-            itemGhost: (item) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.keyboard_arrow_right,
-                    size: 30,
-                    color: Colors.grey,
-                  ),
-                  Expanded(child: Opacity(opacity: 0.4, child: item))
-                ],
-              );
-            },
-            itemGhostOpacity: 1,
-            itemDragOffset: const Offset(30, 0),
-            // listGhost is mandatory when using expansion tiles to prevent multiple widgets using the same globalkey
-            listGhost: Container(
-              color: Colors.blue,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 100.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(7.0),
-                    ),
-                    child: const Icon(
-                      Icons.add_box,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          _createDragDropList(list, header, true)
         ],
       ),
     );
+  }
+
+  Widget _createPresetTreeSimple(bool hideNonApplicable) {
+    List<DragAndDropListInterface> list = List.generate(
+        _lists.length, (index) => _buildList(index, hideNonApplicable));
+    return _createDragDropList(list, null, false, disableScrolling: true);
   }
 
   Widget _createSearchResultsList(Widget? header, bool hideNonApplicable) {
@@ -286,13 +297,14 @@ class _PresetListState extends State<PresetList>
 
     Widget? header = _createHeader();
 
+    if (widget.simplified) return _createPresetTreeSimple(hideNonApplicable);
     Widget ui;
     if (_searchText.text.isEmpty) {
       ui = _createPresetTree(header, hideNonApplicable);
     } else {
       ui = _createSearchResultsList(header, hideNonApplicable);
     }
-    if (widget.simplified) return ui;
+
     var sps = SetlistPlayerState.instance();
     if (sps.state != PlayerState.play ||
         (sps.automation?.presetChangeEventsAvailable == false)) {

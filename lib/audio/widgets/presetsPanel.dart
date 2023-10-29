@@ -7,7 +7,7 @@ class PresetsPanel extends StatelessWidget {
   final AutomationController automation;
   final Function(Map<String, dynamic>) onSelectedPreset;
   final Function(AutomationEvent) onDuplicateEvent;
-  final Function(AutomationEvent) onEditEvent;
+  final Function(AutomationEvent, bool) onEditEvent;
   final Function onDelete;
   const PresetsPanel(
       {Key? key,
@@ -65,7 +65,7 @@ class PresetsPanel extends StatelessWidget {
                   onPressed: automation.selectedEvent == null
                       ? null
                       : () {
-                          onEditEvent(automation.selectedEvent!);
+                          onEditEvent(automation.selectedEvent!, false);
                         },
                   child: const Text("Edit"),
                 ),
@@ -92,7 +92,7 @@ class PresetsPanel extends StatelessWidget {
             textColor: Colors.white,
             child: const Text("Edit Initial Parameters"),
             onPressed: () {
-              onEditEvent(automation.initialEvent);
+              onEditEvent(automation.initialEvent, true);
             },
           ),
         ],

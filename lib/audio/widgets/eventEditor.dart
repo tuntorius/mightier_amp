@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/selectPreset.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/presets/Preset.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/preset_constants.dart';
 import 'package:mighty_plug_manager/platform/presetsStorage.dart';
 import '../models/trackAutomation.dart';
 
 class EventEditor {
   final AutomationEvent event;
-  EventEditor({required this.event});
+  final bool noneOption;
+  EventEditor({required this.event, required this.noneOption});
 
   List<Widget> createPresetTiles(
       context, dynamic preset, StateSetter setState) {
@@ -32,7 +32,7 @@ class EventEditor {
         showDialog(
           context: context,
           builder: (BuildContext context) =>
-              SelectPresetDialog().buildDialog(context, noneOption: false),
+              SelectPresetDialog().buildDialog(context, noneOption: noneOption),
         ).then((value) {
           if (value == false) {
             event.setPresetUuid("");

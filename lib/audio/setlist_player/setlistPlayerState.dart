@@ -132,7 +132,8 @@ class SetlistPlayerState extends ChangeNotifier {
   void previous() async {
     if (_automation == null) return;
     if (currentTrack == 0 || _automation!.player.position.inSeconds > 3) {
-      _automation!.rewind();
+      await _automation!.rewind();
+      currentPosition = const Duration(milliseconds: 0);
     } else if (currentTrack > 0) {
       await closeTrack();
       currentTrack--;

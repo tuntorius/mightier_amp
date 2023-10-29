@@ -48,19 +48,21 @@ class _EffectSelectorState extends State<EffectSelector> {
 
     setState(() {
       var device = NuxDeviceControl.instance().device;
-
+      var effectSlot = _selectedSlot;
       //put new effect in stack
       var oldEffect = (
         slot: _selectedSlot,
-        index: _preset.getSelectedEffectForSlot(_selectedSlot)
+        index: _preset.getSelectedEffectForSlot(_selectedSlot),
       );
       List<Change<({int slot, int index})>> totalChanges = [];
 
-      totalChanges.add(Change(
-          oldEffect,
-          () => _preset.setSelectedEffectForSlot(_selectedSlot, index, true),
-          (oldVal) => _preset.setSelectedEffectForSlot(
-              oldVal.slot, oldVal.index, true)));
+      totalChanges.add(Change(oldEffect, () {
+        if (_selectedSlot != effectSlot) _selectedSlot = effectSlot;
+        _preset.setSelectedEffectForSlot(effectSlot, index, true);
+      }, (oldVal) {
+        if (_selectedSlot != oldVal.slot) _selectedSlot = oldVal.slot;
+        _preset.setSelectedEffectForSlot(oldVal.slot, oldVal.index, true);
+      }));
 
       if (device.cabinetSupport &&
           SharedPrefs().getInt(SettingsKeys.changeCabs, 1) == 1) {

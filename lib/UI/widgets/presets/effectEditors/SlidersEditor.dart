@@ -51,15 +51,31 @@ class _SlidersEditorState extends State<SlidersEditor> {
         _oldValue = val;
       },
       onDragEnd: (val) {
-        //undo/redo here
-        NuxDeviceControl.instance().changes.add(Change<double>(
-            _oldValue,
-            () => widget.preset.setParameterValue(param, val),
-            (oldVal) => widget.preset.setParameterValue(param, oldVal)));
-        NuxDeviceControl.instance().undoStackChanged();
+        _updateParameterValue(param, val);
       },
       handleVerticalDrag: handleVerticalDrag,
     );
+  }
+
+  void _updateParameterValue(Parameter param, double val) {
+    var device = NuxDeviceControl.instance().device;
+    var slot = device.selectedSlot;
+    NuxDeviceControl.instance().changes.add(
+            Change<({double parameter, int selectedSlot})>(
+                (parameter: _oldValue, selectedSlot: slot), () {
+          var currentSlot = device.selectedSlot;
+          if (slot != currentSlot) {
+            device.selectedSlot = slot;
+          }
+          widget.preset.setParameterValue(param, val);
+        }, (oldVal) {
+          var currentSlot = device.selectedSlot;
+          if (oldVal.selectedSlot != currentSlot) {
+            device.selectedSlot = oldVal.selectedSlot;
+          }
+          widget.preset.setParameterValue(param, oldVal.parameter);
+        }));
+    NuxDeviceControl.instance().undoStackChanged();
   }
 
   ModeControl _createModeControl(Parameter param) {
@@ -68,11 +84,8 @@ class _SlidersEditorState extends State<SlidersEditor> {
       value: param.value,
       parameter: param,
       onChanged: (val) {
-        NuxDeviceControl.instance().changes.add(Change<double>(
-            _oldValue,
-            () => widget.preset.setParameterValue(param, val),
-            (oldVal) => widget.preset.setParameterValue(param, oldVal)));
-        NuxDeviceControl.instance().undoStackChanged();
+        _oldValue = param.value;
+        _updateParameterValue(param, val);
       },
       effectColor: widget.preset.effectColor(widget.slot),
       enabled: enabled,
@@ -90,12 +103,8 @@ class _SlidersEditorState extends State<SlidersEditor> {
             var newValue = (param.formatter as TempoFormatter)
                 .timeToPercentage(result / 1000);
             widget.preset.setParameterValue(param, newValue);
-
-            NuxDeviceControl.instance().changes.add(Change<double>(
-                param.value,
-                () => widget.preset.setParameterValue(param, newValue),
-                (oldVal) => widget.preset.setParameterValue(param, oldVal)));
-            NuxDeviceControl.instance().undoStackChanged();
+            _oldValue = param.value;
+            _updateParameterValue(param, newValue);
           });
         }
       },

@@ -6,7 +6,7 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
-abstract class Delay extends Processor {
+abstract class DelayPro extends Processor {
   @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iDLY;
   @override
@@ -36,7 +36,7 @@ abstract class Delay extends Processor {
   MidiControllerHandle? get midiControlNext => MidiControllerHandles.delayNext;
 }
 
-class AnalogDelay extends Delay {
+class AnalogDelay extends DelayPro {
   @override
   final name = "Analog";
 
@@ -72,7 +72,43 @@ class AnalogDelay extends Delay {
   ];
 }
 
-class DigitalDelay extends Delay {
+class AnalogDelayV2 extends DelayPro {
+  @override
+  final name = "Analog";
+
+  @override
+  int get nuxIndex => 1;
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Intensity",
+        handle: "intensity",
+        value: 52,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
+        midiCC: MidiCCValuesPro.DLY_Para3,
+        midiControllerHandle: MidiControllerHandles.delayLevel),
+    Parameter(
+        name: "Rate",
+        handle: "rate",
+        value: 34,
+        formatter: ValueFormatters.tempoProAnalog,
+        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
+        midiCC: MidiCCValuesPro.DLY_Para1,
+        midiControllerHandle: MidiControllerHandles.delayTime),
+    Parameter(
+        name: "Echo",
+        handle: "echo",
+        value: 45,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
+        midiCC: MidiCCValuesPro.DLY_Para2,
+        midiControllerHandle: MidiControllerHandles.delayRepeat)
+  ];
+}
+
+class DigitalDelay extends DelayPro {
   @override
   final name = "Digital Delay";
 
@@ -107,7 +143,7 @@ class DigitalDelay extends Delay {
   ];
 }
 
-class ModDelay extends Delay {
+class ModDelay extends DelayPro {
   @override
   final name = "Modulation";
 
@@ -150,7 +186,7 @@ class ModDelay extends Delay {
   ];
 }
 
-class TapeEcho extends Delay {
+class TapeEcho extends DelayPro {
   @override
   final name = "Tape Echo";
 
@@ -185,7 +221,7 @@ class TapeEcho extends Delay {
   ];
 }
 
-class PanDelay extends Delay {
+class PanDelay extends DelayPro {
   @override
   final name = "Pan Delay";
 

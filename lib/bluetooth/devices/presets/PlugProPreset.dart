@@ -199,7 +199,7 @@ class PlugProPreset extends Preset {
     }
 
     delayList.addAll(
-        [AnalogDelay(), DigitalDelay(), ModDelay(), TapeEcho(), PanDelay()]);
+        [AnalogDelayV2(), DigitalDelay(), ModDelay(), TapeEcho(), PanDelay()]);
 
     _reverbList.addAll([
       RoomReverb(),

@@ -6,7 +6,7 @@ import '../../value_formatters/ValueFormatter.dart';
 import '../MidiControllerHandles.dart';
 import '../Processor.dart';
 
-abstract class EFX extends Processor {
+abstract class EFXPro extends Processor {
   @override
   int? get nuxEffectTypeIndex => PresetDataIndexPlugPro.Head_iEFX;
   @override
@@ -37,7 +37,7 @@ abstract class EFX extends Processor {
   MidiControllerHandle? get midiControlNext => MidiControllerHandles.efxNext;
 }
 
-class DistortionPlus extends EFX {
+class DistortionPlus extends EFXPro {
   @override
   final name = "Distortion+";
 
@@ -64,7 +64,7 @@ class DistortionPlus extends EFX {
   ];
 }
 
-class RCBoost extends EFX {
+class RCBoost extends EFXPro {
   @override
   final name = "RC Boost";
 
@@ -107,7 +107,7 @@ class RCBoost extends EFX {
   ];
 }
 
-class ACBoost extends EFX {
+class ACBoost extends EFXPro {
   @override
   final name = "AC Boost";
 
@@ -150,7 +150,7 @@ class ACBoost extends EFX {
   ];
 }
 
-class DistOne extends EFX {
+class DistOne extends EFXPro {
   @override
   final name = "Dist One";
 
@@ -185,7 +185,7 @@ class DistOne extends EFX {
   ];
 }
 
-class TSDrive extends EFX {
+class TSDrive extends EFXPro {
   @override
   final name = "T Screamer";
   @override
@@ -219,7 +219,7 @@ class TSDrive extends EFX {
   ];
 }
 
-class BluesDrive extends EFX {
+class BluesDrive extends EFXPro {
   @override
   final name = "Blues Drive";
 
@@ -254,7 +254,7 @@ class BluesDrive extends EFX {
   ];
 }
 
-class MorningDrive extends EFX {
+class MorningDrive extends EFXPro {
   @override
   final name = "Morning Drive";
 
@@ -289,7 +289,7 @@ class MorningDrive extends EFX {
   ];
 }
 
-class EatDist extends EFX {
+class EatDist extends EFXPro {
   @override
   final name = "Eat Dist";
 
@@ -324,7 +324,7 @@ class EatDist extends EFX {
   ];
 }
 
-class RedDirt extends EFX {
+class RedDirt extends EFXPro {
   @override
   final name = "Red Dirt";
 
@@ -359,7 +359,7 @@ class RedDirt extends EFX {
   ];
 }
 
-class Crunch extends EFX {
+class Crunch extends EFXPro {
   @override
   final name = "Crunch";
 
@@ -394,7 +394,7 @@ class Crunch extends EFX {
   ];
 }
 
-class MuffFuzz extends EFX {
+class MuffFuzz extends EFXPro {
   @override
   final name = "Muff Fuzz";
 
@@ -429,7 +429,7 @@ class MuffFuzz extends EFX {
   ];
 }
 
-class Katana extends EFX {
+class Katana extends EFXPro {
   @override
   final name = "Katana";
 
@@ -456,7 +456,7 @@ class Katana extends EFX {
   ];
 }
 
-class STSinger extends EFX {
+class STSinger extends EFXPro {
   @override
   final name = "ST Singer";
 

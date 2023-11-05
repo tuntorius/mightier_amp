@@ -100,7 +100,7 @@ class ModCE2 extends Modulation {
   ];
 }
 
-class STChorus extends Modulation {
+class STChorusPro extends Modulation {
   @override
   final name = "ST Chorus";
 
@@ -197,7 +197,7 @@ class Detune extends Modulation {
   ];
 }
 
-class Flanger extends Modulation {
+class FlangerPro extends Modulation {
   @override
   final name = "Flanger";
 
@@ -285,7 +285,7 @@ class Phase100 extends Modulation {
   ];
 }
 
-class SCF extends Modulation {
+class SCFPro extends Modulation {
   @override
   final name = "S.C.F.";
 
@@ -327,7 +327,7 @@ class SCF extends Modulation {
   ];
 }
 
-class Vibe extends Modulation {
+class VibePro extends Modulation {
   @override
   final name = "U-Vibe";
 
@@ -369,7 +369,7 @@ class Vibe extends Modulation {
   ];
 }
 
-class Tremolo extends Modulation {
+class TremoloPro extends Modulation {
   @override
   final name = "Tremolo";
 
@@ -423,7 +423,7 @@ class Rotary extends Modulation {
   ];
 }
 
-class SCH1 extends Modulation {
+class SCH1Pro extends Modulation {
   @override
   final name = "SCH-1";
 

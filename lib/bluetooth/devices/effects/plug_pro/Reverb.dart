@@ -202,7 +202,7 @@ class ShimmerReverb extends Reverb {
   ];
 }
 
-class DampReverb extends Reverb {
+class DampReverbPro extends Reverb {
   @override
   final name = "Damp";
 

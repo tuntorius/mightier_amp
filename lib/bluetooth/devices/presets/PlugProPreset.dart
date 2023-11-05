@@ -42,13 +42,13 @@ class PlugProPreset extends Preset {
   final NoiseGatePro noiseGate = NoiseGatePro();
 
   final List<Compressor> _compressorList = <Compressor>[];
-  final List<EFX> efxList = <EFX>[];
+  final List<EFXPro> efxList = <EFXPro>[];
   final List<CabinetPro> cabinetList = <CabinetPro>[];
   final List<Modulation> modulationList = <Modulation>[];
   final List<Reverb> _reverbList = <Reverb>[];
   @override
   final List<Amplifier> amplifierList = <Amplifier>[];
-  final List<Delay> delayList = <Delay>[];
+  final List<DelayPro> delayList = <DelayPro>[];
   final List<EQ> eqList = <EQ>[];
 
   //presets stored in nux indexing (unused Wah is 0)
@@ -81,22 +81,22 @@ class PlugProPreset extends Preset {
   PlugProPreset(
       {required this.device, required this.channel, required this.channelName})
       : super(channel: channel, channelName: channelName, device: device) {
-    _compressorList.addAll([RoseComp(), KComp(), StudioComp()]);
+    _compressorList.addAll([RoseCompPro(), KComp(), StudioComp()]);
 
     modulationList.addAll([
       ModCE1(),
       ModCE2(),
-      STChorus(),
+      STChorusPro(),
       Vibrato(),
       Detune(),
-      Flanger(),
+      FlangerPro(),
       Phase90(),
       Phase100(),
-      SCF(),
-      Vibe(),
-      Tremolo(),
+      SCFPro(),
+      VibePro(),
+      TremoloPro(),
       Rotary(),
-      SCH1(),
+      SCH1Pro(),
     ]);
 
     efxList.addAll([
@@ -115,7 +115,6 @@ class PlugProPreset extends Preset {
       STSinger(),
     ]);
 
-    bool showHiddenAmps = SharedPrefs().getInt(SettingsKeys.hiddenAmps, 0) != 0;
     amplifierList.addAll([
       JazzClean(),
       DeluxeRvb(),
@@ -207,7 +206,7 @@ class PlugProPreset extends Preset {
       PlateReverb(),
       SpringReverb(),
       ShimmerReverb(),
-      DampReverb()
+      DampReverbPro()
     ]);
 
     for (int i = 0; i < PresetDataIndexPlugPro.defaultEffects.length; i++) {

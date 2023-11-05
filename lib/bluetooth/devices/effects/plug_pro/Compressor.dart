@@ -36,7 +36,7 @@ abstract class Compressor extends Processor {
   MidiControllerHandle? get midiControlNext => MidiControllerHandles.compNext;
 }
 
-class RoseComp extends Compressor {
+class RoseCompPro extends Compressor {
   @override
   final name = "Rose Comp";
 

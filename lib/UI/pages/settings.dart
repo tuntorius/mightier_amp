@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../bluetooth/NuxDeviceControl.dart';
 import '../../bluetooth/bleMidiHandler.dart';
@@ -97,7 +97,7 @@ class _SettingsState extends State<Settings> {
                       .getValue(SettingsKeys.screenAlwaysOn, false),
                   onChanged: (val) {
                     setState(() {
-                      Wakelock.toggle(enable: val);
+                      WakelockPlus.toggle(enable: val);
                       SharedPrefs().setValue(SettingsKeys.screenAlwaysOn, val);
                     });
                   },

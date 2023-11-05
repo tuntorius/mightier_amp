@@ -3,8 +3,8 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'package:wakelock/wakelock.dart';
 import 'package:path/path.dart' as path;
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'platformUtils.dart';
 
@@ -52,7 +52,7 @@ class SharedPrefs {
     await _loadPrefs();
 
     bool value = getValue(SettingsKeys.screenAlwaysOn, false);
-    Wakelock.toggle(enable: value);
+    WakelockPlus.toggle(enable: value);
   }
 
   _getDirectory() async {

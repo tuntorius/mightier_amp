@@ -73,6 +73,8 @@ class NuxMighty8BT extends NuxDevice {
   int get deviceQRId => 12;
   @override
   int get deviceQRVersion => 1;
+  @override
+  bool get jamTrackChannelChange => true;
 
   @override
   List<ProcessorInfo> get processorList => ProcessorsList.mighty8BTList;

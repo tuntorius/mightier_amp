@@ -84,6 +84,8 @@ class NuxMighty2040BT extends NuxDevice {
   int get deviceQRId => 7;
   @override
   int get deviceQRVersion => 1;
+  @override
+  bool get jamTrackChannelChange => true;
 
   @override
   List<String> get groupsName => ["All"]; //, "Group 2"];

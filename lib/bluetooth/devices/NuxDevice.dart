@@ -75,6 +75,7 @@ abstract class NuxDevice extends ChangeNotifier {
   bool get batterySupport;
   bool get nativeActiveChannelsSupport;
   ValueFormatter? get decibelFormatter => null;
+  bool get jamTrackChannelChange => false;
 
   int get deviceQRId;
   int get deviceQRVersion;
@@ -564,7 +565,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
     if (!qrOnly) {
       BLEMidiHandler.instance().clearDataQueue();
-      if (!dontChangeChannel) {
+      if (!dontChangeChannel || jamTrackChannelChange) {
         setSelectedChannel(nuxChannel,
             notifyBT: true, notifyUI: true, sendFullPreset: false);
       }

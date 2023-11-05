@@ -75,6 +75,8 @@ class NuxMightyLite extends NuxDevice {
   int get deviceQRId => 9;
   @override
   int get deviceQRVersion => 1;
+  @override
+  bool get jamTrackChannelChange => true;
 
   @override
   List<String> get groupsName => ["Default"];

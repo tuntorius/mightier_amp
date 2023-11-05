@@ -65,6 +65,7 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
   int get productVID => 48;
   late final PlugProCommunication _communication =
       PlugProCommunication(this, config);
+
   @override
   DeviceCommunication get communication => _communication;
 

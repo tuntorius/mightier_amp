@@ -180,7 +180,7 @@ class LiteCommunication extends DeviceCommunication {
     _handlePresetDataPiece(
         [240, 7, 0, 48, 0, 0, 0, 50, 0, 20, 41, 40, 30, 55, 0, 2, 128, 247]);
     _handlePresetDataPiece(
-        [240, 7, 0, 49, 52, 24, 100, 0, 0, 50, 34, 14, 1, 0, 30, 50, 128, 247]);
+        [240, 7, 0, 49, 52, 24, 2, 0, 0, 50, 1, 12, 1, 0, 30, 50, 128, 247]);
     _handlePresetDataPiece(
         [240, 7, 0, 50, 20, 1, 3, 116, 0, 0, 0, 0, 0, 0, 0, 0, 128, 247]);
     _handlePresetDataPiece(

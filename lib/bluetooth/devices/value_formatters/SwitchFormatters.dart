@@ -113,3 +113,25 @@ class SCFModeFormatter extends SwitchFormatter {
   @override
   List<int> get midiValues => [0, 1, 2];
 }
+
+class TouchWahModeFormatter extends SwitchFormatter {
+  @override
+  String get labelTitle => "Type:";
+
+  @override
+  List<String> get labelValues => ["Cry", "VX", "Full", "Talk"];
+
+  @override
+  List<int> get midiValues => [0, 32, 64, 96];
+}
+
+class TouchWahModeFormatterLiteMk2 extends SwitchFormatter {
+  @override
+  String get labelTitle => "Type:";
+
+  @override
+  List<String> get labelValues => ["Cry", "VX", "Full", "Talk"];
+
+  @override
+  List<int> get midiValues => [0, 32, 64, 96];
+}

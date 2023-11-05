@@ -51,8 +51,8 @@ class TouchWah extends EFX {
     Parameter(
         name: "Type",
         handle: "type",
-        value: 81,
-        formatter: ValueFormatters.percentage,
+        value: 1,
+        formatter: ValueFormatters.touchWahFormatter,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
         midiCC: MidiCCValues.bCC_DistGain),
     Parameter(

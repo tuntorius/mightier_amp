@@ -29,6 +29,9 @@ class ValueFormatters {
   static SCFModeFormatter scfMode = SCFModeFormatter();
   static LowFrequencyFormatter lowFreqFormatter = LowFrequencyFormatter();
   static HighFrequencyFormatter highFreqFormatter = HighFrequencyFormatter();
+  static TouchWahModeFormatter touchWahFormatter = TouchWahModeFormatter();
+  static TouchWahModeFormatterLiteMk2 touchWahFormatterLiteMk2 =
+      TouchWahModeFormatterLiteMk2();
 }
 
 abstract class ValueFormatter {

@@ -154,7 +154,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) async {
-                  editingController.text = suggestion!.toString();
+                  editingController.text = suggestion.toString();
                   onSubmit();
                 },
               ),

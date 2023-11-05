@@ -31,7 +31,8 @@ public class AudioWaveformPlugin implements FlutterPlugin, MethodCallHandler {
         switch (call.method) {
         case "open":
                 String audioInPath = call.argument("path");
-                decoder.open(audioInPath, context);
+                boolean legacy = call.argument("legacy");
+                decoder.open(audioInPath, context, legacy);
                 result.success(null);
             break;
         case "next":

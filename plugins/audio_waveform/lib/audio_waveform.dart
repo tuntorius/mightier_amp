@@ -13,7 +13,7 @@ class AudioWaveformDecoder {
   List<int> get samples => _samples;
   double get duration => _durationms;
 
-  Future<void> open(String path) async {
+  Future<void> open(String path, bool legacy) async {
     if (Platform.isIOS) {
       if (path.contains("ipod-library://")) {
         String url = path;
@@ -24,7 +24,7 @@ class AudioWaveformDecoder {
     try {
       print("opening $path");
       size = 0;
-      var sendMap = <String, String>{"path": path};
+      var sendMap = <String, dynamic>{"path": path, "legacy": legacy};
 
       await platform.invokeMethod("open", sendMap);
       print("File opened");

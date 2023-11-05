@@ -1,6 +1,7 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_waveform/audio_waveform.dart';
@@ -108,7 +109,10 @@ class _AudioEditorState extends State<AudioEditor> {
     print("Audio path $path");
     _resolvedPath = await SourceResolver.getSourceUrl(path);
     print("Resolved path $_resolvedPath");
-    await decoder.open(_resolvedPath);
+
+    bool legacy = Platform.isAndroid &&
+        SharedPrefs().getInt(SettingsKeys.legacyDecoder, 0) != 0;
+    await decoder.open(_resolvedPath, legacy);
 
     decoder.decode(() {
       wfData = WaveformData(maxValue: 1, data: decoder.samples);

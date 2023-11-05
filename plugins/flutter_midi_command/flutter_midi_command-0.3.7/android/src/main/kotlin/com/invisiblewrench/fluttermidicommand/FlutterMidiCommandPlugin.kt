@@ -170,7 +170,7 @@ public class FlutterMidiCommandPlugin : FlutterPlugin, ActivityAware, MethodCall
 
   fun setup() {
     //TODO: Better?
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M)
+    if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_MIDI))
       return;
 
      deviceOpenedListener = MidiDeviceOpenedListener()

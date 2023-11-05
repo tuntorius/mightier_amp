@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 
@@ -30,23 +32,21 @@ class _AdvancedSettingsState extends State<AdvancedSettings> {
                     builder: (context) => const Calibration()));
               },
             ),
-            CheckboxListTile(
-                title: const Text(
-                    "Enable hidden Mighty Plug Pro / Mighty Space amps"),
-                value: SharedPrefs().getInt(SettingsKeys.hiddenAmps, 0) != 0,
-                onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      SharedPrefs()
-                          .setInt(SettingsKeys.hiddenAmps, value ? 1 : 0);
-                      AlertDialogs.showInfoDialog(context,
-                          title: "Restart Required!",
-                          description:
-                              "Please, restart Mightier Amp for the setting to take effect.",
-                          confirmButton: "OK");
-                    }
-                  });
-                }),
+            if (Platform.isAndroid)
+              CheckboxListTile(
+                  title: const Text("Use legacy waveform decoder"),
+                  subtitle: const Text(
+                      "Enable this if you experience crashes when editing tracks"),
+                  value:
+                      SharedPrefs().getInt(SettingsKeys.legacyDecoder, 0) != 0,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) {
+                        SharedPrefs()
+                            .setInt(SettingsKeys.legacyDecoder, value ? 1 : 0);
+                      }
+                    });
+                  }),
             CheckboxListTile(
                 title: const Text("Hide non-applicable presets"),
                 value: SharedPrefs()

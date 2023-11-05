@@ -272,6 +272,10 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
         widgetList = _buildWidgetsRange(
             HotkeyControl.JamTracksPlayPause, HotkeyControl.JamTracksABRepeat);
         break;
+      case HotkeyCategory.Misc:
+        title = "Misc Hotkeys";
+        widgetList = _buildWidgetsRange(
+            HotkeyControl.ToggleTuner, HotkeyControl.ToggleTuner);
     }
 
     return Scaffold(

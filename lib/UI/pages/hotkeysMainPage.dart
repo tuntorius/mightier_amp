@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/hotkeysSetup.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/features/tuner.dart';
 import 'package:mighty_plug_manager/midi/ControllerConstants.dart';
 import 'package:mighty_plug_manager/midi/controllers/MidiController.dart';
 
@@ -68,7 +69,16 @@ class HotkeysMainPage extends StatelessWidget {
                   builder: (context) => HotkeysSetup(
                         controller: controller,
                         category: HotkeyCategory.JamTracks,
-                      ))))
+                      )))),
+          if (NuxDeviceControl.instance().device is Tuner)
+            ListTile(
+                title: const Text("Misc Hotkeys"),
+                trailing: const Icon(Icons.keyboard_arrow_right),
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => HotkeysSetup(
+                          controller: controller,
+                          category: HotkeyCategory.Misc,
+                        )))),
         ],
       ),
     );

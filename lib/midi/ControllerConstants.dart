@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../UI/mightierIcons.dart';
+
 class MidiConstants {
   static const NoteOn = 0x90;
   static const NoteOff = 0x80;
@@ -45,7 +47,8 @@ enum HotkeyControl {
   PreviousPresetGlobal,
   NextPresetGlobal,
   PreviousPresetCategory,
-  NextPresetCategory
+  NextPresetCategory,
+  ToggleTuner
 }
 
 extension HotkeyLabel on HotkeyControl {
@@ -93,6 +96,9 @@ extension HotkeyLabel on HotkeyControl {
         return "Fast Forward";
       case HotkeyControl.JamTracksABRepeat:
         return "A-B Repeat";
+
+      case HotkeyControl.ToggleTuner:
+        return "Toggle Tuner";
       default:
         return null;
     }
@@ -140,6 +146,8 @@ extension HotkeyLabel on HotkeyControl {
         return Icons.fast_forward;
       case HotkeyControl.JamTracksABRepeat:
         return Icons.repeat;
+      case HotkeyControl.ToggleTuner:
+        return MightierIcons.tuner;
       default:
         return null;
     }
@@ -164,5 +172,6 @@ enum HotkeyCategory {
   EffectParameters,
   Drums,
   JamTracks,
-  Looper
+  Looper,
+  Misc
 }

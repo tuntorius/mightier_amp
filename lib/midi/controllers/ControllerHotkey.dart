@@ -126,7 +126,8 @@ class ControllerHotkey {
         if (device.fakeMasterVolume) {
           NuxDeviceControl.instance().masterVolume = val;
         } else {
-          NuxDeviceControl.instance().masterVolume = _mapValueToFormatter(val, device.decibelFormatter!);
+          NuxDeviceControl.instance().masterVolume =
+              _mapValueToFormatter(val, device.decibelFormatter!);
         }
         break;
       case HotkeyControl.ParameterSet:
@@ -317,18 +318,15 @@ class ControllerHotkey {
     double val = midiToPercentage(value);
 
     //Translate the 0-100 value into the range of the parameter
-    val = _mapValueToFormatter(val, effect.parameters[_cachedParameter!].formatter);
+    val = _mapValueToFormatter(
+        val, effect.parameters[_cachedParameter!].formatter);
     p.setParameterValue(effect.parameters[_cachedParameter!], val);
     NuxDeviceControl.instance().forceNotifyListeners();
   }
 
   double _mapValueToFormatter(double value, ValueFormatter formatter) {
     return MathEx.map(
-        value,
-        0,
-        100,
-        formatter.min.toDouble(),
-        formatter.max.toDouble());
+        value, 0, 100, formatter.min.toDouble(), formatter.max.toDouble());
   }
 
   Preset _getEffectCached(NuxDevice device) {

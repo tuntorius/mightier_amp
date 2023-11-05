@@ -5,6 +5,8 @@ import 'dart:math' as math;
 
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/features/tuner.dart';
+import '../../midi/ControllerConstants.dart';
+import '../../midi/MidiControllerManager.dart';
 
 class TunerPage extends StatefulWidget {
   final NuxDevice device;
@@ -52,6 +54,7 @@ class _TunerPageState extends State<TunerPage> {
   late Tuner _tuner;
   late TunerData data = TunerData();
   StreamSubscription? _subscription;
+  StreamSubscription? _hotkeySub;
 
   bool _tunerEnabled = false;
   bool _validDetection = false;
@@ -67,6 +70,9 @@ class _TunerPageState extends State<TunerPage> {
     _tunerEnabled = false;
     _tuner = widget.device as Tuner;
     _subscription = _tuner.getTunerDataStream().listen(onData);
+    _hotkeySub = MidiControllerManager()
+        .controllerStream
+        .listen(_onMidiControllerMessage);
 
     //if not requesting 2 times, the device does not answer
     _tuner.tunerRequestSettings();
@@ -87,8 +93,15 @@ class _TunerPageState extends State<TunerPage> {
   void dispose() {
     _timeout?.cancel();
     _subscription?.cancel();
+    _hotkeySub?.cancel();
     _tuner.tunerEnable(false);
     super.dispose();
+  }
+
+  void _onMidiControllerMessage(HotkeyControl event) {
+    if (event == HotkeyControl.ToggleTuner) {
+      Navigator.maybePop(context);
+    }
   }
 
   void onData(TunerData event) {

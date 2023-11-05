@@ -1,14 +1,17 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/bleMidiHandler.dart';
+import 'package:mighty_plug_manager/midi/MidiControllerManager.dart';
 
 import '../../bluetooth/ble_controllers/BLEController.dart';
 import '../../bluetooth/devices/features/tuner.dart';
+import '../../midi/ControllerConstants.dart';
 import '../mightierIcons.dart';
 import '../pages/tunerPage.dart';
 import 'common/blinkWidget.dart';
@@ -38,12 +41,42 @@ class _NuxAppBarState extends State<MAAppBar> {
   static const batteryKey = "batteryValue";
 
   int? batteryValue;
+  StreamSubscription? _hotkeySub;
 
   @override
   void initState() {
     super.initState();
     batteryValue = PageStorage.of(context)
         .readState(context, identifier: batteryKey) as int?;
+
+    _hotkeySub = MidiControllerManager()
+        .controllerStream
+        .listen(_onMidiControllerMessage);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _hotkeySub?.cancel();
+  }
+
+  void _onMidiControllerMessage(HotkeyControl event) {
+    if (ModalRoute.of(context)?.isCurrent == false) {
+      return;
+    }
+    if (event == HotkeyControl.ToggleTuner) {
+      var dev = NuxDeviceControl().device;
+      if (dev is Tuner) {
+        var tuner = dev as Tuner;
+        if (tuner.tunerAvailable) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => TunerPage(
+                    device: dev,
+                  )));
+        }
+      }
+    }
   }
 
   @override
@@ -148,7 +181,7 @@ class _NuxAppBarState extends State<MAAppBar> {
                         icon = Icons.bluetooth;
                         break;
                       case MidiSetupStatus
-                          .deviceFound: //note device found is issued
+                            .deviceFound: //note device found is issued
                       //during search only, but here it means nothing
                       //so keep search status
                       case MidiSetupStatus.deviceSearching:

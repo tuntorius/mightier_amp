@@ -35,7 +35,6 @@ class SelectPresetDialog {
                 ),
               PresetList(
                   simplified: true,
-                  noneOption: noneOption,
                   onTap: (preset) {
                     Navigator.of(context, rootNavigator: true).pop(preset);
                   }),

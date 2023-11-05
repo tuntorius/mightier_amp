@@ -317,11 +317,7 @@ class _SettingsState extends State<Settings> {
               devCounter++;
               if (devCounter == 7) {
                 Settings.devMode = true;
-                if (SharedPrefs().getInt(SettingsKeys.hiddenAmps, 0) == 0) {
-                  SharedPrefs().setInt(SettingsKeys.hiddenAmps, 1);
-                } else {
-                  SharedPrefs().setInt(SettingsKeys.hiddenSources, 1);
-                }
+                SharedPrefs().setInt(SettingsKeys.hiddenSources, 1);
                 setState(() {});
               }
             },

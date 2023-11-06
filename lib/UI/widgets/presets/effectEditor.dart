@@ -42,15 +42,31 @@ class _EffectEditorState extends State<EffectEditor> {
               widget.preset.setParameterValue(parameter, value, notify: !skip);
             });
           },
-          onChangedFinal: (parameter, newValue, oldValue) {
-            NuxDeviceControl.instance().changes.add(Change<double>(
-                oldValue,
-                () => widget.preset.setParameterValue(parameter, newValue),
-                (oldVal) =>
-                    widget.preset.setParameterValue(parameter, oldVal)));
-            NuxDeviceControl.instance().undoStackChanged();
-          },
+          onChangedFinal: _updateSliderValue,
         );
     }
+  }
+
+  void _updateSliderValue(
+      Parameter parameter, double newValue, double oldValue) {
+    var device = NuxDeviceControl().device;
+    var slot = device.selectedSlot;
+
+    NuxDeviceControl.instance().changes.add(
+            Change<({double value, int selectedSlot})>(
+                (value: oldValue, selectedSlot: slot), () {
+          var currentSlot = device.selectedSlot;
+          if (slot != currentSlot) {
+            device.selectedSlot = slot;
+          }
+          widget.preset.setParameterValue(parameter, newValue);
+        }, (oldVal) {
+          var currentSlot = device.selectedSlot;
+          if (oldVal.selectedSlot != currentSlot) {
+            device.selectedSlot = oldVal.selectedSlot;
+          }
+          widget.preset.setParameterValue(parameter, oldVal.value);
+        }));
+    NuxDeviceControl.instance().undoStackChanged();
   }
 }

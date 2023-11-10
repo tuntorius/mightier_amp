@@ -58,3 +58,14 @@ class LiteFXID extends NuxFXID {
   static const mod = LiteFXID._internal(2);
   static const ambience = LiteFXID._internal(3);
 }
+
+class LiteMK2FXID extends NuxFXID {
+  const LiteMK2FXID._internal(int value) : super._internal(value);
+  static const gate = LiteFXID._internal(0);
+  static const efx = LiteFXID._internal(1);
+  static const amp = LiteFXID._internal(2);
+  static const cab = LiteFXID._internal(3);
+  static const mod = LiteFXID._internal(4);
+  static const delay = LiteFXID._internal(5);
+  static const reverb = LiteFXID._internal(6);
+}

@@ -4,7 +4,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:undo/undo.dart';
@@ -16,6 +15,7 @@ import 'devices/NuxConstants.dart';
 import 'devices/NuxDevice.dart';
 import 'devices/NuxMighty2040BT.dart';
 import 'devices/NuxMightyLite.dart';
+import 'devices/NuxMightyLiteMk2.dart';
 import 'devices/NuxMightyPlugAir.dart';
 import 'devices/NuxMightyPlugPro.dart';
 import 'devices/NuxMightySpace.dart';
@@ -243,6 +243,7 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMighty8BT(this));
     _deviceInstances.add(NuxMighty2040BT(this));
     _deviceInstances.add(NuxMightyLite(this));
+    if (kDebugMode) _deviceInstances.add(NuxMightyLiteMk2(this));
 
     //make it read from config
     String dev = SharedPrefs()

@@ -133,5 +133,5 @@ class TouchWahModeFormatterLiteMk2 extends SwitchFormatter {
   List<String> get labelValues => ["Cry", "VX", "Full", "Talk"];
 
   @override
-  List<int> get midiValues => [0, 32, 64, 96];
+  List<int> get midiValues => [0, 1, 2, 3];
 }

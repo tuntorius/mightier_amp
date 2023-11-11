@@ -15,12 +15,15 @@ class UsbMidiController extends MidiController {
   @override
   String get name {
     if (_name == null) {
-      //custom fix for https://github.com/tuntorius/mightier_amp/issues/81
       _name = device.name;
-      if (_name!.startsWith("Arduino LLC Arduino Leonardo") &&
-          _name!.endsWith("MIDI 1.0")) _name = "Arduino Leonardo MIDI 1.0";
+
+      // Some androids are adding #XXX where XXX is a random number to the name
+      // of the midi controller. This RegEx strips it from the name
+      RegExp regex = RegExp(r'#\d+');
+      _name = _name!.replaceAll(regex, '');
     }
-    return device.name;
+
+    return _name!;
   }
 
   @override

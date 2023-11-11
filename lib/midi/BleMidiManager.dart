@@ -20,11 +20,10 @@ class BleMidiManager extends ChangeNotifier {
 
   bool usbMidiSupported = false;
 
-  StreamSubscription<MidiSetupStatus>? _bleStatusSub;
   StreamSubscription<bool>? _bleScanSub;
 
   BleMidiManager(this.onHotkeyReceived) {
-    _bleStatusSub = BLEMidiHandler.instance().status.listen(_bleStatusListener);
+    BLEMidiHandler.instance().status.listen(_bleStatusListener);
   }
 
   startScan() {
@@ -87,7 +86,6 @@ class BleMidiManager extends ChangeNotifier {
         // TODO: Handle this case.
         break;
       case MidiSetupStatus.deviceDisconnected:
-        debugPrint("Dev just disconnected!");
         // TODO: Handle this case.
         break;
       case MidiSetupStatus.unknown:

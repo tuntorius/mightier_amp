@@ -56,17 +56,25 @@ abstract class Preset {
     NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
 
     for (int i = 0; i < device.effectsChainLength; i++) {
+      bool fxFound = false;
+
       var effects = getEffectsForSlot(i);
 
       if (effects.isEmpty) continue;
       //set proper effect
       if (effects[0].nuxEffectTypeIndex != null) {
-        int effectIndex = nuxData[effects[0].nuxEffectTypeIndex!];
+        int effectData = nuxData[effects[0].nuxEffectTypeIndex!];
+
+        int effectIndex = effectData;
+        if (effects[0].nuxEffectTypeIndex == effects[0].nuxEnableIndex) {
+          effectIndex &= ~effects[0].nuxEnableMask;
+        }
 
         //find array index by nux index
         for (int j = 0; j < effects.length; j++) {
           if (effects[j].nuxIndex == effectIndex) {
             effectIndex = j;
+            fxFound = true;
             break;
           }
         }
@@ -74,8 +82,15 @@ abstract class Preset {
       }
 
       //enable/disable effect
-      if (effects[0].nuxEnableIndex != null) {
-        setSlotEnabled(i, nuxData[effects[0].nuxEnableIndex!] != 0, false);
+      if (fxFound && effects[0].nuxEnableIndex != null) {
+        int enableData =
+            nuxData[effects[0].nuxEnableIndex!] & effects[0].nuxEnableMask;
+
+        bool enabled = (enableData != 0) ^ effects[0].nuxEnableInverted;
+
+        setSlotEnabled(i, enabled, false);
+      } else {
+        setSlotEnabled(i, false, false);
       }
 
       getEffectsForSlot(i)[getSelectedEffectForSlot(i)]

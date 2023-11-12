@@ -117,7 +117,7 @@ class PlugProCommunication extends DeviceCommunication {
 
   List<int> _requestIRName(int index) {
     return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
-        SyxMsg.kSYX_CABNAME, SyxDir.kSYXDIR_REQ, [index]);
+        SyxMsg.kSYX_CRCNAME, SyxDir.kSYXDIR_REQ, [index]);
   }
 
   List<int> _requestEffectsOrder() {
@@ -552,19 +552,43 @@ class PlugProCommunication extends DeviceCommunication {
 
   void _handleIRName(List<int> data) {
     int index = data[1];
-    bool hasIR = data[2] != 0;
-    var decoder = const AsciiDecoder();
-    String name = decoder.convert(data.sublist(6, 17));
-    debugPrint("IR $index, active: $hasIR, name: $name");
+    bool hasIR = data[data.length - 3] != 0;
+    int stringEnd = 0;
 
-    for (var preset in device.presets) {
-      PlugProPreset proPreset = preset as PlugProPreset;
-      if (index >= proPreset.cabinetList.length) return;
-      var cab = proPreset.cabinetList[index];
-      if (cab is UserCab) {
-        cab.setName(name);
-        cab.setActive(hasIR);
+    //find name length
+    for (int i = 8; i < data.length - 1; i++) {
+      if (data[i] == 0 && data[i + 1] == 0) {
+        stringEnd = i;
+        break;
       }
+    }
+
+    if (hasIR) {
+      List<int> encodedName = data.sublist(8, stringEnd);
+      List<int> decodedName = [];
+      for (int i = 0; i < encodedName.length; i++) {
+        if (i % 3 == 0) {
+          decodedName.add((encodedName[i] & 0x01) << 6);
+        } else if (i % 3 == 1) {
+          decodedName.last |= encodedName[i] >> 1;
+        } else if (i % 3 == 2) {
+          decodedName.add(encodedName[i]);
+        }
+      }
+      var decoder = const AsciiDecoder();
+      String name = decoder.convert(decodedName);
+      debugPrint("IR $index, active: $hasIR, name: $name");
+
+      for (var preset in device.presets) {
+        PlugProPreset proPreset = preset as PlugProPreset;
+        if (index >= proPreset.cabinetList.length) return;
+        var cab = proPreset.cabinetList[index];
+        if (cab is UserCab) {
+          cab.setName(name);
+        }
+      }
+    } else {
+      debugPrint("IR $index, active: $hasIR}");
     }
     _readyIRsCount++;
 
@@ -869,7 +893,7 @@ const z = {
                 case SyxMsg.kSYX_PRESET:
                   _handlePresetDataPiece(data.sublist(6));
                   return;
-                case SyxMsg.kSYX_CABNAME:
+                case SyxMsg.kSYX_CRCNAME:
                   _handleIRName(data.sublist(7));
                   return;
                 case SyxMsg.kSYX_SYSTEMSET:

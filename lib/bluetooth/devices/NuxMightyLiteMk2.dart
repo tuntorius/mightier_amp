@@ -74,10 +74,10 @@ class NuxMightyLiteMk2 extends NuxDevice implements Tuner {
   NuxDeviceConfiguration get config => _config;
 
   @override
-  int get deviceQRId => throw UnimplementedError();
+  int get deviceQRId => 0x13;
 
   @override
-  int get deviceQRVersion => throw UnimplementedError();
+  int get deviceQRVersion => 0x01;
 
   @override
   int get effectsChainLength => 7;

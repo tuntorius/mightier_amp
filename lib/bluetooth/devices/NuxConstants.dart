@@ -370,11 +370,11 @@ class SysexPrivacy {
   toString() => '$_value';
   toInt() => _value;
 
-  static const kSYSEX_PUBLIC = 0; //const SysexPrivacy._internal(0);
-  static const kSYSEX_PUBLICREPLY = 16; //const SysexPrivacy._internal(16);
-  static const kSYSEX_RDCTRL = 32; //const SysexPrivacy._internal(32);
-  static const kSYSEX_IRCTRL = 48; //const SysexPrivacy._internal(48);
-  static const kSYSEX_PRIVATE = 112; //const SysexPrivacy._internal(112);
+  static const kSYSEX_PUBLIC = 0x0;
+  static const kSYSEX_PUBLICREPLY = 0x10;
+  static const kSYSEX_RDCTRL = 0x20;
+  static const kSYSEX_IRCTRL = 0x30;
+  static const kSYSEX_PRIVATE = 0x70;
 }
 
 class SyxMsg {
@@ -384,52 +384,52 @@ class SyxMsg {
   toString() => '$_value';
   toInt() => _value;
 
-  static const kSYX_BPM = 3; //const SyxMsg._internal(3);
-  static const kSYX_LANGUAGE = 4; //const SyxMsg._internal(4);
-  static const kSYX_CPURUN = 5; //const SyxMsg._internal(5);
-  static const kSYX_SWAPPRESET = 6; //const SyxMsg._internal(6);
-  static const kSYX_CPYPRESET = 7; //const SyxMsg._internal(7);
-  static const kSYX_IRSAVEAS = 8; //const SyxMsg._internal(8);
-  static const kSYX_CRCNAME = 9; //const SyxMsg._internal(9);
-  static const kSYX_MANUAL = 10; //const SyxMsg._internal(10);
-  static const kSYX_PRESET = 11; //const SyxMsg._internal(11);
-  static const kSYX_CURPRESET = 12; //const SyxMsg._internal(12);
-  static const kSYX_MODULELINK = 13; //const SyxMsg._internal(13);
-  static const kSYX_GLOBLE = 14; //const SyxMsg._internal(14);
-  static const kSYX_MIDICC = 15; //const SyxMsg._internal(15);
-  static const kSYX_CABDATA = 16; //const SyxMsg._internal(16);
-  static const kSYX_CABCURVE = 17; //const SyxMsg._internal(17);
-  static const kSYX_PRESETNAME = 18; //const SyxMsg._internal(18);
-  static const kSYX_PEDALSET = 19; //const SyxMsg._internal(19);
-  static const kSYX_SYSTEMSET = 20;
-  static const kSYX_CURSTATE = 21;
-  static const kSYX_IRDELETE = const SyxMsg._internal(22);
-  static const kSYX_CUTOVER = const SyxMsg._internal(23);
-  static const kSYX_LOOP = 24;
-  static const kSYX_DRUM = 25;
-  static const kSYX_CABNAME = 26; //const SyxMsg._internal(26);
+  static const kSYX_BPM = 0x03;
+  static const kSYX_LANGUAGE = 0x04;
+  static const kSYX_CPURUN = 0x05;
+  static const kSYX_SWAPPRESET = 0x06;
+  static const kSYX_CPYPRESET = 0x07;
+  static const kSYX_IRSAVEAS = 0x08;
+  static const kSYX_CRCNAME = 0x09;
+  static const kSYX_MANUAL = 0x0A;
+  static const kSYX_PRESET = 0x0B;
+  static const kSYX_CURPRESET = 0x0C;
+  static const kSYX_MODULELINK = 0x0D;
+  static const kSYX_GLOBLE = 0x0E;
+  static const kSYX_MIDICC = 0x0F;
+  static const kSYX_CABDATA = 0x10;
+  static const kSYX_CABCURVE = 0x11;
+  static const kSYX_PRESETNAME = 0x12;
+  static const kSYX_PEDALSET = 0x13;
+  static const kSYX_SYSTEMSET = 0x14;
+  static const kSYX_CURSTATE = 0x15;
+  static const kSYX_IRDELETE = 0x16;
+  static const kSYX_CUTOVER = 0x17;
+  static const kSYX_LOOP = 0x18;
+  static const kSYX_DRUM = 0x19;
+  static const kSYX_CABNAME = 0x1A;
   static const kSYX_BTSET =
-      27; //bluetooth eq groups 1-3, however use group 4 to retrieve mute and phase
-  static const kSYX_SPKSET = 28;
-  static const kSYX_PARAINIT = const SyxMsg._internal(96);
-  static const kSYX_WELCOME = const SyxMsg._internal(97);
-  static const kSYX_QTVERSION = const SyxMsg._internal(98);
-  static const kSYX_UAC_EFFECT = const SyxMsg._internal(99);
-  static const kSYX_UAC_TRANS = const SyxMsg._internal(100);
-  static const kSYX_UAC_SAVE = const SyxMsg._internal(101);
-  static const kSYX_TUNER_SETTINGS = 111;
-  static const kSYX_VOLDISPLAY = const SyxMsg._internal(116);
-  static const kSYX_SPEC_CMD = 117;
-  static const kSYX_HW_VERSION = const SyxMsg._internal(118);
-  static const kSYX_CODEC_SET = const SyxMsg._internal(119);
-  static const kSYX_TFT_SET = const SyxMsg._internal(120);
-  static const kSYX_SNAPSHOTCMD = const SyxMsg._internal(121);
-  static const kSYX_SNAPSHOT = const SyxMsg._internal(122);
-  static const kSYX_RESET = const SyxMsg._internal(123);
-  static const kSYX_IRINFO = const SyxMsg._internal(124);
-  static const kSYX_DEVINFO = const SyxMsg._internal(125);
-  static const kSYX_SENDCMD = 126;
-  static const kSYX_NOUSE = const SyxMsg._internal(127);
+      0x1B; //bluetooth eq groups 1-3, however use group 4 to retrieve mute and phase
+  static const kSYX_SPKSET = 0x1C;
+  static const kSYX_PARAINIT = 0x60;
+  static const kSYX_WELCOME = 0x61;
+  static const kSYX_QTVERSION = 0x62;
+  static const kSYX_UAC_EFFECT = 0x63;
+  static const kSYX_UAC_TRANS = 0x64;
+  static const kSYX_UAC_SAVE = 0x65;
+  static const kSYX_TUNER_SETTINGS = 0x6F;
+  static const kSYX_VOLDISPLAY = 0x74;
+  static const kSYX_SPEC_CMD = 0x75;
+  static const kSYX_HW_VERSION = 0x76;
+  static const kSYX_CODEC_SET = 0x77;
+  static const kSYX_TFT_SET = 0x78;
+  static const kSYX_SNAPSHOTCMD = 0x79;
+  static const kSYX_SNAPSHOT = 0x7A;
+  static const kSYX_RESET = 0x7B;
+  static const kSYX_IRINFO = 0x7C;
+  static const kSYX_DEVINFO = 0x7D;
+  static const kSYX_SENDCMD = 0x7E;
+  static const kSYX_NOUSE = 0x7F;
 }
 
 class SyxDir {

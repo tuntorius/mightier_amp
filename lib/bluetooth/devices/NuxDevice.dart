@@ -451,6 +451,14 @@ abstract class NuxDevice extends ChangeNotifier {
     return result;
   }
 
+  Preset? setupDetachedPresetFromQRData(String qrData) {
+    var p = getCustomPreset(selectedChannel);
+
+    var result = p.setupPresetFromQRData(qrData);
+    if (result == PresetQRError.Ok) return p;
+    return null;
+  }
+
   String? jsonToQR(Map<String, dynamic> jsonPreset) {
     var preset = presetFromJson(jsonPreset, null, qrOnly: true);
     if (preset != null) {
@@ -466,7 +474,6 @@ abstract class NuxDevice extends ChangeNotifier {
       var data = preset.createNuxDataFromPreset();
       var encoded = PresetEncoder.encode(data);
     }
-    throw Exception("Mamati");
   }
 
   String channelToQR(int channel) {
@@ -638,14 +645,14 @@ abstract class NuxDevice extends ChangeNotifier {
     return null;
   }
 
-  Map<String, dynamic> presetToJson() {
+  Map<String, dynamic> presetToJson({Preset? customPreset}) {
     Map<String, dynamic> mainJson = {
       "channel": selectedChannel,
       "product_id": presetClass,
       "version": productVersion
     };
 
-    Preset p = getPreset(selectedChannel);
+    Preset p = customPreset ?? getPreset(selectedChannel);
 
     if (!fakeMasterVolume) mainJson["volume"] = p.volume;
     //parse all effects

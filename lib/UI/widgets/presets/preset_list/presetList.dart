@@ -7,6 +7,7 @@ import 'package:mighty_plug_manager/UI/toneshare/toneshare_main.dart';
 import 'package:mighty_plug_manager/UI/widgets/presets/preset_list/preset_widget.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import '../../../mainTabs.dart';
+import '../../../pages/mighty_patches_importer.dart';
 import '/utilities/string_extensions.dart';
 
 import '../../search_field.dart';
@@ -100,8 +101,11 @@ class _PresetListState extends State<PresetList>
   }
 
   void _openToneShare() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => const ToneShare()));
+    //Navigator.of(context)
+    //    .push(MaterialPageRoute(builder: (context) => const ToneShare()));
+
+    //Navigator.of(context)
+    //    .push(MaterialPageRoute(builder: (context) => MightyPatchesPage()));
   }
 
   Widget _mainPopupMenu() {
@@ -139,13 +143,13 @@ class _PresetListState extends State<PresetList>
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (kDebugMode)
+            /*if (kDebugMode)
               IconButton(
                   onPressed: _openToneShare,
                   icon: const Icon(
                     Icons.cloud_download,
                     size: 28,
-                  )),
+                  )),*/
             IconButton(
                 onPressed: () {
                   _showSearch = true;

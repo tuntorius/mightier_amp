@@ -81,6 +81,9 @@ dependencies:
   convert: ^3.0.1
   pocketbase: ^0.16.0
 
+  #webview_flutter: ^4.4.2
+  #http: ^1.1.0
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^0.1.3

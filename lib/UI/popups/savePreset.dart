@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
+import '../../bluetooth/devices/presets/Preset.dart';
 import '../widgets/scrollParent.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../platform/presetsStorage.dart';
@@ -13,14 +14,24 @@ class SavePresetDialog {
   final categoryCtrl = TextEditingController();
   final nameCtrl = TextEditingController();
   final parentScroll = ScrollController();
+  final String? customName;
+  final Preset? customPreset;
   final NuxDevice device;
   final Color? confirmColor;
   late NuxDeviceControl deviceControl;
 
-  SavePresetDialog({required this.device, this.confirmColor}) {
+  SavePresetDialog(
+      {required this.device,
+      this.confirmColor,
+      this.customName,
+      this.customPreset}) {
     deviceControl = device.deviceControl;
     categoryCtrl.text = deviceControl.presetCategory;
-    nameCtrl.text = deviceControl.presetName;
+    if (customName != null) {
+      nameCtrl.text = customName!;
+    } else {
+      nameCtrl.text = deviceControl.presetName;
+    }
   }
 
   Widget buildDialog(NuxDevice device, BuildContext context) {
@@ -154,13 +165,17 @@ class SavePresetDialog {
   }
 
   savePreset(context) {
-    var preset = device.presetToJson();
-    deviceControl.presetName = nameCtrl.value.text;
-    deviceControl.presetCategory = categoryCtrl.value.text;
+    var preset = device.presetToJson(customPreset: customPreset);
+    if (customPreset == null) {
+      deviceControl.presetName = nameCtrl.value.text;
+      deviceControl.presetCategory = categoryCtrl.value.text;
+    }
 
-    String uuid = PresetsStorage().savePreset(
-        preset, deviceControl.presetName, deviceControl.presetCategory);
+    String uuid = PresetsStorage()
+        .savePreset(preset, nameCtrl.value.text, categoryCtrl.value.text);
 
-    deviceControl.presetUUID = uuid;
+    if (customPreset == null) {
+      deviceControl.presetUUID = uuid;
+    }
   }
 }

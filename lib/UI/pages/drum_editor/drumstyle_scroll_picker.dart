@@ -48,7 +48,7 @@ class DrumStyleScrollPicker extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
             side: const BorderSide(width: 1, color: Colors.white)),
         title: Text(
-          layout == DrumEditorLayout.PlugPro
+          layout == DrumEditorLayout.extendedToneControls
               ? _getComplexListStyle(drumStyles)
               : drumStyles[selectedDrumPattern],
           style: _fontStyle,
@@ -60,7 +60,7 @@ class DrumStyleScrollPicker extends StatelessWidget {
               builder: (context) {
                 return DrumStyleBottomSheet(
                   styleMap: drumStyles,
-                  mode: layout == DrumEditorLayout.PlugPro
+                  mode: layout == DrumEditorLayout.extendedToneControls
                       ? DrumStyleMode.categorized
                       : DrumStyleMode.flat,
                   selected: selectedDrumPattern,

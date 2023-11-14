@@ -16,6 +16,7 @@ import 'NuxDevice.dart';
 import 'device_data/drumstyles.dart';
 import 'effects/Processor.dart';
 import 'effects/plug_pro/EQ.dart';
+import 'features/drumsTone.dart';
 import 'features/looper.dart';
 import 'features/proUsbSettings.dart';
 import 'features/tuner.dart';
@@ -25,8 +26,6 @@ import 'value_formatters/ValueFormatter.dart';
 enum PlugProChannel { Clean, Overdrive, Distortion, AGSim, Pop, Rock, Funk }
 
 enum PlugProVersion { PlugPro1 }
-
-enum DrumsToneControl { Bass, Middle, Treble }
 
 class NuxPlugProConfiguration extends NuxDeviceConfiguration {
   static const bluetoothEQCount = 4;
@@ -58,7 +57,7 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
 }
 
 class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
-    implements Tuner, ProUsbSettings {
+    implements Tuner, ProUsbSettings, DrumsTone {
   @override
   int get productVID => 48;
   late final PlugProCommunication _communication =
@@ -132,12 +131,12 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
   @override
   int get deviceQRVersion => 1;
 
-  double get drumsBass => config.drumsBass;
-  double get drumsMiddle => config.drumsMiddle;
-  double get drumsTreble => config.drumsTreble;
-
   @override
-  bool get drumToneControls => true;
+  double get drumsBass => config.drumsBass;
+  @override
+  double get drumsMiddle => config.drumsMiddle;
+  @override
+  double get drumsTreble => config.drumsTreble;
 
   @override
   double get drumsMaxTempo => 300;
@@ -247,15 +246,16 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
     return deviceId == deviceQRId && ver == 1;
   }
 
+  @override
   void setDrumsTone(double value, DrumsToneControl control, bool send) {
     switch (control) {
-      case DrumsToneControl.Bass:
+      case DrumsToneControl.bass:
         config.drumsBass = value;
         break;
-      case DrumsToneControl.Middle:
+      case DrumsToneControl.middle:
         config.drumsMiddle = value;
         break;
-      case DrumsToneControl.Treble:
+      case DrumsToneControl.treble:
         config.drumsTreble = value;
         break;
     }

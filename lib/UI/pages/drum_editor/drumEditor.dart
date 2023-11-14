@@ -8,7 +8,7 @@ import 'package:mighty_plug_manager/UI/pages/drum_editor/tap_buttons.dart';
 import 'package:mighty_plug_manager/UI/widgets/circular_button.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/modeControlRegular.dart';
 import 'package:mighty_plug_manager/UI/pages/drum_editor/tempoTrainerSheet.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/features/drumsTone.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
 import '../../../bluetooth/devices/features/looper.dart';
@@ -16,7 +16,7 @@ import '../../../modules/tempo_trainer.dart';
 import '../../widgets/thickSlider.dart';
 import 'looperPage.dart';
 
-enum DrumEditorLayout { Standard, PlugPro }
+enum DrumEditorLayout { standard, extendedToneControls }
 
 enum DrumEditorMode { regular, trainer, looper }
 
@@ -31,7 +31,7 @@ class DrumEditor extends StatefulWidget {
 class _DrumEditorState extends State<DrumEditor>
     with AutomaticKeepAliveClientMixin<DrumEditor> {
   late dynamic _drumStyles;
-  DrumEditorLayout _layout = DrumEditorLayout.Standard;
+  DrumEditorLayout _layout = DrumEditorLayout.standard;
   DrumEditorMode _mode = DrumEditorMode.regular;
   int _selectedDrumPattern = 0;
   late NuxDevice device;
@@ -195,8 +195,8 @@ class _DrumEditorState extends State<DrumEditor>
   }
 
   List<Widget> _toneSliders(bool small) {
-    if (!device.drumToneControls) return [];
-    var dev = device as NuxMightyPlugPro;
+    if (device is! DrumsTone) return [];
+    var dev = device as DrumsTone;
     return [
       ThickSlider(
         min: 0,
@@ -208,7 +208,7 @@ class _DrumEditorState extends State<DrumEditor>
         value: dev.drumsBass,
         labelFormatter: (val) => "${dev.drumsBass.round()} %",
         onChanged: (val, skip) {
-          dev.setDrumsTone(val, DrumsToneControl.Bass, !skip);
+          dev.setDrumsTone(val, DrumsToneControl.bass, !skip);
           setState(() {});
         },
       ),
@@ -222,7 +222,7 @@ class _DrumEditorState extends State<DrumEditor>
         value: dev.drumsMiddle,
         labelFormatter: (val) => "${dev.drumsMiddle.round()} %",
         onChanged: (val, skip) {
-          dev.setDrumsTone(val, DrumsToneControl.Middle, !skip);
+          dev.setDrumsTone(val, DrumsToneControl.middle, !skip);
           setState(() {});
         },
       ),
@@ -236,7 +236,7 @@ class _DrumEditorState extends State<DrumEditor>
         value: dev.drumsTreble,
         labelFormatter: (val) => "${dev.drumsTreble.round()} %",
         onChanged: (val, skip) {
-          dev.setDrumsTone(val, DrumsToneControl.Treble, !skip);
+          dev.setDrumsTone(val, DrumsToneControl.treble, !skip);
           setState(() {});
         },
       )
@@ -268,8 +268,8 @@ class _DrumEditorState extends State<DrumEditor>
     final bool hasLooper = device is Looper;
     final bool looperEnabled = hasLooper && (device as Looper).loopState != 0;
     _layout = _drumStyles is List<String>
-        ? DrumEditorLayout.Standard
-        : DrumEditorLayout.PlugPro;
+        ? DrumEditorLayout.standard
+        : DrumEditorLayout.extendedToneControls;
 
     _selectedDrumPattern = device.selectedDrumStyle;
 
@@ -304,8 +304,7 @@ class _DrumEditorState extends State<DrumEditor>
                   _tempoSlider(smallControls, false),
                   if (_mode == DrumEditorMode.regular)
                     _tapButton(smallControls),
-                  if (_mode == DrumEditorMode.regular &&
-                      device.drumToneControls)
+                  if (_mode == DrumEditorMode.regular && device is DrumsTone)
                     ..._toneSliders(smallControls),
                   if (_mode == DrumEditorMode.trainer)
                     TempoTrainerSheet(
@@ -348,7 +347,7 @@ class _DrumEditorState extends State<DrumEditor>
                           child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          if (device.drumToneControls)
+                          if (device is DrumsTone)
                             CircularButton(
                                 icon: Icons.equalizer,
                                 backgroundColor: Colors.blue,

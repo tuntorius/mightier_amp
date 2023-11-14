@@ -11,6 +11,7 @@ import 'NuxMightyPlugPro.dart';
 import 'communication/liteMk2Communication.dart';
 import 'device_data/drumstyles.dart';
 import 'device_data/processors_list.dart';
+import 'features/drumsTone.dart';
 import 'features/proUsbSettings.dart';
 import 'features/tuner.dart';
 import 'presets/MightyMk2Preset.dart';
@@ -18,7 +19,8 @@ import 'value_formatters/ValueFormatter.dart';
 
 enum LiteMK2Version { LiteMK2v1 }
 
-class NuxMightyLiteMk2 extends NuxDevice implements Tuner, ProUsbSettings {
+class NuxMightyLiteMk2 extends NuxDevice
+    implements Tuner, ProUsbSettings, DrumsTone {
   NuxMightyLiteMk2(super.devControl) {
     //get channel names
     for (int i = 0; i < channelsCount; i++) {
@@ -44,7 +46,7 @@ class NuxMightyLiteMk2 extends NuxDevice implements Tuner, ProUsbSettings {
   @override
   int get productVersion => version.index;
   @override
-  String get productIconLabel => "LITE MK2|-|8BT MK2";
+  String get productIconLabel => "LITE II|-|8BT II";
   @override
   List<String> get productBLENames => ["NUX NGA-3BT"];
 
@@ -113,6 +115,16 @@ class NuxMightyLiteMk2 extends NuxDevice implements Tuner, ProUsbSettings {
   bool get presetSaveSupport => true;
 
   @override
+  double get drumsBass => _config.drumsBass;
+  @override
+  double get drumsMiddle => _config.drumsMiddle;
+  @override
+  double get drumsTreble => _config.drumsTreble;
+
+  @override
+  double get drumsMaxTempo => 300;
+
+  @override
   List<ProcessorInfo> get processorList => ProcessorsList.liteMk2List;
   final _tunerController = StreamController<TunerData>.broadcast();
 
@@ -157,6 +169,22 @@ class NuxMightyLiteMk2 extends NuxDevice implements Tuner, ProUsbSettings {
     var preset = PlugProPreset(device: this, channel: channel, channelName: "");
     preset.setFirmwareVersion(productVersion);
     return preset;
+  }
+
+  @override
+  void setDrumsTone(double value, DrumsToneControl control, bool send) {
+    switch (control) {
+      case DrumsToneControl.bass:
+        _config.drumsBass = value;
+        break;
+      case DrumsToneControl.middle:
+        _config.drumsMiddle = value;
+        break;
+      case DrumsToneControl.treble:
+        _config.drumsTreble = value;
+        break;
+    }
+    if (send) _communication.setDrumsTone(value, control);
   }
 
   @override

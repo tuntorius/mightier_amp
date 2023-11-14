@@ -7,6 +7,7 @@ import '../NuxDevice.dart';
 import '../NuxFXID.dart';
 import '../NuxMightySpace.dart';
 import '../effects/plug_pro/Cabinet.dart';
+import '../features/drumsTone.dart';
 import '../features/tuner.dart';
 import '../presets/PlugProPreset.dart';
 
@@ -280,13 +281,13 @@ class PlugProCommunication extends DeviceCommunication {
     if (!device.deviceControl.isConnected) return;
     int cc = 0;
     switch (control) {
-      case DrumsToneControl.Bass:
+      case DrumsToneControl.bass:
         cc = MidiCCValuesPro.DRUM_BASS;
         break;
-      case DrumsToneControl.Middle:
+      case DrumsToneControl.middle:
         cc = MidiCCValuesPro.DRUM_MIDDLE;
         break;
-      case DrumsToneControl.Treble:
+      case DrumsToneControl.treble:
         cc = MidiCCValuesPro.DRUM_TREBLE;
         break;
     }
@@ -749,7 +750,7 @@ class PlugProCommunication extends DeviceCommunication {
     config.tunerData.mode = TunerMode.getByMode(data[2]) ?? TunerMode.chromatic;
     config.tunerData.referencePitch = data[3];
     config.tunerData.muted = data[4] == 1;
-    (device as NuxMightyPlugPro).notifyTunerListeners();
+    (device as Tuner).notifyTunerListeners();
   }
 
   //Info: in plugProDataObject.js in the beginning there are few const enums

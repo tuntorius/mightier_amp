@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
-
-import '../../../bluetooth/devices/NuxMightyPlugPro.dart';
+import '../../../bluetooth/devices/features/drumsTone.dart';
 import '../../widgets/thickSlider.dart';
 
 class DrumEQBottomSheet extends StatefulWidget {
@@ -14,7 +13,7 @@ class DrumEQBottomSheet extends StatefulWidget {
 class _DrumEQBottomSheetState extends State<DrumEQBottomSheet> {
   @override
   Widget build(BuildContext context) {
-    var dev = NuxDeviceControl.instance().device as NuxMightyPlugPro;
+    var dev = NuxDeviceControl.instance().device as DrumsTone;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -29,7 +28,7 @@ class _DrumEQBottomSheetState extends State<DrumEQBottomSheet> {
           handleVerticalDrag: false,
           labelFormatter: (val) => "${dev.drumsBass.round()} %",
           onChanged: (val, skip) {
-            dev.setDrumsTone(val, DrumsToneControl.Bass, !skip);
+            dev.setDrumsTone(val, DrumsToneControl.bass, !skip);
             setState(() {});
           },
         ),
@@ -44,7 +43,7 @@ class _DrumEQBottomSheetState extends State<DrumEQBottomSheet> {
           handleVerticalDrag: false,
           labelFormatter: (val) => "${dev.drumsMiddle.round()} %",
           onChanged: (val, skip) {
-            dev.setDrumsTone(val, DrumsToneControl.Middle, !skip);
+            dev.setDrumsTone(val, DrumsToneControl.middle, !skip);
             setState(() {});
           },
         ),
@@ -59,7 +58,7 @@ class _DrumEQBottomSheetState extends State<DrumEQBottomSheet> {
           handleVerticalDrag: false,
           labelFormatter: (val) => "${dev.drumsTreble.round()} %",
           onChanged: (val, skip) {
-            dev.setDrumsTone(val, DrumsToneControl.Treble, !skip);
+            dev.setDrumsTone(val, DrumsToneControl.treble, !skip);
             setState(() {});
           },
         ),

@@ -5,7 +5,6 @@ import '../../../bluetooth/bleMidiHandler.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../popups/alertDialogs.dart';
 import 'PlugProUsbSettings.dart';
-import 'eq/PlugProEQSettings.dart';
 
 class LiteMk2Settings extends StatefulWidget {
   final NuxDevice device;

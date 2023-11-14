@@ -465,7 +465,9 @@ class NuxDeviceControl extends ChangeNotifier {
       sendFullEffectSettings(i, false);
     }
 
-    device.communication.sendSlotOrder();
+    if (device.reorderableFXChain) {
+      device.communication.sendSlotOrder();
+    }
   }
 
   void resetToChannelDefaults() {

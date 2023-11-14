@@ -45,6 +45,8 @@ class PlugAirPreset extends Preset {
   @override
   List<Amplifier> get amplifierList =>
       version == PlugAirVersion.PlugAir21 ? amplifierListv2 : amplifierListv1;
+
+  @override
   final List<CabinetMP2> cabinetList = <CabinetMP2>[];
   List<Modulation> get modulationList =>
       version == PlugAirVersion.PlugAir21 ? modulationListv2 : modulationListv1;

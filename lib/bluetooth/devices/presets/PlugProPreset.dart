@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_pro/EmptyEffects.dart';
-import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 
 import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
@@ -43,6 +42,8 @@ class PlugProPreset extends Preset {
 
   final List<Compressor> _compressorList = <Compressor>[];
   final List<EFXPro> efxList = <EFXPro>[];
+
+  @override
   final List<CabinetPro> cabinetList = <CabinetPro>[];
   final List<Modulation> modulationList = <Modulation>[];
   final List<Reverb> _reverbList = <Reverb>[];
@@ -522,12 +523,20 @@ class PlugProPreset extends Preset {
       _getEffectsForFXID(fxid)[effectIndex].setupFromNuxPayload(nuxData);
     }
 
-    _volume = device.decibelFormatter!
-        .midi7BitToValue(nuxData[PresetDataIndexPlugPro.MASTER]);
+    if (nuxData.length > PresetDataIndexPlugPro.MASTER) {
+      _volume = device.decibelFormatter!
+          .midi7BitToValue(nuxData[PresetDataIndexPlugPro.MASTER]);
+    } else {
+      debugPrint("Error: master volume outside of preset data!");
+    }
 
     //effects chain arrangement
     int start = PresetDataIndexPlugPro.LINK1;
 
+    if (nuxData.length <= start) {
+      debugPrint("Error: preset doesn't contain FX chain order settings");
+      return;
+    }
     //fix for QR
     for (int i = 0; i < 3; i++) {
       if (!PresetDataIndexPlugPro.effectTypesIndex.contains(nuxData[start])) {

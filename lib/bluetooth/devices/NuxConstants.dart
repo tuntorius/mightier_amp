@@ -202,8 +202,6 @@ class PresetDataIndexLite {
 
 class PresetDataIndexPlugPro {
   static const effectTypesIndex = [
-    if (NuxMightyPlugPro.enableWahExperimental)
-      Head_iWAH, //not used but there must be a value here
     Head_iCMP,
     Head_iEFX,
     Head_iAMP,
@@ -217,7 +215,6 @@ class PresetDataIndexPlugPro {
   ];
 
   static const defaultEffects = [
-    if (NuxMightyPlugPro.enableWahExperimental) PlugProFXID.wah,
     PlugProFXID.gate,
     PlugProFXID.comp,
     PlugProFXID.mod,

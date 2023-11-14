@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
+import '../../../bluetooth/devices/features/proUsbSettings.dart';
 import '../../widgets/common/modeControlRegular.dart';
 
 class RouteModel {
@@ -52,7 +53,9 @@ class PlugProUsbSettings extends StatefulWidget {
 class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
   final loopbackMask = 0x10;
   final modeMask = 0x07;
-  final device = NuxDeviceControl.instance().device as NuxMightyPlugPro;
+  final config =
+      NuxDeviceControl.instance().device.config as NuxPlugProConfiguration;
+  final usbSettings = NuxDeviceControl.instance().device as ProUsbSettings;
   static const fontSize = TextStyle(fontSize: 20);
 
   @override
@@ -66,27 +69,27 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
 
   void _setUsbDryWetValue(double value, bool skip) {
     if (skip) {
-      device.config.usbDryWet = value.round();
+      config.usbDryWet = value.round();
     } else {
-      device.setUsbDryWetVol(value.round());
+      usbSettings.setUsbDryWetVol(value.round());
     }
     setState(() {});
   }
 
   void _setUsbRecordingValue(double value, bool skip) {
     if (skip) {
-      device.config.recLevel = value.round();
+      config.recLevel = value.round();
     } else {
-      device.setUsbRecordingVol(value.round());
+      usbSettings.setUsbRecordingVol(value.round());
     }
     setState(() {});
   }
 
   void _setUsbPlaybackValue(double value, bool skip) {
     if (skip) {
-      device.config.playbackLevel = value.round();
+      config.playbackLevel = value.round();
     } else {
-      device.setUsbPlaybackVol(value.round());
+      usbSettings.setUsbPlaybackVol(value.round());
     }
     setState(() {});
   }
@@ -94,10 +97,10 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
   @override
   Widget build(BuildContext context) {
     const routes = PlugProUsbSettings.routes;
-    var routeModeInt = device.config.routingMode & modeMask;
+    var routeModeInt = config.routingMode & modeMask;
     var routeMode = routes.firstWhere((r) => r.value == routeModeInt);
     var modeIndex = routes.indexOf(routeMode);
-    var loopback = device.config.routingMode & loopbackMask != 0;
+    var loopback = config.routingMode & loopbackMask != 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -123,7 +126,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                   var mode = routes[index];
                   var value = mode.value;
                   if (mode.loopback && loopback) value |= loopbackMask;
-                  device.setUsbMode(value);
+                  usbSettings.setUsbMode(value);
                   setState(() {});
                 },
                 textStyle: fontSize,
@@ -147,7 +150,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                           } else {
                             routeModeInt &= modeMask;
                           }
-                          device.setUsbMode(routeModeInt);
+                          usbSettings.setUsbMode(routeModeInt);
                           setState(() {});
                         }),
               Padding(
@@ -158,11 +161,11 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
                 enabled: routeMode.dryWet,
                 activeColor: Colors.blue,
                 label: "Dry/Wet",
-                value: device.config.usbDryWet.toDouble(),
+                value: config.usbDryWet.toDouble(),
                 min: 0,
                 max: 100,
                 labelFormatter: (val) {
-                  return "${device.config.usbDryWet}%";
+                  return "${config.usbDryWet}%";
                 },
                 handleVerticalDrag: true,
                 onChanged: _setUsbDryWetValue,
@@ -171,7 +174,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
               ThickSlider(
                 activeColor: Colors.blue,
                 label: "Recording Level",
-                value: device.config.recLevel.toDouble(),
+                value: config.recLevel.toDouble(),
                 min: 0,
                 max: 100,
                 labelFormatter: (val) {
@@ -184,7 +187,7 @@ class _PlugProUsbSettingsState extends State<PlugProUsbSettings> {
               ThickSlider(
                 activeColor: Colors.blue,
                 label: "Playback Level",
-                value: device.config.playbackLevel.toDouble(),
+                value: config.playbackLevel.toDouble(),
                 min: 0,
                 max: 100,
                 labelFormatter: (val) {

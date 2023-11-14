@@ -17,6 +17,7 @@ import 'device_data/drumstyles.dart';
 import 'effects/Processor.dart';
 import 'effects/plug_pro/EQ.dart';
 import 'features/looper.dart';
+import 'features/proUsbSettings.dart';
 import 'features/tuner.dart';
 import 'presets/PlugProPreset.dart';
 import 'value_formatters/ValueFormatter.dart';
@@ -57,10 +58,7 @@ class NuxPlugProConfiguration extends NuxDeviceConfiguration {
 }
 
 class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
-    implements Tuner {
-  //NUX's own app source has info about wah, but is it really available?
-  static const enableWahExperimental = false;
-
+    implements Tuner, ProUsbSettings {
   @override
   int get productVID => 48;
   late final PlugProCommunication _communication =
@@ -98,7 +96,7 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
   @override
   int get channelsCount => 7;
   @override
-  int get effectsChainLength => enableWahExperimental ? 10 : 9;
+  int get effectsChainLength => 9;
   int get groupsCount => 1;
 
   @override
@@ -147,7 +145,7 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
   @override
   List<ProcessorInfo> get processorList => ProcessorsList.plugProList;
 
-  final tunerController = StreamController<TunerData>.broadcast();
+  final _tunerController = StreamController<TunerData>.broadcast();
 
   int? _drumStylesCount;
 
@@ -215,21 +213,25 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
     return preset;
   }
 
+  @override
   void setUsbMode(int mode) {
     config.routingMode = mode;
     communication.setUsbAudioMode(mode);
   }
 
+  @override
   void setUsbRecordingVol(int vol) {
     config.recLevel = vol;
     communication.setUsbInputVolume(vol);
   }
 
+  @override
   void setUsbPlaybackVol(int vol) {
     config.playbackLevel = vol;
     communication.setUsbOutputVolume(vol);
   }
 
+  @override
   void setUsbDryWetVol(int vol) {
     config.usbDryWet = vol;
     _communication.setUsbDryWet(vol);
@@ -298,11 +300,11 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
 
   @override
   Stream<TunerData> getTunerDataStream() {
-    return tunerController.stream;
+    return _tunerController.stream;
   }
 
   @override
   void notifyTunerListeners() {
-    tunerController.add(config.tunerData);
+    _tunerController.add(config.tunerData);
   }
 }

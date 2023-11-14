@@ -10,6 +10,14 @@ class DebugConsole extends StatelessWidget {
     output += "$value\n";
   }
 
+  static void printHex(List<int> array) {
+    output += '[ ';
+    output += array
+        .map((x) => '${x < 16 ? '0' : ''}${x.toRadixString(16)}')
+        .join(" ");
+    output += ']\n';
+  }
+
   static void printString(Object? value) {
     output += "$value\n";
   }

@@ -309,7 +309,6 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   void _onConnect() {
-    debugPrint("Device connected");
     clearPresetData();
     device.onConnect();
     _connectStatus.add(DeviceConnectionState.connectionBegin);

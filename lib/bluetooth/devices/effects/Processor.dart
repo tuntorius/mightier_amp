@@ -105,6 +105,11 @@ abstract class Processor {
   //at least for Mighty Plug MP-2, the NuxPayload values are 0-100, not 0,127
   void setupFromNuxPayload(List<int> nuxData) {
     for (int i = 0; i < parameters.length; i++) {
+      var valueIndex = parameters[i].devicePresetIndex;
+      if (nuxData.length <= valueIndex) {
+        debugPrint("Error: $valueIndex outside of preset data!");
+        continue;
+      }
       if (parameters[i].formatter is SwitchFormatter) {
         parameters[i].value =
             nuxData[parameters[i].devicePresetIndex].toDouble();

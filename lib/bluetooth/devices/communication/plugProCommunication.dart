@@ -28,8 +28,10 @@ class PlugProCommunication extends DeviceCommunication {
   @override
   get connectionSteps => 6;
 
-  int _readyPresetsCount = 0;
-  int _readyIRsCount = 0;
+  @protected
+  int readyPresetsCount = 0;
+  @protected
+  int readyIRsCount = 0;
 
   //use this, because when the app sends the order, the amp answers sends it back,
   //however, it must be ignored in this case, but not in other cases.
@@ -66,15 +68,15 @@ class PlugProCommunication extends DeviceCommunication {
   void performNextConnectionStep() {
     switch (currentConnectionStep) {
       case 0: //presets
-        _readyPresetsCount = 0;
-        _readyIRsCount = 0;
+        readyPresetsCount = 0;
+        readyIRsCount = 0;
         device.deviceControl.sendBLEData(requestPresetByIndex(0));
         break;
       case 1:
-        device.deviceControl.sendBLEData(_requestCurrentChannel());
+        device.deviceControl.sendBLEData(requestCurrentChannel());
         break;
       case 2:
-        device.deviceControl.sendBLEData(_requestIRName(customIRStart));
+        device.deviceControl.sendBLEData(requestIRName(customIRStart));
         break;
       case 3:
         device.deviceControl.sendBLEData(_requestSystemSettings());
@@ -105,7 +107,8 @@ class PlugProCommunication extends DeviceCommunication {
         SyxMsg.kSYX_PRESET, SyxDir.kSYXDIR_REQ, [index]);
   }
 
-  List<int> _requestCurrentChannel() {
+  @protected
+  List<int> requestCurrentChannel() {
     return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_CURPRESET, SyxDir.kSYXDIR_REQ, []);
   }
@@ -115,7 +118,8 @@ class PlugProCommunication extends DeviceCommunication {
         SyxMsg.kSYX_SYSTEMSET, SyxDir.kSYXDIR_REQ, []);
   }
 
-  List<int> _requestIRName(int index) {
+  @protected
+  List<int> requestIRName(int index) {
     return createSysExMessagePro(SysexPrivacy.kSYSEX_PRIVATE,
         SyxMsg.kSYX_CRCNAME, SyxDir.kSYXDIR_REQ, [index]);
   }
@@ -175,8 +179,8 @@ class PlugProCommunication extends DeviceCommunication {
         SyxDir.kSYXDIR_SET,
         [SysCtrlState.syscmd_resetall]);
 
-    _readyPresetsCount = 0;
-    _readyIRsCount = 0;
+    readyPresetsCount = 0;
+    readyIRsCount = 0;
     device.deviceControl.sendBLEData(data);
   }
 
@@ -536,9 +540,9 @@ class PlugProCommunication extends DeviceCommunication {
       if (preset.payloadPiecesReady()) {
         preset.setupPresetFromNuxData();
         if (!device.nuxPresetsReceived) {
-          _readyPresetsCount++;
+          readyPresetsCount++;
 
-          if (_readyPresetsCount == device.channelsCount) {
+          if (readyPresetsCount == device.channelsCount) {
             device.onPresetsReady();
             debugPrint("Presets connection step ready");
             connectionStepReady();
@@ -580,9 +584,9 @@ class PlugProCommunication extends DeviceCommunication {
       debugPrint("IR $index, active: $hasIR, name: $name");
 
       for (var preset in device.presets) {
-        PlugProPreset proPreset = preset as PlugProPreset;
-        if (index >= proPreset.cabinetList.length) return;
-        var cab = proPreset.cabinetList[index];
+        if (preset.cabinetList == null) continue;
+        if (index >= preset.cabinetList!.length) return;
+        var cab = preset.cabinetList![index];
         if (cab is UserCab) {
           cab.setName(name);
         }
@@ -590,14 +594,14 @@ class PlugProCommunication extends DeviceCommunication {
     } else {
       debugPrint("IR $index, active: $hasIR}");
     }
-    _readyIRsCount++;
+    readyIRsCount++;
 
-    if (_readyIRsCount == customIRsCount) {
+    if (readyIRsCount == customIRsCount) {
       debugPrint("IR names connection step ready");
       connectionStepReady();
     } else {
       device.deviceControl
-          .sendBLEData(_requestIRName(customIRStart + _readyIRsCount));
+          .sendBLEData(requestIRName(customIRStart + readyIRsCount));
     }
   }
 
@@ -958,7 +962,7 @@ const z = {
   @override
   void onDisconnect() {
     super.onDisconnect();
-    _readyPresetsCount = 0;
-    _readyIRsCount = 0;
+    readyPresetsCount = 0;
+    readyIRsCount = 0;
   }
 }

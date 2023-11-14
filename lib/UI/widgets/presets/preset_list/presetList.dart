@@ -1,13 +1,10 @@
 import 'package:drag_and_drop_lists/drag_and_drop_list_interface.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/toneshare/toneshare_main.dart';
 import 'package:mighty_plug_manager/UI/widgets/presets/preset_list/preset_widget.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import '../../../mainTabs.dart';
-import '../../../pages/mighty_patches_importer.dart';
 import '/utilities/string_extensions.dart';
 
 import '../../search_field.dart';

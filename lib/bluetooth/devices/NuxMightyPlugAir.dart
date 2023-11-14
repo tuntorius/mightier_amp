@@ -84,7 +84,7 @@ class NuxMightyPlug extends NuxDevice {
   @override
   bool get fakeMasterVolume => true;
   @override
-  bool get activeChannelRetrieval => false;
+  bool get activeChannelRetrieval => true;
   @override
   bool get longChannelNames => false;
   @override

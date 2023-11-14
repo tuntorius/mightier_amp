@@ -3,12 +3,14 @@
 
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/liteMk2Communication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/liteMk2/delay.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/liteMk2/efx.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/liteMk2/reverb.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/preset_constants.dart';
 
+import '../NuxConstants.dart';
 import '../NuxDevice.dart';
 import '../NuxMightyLiteMk2.dart';
 import '../communication/plugProCommunication.dart';
@@ -18,7 +20,6 @@ import '../effects/liteMk2/modulation.dart';
 import '../effects/plug_pro/EFX.dart';
 import '../effects/plug_pro/Amps.dart';
 import '../effects/plug_pro/Cabinet.dart';
-import '../effects/plug_pro/EQ.dart';
 import '../effects/plug_pro/Modulation.dart';
 import '../effects/plug_pro/Delay.dart';
 import '../effects/plug_pro/Reverb.dart';
@@ -36,7 +37,7 @@ class MightyMk2Preset extends Preset {
   List<Color> get channelColorsList => PresetConstants.channelColorsPro;
 
   @override
-  int get qrDataLength => 40;
+  int get qrDataLength => 113;
 
   double _volume = 0;
 
@@ -59,6 +60,8 @@ class MightyMk2Preset extends Preset {
   final List<DelayPro> _delayList = <DelayPro>[];
   final List<Reverb> _reverbList = <Reverb>[];
 
+  @override
+  List<Cabinet> get cabinetList => _cabinetList;
   bool noiseGateEnabled = true;
   bool efxEnabled = true;
   bool ampEnabled = true;
@@ -372,5 +375,17 @@ class MightyMk2Preset extends Preset {
   void sendVolume() {
     (device.communication as LiteMk2Communication)
         .sendChannelVolume(device.decibelFormatter!.valueToMidi7Bit(_volume));
+  }
+
+  @override
+  void setupPresetFromNuxDataArray(List<int> nuxData) {
+    super.setupPresetFromNuxDataArray(nuxData);
+
+    if (nuxData.length > PresetDataIndexPlugPro.MASTER) {
+      _volume = device.decibelFormatter!
+          .midi7BitToValue(nuxData[PresetDataIndexPlugPro.MASTER]);
+    } else {
+      debugPrint("Error: master volume outside of preset data!");
+    }
   }
 }

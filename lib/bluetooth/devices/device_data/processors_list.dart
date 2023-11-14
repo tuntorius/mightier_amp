@@ -123,6 +123,58 @@ class ProcessorsList {
         icon: MightierIcons.cabinet),
   ];
 
+  static const List<ProcessorInfo> liteMk2List = [
+    ProcessorInfo(
+        shortName: "GATE",
+        longName: "Noise Gate",
+        keyName: "gate",
+        nuxFXID: LiteMK2FXID.gate,
+        color: Colors.green,
+        icon: MightierIcons.gate),
+    ProcessorInfo(
+        shortName: "EFX",
+        longName: "EFX",
+        keyName: "efx",
+        nuxFXID: LiteMK2FXID.efx,
+        color: Colors.orange,
+        icon: MightierIcons.pedal),
+    ProcessorInfo(
+        shortName: "AMP",
+        longName: "Amplifier",
+        keyName: "amp",
+        nuxFXID: LiteMK2FXID.amp,
+        color: Colors.red,
+        icon: MightierIcons.amp),
+    ProcessorInfo(
+        shortName: "IR",
+        longName: "Cab",
+        keyName: "cabinet",
+        nuxFXID: LiteMK2FXID.cab,
+        color: Color(0xFF29B6F6), //lightBlue[400]
+        icon: MightierIcons.cabinet),
+    ProcessorInfo(
+        shortName: "MOD",
+        longName: "Modulation",
+        keyName: "mod",
+        nuxFXID: LiteMK2FXID.mod,
+        color: Color(0xFF7E57C2), //Colors.deepPurple[400]!,
+        icon: Icons.waves),
+    ProcessorInfo(
+        shortName: "DLY",
+        longName: "Delay",
+        keyName: "delay",
+        nuxFXID: LiteMK2FXID.delay,
+        color: Color(0xFF4DD0E1), //Colors.cyan[300]!,
+        icon: Icons.blur_linear),
+    ProcessorInfo(
+        shortName: "RVB",
+        longName: "Reverb",
+        keyName: "reverb",
+        nuxFXID: LiteMK2FXID.reverb,
+        color: Color(0xFFCE93D8), //Colors.purple[200]!,
+        icon: Icons.blur_on),
+  ];
+
   static const List<ProcessorInfo> liteList = [
     ProcessorInfo(
         shortName: "Gate",

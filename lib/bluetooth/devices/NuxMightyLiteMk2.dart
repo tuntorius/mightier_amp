@@ -1,21 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/NuxFXID.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/PlugProPreset.dart';
 
-import '../../UI/mightierIcons.dart';
+import '../../UI/pages/device_specific_settings/LiteMk2Settings.dart';
 import 'NuxMightyPlugPro.dart';
 import 'communication/liteMk2Communication.dart';
 import 'device_data/drumstyles.dart';
+import 'device_data/processors_list.dart';
+import 'features/proUsbSettings.dart';
 import 'features/tuner.dart';
 import 'presets/MightyMk2Preset.dart';
 import 'value_formatters/ValueFormatter.dart';
 
 enum LiteMK2Version { LiteMK2v1 }
 
-class NuxMightyLiteMk2 extends NuxDevice implements Tuner {
+class NuxMightyLiteMk2 extends NuxDevice implements Tuner, ProUsbSettings {
   NuxMightyLiteMk2(super.devControl) {
     //get channel names
     for (int i = 0; i < channelsCount; i++) {
@@ -107,71 +110,13 @@ class NuxMightyLiteMk2 extends NuxDevice implements Tuner {
   String get presetClass => "mighty_amps_mk2";
 
   @override
-  bool get presetSaveSupport => false;
+  bool get presetSaveSupport => true;
 
   @override
-  List<ProcessorInfo> get processorList => _processorList;
+  List<ProcessorInfo> get processorList => ProcessorsList.liteMk2List;
+  final _tunerController = StreamController<TunerData>.broadcast();
 
   int? _drumStylesCount;
-
-  final List<ProcessorInfo> _processorList = [
-    const ProcessorInfo(
-        shortName: "GATE",
-        longName: "Noise Gate",
-        keyName: "gate",
-        nuxFXID: LiteMK2FXID.gate,
-        color: Colors.green,
-        icon: MightierIcons.gate),
-    const ProcessorInfo(
-        shortName: "EFX",
-        longName: "EFX",
-        keyName: "efx",
-        nuxFXID: LiteMK2FXID.efx,
-        color: Colors.orange,
-        icon: MightierIcons.pedal),
-    const ProcessorInfo(
-        shortName: "AMP",
-        longName: "Amplifier",
-        keyName: "amp",
-        nuxFXID: LiteMK2FXID.amp,
-        color: Colors.red,
-        icon: MightierIcons.amp),
-    ProcessorInfo(
-        shortName: "IR",
-        longName: "Cab",
-        keyName: "cabinet",
-        nuxFXID: LiteMK2FXID.cab,
-        color: Colors.lightBlue[400]!,
-        icon: MightierIcons.cabinet),
-    const ProcessorInfo(
-        shortName: "EQ",
-        longName: "EQ",
-        keyName: "eq",
-        nuxFXID: PlugProFXID.eq,
-        color: Color(0xFFE0E0E0), //grey[300]
-        icon: MightierIcons.sliders),
-    ProcessorInfo(
-        shortName: "MOD",
-        longName: "Modulation",
-        keyName: "mod",
-        nuxFXID: LiteMK2FXID.mod,
-        color: Colors.deepPurple[400]!,
-        icon: Icons.waves),
-    ProcessorInfo(
-        shortName: "DLY",
-        longName: "Delay",
-        keyName: "delay",
-        nuxFXID: LiteMK2FXID.delay,
-        color: Colors.cyan[300]!,
-        icon: Icons.blur_linear),
-    ProcessorInfo(
-        shortName: "RVB",
-        longName: "Reverb",
-        keyName: "reverb",
-        nuxFXID: LiteMK2FXID.reverb,
-        color: Colors.purple[200]!,
-        icon: Icons.blur_on),
-  ];
 
   @override
   getDrumStyles() => DrumStyles.drumCategoriesPro;
@@ -198,6 +143,11 @@ class NuxMightyLiteMk2 extends NuxDevice implements Tuner {
   }
 
   @override
+  Widget getSettingsWidget() {
+    return LiteMk2Settings(device: this);
+  }
+
+  @override
   bool checkQRValid(int deviceId, int ver) {
     return deviceId == deviceQRId && ver == 1;
   }
@@ -210,42 +160,72 @@ class NuxMightyLiteMk2 extends NuxDevice implements Tuner {
   }
 
   @override
-  // TODO: implement tunerAvailable
-  bool get tunerAvailable => false;
-
-  @override
-  void tunerEnable(bool enable) {
-    // TODO: implement tunerEnable
+  bool get tunerAvailable {
+    return deviceControl.isConnected;
   }
 
   @override
-  void tunerMute(bool enable) {
-    // TODO: implement tunerMute
+  void tunerEnable(bool enable) {
+    _communication.enableTuner(enable);
   }
 
   @override
   void tunerRequestSettings() {
-    // TODO: implement tunerRequestSettings
-  }
-
-  @override
-  Stream<TunerData> getTunerDataStream() {
-    // TODO: implement getTunerDataStream
-    throw UnimplementedError();
-  }
-
-  @override
-  void notifyTunerListeners() {
-    // TODO: implement notifyTunerListeners
+    _communication.requestTunerSettings();
   }
 
   @override
   void tunerSetMode(TunerMode mode) {
-    // TODO: implement tunerSetMode
+    _config.tunerData.mode = mode;
+    _communication.tunerSetSettings();
+    notifyTunerListeners();
   }
 
   @override
   void tunerSetReferencePitch(int refPitch) {
-    // TODO: implement tunerSetReferencePitch
+    _config.tunerData.referencePitch = refPitch;
+    _communication.tunerSetSettings();
+    notifyTunerListeners();
+  }
+
+  @override
+  void tunerMute(bool enable) {
+    _config.tunerData.muted = enable;
+    _communication.tunerSetSettings();
+    notifyTunerListeners();
+  }
+
+  @override
+  Stream<TunerData> getTunerDataStream() {
+    return _tunerController.stream;
+  }
+
+  @override
+  void notifyTunerListeners() {
+    _tunerController.add(_config.tunerData);
+  }
+
+  @override
+  void setUsbMode(int mode) {
+    _config.routingMode = mode;
+    communication.setUsbAudioMode(mode);
+  }
+
+  @override
+  void setUsbRecordingVol(int vol) {
+    _config.recLevel = vol;
+    communication.setUsbInputVolume(vol);
+  }
+
+  @override
+  void setUsbPlaybackVol(int vol) {
+    _config.playbackLevel = vol;
+    communication.setUsbOutputVolume(vol);
+  }
+
+  @override
+  void setUsbDryWetVol(int vol) {
+    _config.usbDryWet = vol;
+    _communication.setUsbDryWet(vol);
   }
 }

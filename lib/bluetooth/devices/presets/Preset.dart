@@ -22,6 +22,7 @@ abstract class Preset {
   Color get channelColor => channelColorsList[channel];
   List<Color> get channelColorsList => PresetConstants.channelColorsPlug;
   List<Amplifier> get amplifierList;
+  List<Cabinet>? get cabinetList => null;
 
   final _changeStack = ChangeStack();
 
@@ -89,12 +90,12 @@ abstract class Preset {
         bool enabled = (enableData != 0) ^ effects[0].nuxEnableInverted;
 
         setSlotEnabled(i, enabled, false);
+
+        getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
+            .setupFromNuxPayload(nuxData);
       } else {
         setSlotEnabled(i, false, false);
       }
-
-      getEffectsForSlot(i)[getSelectedEffectForSlot(i)]
-          .setupFromNuxPayload(nuxData);
     }
   }
 
@@ -141,6 +142,7 @@ abstract class Preset {
 
   //receives data chunk from a device
   void addNuxPayloadPiece(List<int> data, int part, int total) {
+    if (total == 0) return;
     if (nuxDataPieces.length != total) {
       nuxDataPieces = List.filled(total, []);
     }

@@ -200,6 +200,46 @@ class PresetDataIndexLite {
   static const micambsend = 35;
 }
 
+class PresetDataIndexBass50BT {
+  static const ngenable = 0;
+  static const ngthresold = 1;
+  static const ngsustain = 2;
+  static const efxenable = 3;
+  static const efxtype = 4;
+  static const efxvar1 = 5;
+  static const efxvar2 = 6;
+  static const efxvar3 = 7;
+  static const ampenable = 8;
+  static const amptype = 9;
+  static const ampgain = 10;
+  static const amplevel = 11;
+  static const ampbass = 12;
+  static const ampmiddle = 13;
+  static const amptreble = 14;
+  static const amptone = 15;
+  static const cabenable = 16;
+  static const cabtype = 17;
+  static const cabgain = 18;
+  static const modfxenable = 19;
+  static const modfxtype = 20;
+  static const modfxrate = 21;
+  static const modfxvar1rate = 21;
+  static const modfxdepth = 22;
+  static const modfxvar2depth = 22;
+  static const modfxmix = 23;
+  static const modfxvar3mix = 23;
+  static const delayenable = 24;
+  static const irlowcut = 25;
+  static const irhighcut = 26;
+  static const modfxvar4 = 27;
+  static const efxvar4 = 28;
+  static const reverbenable = 29;
+  static const reverbtype = 30;
+  static const reverbdecay = 31;
+  static const reverbdamp = 32;
+  static const reverbmix = 33;
+}
+
 class PresetDataIndexPlugPro {
   static const effectTypesIndex = [
     Head_iCMP,

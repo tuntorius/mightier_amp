@@ -281,4 +281,49 @@ class ProcessorsList {
         color: Colors.orange,
         icon: Icons.blur_on),
   ];
+
+  static const List<ProcessorInfo> bassList = [
+    ProcessorInfo(
+        shortName: "Gate",
+        longName: "Noise Gate",
+        keyName: "gate",
+        nuxFXID: PlugAirFXID.gate,
+        color: Colors.green,
+        icon: MightierIcons.gate),
+    ProcessorInfo(
+        shortName: "EFX",
+        longName: "EFX",
+        keyName: "efx",
+        nuxFXID: PlugAirFXID.efx,
+        color: Color(0xFFB388FF), //deepPurpleAccent[100]
+        icon: MightierIcons.pedal),
+    ProcessorInfo(
+        shortName: "Amp",
+        longName: "Amplifier",
+        keyName: "amp",
+        nuxFXID: PlugAirFXID.amp,
+        color: Colors.green,
+        icon: MightierIcons.amp),
+    ProcessorInfo(
+        shortName: "IR",
+        longName: "Cabinet",
+        keyName: "cabinet",
+        nuxFXID: PlugAirFXID.cab,
+        color: Colors.blue,
+        icon: MightierIcons.cabinet),
+    ProcessorInfo(
+        shortName: "Mod",
+        longName: "Modulation",
+        keyName: "mod",
+        nuxFXID: PlugAirFXID.mod,
+        color: Color(0xFF4DD0E1), //cyan[300]
+        icon: Icons.waves),
+    ProcessorInfo(
+        shortName: "Reverb",
+        longName: "Reverb",
+        keyName: "reverb",
+        nuxFXID: PlugAirFXID.reverb,
+        color: Colors.orange,
+        icon: Icons.blur_on),
+  ];
 }

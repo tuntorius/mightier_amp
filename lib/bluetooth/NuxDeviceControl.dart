@@ -14,6 +14,7 @@ import 'ble_controllers/BLEController.dart';
 import 'devices/NuxConstants.dart';
 import 'devices/NuxDevice.dart';
 import 'devices/NuxMighty2040BT.dart';
+import 'devices/NuxMightyBass.dart';
 import 'devices/NuxMightyLite.dart';
 import 'devices/NuxMightyLiteMk2.dart';
 import 'devices/NuxMightyPlugAir.dart';
@@ -243,6 +244,7 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMighty8BT(this));
     _deviceInstances.add(NuxMighty2040BT(this));
     _deviceInstances.add(NuxMightyLite(this));
+    _deviceInstances.add(NuxMightyBass(this));
     if (kDebugMode) _deviceInstances.add(NuxMightyLiteMk2(this));
 
     //make it read from config

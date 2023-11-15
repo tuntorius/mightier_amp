@@ -69,3 +69,13 @@ class LiteMK2FXID extends NuxFXID {
   static const delay = LiteFXID._internal(5);
   static const reverb = LiteFXID._internal(6);
 }
+
+class Bass50BTFXID extends NuxFXID {
+  const Bass50BTFXID._internal(int value) : super._internal(value);
+  static const gate = PlugAirFXID._internal(0);
+  static const efx = PlugAirFXID._internal(1);
+  static const amp = PlugAirFXID._internal(2);
+  static const cab = PlugAirFXID._internal(3);
+  static const mod = PlugAirFXID._internal(4);
+  static const reverb = PlugAirFXID._internal(5);
+}

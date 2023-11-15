@@ -12,6 +12,10 @@ class BassCommunication extends DeviceCommunication {
 
   int _readyPresetsCount = 0;
 
+  static const int customIRStart = 8;
+  static const int customIRsCount = 8;
+  static const int irLength = customIRStart + customIRsCount;
+
   @override
   void performNextConnectionStep() {
     switch (currentConnectionStep) {

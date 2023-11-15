@@ -219,7 +219,7 @@ class PresetDataIndexBass50BT {
   static const amptone = 15;
   static const cabenable = 16;
   static const cabtype = 17;
-  static const cabgain = 18;
+  static const cablevel = 18;
   static const modfxenable = 19;
   static const modfxtype = 20;
   static const modfxrate = 21;

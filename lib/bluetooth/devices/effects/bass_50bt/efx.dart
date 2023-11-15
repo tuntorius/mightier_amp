@@ -129,3 +129,116 @@ class Phase100Bass extends EFX {
         midiControllerHandle: MidiControllerHandles.efxRate),
   ];
 }
+
+class RCBoostBass extends EFX {
+  @override
+  final name = "RC Boost";
+
+  @override
+  int get nuxIndex => 5;
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Gain",
+        handle: "gain",
+        value: 35,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar1,
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxGain),
+    Parameter(
+        name: "Volume",
+        handle: "volume",
+        value: 40,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar2,
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
+    Parameter(
+        name: "Bass",
+        handle: "bass",
+        value: 35,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar3,
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxBass),
+    Parameter(
+        name: "Treble",
+        handle: "treble",
+        value: 70,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar4,
+        midiCC: MidiCCValues.bCC_DelayLevel,
+        midiControllerHandle: MidiControllerHandles.efxTone),
+  ];
+}
+
+class TSDriveBass extends EFX {
+  @override
+  final name = "T Scream";
+
+  @override
+  int get nuxIndex => 6;
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Drive",
+        handle: "drive",
+        value: 50,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar1,
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxGain),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 41,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar2,
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
+    Parameter(
+        name: "Tone",
+        handle: "tone",
+        value: 67,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar3,
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxTone),
+  ];
+}
+
+class MuffBass extends EFX {
+  @override
+  final name = "Muff";
+
+  @override
+  int get nuxIndex => 7;
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 40,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar1,
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
+    Parameter(
+        name: "Sustain",
+        handle: "sustain",
+        value: 40,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar2,
+        midiCC: MidiCCValues.bCC_DistTone,
+        midiControllerHandle: MidiControllerHandles.efxDepth),
+    Parameter(
+        name: "Tone",
+        handle: "tone",
+        value: 50,
+        formatter: ValueFormatters.percentage,
+        devicePresetIndex: PresetDataIndexBass50BT.efxvar3,
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxTone),
+  ];
+}

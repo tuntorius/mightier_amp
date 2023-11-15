@@ -4,17 +4,18 @@
 import 'dart:ui';
 
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyBass.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugAir.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/communication/bassCommunication.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/effects/bass_50bt/amps.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/bass_50bt/efx.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/preset_constants.dart';
 
 import '../NuxDevice.dart';
 import '../effects/Processor.dart';
 import '../effects/NoiseGate.dart';
+import '../effects/bass_50bt/cabs.dart';
 import '../effects/bass_50bt/modulation.dart';
+import '../effects/bass_50bt/reverb.dart';
 import '../effects/plug_air/EFX.dart';
-import '../effects/plug_air/Amps.dart';
-import '../effects/plug_air/Cabinet.dart';
 import '../effects/plug_air/Modulation.dart';
 import '../effects/plug_air/Reverb.dart';
 import 'Preset.dart';
@@ -42,7 +43,7 @@ class BassPreset extends Preset {
   List<Amplifier> get amplifierList => _amplifierList;
 
   @override
-  final List<CabinetMP2> cabinetList = <CabinetMP2>[];
+  final List<CabinetBass50BT> cabinetList = <CabinetBass50BT>[];
 
   List<Modulation> get modulationList => _modulationList;
   List<Reverb> get reverbList => _reverbList;
@@ -68,42 +69,48 @@ class BassPreset extends Preset {
   BassPreset(
       {required this.device, required this.channel, required this.channelName})
       : super(channel: channel, channelName: channelName, device: device) {
-    //only ph100Bass ready
-    _modulationList.addAll([STChorus(), Flanger(), PH100BassMod()]);
+    _modulationList.addAll([STChorusBass(), FlangerBass(), PH100BassMod()]);
 
-    //ready up to phase100
-    _efxList
-        .addAll([KCompBass(), TouchWahBass(), UniVibeBass(), Phase100Bass()]);
-
-    _amplifierList.addAll([
-      MLD(),
-      AGL(),
+    _efxList.addAll([
+      KCompBass(),
+      RoseCompBass(),
+      TouchWahBass(),
+      UniVibeBass(),
+      Phase100Bass(),
+      RCBoostBass(),
+      TSDriveBass(),
+      MuffBass()
     ]);
+
+    _amplifierList.addAll([MLD50BT(), AGL50BT(), BassGuy50BT()]);
 
     cabinetList.addAll([
-      AGLDB810(),
-      V1960(),
-      A212(),
-      BS410(),
-      DR112(),
-      GB412(),
-      JZ120IR(),
-      TR212(),
-      V412(),
-      AMPSV810(),
-      MKB410(),
-      TRC410(),
-      GHBird(),
-      GJ15(),
-      MD45(),
-      GIBJ200(),
-      GIBJ45(),
-      TL314(),
-      MHD28()
+      DB81050BT(),
+      SV21250BT(),
+      SV41050BT(),
+      SV81050BT(),
+      BassguyCab50BT(),
+      Eden50BT(),
+      MKB50BT(),
+      TRC50BT()
     ]);
 
-    _reverbList.addAll(
-        [RoomReverbv2(), HallReverb(), PlateReverbv2(), SpringReverb()]);
+    _reverbList.addAll([
+      RoomReverbBass(),
+      HallReverbBass(),
+      PlateReverbBass(),
+      SpringReverbBass()
+    ]);
+
+    for (int i = 0; i < BassCommunication.customIRsCount; i++) {
+      var userCab = UserCab50BT();
+      userCab.setNuxIndex(i + BassCommunication.customIRStart);
+      if (i == 0) {
+        userCab.isSeparator = true;
+        userCab.category = "User IRs";
+      }
+      cabinetList.add(userCab);
+    }
   }
 
   /// checks if the effect slot can be switched on and off

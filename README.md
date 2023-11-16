@@ -15,9 +15,10 @@ This app aims to cover all the functionality of the original app plus many enhan
 
 1.Mighty Plug / Mighty Air  
 2.Mighty Plug Pro / Mighty Space  
-3.Mighty 8 BT\*\*  
-4.Mighty 20 BT / Mighty 40 BT  
-5.Mighty BT Lite\*\* / AirBorne Go\*\* / GUO AN\*\*  
+3.Mighty Lite BT MKII  
+4.Mighty 8 BT\*\*  
+5.Mighty 20 BT \*\* / Mighty 40 BT \*\*
+6.Mighty BT Lite / AirBorne Go\*\* / GUO AN\*\*  
 
 \*\* These amps are not tested and might not work.  
 

@@ -276,6 +276,7 @@ public class SwiftFlutterMidiCommandPlugin: NSObject, CBCentralManagerDelegate, 
                 }
             }
 //            print("entityIndex \(entityIndex)")
+            let deviceId = "\(device):\(entityIndex)"
             
             let entityDestinationCount = MIDIEntityGetNumberOfDestinations(entity)
 //            print("entiry dest count \(entityDestinationCount)")
@@ -284,7 +285,7 @@ public class SwiftFlutterMidiCommandPlugin: NSObject, CBCentralManagerDelegate, 
                 "name" : "\(deviceName) \(entityName)",
                 "id" : "\(device):\(entityIndex)",
                 "type" : "native",
-                "connected":(connectedDevices.keys.contains(String(entity)) ? "true" : "false"),
+                "connected":(connectedDevices.keys.contains(deviceId) ? "true" : "false"),
                 "outputs" : createPortDict(count: entityDestinationCount)
                 ]
         }
@@ -320,6 +321,7 @@ public class SwiftFlutterMidiCommandPlugin: NSObject, CBCentralManagerDelegate, 
             
             let entitySourceCount = MIDIEntityGetNumberOfSources(entity)
 //            print("entiry source count \(entitySourceCount)")
+            let deviceId = "\(device):\(entityIndex)"
             
             if var deviceDict = nativeDevices[entity] {
 //                print("add inputs to dict")
@@ -332,7 +334,7 @@ public class SwiftFlutterMidiCommandPlugin: NSObject, CBCentralManagerDelegate, 
                     "name" : "\(deviceName) \(entityName)",
                     "id" : "\(device):\(entityIndex)",
                     "type" : "native",
-                    "connected":(connectedDevices.keys.contains(String(entity)) ? "true" : "false"),
+                    "connected":(connectedDevices.keys.contains(deviceId) ? "true" : "false"),
                     "inputs" : createPortDict(count: entitySourceCount)
                     ]
             }

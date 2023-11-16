@@ -189,7 +189,9 @@ class NuxMightyLiteMk2 extends NuxDevice
 
   @override
   bool get tunerAvailable {
-    return deviceControl.isConnected;
+    //probably in a firmware update
+    return false;
+    //return deviceControl.isConnected;
   }
 
   @override

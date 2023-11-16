@@ -243,7 +243,7 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMighty8BT(this));
     _deviceInstances.add(NuxMighty2040BT(this));
     _deviceInstances.add(NuxMightyLite(this));
-    if (kDebugMode) _deviceInstances.add(NuxMightyLiteMk2(this));
+    _deviceInstances.add(NuxMightyLiteMk2(this));
 
     //make it read from config
     String dev = SharedPrefs()

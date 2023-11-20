@@ -556,44 +556,47 @@ class PlugProCommunication extends DeviceCommunication {
   }
 
   void _handleIRName(List<int> data) {
-    int index = data[1];
-    bool hasIR = data[data.length - 3] != 0;
-    int stringEnd = 0;
+    if (data.length > 8) {
+      int index = data[1];
+      bool hasIR = data[data.length - 3] != 0;
+      int stringEnd = 0;
 
-    //find name length
-    for (int i = 8; i < data.length - 1; i++) {
-      if (data[i] == 0 && data[i + 1] == 0) {
-        stringEnd = i;
-        break;
-      }
-    }
-    if (stringEnd < 8) stringEnd = data.length - 3;
-    if (hasIR) {
-      List<int> encodedName = data.sublist(8, stringEnd);
-      List<int> decodedName = [];
-      for (int i = 0; i < encodedName.length; i++) {
-        if (i % 3 == 0) {
-          decodedName.add((encodedName[i] & 0x01) << 6);
-        } else if (i % 3 == 1) {
-          decodedName.last |= encodedName[i] >> 1;
-        } else if (i % 3 == 2) {
-          decodedName.add(encodedName[i]);
+      //find name length
+      for (int i = 8; i < data.length - 1; i++) {
+        if (data[i] == 0 && data[i + 1] == 0) {
+          stringEnd = i;
+          break;
         }
       }
-      var decoder = const AsciiDecoder();
-      String name = decoder.convert(decodedName);
-      debugPrint("IR $index, active: $hasIR, name: $name");
+      if (stringEnd < 8) stringEnd = data.length - 3;
 
-      for (var preset in device.presets) {
-        if (preset.cabinetList == null) continue;
-        if (index >= preset.cabinetList!.length) return;
-        var cab = preset.cabinetList![index];
-        if (cab is UserCab) {
-          cab.setName(name);
+      if (hasIR) {
+        List<int> encodedName = data.sublist(8, stringEnd);
+        List<int> decodedName = [];
+        for (int i = 0; i < encodedName.length; i++) {
+          if (i % 3 == 0) {
+            decodedName.add((encodedName[i] & 0x01) << 6);
+          } else if (i % 3 == 1) {
+            decodedName.last |= encodedName[i] >> 1;
+          } else if (i % 3 == 2) {
+            decodedName.add(encodedName[i]);
+          }
         }
+        var decoder = const AsciiDecoder();
+        String name = decoder.convert(decodedName);
+        debugPrint("IR $index, active: $hasIR, name: $name");
+
+        for (var preset in device.presets) {
+          if (preset.cabinetList == null) continue;
+          if (index >= preset.cabinetList!.length) break;
+          var cab = preset.cabinetList![index];
+          if (cab is UserCab) {
+            cab.setName(name);
+          }
+        }
+      } else {
+        debugPrint("IR $index, active: $hasIR}");
       }
-    } else {
-      debugPrint("IR $index, active: $hasIR}");
     }
     readyIRsCount++;
 

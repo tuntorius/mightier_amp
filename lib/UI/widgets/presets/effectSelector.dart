@@ -144,7 +144,7 @@ class _EffectSelectorState extends State<EffectSelector> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
-            effects[f].name,
+            "${f + 1}. ${effects[f].name}",
           ),
         ),
       ));

@@ -567,7 +567,7 @@ class PlugProCommunication extends DeviceCommunication {
         break;
       }
     }
-
+    if (stringEnd < 8) stringEnd = data.length - 3;
     if (hasIR) {
       List<int> encodedName = data.sublist(8, stringEnd);
       List<int> decodedName = [];

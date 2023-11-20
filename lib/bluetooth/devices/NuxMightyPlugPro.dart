@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/device_data/processors_list.dart';
 import '../../UI/pages/device_specific_settings/PlugProSettings.dart';
+import 'NuxConstants.dart';
 import 'NuxFXID.dart';
 import 'NuxReorderableDevice.dart';
 import 'communication/communication.dart';
@@ -307,4 +308,16 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
   void notifyTunerListeners() {
     _tunerController.add(config.tunerData);
   }
+
+  @override
+  int get tunerNoteCC => MidiCCValuesPro.TUNER_Note;
+
+  @override
+  int get tunerPitchCC => MidiCCValuesPro.TUNER_Cent;
+
+  @override
+  int get tunerStateCC => MidiCCValuesPro.TUNER_State;
+
+  @override
+  int get tunerStringCC => MidiCCValuesPro.TUNER_Number;
 }

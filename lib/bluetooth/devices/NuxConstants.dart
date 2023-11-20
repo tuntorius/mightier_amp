@@ -1,8 +1,6 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
-
 import 'NuxFXID.dart';
 
 class AppConstants {
@@ -407,7 +405,13 @@ class SyxMsg {
   static const kSYX_CABNAME = 0x1A;
   static const kSYX_BTSET =
       0x1B; //bluetooth eq groups 1-3, however use group 4 to retrieve mute and phase
+
+  static const kSYX_AUXEQ = 27;
+  static const kSYX_SPKEQ = 28;
+
   static const kSYX_SPKSET = 0x1C;
+
+  static const kSYX_STICKY = 95;
   static const kSYX_PARAINIT = 0x60;
   static const kSYX_WELCOME = 0x61;
   static const kSYX_QTVERSION = 0x62;
@@ -651,4 +655,9 @@ class MidiCCValuesPro {
   static const SPK_EQ_10 = 122;
   static const SPK_EQ_11 = 123;
   static const AUX_SAVE = 125;
+
+  static const TunerLiteMK2_State = 112;
+  static const TunerLiteMK2_Note = 113;
+  static const TunerLiteMK2_Number = 114;
+  static const TunerLiteMK2_Cent = 115;
 }

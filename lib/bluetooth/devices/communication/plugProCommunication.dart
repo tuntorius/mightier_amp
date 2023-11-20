@@ -731,21 +731,18 @@ class PlugProCommunication extends DeviceCommunication {
   }
 
   void _handleTuner(int ccNumber, int value) {
-    switch (ccNumber) {
-      case MidiCCValuesPro.TUNER_State:
-        config.tunerData.enabled = value == 1;
-        break;
-      case MidiCCValuesPro.TUNER_Note:
-        config.tunerData.note = value;
-        break;
-      case MidiCCValuesPro.TUNER_Cent:
-        config.tunerData.cents = value;
-        break;
-      case MidiCCValuesPro.TUNER_Number:
-        config.tunerData.stringNumber = value;
-        break;
+    var tuner = device as Tuner;
+
+    if (ccNumber == tuner.tunerStateCC) {
+      config.tunerData.enabled = value == 1;
+    } else if (ccNumber == tuner.tunerNoteCC) {
+      config.tunerData.note = value;
+    } else if (ccNumber == tuner.tunerPitchCC) {
+      config.tunerData.cents = value;
+    } else if (ccNumber == tuner.tunerStringCC) {
+      config.tunerData.stringNumber = value;
     }
-    (device as Tuner).notifyTunerListeners();
+    tuner.notifyTunerListeners();
   }
 
   void _handleTunerSysEx(List<int> data) {
@@ -880,6 +877,10 @@ const z = {
             case MidiCCValuesPro.TUNER_Note:
             case MidiCCValuesPro.TUNER_Number:
             case MidiCCValuesPro.TUNER_Cent:
+            case MidiCCValuesPro.TunerLiteMK2_Cent:
+            case MidiCCValuesPro.TunerLiteMK2_Note:
+            case MidiCCValuesPro.TunerLiteMK2_Number:
+            case MidiCCValuesPro.TunerLiteMK2_State:
               _handleTuner(data[3], data[4]);
               break;
             case MidiCCValuesPro.LOOPLEVEL:

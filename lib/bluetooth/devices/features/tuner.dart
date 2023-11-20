@@ -25,6 +25,11 @@ abstract class Tuner {
     "Bass"
   ];
 
+  int get tunerStateCC;
+  int get tunerNoteCC;
+  int get tunerStringCC;
+  int get tunerPitchCC;
+
   bool get tunerAvailable;
   void tunerEnable(bool enable);
   void tunerRequestSettings();
@@ -36,6 +41,7 @@ abstract class Tuner {
 }
 
 class TunerData {
+  //TODO: this is not enabled but note on/note off
   bool enabled = false;
   bool muted = false;
   int note = 0;

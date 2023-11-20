@@ -7,6 +7,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/presets/PlugProPreset.dart';
 
 import '../../UI/pages/device_specific_settings/LiteMk2Settings.dart';
+import 'NuxConstants.dart';
 import 'NuxMightyPlugPro.dart';
 import 'communication/liteMk2Communication.dart';
 import 'device_data/drumstyles.dart';
@@ -38,9 +39,9 @@ class NuxMightyLiteMk2 extends NuxDevice
   LiteMK2Version version = LiteMK2Version.LiteMK2v1;
 
   @override
-  String get productName => "NUX Mighty Lite MK2";
+  String get productName => "NUX Mighty Lite MKII";
   @override
-  String get productNameShort => "Mighty Lite MK2";
+  String get productNameShort => "Mighty Lite MKII";
   @override
   String get productStringId => "mighty_lite2";
   @override
@@ -189,9 +190,7 @@ class NuxMightyLiteMk2 extends NuxDevice
 
   @override
   bool get tunerAvailable {
-    //probably in a firmware update
-    return false;
-    //return deviceControl.isConnected;
+    return deviceControl.isConnected;
   }
 
   @override
@@ -234,6 +233,18 @@ class NuxMightyLiteMk2 extends NuxDevice
   void notifyTunerListeners() {
     _tunerController.add(_config.tunerData);
   }
+
+  @override
+  int get tunerNoteCC => MidiCCValuesPro.TunerLiteMK2_Note;
+
+  @override
+  int get tunerPitchCC => MidiCCValuesPro.TunerLiteMK2_Cent;
+
+  @override
+  int get tunerStateCC => MidiCCValuesPro.TunerLiteMK2_State;
+
+  @override
+  int get tunerStringCC => MidiCCValuesPro.TunerLiteMK2_Number;
 
   @override
   void setUsbMode(int mode) {

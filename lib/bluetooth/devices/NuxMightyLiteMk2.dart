@@ -166,8 +166,9 @@ class NuxMightyLiteMk2 extends NuxDevice
   }
 
   @override
-  PlugProPreset getCustomPreset(int channel) {
-    var preset = PlugProPreset(device: this, channel: channel, channelName: "");
+  MightyMk2Preset getCustomPreset(int channel) {
+    var preset =
+        MightyMk2Preset(device: this, channel: channel, channelName: "");
     preset.setFirmwareVersion(productVersion);
     return preset;
   }

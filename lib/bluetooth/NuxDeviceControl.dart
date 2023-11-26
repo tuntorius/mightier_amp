@@ -198,6 +198,15 @@ class NuxDeviceControl extends ChangeNotifier {
     return null;
   }
 
+  NuxDevice? getDeviceFromPresetClass(String presetClass) {
+    for (int i = 0; i < _deviceInstances.length; i++) {
+      if (_deviceInstances[i].presetClass == presetClass) {
+        return _deviceInstances[i];
+      }
+    }
+    return null;
+  }
+
   _clearDeviceStack({NuxDevice? device}) {
     bool notify = device == null;
     device ??= _device;

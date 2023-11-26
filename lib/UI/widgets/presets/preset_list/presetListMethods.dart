@@ -11,7 +11,8 @@ import '../../../popups/exportQRCode.dart';
 
 class PresetListMethods {
   static void exportQR(Map<String, dynamic> preset, BuildContext context) {
-    var dev = NuxDeviceControl.instance().getDeviceFromId(preset["product_id"]);
+    var dev = NuxDeviceControl.instance()
+        .getDeviceFromPresetClass(preset["product_id"]);
     var pVersion = preset["version"] ?? 0;
     if (dev != null) {
       int? originalVersion;

@@ -126,7 +126,8 @@ class _PresetWidgetState extends State<PresetWidget> {
   void _changePresetChannel(Map<String, dynamic> preset) {
     List<String> channelList = [];
     int nuxChannel = preset["channel"];
-    var d = NuxDeviceControl.instance().getDeviceFromId(preset["product_id"]);
+    var d = NuxDeviceControl.instance()
+        .getDeviceFromPresetClass(preset["product_id"]);
 
     if (d != null) {
       for (int i = 0; i < d.channelsCount; i++) {

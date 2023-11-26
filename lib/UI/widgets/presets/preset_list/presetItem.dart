@@ -109,7 +109,8 @@ class PresetItem extends StatelessWidget {
     bool selected = item["uuid"] == device.deviceControl.presetUUID;
     bool newItem = item.containsKey("new");
 
-    var dev = NuxDeviceControl.instance().getDeviceFromId(item["product_id"]) ??
+    var dev = NuxDeviceControl.instance()
+            .getDeviceFromPresetClass(item["product_id"]) ??
         device;
     Color color = dev.getPreset(0).channelColorsList[item["channel"]];
 

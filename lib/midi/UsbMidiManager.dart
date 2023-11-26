@@ -73,7 +73,7 @@ class UsbMidiManager {
     //find which device this belongs to
     var ctls = MidiControllerManager().controllers;
     for (var ctl in ctls) {
-      if (ctl.name == event.device.name && ctl.id == event.device.id) {
+      if (ctl.id == event.device.id) {
         (ctl as UsbMidiController).onDataReceivedLoopback(event.data);
       }
     }

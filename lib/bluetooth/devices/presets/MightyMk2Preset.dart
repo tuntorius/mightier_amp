@@ -12,6 +12,7 @@ import 'package:mighty_plug_manager/bluetooth/devices/presets/preset_constants.d
 
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
+import '../NuxFXID.dart';
 import '../NuxMightyLiteMk2.dart';
 import '../communication/plugProCommunication.dart';
 import '../effects/Processor.dart';
@@ -350,6 +351,18 @@ class MightyMk2Preset extends Preset {
   }
 
   @override
+  int getEffectArrayIndexFromNuxIndex(NuxFXID fxid, int nuxIndex) {
+    List<Processor> list = [];
+    list = getEffectsForSlot(fxid.value);
+
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].nuxIndex == nuxIndex) return i;
+    }
+
+    return 0;
+  }
+
+  @override
   Color effectColor(int index) {
     return device.processorList[index].color;
   }
@@ -357,11 +370,6 @@ class MightyMk2Preset extends Preset {
   @override
   setFirmwareVersion(int ver) {
     version = LiteMK2Version.values[ver];
-  }
-
-  @override
-  String getAmpNameByNuxIndex(int index, int version) {
-    return amplifierList[index].name;
   }
 
   @override

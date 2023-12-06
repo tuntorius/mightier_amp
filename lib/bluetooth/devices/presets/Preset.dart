@@ -39,7 +39,7 @@ abstract class Preset {
   //returns whether the specific slot is on or off
   bool slotEnabled(int index);
 
-  //used for reorderable fx chain
+  //override in reorderable fx chain
   NuxFXID getFXIDFromSlot(int slot) {
     return NuxFXID.fromInt(slot);
   }
@@ -130,6 +130,7 @@ abstract class Preset {
     }
   }
 
+  //override in more complex FX chains
   int getEffectArrayIndexFromNuxIndex(NuxFXID fxid, int nuxIndex) {
     return nuxIndex;
   }
@@ -197,8 +198,8 @@ abstract class Preset {
   }
 
   String getAmpNameByNuxIndex(int index, int version) {
-    var ampIndex = NuxFXID.fromInt(device.amplifierSlotIndex);
-    getEffectArrayIndexFromNuxIndex(ampIndex, index);
+    var ampIndex = getFXIDFromSlot(device.amplifierSlotIndex);
+    index = getEffectArrayIndexFromNuxIndex(ampIndex, index);
     return amplifierList[index].name;
   }
 

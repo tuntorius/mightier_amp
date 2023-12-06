@@ -442,47 +442,13 @@ class PlugProPreset extends Preset {
   @override
   int getEffectArrayIndexFromNuxIndex(NuxFXID fxid, int nuxIndex) {
     List<Processor> list = [];
-    switch (fxid.value) {
-      case PresetDataIndexPlugPro.Head_iWAH:
-        return 0;
-      case PresetDataIndexPlugPro.Head_iNG:
-        return 0;
-      case PresetDataIndexPlugPro.Head_iCMP:
-        list = _compressorList;
-        break;
-      case PresetDataIndexPlugPro.Head_iEFX:
-        list = efxList;
-        break;
-      case PresetDataIndexPlugPro.Head_iAMP:
-        list = amplifierList;
-        break;
-      case PresetDataIndexPlugPro.Head_iCAB:
-        list = cabinetList;
-        break;
-      case PresetDataIndexPlugPro.Head_iMOD:
-        list = modulationList;
-        break;
-      case PresetDataIndexPlugPro.Head_iEQ:
-        list = eqList;
-        break;
-      case PresetDataIndexPlugPro.Head_iDLY:
-        list = delayList;
-        break;
-      case PresetDataIndexPlugPro.Head_iRVB:
-        list = _reverbList;
-        break;
-    }
+    list = _getEffectsForFXID(fxid);
+
     for (int i = 0; i < list.length; i++) {
       if (list[i].nuxIndex == nuxIndex) return i;
     }
 
     return 0;
-  }
-
-  @override
-  String getAmpNameByNuxIndex(int index, int version) {
-    index = getEffectArrayIndexFromNuxIndex(PlugProFXID.amp, index);
-    return amplifierList[index].name;
   }
 
   @override

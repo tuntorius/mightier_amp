@@ -63,8 +63,7 @@ class NuxMightyPlug extends NuxDevice {
   @override
   String get productIconLabel => "PLUG|-|AIR";
   @override
-  List<String> get productBLENames =>
-      ["NUX MIGHTY PLUG MIDI", "NUX MIGHTY AIR MIDI"];
+  List<String> get productBLENames => ["NUX MIGHTY PLUG", "NUX MIGHTY AIR"];
 
   String get mightyAirBLEName => productBLENames[1];
   //general settings
@@ -171,7 +170,7 @@ class NuxMightyPlug extends NuxDevice {
   @override
   void onConnect() {
     var name = BLEMidiHandler.instance().connectedDevice?.name;
-    if (name == mightyAirBLEName) {
+    if (name != null && name.contains(mightyAirBLEName)) {
       ampVariant = PlugAirVariant.MightyAir;
     } else {
       ampVariant = PlugAirVariant.MightyPlug;

@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 
 import '../../bluetooth/NuxDeviceControl.dart';
+import '../../platform/platformUtils.dart';
 import '../../platform/simpleSharedPrefs.dart';
 import 'calibration.dart';
 
@@ -32,7 +30,7 @@ class _AdvancedSettingsState extends State<AdvancedSettings> {
                     builder: (context) => const Calibration()));
               },
             ),
-            if (Platform.isAndroid)
+            if (PlatformUtils.isAndroid)
               CheckboxListTile(
                   title: const Text("Use legacy waveform decoder"),
                   subtitle: const Text(

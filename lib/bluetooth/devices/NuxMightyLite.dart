@@ -40,7 +40,7 @@ class NuxMightyLite extends NuxDevice {
 
   @override
   List<String> get productBLENames =>
-      ["NUX MIGHTY LITE MIDI", "AirBorne GO", "GUO AN MIDI"];
+      ["NUX MIGHTY LITE", "AirBorne GO", "GUO AN"];
 
   @override
   int get channelsCount => 3;

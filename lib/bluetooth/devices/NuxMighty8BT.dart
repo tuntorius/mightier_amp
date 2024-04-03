@@ -39,7 +39,7 @@ class NuxMighty8BT extends NuxDevice {
   @override
   int get productVersion => 0;
   @override
-  List<String> get productBLENames => ["NUX MIGHTY8BT MIDI"];
+  List<String> get productBLENames => ["NUX MIGHTY8BT"];
 
   @override
   int get channelsCount => 3;

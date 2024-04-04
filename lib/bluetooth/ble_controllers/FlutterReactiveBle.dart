@@ -119,7 +119,7 @@ class FlutterReactiveBleController extends BLEController {
     var ownDevice = (device as FBPBleDevice).device;
 
     bool ampDevice = false;
-    if (deviceListProvider.call().contains(ownDevice.name)) {
+    if (deviceListProvider.call().containsPartial(ownDevice.name)) {
       ampDevice = true;
       if (_connectInProgress || _device != null) {
         debugPrint("Denying secondary connection!");
@@ -254,7 +254,7 @@ class FlutterReactiveBleController extends BLEController {
     //filter the scan results
     var devNames = deviceListProvider.call();
 
-    if (devNames.contains(result.name)) {
+    if (devNames.containsPartial(result.name)) {
       nuxDevices.add(result);
     } else {
       bool validDevice = false;

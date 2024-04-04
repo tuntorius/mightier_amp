@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BT.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
+import 'package:mighty_plug_manager/utilities/list_extenstions.dart';
 import 'package:undo/undo.dart';
 
 import 'bleMidiHandler.dart';
@@ -173,7 +174,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   NuxDevice deviceFromBLEId(String id) {
     for (int i = 0; i < _deviceInstances.length; i++) {
-      if (_deviceInstances[i].productBLENames.contains(id)) {
+      if (_deviceInstances[i].productBLENames.containsPartial(id)) {
         return _deviceInstances[i];
       }
     }

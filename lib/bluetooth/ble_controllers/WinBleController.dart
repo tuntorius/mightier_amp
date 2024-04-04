@@ -316,7 +316,7 @@ class WinBleController extends BLEController {
 
       stopScanning();
       scannedDevices.retainWhere((device) =>
-          nuxDeviceNames.contains(device.name) &&
+          nuxDeviceNames.containsPartial(device.name) &&
           device.serviceUuids.contains("{${BLEController.midiServiceGuid}}"));
 
       List<BLEScanResult> nuxBle = [], ctrlBle = [];

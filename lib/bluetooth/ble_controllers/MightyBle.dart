@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:mighty_plug_manager/utilities/list_extenstions.dart';
+
 import 'BLEController.dart';
 import 'package:mighty_ble/mighty_ble.dart';
 
@@ -159,7 +161,7 @@ class MightyBLEController extends BLEController {
       var devNames = deviceListProvider.call();
 
       for (ScanResult result in results) {
-        if (devNames.contains(result.name)) {
+        if (devNames.containsPartial(result.name)) {
           nuxDevices.add(result);
         } else {
           //check if it is in the special device list

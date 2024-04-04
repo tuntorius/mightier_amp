@@ -12,6 +12,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/ble_controllers/BLEController.dart';
+import 'package:mighty_plug_manager/utilities/list_extenstions.dart';
 
 class FBPScanResult extends BLEScanResult {
   @override
@@ -122,7 +123,7 @@ class FlutterBluePlusController extends BLEController {
     var ownDevice = (device as FBPBleDevice).device;
 
     bool ampDevice = false;
-    if (deviceListProvider.call().contains(ownDevice.name)) {
+    if (deviceListProvider.call().containsPartial(ownDevice.name)) {
       ampDevice = true;
       if (_connectInProgress || _device != null) {
         debugPrint("Denying secondary connection!");
@@ -283,7 +284,7 @@ class FlutterBluePlusController extends BLEController {
       var devNames = deviceListProvider.call();
 
       for (ScanResult result in results) {
-        if (devNames.contains(result.device.name)) {
+        if (devNames.containsPartial(result.device.name)) {
           nuxDevices.add(result);
         } else {
           bool validDevice = false;

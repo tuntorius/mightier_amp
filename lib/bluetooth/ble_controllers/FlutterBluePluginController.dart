@@ -117,7 +117,7 @@ class FlutterBluePluginController extends BLEController {
     var ownDevice = (device as FBPBleDevice).device;
 
     bool ampDevice = false;
-    if (deviceListProvider.call().contains(ownDevice.name)) {
+    if (deviceListProvider.call().containsPartial(ownDevice.name)) {
       ampDevice = true;
       if (_connectInProgress || _device != null) {
         debugPrint("Denying secondary connection!");
@@ -267,7 +267,7 @@ class FlutterBluePluginController extends BLEController {
       var devNames = deviceListProvider.call();
 
       for (ScanResult result in results) {
-        if (devNames.contains(result.device.name)) {
+        if (devNames.containsPartial(result.device.name)) {
           nuxDevices.add(result);
         } else {
           bool validDevice = false;

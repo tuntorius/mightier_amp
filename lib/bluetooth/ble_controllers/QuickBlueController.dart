@@ -145,7 +145,7 @@ class QuickBlueController extends BLEController {
     if (bleState != BleState.on) return null;
 
     bool ampDevice = false;
-    if (nuxDeviceNames.contains(device.name)) {
+    if (nuxDeviceNames.containsPartial(device.name)) {
       ampDevice = true;
       if (_connectInProgress || _device != null) {
         print("Denying secondary connection!");
@@ -287,7 +287,7 @@ class QuickBlueController extends BLEController {
 
       stopScanning();
       scannedDevices
-          .retainWhere((device) => nuxDeviceNames.contains(device.name));
+          .retainWhere((device) => nuxDeviceNames.containsPartial(device.name));
 
       List<BLEScanResult> nuxBle = [], ctrlBle = [];
       for (var dev in scannedDevices) {

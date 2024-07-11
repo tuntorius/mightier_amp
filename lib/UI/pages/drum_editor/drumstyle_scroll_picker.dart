@@ -52,6 +52,7 @@ class DrumStyleScrollPicker extends StatelessWidget {
               ? _getComplexListStyle(drumStyles)
               : drumStyles[selectedDrumPattern],
           style: _fontStyle,
+          overflow: TextOverflow.ellipsis,
         ),
         trailing: const Icon(Icons.keyboard_arrow_right),
         onTap: () {

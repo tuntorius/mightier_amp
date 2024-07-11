@@ -255,3 +255,38 @@ class PanDelay extends DelayPro {
         midiControllerHandle: MidiControllerHandles.delayRepeat),
   ];
 }
+
+class PhiDelayPro extends DelayPro {
+  @override
+  final name = "Phi Delay";
+
+  @override
+  int get nuxIndex => 6;
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Time",
+        handle: "time",
+        value: 50,
+        formatter: ValueFormatters.tempoPro,
+        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para1,
+        midiCC: MidiCCValuesPro.DLY_Para1,
+        midiControllerHandle: MidiControllerHandles.delayTime),
+    Parameter(
+        name: "Repeat",
+        handle: "repeat",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para2,
+        midiCC: MidiCCValuesPro.DLY_Para2,
+        midiControllerHandle: MidiControllerHandles.delayRepeat),
+    Parameter(
+        name: "Mix",
+        handle: "level",
+        value: 45,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.DLY_Para3,
+        midiCC: MidiCCValuesPro.DLY_Para3,
+        midiControllerHandle: MidiControllerHandles.delayLevel),
+  ];
+}

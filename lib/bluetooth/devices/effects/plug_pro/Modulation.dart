@@ -457,3 +457,38 @@ class SCH1Pro extends Modulation {
         midiControllerHandle: MidiControllerHandles.modIntensity),
   ];
 }
+
+class MonoOctave extends Modulation {
+  @override
+  final name = "Mono Octave";
+
+  @override
+  int get nuxIndex => 14;
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Sub",
+        handle: "sub",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para1,
+        midiCC: MidiCCValuesPro.MOD_Para1,
+        midiControllerHandle: MidiControllerHandles.modRate),
+    Parameter(
+        name: "Dry",
+        handle: "dry",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para2,
+        midiCC: MidiCCValuesPro.MOD_Para2,
+        midiControllerHandle: MidiControllerHandles.modIntensity),
+    Parameter(
+        name: "Up",
+        handle: "up",
+        value: 50,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
+        midiCC: MidiCCValuesPro.MOD_Para3,
+        midiControllerHandle: MidiControllerHandles.modDepth),
+  ];
+}

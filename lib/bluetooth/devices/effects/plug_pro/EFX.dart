@@ -490,3 +490,38 @@ class STSinger extends EFXPro {
         midiControllerHandle: MidiControllerHandles.efxTone),
   ];
 }
+
+class TouchWahPro extends EFXPro {
+  @override
+  int get nuxIndex => 14;
+
+  @override
+  final name = "Touch Wah";
+
+  @override
+  List<Parameter> parameters = [
+    Parameter(
+        name: "Type",
+        handle: "type",
+        value: 1,
+        formatter: ValueFormatters.touchWahFormatterLiteMk2,
+        devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
+        midiCC: MidiCCValuesPro.EFX_Para1),
+    Parameter(
+        name: "Wow",
+        handle: "wow",
+        value: 35,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
+        midiCC: MidiCCValuesPro.EFX_Para2,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
+    Parameter(
+        name: "Sense",
+        handle: "sense",
+        value: 90,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
+        midiCC: MidiCCValuesPro.EFX_Para3,
+        midiControllerHandle: MidiControllerHandles.efxRate),
+  ];
+}

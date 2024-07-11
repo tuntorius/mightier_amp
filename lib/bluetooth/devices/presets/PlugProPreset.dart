@@ -98,6 +98,7 @@ class PlugProPreset extends Preset {
       TremoloPro(),
       Rotary(),
       SCH1Pro(),
+      MonoOctave()
     ]);
 
     efxList.addAll([
@@ -114,6 +115,7 @@ class PlugProPreset extends Preset {
       MuffFuzz(),
       Katana(),
       STSinger(),
+      TouchWahPro()
     ]);
 
     amplifierList.addAll([
@@ -198,8 +200,14 @@ class PlugProPreset extends Preset {
       cabinetList.add(userCab);
     }
 
-    delayList.addAll(
-        [AnalogDelayV2(), DigitalDelay(), ModDelay(), TapeEcho(), PanDelay()]);
+    delayList.addAll([
+      AnalogDelayV2(),
+      DigitalDelay(),
+      ModDelay(),
+      TapeEcho(),
+      PanDelay(),
+      PhiDelayPro()
+    ]);
 
     _reverbList.addAll([
       RoomReverb(),

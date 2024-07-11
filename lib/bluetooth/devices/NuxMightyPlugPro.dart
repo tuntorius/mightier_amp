@@ -75,6 +75,7 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
   PlugProVersion version = PlugProVersion.PlugPro1;
 
   String versionDate = "";
+  bool version2024July = true;
 
   @override
   String get productName => "NUX Mighty Plug Pro";
@@ -162,13 +163,15 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
   }
 
   @override
-  dynamic getDrumStyles() => DrumStyles.drumCategoriesPro;
+  Map<String, Map<dynamic, dynamic>> getDrumStyles() => version2024July
+      ? DrumStyles.drumCategoriesProV2
+      : DrumStyles.drumCategoriesPro;
 
   @override
   int getDrumStylesCount() {
     if (_drumStylesCount == null) {
       _drumStylesCount = 0;
-      for (var cat in DrumStyles.drumCategoriesPro.values) {
+      for (var cat in getDrumStyles().values) {
         _drumStylesCount = _drumStylesCount! + cat.length;
       }
     }
@@ -198,6 +201,7 @@ class NuxMightyPlugPro extends NuxReorderableDevice<PlugProPreset>
 
   void setVersionDate(String vDate) {
     versionDate = vDate;
+    version2024July = versionDate.compareTo("20240101") > 0;
   }
 
   @override

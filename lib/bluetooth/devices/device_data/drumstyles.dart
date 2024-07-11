@@ -143,6 +143,17 @@ class DrumStyles {
     'Elec-Tech': 66,
   };
 
+  static const Map<String, int> metronomeStylesPro = {
+    'M1 - 4/4 4th': 67,
+    'M2 - 4/4 8th': 68,
+    'M3 - 4/4 16th': 69,
+    'M4 - 4/4 2nd Tri': 70,
+    'M5 - 4/4 4th Tri': 71,
+    'M6 - 4/4 8th Tri': 72,
+    'M7 - 3/4 4th': 73,
+    'M8 - 3/4 8th': 74,
+  };
+
   static const Map<String, Map> drumCategoriesPro = {
     "Rock": rockStylesPro,
     "Country": countryStylesPro,
@@ -154,5 +165,129 @@ class DrumStyles {
     "Pop": popStylesPro,
     "Reggae": reggaeStylesPro,
     "Electronic": electronicStylesPro
+  };
+
+  static const Map<String, Map> drumCategoriesProV2 = {
+    "Metronome": metronomeStylesProV2,
+    "Rock": rockStylesProV2,
+    "Country": countryStylesProV2,
+    "Blues": bluesStylesProV2,
+    "Metal": metalStylesProV2,
+    "Funk": funkStylesProV2,
+    "Jazz": jazzStylesProV2,
+    "Ballad": balladStylesProV2,
+    "Pop": popStylesProV2,
+    "Reggae": reggaeStylesProV2,
+    "Electronic": electronicStylesProV2
+  };
+
+  //version 2 - for 2024 update:
+
+  static const Map<String, int> metronomeStylesProV2 = {
+    'M1 - 4/4 4th': 0,
+    'M2 - 4/4 8th': 1,
+    'M3 - 4/4 16th': 2,
+    'M4 - 4/4 2nd Tri': 3,
+    'M5 - 4/4 4th Tri': 4,
+    'M6 - 4/4 8th Tri': 5,
+    'M7 - 3/4 4th': 6,
+    'M8 - 3/4 8th': 7,
+  };
+
+  static const Map<String, int> rockStylesProV2 = {
+    'Standard': 8,
+    'Swing Rock': 9,
+    'Power Beat': 10,
+    'Smooth': 11,
+    'Mega Drive': 12,
+    'Hard Rock': 13,
+    'Boogie': 14
+  };
+
+  static const Map<String, int> countryStylesProV2 = {
+    'Walk Line': 15,
+    'Blue Grass': 16,
+    'Country': 17,
+    'Waltz': 18,
+    'Train': 19,
+    'Country Rock': 20,
+    'Slowly': 21
+  };
+
+  static const Map<String, int> bluesStylesProV2 = {
+    'Slow Blues': 22,
+    'Chicago': 23,
+    'R&B': 24,
+    'Blues Rock': 25,
+    'Road Train': 26,
+    'Shuffle': 27,
+  };
+
+  static const Map<String, int> metalStylesProV2 = {
+    '2X Bass': 28,
+    'Close Beat': 29,
+    'Heavy Bass': 30,
+    'Fast': 31,
+    'Holy Case': 32,
+    'Open Hat': 33,
+    'Epic': 34,
+  };
+
+  static const Map<String, int> funkStylesProV2 = {
+    'Bounce': 35,
+    'East Coast': 36,
+    'New Mann': 37,
+    'R&B Funk': 38,
+    '80s Funk': 39,
+    'Soul': 40,
+    'Uncle Jam': 41,
+  };
+
+  static const Map<String, int> jazzStylesProV2 = {
+    'Blues Jazz': 42,
+    'Classic 1': 43,
+    'Classic 2': 44,
+    'Easy Jazz': 45,
+    'Fast': 46,
+    'Walking': 47,
+    'Smooth': 48,
+  };
+
+  static const Map<String, int> balladStylesProV2 = {
+    'Bluesy': 49,
+    'Grooves': 50,
+    'Ballad Rock': 51,
+    'Slow Rock': 52,
+    'Tutorial': 53,
+    'R&B Ballad': 54,
+    'Gospel': 55,
+  };
+
+  static const Map<String, int> popStylesProV2 = {
+    'Beach Side': 56,
+    'Big City': 57,
+    'Funky Pop': 58,
+    'Modern': 59,
+    'School Pop': 60,
+    'Motown': 61,
+    'Resistor': 62,
+  };
+
+  static const Map<String, int> reggaeStylesProV2 = {
+    'Sheriff': 63,
+    'Santeria': 64,
+    'Reggae 3': 65,
+    'Reggae 4': 66,
+    'Reggae 5': 67,
+    'Reggae 6': 68,
+    'Reggae 7': 69,
+  };
+
+  static const Map<String, int> electronicStylesProV2 = {
+    'Electronic 1': 70,
+    'Electronic 2': 71,
+    'Electronic 3': 72,
+    'Elec-EDM': 73,
+    'Elec-Tech': 74,
   };
 }

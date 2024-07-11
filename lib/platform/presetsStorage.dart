@@ -49,12 +49,14 @@ class PresetsStorage extends ChangeNotifier {
   }
 
   _getDirectory() async {
-    storageDirectory = await PlatformUtils.getAppDataDirectory();
+    try {
+      storageDirectory = await PlatformUtils.getAppDataDirectory();
 
-    if (storageDirectory != null) {
-      presetsPath = path.join(storageDirectory!.path, presetsFile);
-      _presetsFile = File(presetsPath);
-    }
+      if (storageDirectory != null) {
+        presetsPath = path.join(storageDirectory!.path, presetsFile);
+        _presetsFile = File(presetsPath);
+      }
+    } catch (_) {}
   }
 
   _loadPresets() async {

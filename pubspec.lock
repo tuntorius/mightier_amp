@@ -205,10 +205,9 @@ packages:
   flutter_blue_plus:
     dependency: "direct main"
     description:
-      name: flutter_blue_plus
-      sha256: "4e49b45d2f1ec9855826ed0af7d2b78b7d2a3e5743b3ae72aec59eb3790356d9"
-      url: "https://pub.dev"
-    source: hosted
+      path: "plugins/flutter_blue_plus"
+      relative: true
+    source: path
     version: "1.4.0"
   flutter_keyboard_visibility:
     dependency: transitive

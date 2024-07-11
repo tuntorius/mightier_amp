@@ -31,7 +31,6 @@ ThemeData getTheme() {
       surface: Colors.grey[700]!, //appbar
       onSurface: Colors.white, //titlebar text
     ),
-    backgroundColor: Colors.white,
     //canvasColor: Colors.white,
     scaffoldBackgroundColor: Colors.grey[900],
 
@@ -44,7 +43,6 @@ ThemeData getTheme() {
 
     disabledColor: Colors.grey[700],
     unselectedWidgetColor: Colors.white,
-    toggleableActiveColor: Colors.white,
     inputDecorationTheme: InputDecorationTheme(
         labelStyle: const TextStyle(color: Colors.white),
         focusedBorder: const UnderlineInputBorder(
@@ -74,36 +72,19 @@ ThemeData getTheme() {
       if (states.contains(MaterialState.disabled)) return Colors.grey[700]!;
       return Colors.grey[300]!;
     }))),
-    // elevatedButtonTheme: ElevatedButtonThemeData(
-    //     style: ButtonStyle(
-    //   backgroundColor: MaterialStateColor.resolveWith((states) {
-    //     if (states.contains(MaterialState.disabled)) return Colors.grey[700]!;
-    //     return Colors.blue;
-    //   }),
-    //   foregroundColor: MaterialStateColor.resolveWith((states) {
-    //     if (states.contains(MaterialState.disabled)) return Colors.grey;
-    //     return Colors.white;
-    //   }),
-    // )),
-    textTheme: TextTheme(
-      caption: TextStyle(color: Colors.grey[400]),
-      button: const TextStyle(color: Colors.pink),
 
-      // headline1: TextStyle(color: Colors.orange),
-      // headline2: TextStyle(color: Colors.red),
-      // overline: TextStyle(color: Colors.pink),
-      // headline3: TextStyle(color: Colors.pink),
-      // headline4: TextStyle(color: Colors.red),
-      // headline5: TextStyle(color: Colors.green),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+      backgroundColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) return Colors.grey[700]!;
+        return Colors.blue;
+      }),
+      foregroundColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) return Colors.grey;
+        return Colors.white;
+      }),
+    )),
 
-      //popup titles
-      headline6: const TextStyle(color: Colors.white),
-
-      bodyText1: const TextStyle(color: Colors.grey),
-      subtitle1: const TextStyle(color: Colors.white),
-      subtitle2: const TextStyle(color: Colors.pink),
-      bodyText2: const TextStyle(color: Colors.white), //default text
-    ),
     dialogTheme: DialogTheme(
       contentTextStyle: const TextStyle(color: Colors.white),
       backgroundColor: Colors.grey[800],
@@ -117,11 +98,9 @@ ThemeData getTheme() {
       selectedBorderColor: Colors.grey[800],
       fillColor: Colors.transparent,
       borderWidth: 2,
-      borderRadius: const BorderRadius.all(Radius.circular(5)),
+      borderRadius: const BorderRadius.all(Radius.circular(12)),
     ),
-    popupMenuTheme: PopupMenuThemeData(
-      color: Colors.grey[700],
-    ),
+    popupMenuTheme: PopupMenuThemeData(color: Colors.grey[700]),
     dividerTheme:
         const DividerThemeData(color: Colors.grey, indent: 15, endIndent: 15),
   );

@@ -32,6 +32,8 @@ class ValueFormatters {
   static TouchWahModeFormatter touchWahFormatter = TouchWahModeFormatter();
   static TouchWahModeFormatterLiteMk2 touchWahFormatterLiteMk2 =
       TouchWahModeFormatterLiteMk2();
+  static TouchWahDirectionFormatterPro touchWahDirectionFormatterPro =
+      TouchWahDirectionFormatterPro();
 }
 
 abstract class ValueFormatter {

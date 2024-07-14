@@ -135,3 +135,14 @@ class TouchWahModeFormatterLiteMk2 extends SwitchFormatter {
   @override
   List<int> get midiValues => [0, 1, 2, 3];
 }
+
+class TouchWahDirectionFormatterPro extends SwitchFormatter {
+  @override
+  String get labelTitle => "Up/Down Switch:";
+
+  @override
+  List<String> get labelValues => ["Down", "Up"];
+
+  @override
+  List<int> get midiValues => [0, 1];
+}

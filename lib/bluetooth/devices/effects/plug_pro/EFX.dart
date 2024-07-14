@@ -514,7 +514,7 @@ class TouchWahPro extends EFXPro {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para2,
         midiCC: MidiCCValuesPro.EFX_Para2,
-        midiControllerHandle: MidiControllerHandles.efxLevel),
+        midiControllerHandle: MidiControllerHandles.efxGain),
     Parameter(
         name: "Sense",
         handle: "sense",
@@ -523,5 +523,20 @@ class TouchWahPro extends EFXPro {
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para3,
         midiCC: MidiCCValuesPro.EFX_Para3,
         midiControllerHandle: MidiControllerHandles.efxRate),
+    Parameter(
+        name: "Level",
+        handle: "level",
+        value: 100,
+        formatter: ValueFormatters.percentageMPPro,
+        devicePresetIndex: PresetDataIndexPlugPro.EFX_Para5,
+        midiCC: MidiCCValuesPro.EFX_Para5,
+        midiControllerHandle: MidiControllerHandles.efxLevel),
+    Parameter(
+        name: "Up/Down Switch",
+        handle: "direction",
+        value: 0,
+        formatter: ValueFormatters.touchWahDirectionFormatterPro,
+        devicePresetIndex: PresetDataIndexPlugPro.EFX_Para4,
+        midiCC: MidiCCValuesPro.EFX_Para4),
   ];
 }

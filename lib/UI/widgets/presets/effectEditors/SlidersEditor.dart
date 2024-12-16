@@ -161,7 +161,8 @@ class _SlidersEditorState extends State<SlidersEditor> {
           onTap: () async {
             var url = AppConstants.patcherUrl;
             await canLaunchUrlString(url)
-                ? await launchUrlString(url)
+                ? await launchUrlString(url,
+                    mode: LaunchMode.externalApplication)
                 : throw 'Could not launch $url';
           },
           child: SizedBox(

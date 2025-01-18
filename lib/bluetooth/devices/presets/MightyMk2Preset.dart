@@ -125,7 +125,7 @@ class MightyMk2Preset extends Preset {
       BassMate(),
       Tweedy(),
       //this one and VibroKing cause crashes or ear piercing feedbacks
-      //TwinRvb(),
+      TwinRvb(),
       HiWire(),
       CaliCrunch(),
       ClassA15(),
@@ -138,7 +138,7 @@ class MightyMk2Preset extends Preset {
       FiremanHBE(),
       DualRect(),
       DIEVH4(),
-      //VibroKing(),
+      VibroKing(),
       Budda(),
       MrZ38(),
       SuperRvb(),

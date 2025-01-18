@@ -1,17 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mighty_plug_manager/UI/pages/device_specific_settings/PlugProSettings.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 
 import '../../UI/pages/device_specific_settings/LiteMk2Settings.dart';
 import 'NuxConstants.dart';
-import 'NuxMightyPlugPro.dart';
 import 'communication/liteMk2Communication.dart';
 import 'device_data/drumstyles.dart';
 import 'device_data/processors_list.dart';
+import 'effects/plug_pro/EQ.dart';
 import 'features/drumsTone.dart';
+import 'features/looper.dart';
 import 'features/proUsbSettings.dart';
 import 'features/tuner.dart';
 import 'presets/MightyMk2Preset.dart';
@@ -19,9 +21,38 @@ import 'value_formatters/ValueFormatter.dart';
 
 enum LiteMK2Version { LiteMK2v1 }
 
-class NuxMightyLiteMk2 extends NuxDevice
-    implements Tuner, ProUsbSettings, DrumsTone {
-  NuxMightyLiteMk2(super.devControl) {
+class NuxMighty8BT2Configuration extends NuxDeviceConfiguration {
+  static const bluetoothEQCount = 4;
+
+  double drumsBass = 50;
+  double drumsMiddle = 50;
+  double drumsTreble = 50;
+
+  int routingMode = 1;
+  int recLevel = 50;
+  int playbackLevel = 50;
+  int usbDryWet = 50;
+
+  //Bluetooth and mic
+  EQTenBandBT bluetoothEQ = EQTenBandBT();
+  int bluetoothGroup = 0;
+  bool bluetoothEQMute = false;
+  bool bluetoothInvertChannel = false;
+
+  bool micMute = false;
+  int micVolume = 50;
+  bool micNoiseGate = false;
+  int micNGSensitivity = 50;
+  int micNGDecay = 50;
+
+  LooperData looperData = LooperData();
+
+  TunerData tunerData = TunerData();
+}
+
+class NuxMighty8BTMk2 extends NuxDevice
+    implements Tuner, ProUsbSettings, DrumsTone, Looper {
+  NuxMighty8BTMk2(super.devControl) {
     //get channel names
     for (int i = 0; i < channelsCount; i++) {
       presets.add(MightyMk2Preset(
@@ -33,14 +64,14 @@ class NuxMightyLiteMk2 extends NuxDevice
   late final LiteMk2Communication _communication =
       LiteMk2Communication(this, config);
 
-  final NuxPlugProConfiguration _config = NuxPlugProConfiguration();
+  final NuxMighty8BT2Configuration _config = NuxMighty8BT2Configuration();
 
   LiteMK2Version version = LiteMK2Version.LiteMK2v1;
 
   @override
-  String get productName => "NUX Mighty Lite MKII";
+  String get productName => "NUX Mighty 8BT MKII";
   @override
-  String get productNameShort => "Mighty Lite MKII";
+  String get productNameShort => "Mighty 8BT MKII";
   @override
   String get productStringId => "mighty_lite2";
   @override
@@ -48,7 +79,7 @@ class NuxMightyLiteMk2 extends NuxDevice
   @override
   String get productIconLabel => "LITE II|-|8BT II";
   @override
-  List<String> get productBLENames => ["NUX NGA-3BT"];
+  List<String> get productBLENames => ["NUX NGA-8BT", "MIGHTY 8BT MKII"];
 
   @override
   int get productVID => 0;
@@ -76,12 +107,12 @@ class NuxMightyLiteMk2 extends NuxDevice
 
   @override
   // TODO: implement config
-  NuxDeviceConfiguration get config => _config;
+  NuxMighty8BT2Configuration get config => _config;
 
   @override
-  int get deviceQRId => 0x13;
+  int get deviceQRId => 0x14;
 
-  int get deviceQRIdAlt => 0x14; //mighty 8BT mk2
+  int get deviceQRIdAlt => 0x13; //Mighty lite QR
 
   @override
   int get deviceQRVersion => 0x01;
@@ -127,6 +158,17 @@ class NuxMightyLiteMk2 extends NuxDevice
   double get drumsMaxTempo => 300;
 
   @override
+  int get loopState => config.looperData.loopState;
+  @override
+  int get loopUndoState => config.looperData.loopUndoState;
+  @override
+  int get loopRecordMode => config.looperData.loopRecordMode;
+  @override
+  double get loopLevel => config.looperData.loopLevel;
+
+  final looperController = StreamController<LooperData>.broadcast();
+
+  @override
   List<ProcessorInfo> get processorList => ProcessorsList.liteMk2List;
   final _tunerController = StreamController<TunerData>.broadcast();
 
@@ -158,7 +200,7 @@ class NuxMightyLiteMk2 extends NuxDevice
 
   @override
   Widget getSettingsWidget() {
-    return LiteMk2Settings(device: this);
+    return PlugProSettings(device: this, mightySpace: false);
   }
 
   @override
@@ -271,5 +313,51 @@ class NuxMightyLiteMk2 extends NuxDevice
   void setUsbDryWetVol(int vol) {
     _config.usbDryWet = vol;
     _communication.setUsbDryWet(vol);
+  }
+
+  @override
+  Stream<LooperData> getLooperDataStream() {
+    return looperController.stream;
+  }
+
+  void notifyLooperListeners() {
+    looperController.add(config.looperData);
+  }
+
+  @override
+  void looperClear() {
+    _communication.looperClear();
+  }
+
+  @override
+  void looperRecordPlay() {
+    _communication.looperRecord();
+  }
+
+  @override
+  void looperStop() {
+    _communication.looperStop();
+  }
+
+  @override
+  void looperUndoRedo() {
+    _communication.looperUndoRedo();
+  }
+
+  @override
+  void looperLevel(int vol) {
+    config.looperData.loopLevel = vol.toDouble();
+    _communication.looperVolume(vol);
+  }
+
+  @override
+  void looperNrAr(bool auto) {
+    config.looperData.loopRecordMode = auto ? 1 : 0;
+    _communication.looperNrAr(auto);
+  }
+
+  @override
+  void requestLooperSettings() {
+    _communication.requestLooperSettings();
   }
 }

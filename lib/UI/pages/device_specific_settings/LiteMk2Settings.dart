@@ -12,8 +12,6 @@ class LiteMk2Settings extends StatefulWidget {
 
   @override
   State<LiteMk2Settings> createState() => _LiteMk2SettingsState();
-
-  NuxMightyPlugPro get plugProDevice => device as NuxMightyPlugPro;
 }
 
 class _LiteMk2SettingsState extends State<LiteMk2Settings> {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/pages/device_specific_settings/eq/MightySpaceSpeakerEQ.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/NuxMightySpace.dart';
 
 import '../../../bluetooth/bleMidiHandler.dart';
@@ -19,8 +18,6 @@ class PlugProSettings extends StatefulWidget {
 
   @override
   State<PlugProSettings> createState() => _PlugProSettingsState();
-
-  NuxMightyPlugPro get plugProDevice => device as NuxMightyPlugPro;
 }
 
 class _PlugProSettingsState extends State<PlugProSettings> {

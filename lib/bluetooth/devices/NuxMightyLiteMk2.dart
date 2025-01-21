@@ -48,7 +48,7 @@ class NuxMightyLiteMk2 extends NuxDevice
   @override
   String get productIconLabel => "LITE II|-|8BT II";
   @override
-  List<String> get productBLENames => ["NUX NGA-3BT"];
+  List<String> get productBLENames => ["NUX NGA-3BT", "MIGHTY LITE BT MKII"];
 
   @override
   int get productVID => 0;

@@ -63,7 +63,7 @@ class NuxMightyPlug extends NuxDevice {
   @override
   String get productIconLabel => "PLUG|-|AIR";
   @override
-  List<String> get productBLENames => ["NUX MIGHTY PLUG", "NUX MIGHTY AIR"];
+  List<String> get productBLENames => ["NUX MIGHTY PLUG", "NUX MIGHTY AIR", "NUX NGA-10W"];
 
   String get mightyAirBLEName => productBLENames[1];
   //general settings

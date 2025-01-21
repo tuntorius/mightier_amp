@@ -36,7 +36,7 @@ class NuxMightySpace extends NuxMightyPlugPro implements Tuner, Looper {
   @override
   String get productIconLabel => "MP-3|-|SPACE";
   @override
-  List<String> get productBLENames => ["MIGHTY SPACE"];
+  List<String> get productBLENames => ["MIGHTY SPACE", "NUX NGA-30W"];
 
   @override
   int get loopState => config.looperData.loopState;

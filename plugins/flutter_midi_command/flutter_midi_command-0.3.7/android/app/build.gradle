@@ -27,7 +27,8 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 31
-
+    namespace 'com.invisiblewrench.flutter_midi_command'
+    
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }

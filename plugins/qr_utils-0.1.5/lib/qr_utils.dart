@@ -14,7 +14,7 @@ class QrUtils {
     "Error! This preset is for different firmware version!"
   ];
   static const MethodChannel _channel =
-      const MethodChannel('com.aeologic.adhoc.qr_utils');
+      MethodChannel('com.aeologic.adhoc.qr_utils');
 
   // Returns Future<String> after scanning QR code
   static Future<String?> get scanQR async {

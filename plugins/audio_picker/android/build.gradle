@@ -26,6 +26,16 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 31
+    namespace 'com.audio_picker.audio_picker'
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'

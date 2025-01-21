@@ -8,8 +8,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0'
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.17'
+        classpath 'com.android.tools.build:gradle:8.0.2'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.1'
     }
 }
 
@@ -24,11 +24,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.google.protobuf'
 
 android {
-    compileSdkVersion 31
-
+    compileSdkVersion 34
+    namespace 'com.boskokg.flutter_blue_plus'
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     defaultConfig {

@@ -22,6 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'com.tuntori.audio_waveform'
     compileSdkVersion 31
 
     compileOptions {

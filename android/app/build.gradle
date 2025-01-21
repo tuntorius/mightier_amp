@@ -34,6 +34,13 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     compileSdkVersion 34
+    
+    namespace 'com.tuntori.mightieramp'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -45,7 +52,7 @@ android {
 
     defaultConfig {
         applicationId "com.tuntori.mightieramp"
-        minSdkVersion 19
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

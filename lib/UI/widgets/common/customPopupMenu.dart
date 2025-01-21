@@ -416,7 +416,7 @@ class PopupMenuItemState<T, W extends PopupMenuItem<T>> extends State<W> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    TextStyle style = theme.textTheme.subtitle1!;
+    TextStyle style = theme.textTheme.titleMedium!;
     if (!widget.enabled) style = style.copyWith(color: theme.disabledColor);
 
     Widget item = AnimatedDefaultTextStyle(
@@ -1156,5 +1156,5 @@ class PopupMenuButton<T> extends StatelessWidget {
 }
 
 // class _PopupMenuButtonState<T> extends State<PopupMenuButton<T>> {
-  
+
 // }

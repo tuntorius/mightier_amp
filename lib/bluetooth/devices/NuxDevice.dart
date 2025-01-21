@@ -472,7 +472,9 @@ abstract class NuxDevice extends ChangeNotifier {
     if (preset != null) {
       var data = preset.createNuxDataFromPreset();
       var encoded = PresetEncoder.encode(data);
+      return encoded;
     }
+    return null;
   }
 
   String channelToQR(int channel) {

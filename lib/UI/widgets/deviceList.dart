@@ -32,7 +32,7 @@ class DeviceList extends StatelessWidget {
         final result = midiHandler.nuxDevices[index];
         return ListTile(
           title: Text(result.name,
-              style: Theme.of(context).textTheme.headline6!.copyWith(
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: isConnected(result.id) ? Colors.blue : Colors.white)),
           trailing: const Icon(Icons.bluetooth, color: Colors.white),
           onTap: () {

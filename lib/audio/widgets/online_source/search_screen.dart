@@ -133,15 +133,17 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
           child: Column(
             children: [
               TypeAheadField(
-                textFieldConfiguration: TextFieldConfiguration(
-                    autofocus: true,
-                    controller: editingController,
-                    onSubmitted: (value) => onSubmit(),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Search",
-                      prefixIcon: Icon(Icons.search),
-                    )),
+                builder: (context, controller, focusNode) {
+                  return TextField(
+                      autofocus: true,
+                      controller: editingController,
+                      onSubmitted: (value) => onSubmit(),
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Search",
+                        prefixIcon: Icon(Icons.search),
+                      ));
+                },
                 suggestionsCallback: (pattern) async {
                   return await widget.source.getSuggestions(pattern);
                 },
@@ -150,10 +152,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                     title: Text(suggestion.toString()),
                   );
                 },
-                transitionBuilder: (context, suggestionsBox, controller) {
-                  return suggestionsBox;
-                },
-                onSuggestionSelected: (suggestion) async {
+                onSelected: (suggestion) async {
                   editingController.text = suggestion.toString();
                   onSubmit();
                 },

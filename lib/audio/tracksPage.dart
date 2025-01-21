@@ -1,7 +1,7 @@
 import 'package:audio_picker/audio_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_query_forked/on_audio_query.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
 import 'package:mighty_plug_manager/UI/theme.dart';
 import 'package:mighty_plug_manager/UI/widgets/fabMenu.dart';
@@ -447,7 +447,7 @@ class _TracksPageState extends State<TracksPage>
                   children: [
                     Center(
                         child: Text("No Tracks",
-                            style: Theme.of(context).textTheme.bodyText1)),
+                            style: Theme.of(context).textTheme.bodyLarge)),
                     ListView.builder(
                       controller: scrollController,
                       itemCount: TrackData().tracks.length,

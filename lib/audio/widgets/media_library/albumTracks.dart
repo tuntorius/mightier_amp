@@ -2,7 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_query_forked/on_audio_query.dart';
 import 'package:mighty_plug_manager/UI/widgets/common/nestedWillPopScope.dart';
 
 class AlbumTracks extends StatefulWidget {

@@ -72,7 +72,7 @@ class EffectChainButton extends StatelessWidget {
                             fontSize: 10,
                             color: enabled
                                 ? null
-                                : Theme.of(context).textTheme.caption!.color),
+                                : Theme.of(context).textTheme.bodySmall!.color),
                       ),
                     ),
                   ],

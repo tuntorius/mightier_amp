@@ -76,7 +76,10 @@ class QRExportDialog {
                             saveFile("image/png", presetName, data);
                           }
                         },
-                        icon: const Icon(Icons.save_alt),
+                        icon: const Icon(
+                          Icons.save_alt,
+                          color: Colors.white,
+                        ),
                         label: const Text("Save")),
                   const SizedBox(
                     width: 10,
@@ -99,14 +102,17 @@ class QRExportDialog {
                         await screenshotController.captureAndSave(tracksPath,
                             fileName: "preset.png");
 
-                        Share.shareFiles(['$tracksPath/preset.png'],
+                        Share.shareXFiles([XFile('$tracksPath/preset.png')],
                             text: 'QR Code',
                             sharePositionOrigin: Rect.fromCenter(
                                 center: const Offset(100, 100),
                                 width: 100,
                                 height: 100));
                       },
-                      icon: Icon(Icons.adaptive.share),
+                      icon: Icon(
+                        Icons.adaptive.share,
+                        color: Colors.white,
+                      ),
                       label: const Text("Share"))
                 ],
               ),

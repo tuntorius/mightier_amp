@@ -51,9 +51,9 @@ class _ScrollPickerState extends State<ScrollPicker> {
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
-    TextStyle defaultStyle = themeData.textTheme.bodyText2!;
-    TextStyle selectedStyle = themeData.textTheme.headline5!
-        .copyWith(color: themeData.backgroundColor);
+    TextStyle defaultStyle = themeData.textTheme.bodyMedium!;
+    TextStyle selectedStyle =
+        themeData.textTheme.bodyLarge!.copyWith(fontSize: 26);
 
     if (!_isUserGenerated) {
       selectedValue = widget.initialValue;
@@ -119,12 +119,10 @@ class _ScrollPickerState extends State<ScrollPicker> {
                   child: Center(
                     child: Container(
                       height: ScrollPicker.itemHeight,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         border: Border(
-                          top: BorderSide(
-                              color: themeData.backgroundColor, width: 1.0),
-                          bottom: BorderSide(
-                              color: themeData.backgroundColor, width: 1.0),
+                          top: BorderSide(color: Colors.grey, width: 1.0),
+                          bottom: BorderSide(color: Colors.grey, width: 1.0),
                         ),
                       ),
                     ),

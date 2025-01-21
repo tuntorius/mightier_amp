@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/audio/models/trackAutomation.dart';
-import '../../bluetooth/devices/presets/Preset.dart';
 import '../../bluetooth/devices/presets/preset_constants.dart';
 import '../automationController.dart';
 import '../models/waveform_data.dart';

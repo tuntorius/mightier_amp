@@ -266,7 +266,7 @@ class _SetlistPageState extends State<SetlistPage> {
                     Center(
                       child: Text(
                         "No Tracks",
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     )
                   ],

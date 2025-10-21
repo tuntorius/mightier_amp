@@ -5,10 +5,11 @@ import 'package:mighty_plug_manager/UI/widgets/VolumeDrawer.dart';
 
 final _tiles = <TileModel>[
   const TileModel(0, 'Editor', MightierIcons.sliders),
-  const TileModel(1, 'Presets', Icons.list),
-  const TileModel(2, 'Drums', MightierIcons.drum),
-  const TileModel(3, 'Jam Tracks', Icons.queue_music),
-  const TileModel(4, 'Settings', Icons.settings),
+  const TileModel(1, 'QSwitch', Icons.switch_access_shortcut),
+  const TileModel(2, 'Presets', Icons.list),
+  const TileModel(3, 'Drums', MightierIcons.drum),
+  const TileModel(4, 'Jam Tracks', Icons.queue_music),
+  const TileModel(5, 'Settings', Icons.settings),
 ];
 
 class AppDrawer extends StatefulWidget {
@@ -45,8 +46,9 @@ class _AppDrawerState extends State<AppDrawer> {
 
   void _onExpandChange(bool expand) {
     isExpanded = expand;
-    PageStorage.of(context)
-        .writeState(context, isExpanded, identifier: expandedState);
+    PageStorage.of(
+      context,
+    ).writeState(context, isExpanded, identifier: expandedState);
     if (isExpanded == false) expandChildren = false;
     setState(() {});
   }
@@ -116,6 +118,12 @@ class _AppDrawerState extends State<AppDrawer> {
                         currentIndex: widget.currentIndex,
                         expanded: expandChildren,
                       ),
+                      _DrawerTile(
+                        tileIndex: 5,
+                        onSwitchPageIndex: widget.onSwitchPageIndex,
+                        currentIndex: widget.currentIndex,
+                        expanded: expandChildren,
+                      ),
                     ],
                   ),
                 ),
@@ -142,13 +150,13 @@ class _DrawerTile extends StatelessWidget {
   final bool expanded;
   final void Function(int p1) onSwitchPageIndex;
 
-  const _DrawerTile(
-      {Key? key,
-      required this.onSwitchPageIndex,
-      required this.currentIndex,
-      required this.tileIndex,
-      required this.expanded})
-      : super(key: key);
+  const _DrawerTile({
+    Key? key,
+    required this.onSwitchPageIndex,
+    required this.currentIndex,
+    required this.tileIndex,
+    required this.expanded,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -162,9 +170,7 @@ class _DrawerTile extends StatelessWidget {
           _tiles.elementAt(tileIndex).title,
           // textAlign: TextAlign.right,
         ),
-        leading: Icon(
-          _tiles.elementAt(tileIndex).icon,
-        ),
+        leading: Icon(_tiles.elementAt(tileIndex).icon),
         minLeadingWidth: 10,
         onTap: () => onSwitchPageIndex(tileIndex),
       );
@@ -172,11 +178,9 @@ class _DrawerTile extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(4),
         child: IconButton(
-            onPressed: () => onSwitchPageIndex(tileIndex),
-            icon: Icon(
-              _tiles.elementAt(tileIndex).icon,
-              color: color,
-            )),
+          onPressed: () => onSwitchPageIndex(tileIndex),
+          icon: Icon(_tiles.elementAt(tileIndex).icon, color: color),
+        ),
       );
     }
   }

@@ -14,6 +14,7 @@ import '../midi/MidiControllerManager.dart';
 import '../platform/platformUtils.dart';
 import 'pages/jamTracks.dart';
 import 'pages/presetEditor.dart';
+import 'pages/quickSwitchPage.dart';
 import 'pages/settings.dart';
 import 'popups/alertDialogs.dart';
 import 'theme.dart';
@@ -48,14 +49,16 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
   @override
   void initState() {
     if (!AppThemeConfig.allowRotation) {
-      SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
     } else {
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
         DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight
+        DeviceOrientation.landscapeRight,
       ]);
     }
 
@@ -66,15 +69,20 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     //add 5 pages widgets
     _tabs = [
       const PresetEditor(),
+      const QuickSwitch(),
       PresetList(
-          visibilityEventHandler: _visibilityController.getEventHandler(1)),
+        visibilityEventHandler: _visibilityController.getEventHandler(1),
+      ),
       const DrumsPage(),
       const JamTracks(),
       const Settings(),
     ];
 
-    controller =
-        TabController(initialIndex: 0, length: _tabs.length, vsync: this);
+    controller = TabController(
+      initialIndex: 0,
+      length: _tabs.length,
+      vsync: this,
+    );
 
     // controller.addListener(() {
     //   setState(() {
@@ -94,28 +102,34 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
       switch (error) {
         case BleError.unavailable:
           if (!PlatformUtils.isIOS) {
-            AlertDialogs.showInfoDialog(context,
-                title: "Warning!",
-                description: "Your device does not support bluetooth!",
-                confirmButton: "OK");
+            AlertDialogs.showInfoDialog(
+              context,
+              title: "Warning!",
+              description: "Your device does not support bluetooth!",
+              confirmButton: "OK",
+            );
           }
           break;
         case BleError.permissionDenied:
           AlertDialogs.showLocationPrompt(context, false, null);
           break;
         case BleError.locationServiceOff:
-          AlertDialogs.showInfoDialog(context,
-              title: "Location service is disabled!",
-              description:
-                  "Please, enable location service. It is required for Bluetooth connection to work.",
-              confirmButton: "OK");
+          AlertDialogs.showInfoDialog(
+            context,
+            title: "Location service is disabled!",
+            description:
+                "Please, enable location service. It is required for Bluetooth connection to work.",
+            confirmButton: "OK",
+          );
           break;
         case BleError.scanPermissionDenied:
-          AlertDialogs.showInfoDialog(context,
-              title: "Bluetooth permissions required!",
-              description:
-                  "Please, grant bluetooth scan and connect permissions. They are required for Mightier Amp to work.",
-              confirmButton: "OK");
+          AlertDialogs.showInfoDialog(
+            context,
+            title: "Bluetooth permissions required!",
+            description:
+                "Please, grant bluetooth scan and connect permissions. They are required for Mightier Amp to work.",
+            confirmButton: "OK",
+          );
           break;
       }
     }
@@ -164,16 +178,13 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                           if (!connectionFailed)
                             const CircularProgressIndicator.adaptive(),
                           if (connectionFailed)
-                            const Icon(
-                              Icons.error,
-                              color: Colors.red,
-                            ),
-                          const SizedBox(
-                            width: 8,
+                            const Icon(Icons.error, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Text(
+                            connectionFailed
+                                ? "Connection Failed!"
+                                : "Connecting",
                           ),
-                          Text(connectionFailed
-                              ? "Connection Failed!"
-                              : "Connecting"),
                         ],
                       ),
                     ),
@@ -214,18 +225,21 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
   Future<bool> _willPopCallback() async {
     Completer<bool> confirmation = Completer<bool>();
-    AlertDialogs.showConfirmDialog(context,
-        title: "Exit Mightier Amp?",
-        cancelButton: "No",
-        confirmButton: "Yes",
-        confirmColor: Colors.red,
-        description: "Are you sure?", onConfirm: (val) {
-      if (val) {
-        //disconnect device if connected
-        BLEMidiHandler.instance().disconnectDevice();
-      }
-      confirmation.complete(val);
-    });
+    AlertDialogs.showConfirmDialog(
+      context,
+      title: "Exit Mightier Amp?",
+      cancelButton: "No",
+      confirmButton: "Yes",
+      confirmColor: Colors.red,
+      description: "Are you sure?",
+      onConfirm: (val) {
+        if (val) {
+          //disconnect device if connected
+          BLEMidiHandler.instance().disconnectDevice();
+        }
+        confirmation.complete(val);
+      },
+    );
     return confirmation.future;
   }
 
@@ -336,8 +350,10 @@ class TabVisibilityEventHandler {
 class TabVisibilityController {
   late List<TabVisibilityEventHandler> eventHandlers;
   TabVisibilityController(int tabAmount) {
-    eventHandlers =
-        List.generate(tabAmount, (index) => TabVisibilityEventHandler());
+    eventHandlers = List.generate(
+      tabAmount,
+      (index) => TabVisibilityEventHandler(),
+    );
   }
 
   TabVisibilityEventHandler getEventHandler(int tab) {

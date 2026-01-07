@@ -40,7 +40,7 @@ abstract class Modulation extends Processor {
 
 class ModCE1 extends Modulation {
   @override
-  final name = "CE-1";
+  final name = "Boss CE-1";
 
   @override
   int get nuxIndex => 1;
@@ -75,7 +75,7 @@ class ModCE1 extends Modulation {
 
 class ModCE2 extends Modulation {
   @override
-  final name = "CE-2";
+  final name = "Boss CE-2";
 
   @override
   int get nuxIndex => 2;
@@ -102,7 +102,7 @@ class ModCE2 extends Modulation {
 
 class STChorusPro extends Modulation {
   @override
-  final name = "ST Chorus";
+  final name = "MXR M134 Stereo Chorus";
 
   @override
   int get nuxIndex => 3;
@@ -137,7 +137,7 @@ class STChorusPro extends Modulation {
 
 class Vibrato extends Modulation {
   @override
-  final name = "Vibrato";
+  final name = "Boss VB-2 Vibrato";
 
   @override
   int get nuxIndex => 4;
@@ -164,7 +164,7 @@ class Vibrato extends Modulation {
 
 class Detune extends Modulation {
   @override
-  final name = "Detune";
+  final name = "DigiTech Luxe Detune";
 
   @override
   int get nuxIndex => 5;
@@ -199,7 +199,7 @@ class Detune extends Modulation {
 
 class FlangerPro extends Modulation {
   @override
-  final name = "Flanger";
+  final name = "Boss Flanger BF-3";
 
   @override
   int get nuxIndex => 6;
@@ -241,7 +241,7 @@ class FlangerPro extends Modulation {
 
 class Phase90 extends Modulation {
   @override
-  final name = "Phase 90";
+  final name = "MXR Phase 90";
 
   @override
   int get nuxIndex => 7;
@@ -260,7 +260,7 @@ class Phase90 extends Modulation {
 
 class Phase100 extends Modulation {
   @override
-  final name = "Phase 100";
+  final name = "MXR Phase 100";
 
   @override
   int get nuxIndex => 8;
@@ -287,7 +287,7 @@ class Phase100 extends Modulation {
 
 class SCFPro extends Modulation {
   @override
-  final name = "S.C.F.";
+  final name = "TC Electronic SCF";
 
   @override
   int get nuxIndex => 9;
@@ -329,7 +329,7 @@ class SCFPro extends Modulation {
 
 class VibePro extends Modulation {
   @override
-  final name = "U-Vibe";
+  final name = "Shin-Ei Uni-Vibe";
 
   @override
   int get nuxIndex => 10;
@@ -371,7 +371,7 @@ class VibePro extends Modulation {
 
 class TremoloPro extends Modulation {
   @override
-  final name = "Tremolo";
+  final name = "Boss TR-2 Tremolo";
 
   @override
   int get nuxIndex => 11;
@@ -398,7 +398,7 @@ class TremoloPro extends Modulation {
 
 class Rotary extends Modulation {
   @override
-  final name = "Rotary";
+  final name = "Strymon Lex Rotary";
 
   @override
   int get nuxIndex => 12;
@@ -425,7 +425,7 @@ class Rotary extends Modulation {
 
 class SCH1Pro extends Modulation {
   @override
-  final name = "SCH-1";
+  final name = "Arion SCH-1 Stereo Chorus";
 
   @override
   int get nuxIndex => 13;
@@ -460,7 +460,7 @@ class SCH1Pro extends Modulation {
 
 class MonoOctave extends Modulation {
   @override
-  final name = "Mono Octave";
+  final name = "Sub'N'Up Mini Octaver";
 
   @override
   int get nuxIndex => 14;

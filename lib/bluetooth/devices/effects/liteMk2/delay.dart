@@ -7,7 +7,7 @@ import '../plug_pro/Delay.dart';
 
 class AnalogDelayLiteMk2 extends DelayPro {
   @override
-  final name = "Analog";
+  final name = "Boss DM-2 Analog";
 
   @override
   int get nuxIndex => 1;
@@ -79,7 +79,7 @@ class DigitalDelayLiteV2 extends DelayPro {
 
 class ModDelayLiteMk2 extends DelayPro {
   @override
-  final name = "Modulation";
+  final name = "Ibanez Mod Delay II";
 
   @override
   int get nuxIndex => 3;
@@ -122,7 +122,7 @@ class ModDelayLiteMk2 extends DelayPro {
 
 class TapeEchoLiteMk2 extends DelayPro {
   @override
-  final name = "Tape Echo";
+  final name = "Boss RE-2 Space Echo";
 
   @override
   int get nuxIndex => 4;
@@ -157,7 +157,7 @@ class TapeEchoLiteMk2 extends DelayPro {
 
 class PhiDelayLiteMk2 extends DelayPro {
   @override
-  final name = "Phi Delay";
+  final name = "NUX Edge Delay";
 
   @override
   int get nuxIndex => 5;

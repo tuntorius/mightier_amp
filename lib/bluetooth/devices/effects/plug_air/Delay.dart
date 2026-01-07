@@ -35,7 +35,7 @@ abstract class Delay extends Processor {
 
 class AnalogDelay extends Delay {
   @override
-  final name = "Analog Delay";
+  final name = "Boss DM-2 Analog";
 
   @override
   int get nuxIndex => 0;
@@ -71,7 +71,7 @@ class AnalogDelay extends Delay {
 
 class TapeEcho extends Delay {
   @override
-  final name = "Tape Echo";
+  final name = "Boss RE-2 Space Echo";
 
   @override
   int get nuxIndex => 1;
@@ -111,7 +111,7 @@ class TapeEcho extends Delay {
 
 class DigitalDelay extends Delay {
   @override
-  final name = "Digital Delay";
+  final name = "Boss DD-3 Digital";
 
   @override
   int get nuxIndex => 2;
@@ -187,7 +187,7 @@ class PingPong extends Delay {
 
 class DigitalDelayv2 extends Delay {
   @override
-  final name = "Digital Delay";
+  final name = "Boss DD-3 Digital";
 
   @override
   int get nuxIndex => 1;
@@ -229,7 +229,7 @@ class DigitalDelayv2 extends Delay {
 
 class ModDelay extends Delay {
   @override
-  final name = "Mod Delay";
+  final name = "Ibanez Mod Delay II";
 
   @override
   int get nuxIndex => 2;

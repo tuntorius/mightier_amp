@@ -7,7 +7,7 @@ import 'EFX.dart';
 
 class PH100EFX extends EFX {
   @override
-  final name = "PH 100";
+  final name = "MXR Phase 100";
 
   @override
   int get nuxIndex => 3;
@@ -34,7 +34,7 @@ class PH100EFX extends EFX {
 
 class STSinger extends EFX {
   @override
-  final name = "ST Singer";
+  final name = "Vertex Steel String";
 
   @override
   int get nuxIndex => 4;
@@ -75,7 +75,7 @@ class STSinger extends EFX {
 
 class Katana extends EFX {
   @override
-  final name = "Katana";
+  final name = "Katana Clean Boost";
 
   @override
   int get nuxIndex => 6;
@@ -108,7 +108,7 @@ class Katana extends EFX {
 
 class RedDirt extends EFX {
   @override
-  final name = "Red Dirt";
+  final name = "Keeley Red Dirt";
 
   @override
   int get nuxIndex => 10;
@@ -143,7 +143,7 @@ class RedDirt extends EFX {
 
 class RoseComp extends EFX {
   @override
-  final name = "Rose Comp";
+  final name = "Ross Compressor";
 
   @override
   int get nuxIndex => 13;

@@ -6,7 +6,7 @@ import '../plug_pro/EFX.dart';
 
 class RoseCompLiteMk2 extends EFXPro {
   @override
-  final name = "Rose Comp";
+  final name = "Ross Compressor";
 
   @override
   int get nuxIndex => 14;
@@ -34,7 +34,7 @@ class RoseCompLiteMk2 extends EFXPro {
 
 class KCompLiteMk2 extends EFXPro {
   @override
-  final name = "K Comp";
+  final name = "Keeley Compressor";
 
   @override
   int get nuxIndex => 15;
@@ -73,7 +73,7 @@ class TouchWahLiteMk2 extends EFXPro {
   int get nuxIndex => 16;
 
   @override
-  final name = "Touch Wah";
+  final name = "Boss T Wah";
 
   @override
   List<Parameter> parameters = [
@@ -105,7 +105,7 @@ class TouchWahLiteMk2 extends EFXPro {
 
 class TremoloEFXLiteMk2 extends EFXPro {
   @override
-  final name = "Tremolo";
+  final name = "Boss TR-2 Tremolo";
 
   @override
   int get nuxIndex => 17;
@@ -132,7 +132,7 @@ class TremoloEFXLiteMk2 extends EFXPro {
 
 class VibeEFXLiteMk2 extends EFXPro {
   @override
-  final name = "U-Vibe";
+  final name = "Shin-Ei Uni-Vibe";
 
   @override
   int get nuxIndex => 18;
@@ -166,7 +166,7 @@ class VibeEFXLiteMk2 extends EFXPro {
 
 class PH100LiteMk2 extends EFXPro {
   @override
-  final name = "PH 100";
+  final name = "MXR Phase 100";
 
   @override
   int get nuxIndex => 19;

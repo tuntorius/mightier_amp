@@ -38,7 +38,7 @@ abstract class DelayPro extends Processor {
 
 class AnalogDelay extends DelayPro {
   @override
-  final name = "Analog";
+  final name = "Boss DM-2 Analog";
 
   @override
   int get nuxIndex => 1;
@@ -74,7 +74,7 @@ class AnalogDelay extends DelayPro {
 
 class AnalogDelayV2 extends DelayPro {
   @override
-  final name = "Analog";
+  final name = "Boss DM-2 Analog";
 
   @override
   int get nuxIndex => 1;
@@ -110,7 +110,7 @@ class AnalogDelayV2 extends DelayPro {
 
 class DigitalDelay extends DelayPro {
   @override
-  final name = "Digital Delay";
+  final name = "Boss DD-3 Digital";
 
   @override
   int get nuxIndex => 2;
@@ -145,7 +145,7 @@ class DigitalDelay extends DelayPro {
 
 class ModDelay extends DelayPro {
   @override
-  final name = "Modulation";
+  final name = "Ibanez Mod Delay II";
 
   @override
   int get nuxIndex => 3;
@@ -188,7 +188,7 @@ class ModDelay extends DelayPro {
 
 class TapeEcho extends DelayPro {
   @override
-  final name = "Tape Echo";
+  final name = "Boss RE-2 Space Echo";
 
   @override
   int get nuxIndex => 4;
@@ -223,7 +223,7 @@ class TapeEcho extends DelayPro {
 
 class PanDelay extends DelayPro {
   @override
-  final name = "Pan Delay";
+  final name = "Ibanez Pan Delay DPL 10";
 
   @override
   int get nuxIndex => 5;
@@ -258,7 +258,7 @@ class PanDelay extends DelayPro {
 
 class PhiDelayPro extends DelayPro {
   @override
-  final name = "Phi Delay";
+  final name = "NUX Edge Delay";
 
   @override
   int get nuxIndex => 6;

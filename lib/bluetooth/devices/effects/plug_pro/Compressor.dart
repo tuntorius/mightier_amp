@@ -38,7 +38,7 @@ abstract class Compressor extends Processor {
 
 class RoseCompPro extends Compressor {
   @override
-  final name = "Rose Comp";
+  final name = "Ross Compressor";
 
   @override
   int get nuxIndex => 1;
@@ -66,7 +66,7 @@ class RoseCompPro extends Compressor {
 
 class KComp extends Compressor {
   @override
-  final name = "K Comp";
+  final name = "Keeley Compressor";
 
   @override
   int get nuxIndex => 2;

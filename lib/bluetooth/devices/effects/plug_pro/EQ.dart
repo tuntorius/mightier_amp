@@ -39,7 +39,7 @@ abstract class EQ extends Processor {
 
 class EQSixBand extends EQ {
   @override
-  final name = "6-Band";
+  final name = "Boss GE-7 6-band";
 
   @override
   int get nuxIndex => 1;
@@ -93,7 +93,7 @@ class EQSixBand extends EQ {
 
 class EQTenBand extends EQ {
   @override
-  final name = "10-Band";
+  final name = "MXR 10-Band";
 
   @override
   int get nuxIndex => 3;

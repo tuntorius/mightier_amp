@@ -15,7 +15,7 @@ abstract class EFX extends Processor {
   @override
   int? get nuxEnableIndex => PresetDataIndexPlugAir.efxenable;
   //row 1871
-  // 0 -Touch Wah, 1 - Uni Vibe, 2 - Tremolo, 3 - Phaser, 4 - Boost, 5 - TS Drive, 6 - Bass TS
+  // 0 -Boss T Wah, 1 - Uni Vibe, 2 - Tremolo, 3 - Phaser, 4 - Boost, 5 - TS Drive, 6 - Bass TS
   // 7 - 3 Band EQ, 8 - Muff, 9 - Crunch, 10 - Red Dist, 11 - Morning Drive, 12 - Dist One
   // The bass TS (6) is only available in bass preset mode, the rest are everywhere
   @override
@@ -42,7 +42,7 @@ abstract class EFX extends Processor {
 
 class TouchWah extends EFX {
   @override
-  final name = "Touch Wah";
+  final name = "Boss T Wah";
 
   @override
   int get nuxIndex => 0;
@@ -76,7 +76,7 @@ class TouchWah extends EFX {
 
 class UniVibe extends EFX {
   @override
-  final name = "Uni Vibe";
+  final name = "Shin-ei Uni-Vibe";
 
   @override
   int get nuxIndex => 1;
@@ -110,7 +110,7 @@ class UniVibe extends EFX {
 
 class TremoloEFX extends EFX {
   @override
-  final name = "Tremolo";
+  final name = "Boss TR-2 Tremolo";
 
   @override
   int get nuxIndex => 2;
@@ -205,7 +205,7 @@ class Boost extends EFX {
 
 class TSDrive extends EFX {
   @override
-  final name = "T Screamer";
+  final name = "Ibanez TS9 Tube Screamer";
 
   @override
   int get nuxIndex => 5;
@@ -316,7 +316,7 @@ class ThreeBandEQ extends EFX {
 
 class Muff extends EFX {
   @override
-  final name = "Muff Fuzz";
+  final name = "Nano Big Muff PI";
 
   @override
   int get nuxIndex => 8;
@@ -351,7 +351,7 @@ class Muff extends EFX {
 
 class Crunch extends EFX {
   @override
-  final name = "Crunch";
+  final name = "MI Audio Crunch Box";
 
   @override
   int get nuxIndex => 9;
@@ -386,7 +386,7 @@ class Crunch extends EFX {
 
 class RedDist extends EFX {
   @override
-  final name = "Red Dist";
+  final name = "Keeley Red Dirt";
 
   @override
   int get nuxIndex => 10;
@@ -421,7 +421,7 @@ class RedDist extends EFX {
 
 class MorningDrive extends EFX {
   @override
-  final name = "Morning Drive";
+  final name = "JHS Morning Glory";
 
   @override
   int get nuxIndex => 11;
@@ -456,7 +456,7 @@ class MorningDrive extends EFX {
 
 class DistOne extends EFX {
   @override
-  final name = "Dist One";
+  final name = "Boss DS-1";
 
   @override
   int get nuxIndex => 12;

@@ -7,7 +7,7 @@ import '../Processor.dart';
 
 class RoomReverbLiteMk2 extends Reverb {
   @override
-  final name = "Room";
+  final name = "MXR M300 Room";
 
   @override
   int get nuxIndex => 1;
@@ -42,7 +42,7 @@ class RoomReverbLiteMk2 extends Reverb {
 
 class HallReverbLiteMk2 extends Reverb {
   @override
-  final name = "Hall";
+  final name = "Lexicon 480L Hall";
 
   @override
   int get nuxIndex => 2;

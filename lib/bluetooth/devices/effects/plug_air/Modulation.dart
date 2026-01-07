@@ -105,7 +105,7 @@ class Chorus extends Modulation {
 
 class STChorus extends Modulation {
   @override
-  final name = "ST Chorus";
+  final name = "MXR M134 Stereo Chorus";
 
   @override
   int get nuxIndex => 2;
@@ -140,7 +140,7 @@ class STChorus extends Modulation {
 
 class Flanger extends Modulation {
   @override
-  final name = "Flanger";
+  final name = "Boss Flanger BF-3";
 
   @override
   int get nuxIndex => 3;
@@ -175,7 +175,7 @@ class Flanger extends Modulation {
 
 class Vibe extends Modulation {
   @override
-  final name = "U-Vibe";
+  final name = "Shin-Ei Uni-Vibe";
 
   @override
   int get nuxIndex => 4;
@@ -209,7 +209,7 @@ class Vibe extends Modulation {
 
 class Tremolo extends Modulation {
   @override
-  final name = "Tremolo";
+  final name = "Boss TR-2 Tremolo";
 
   @override
   int get nuxIndex => 5;
@@ -236,7 +236,7 @@ class Tremolo extends Modulation {
 
 class PH100 extends Modulation {
   @override
-  final name = "PH 100";
+  final name = "MXR Phase 100";
 
   @override
   int get nuxIndex => 0;
@@ -263,7 +263,7 @@ class PH100 extends Modulation {
 
 class CE1 extends Modulation {
   @override
-  final name = "CE-1";
+  final name = "Boss CE-1";
 
   @override
   int get nuxIndex => 1;
@@ -298,7 +298,7 @@ class CE1 extends Modulation {
 
 class STChorusv2 extends Modulation {
   @override
-  final name = "ST Chorus";
+  final name = "MXR M134 Stereo Chorus";
 
   @override
   int get nuxIndex => 2;
@@ -333,7 +333,7 @@ class STChorusv2 extends Modulation {
 
 class SCF extends Modulation {
   @override
-  final name = "SCF";
+  final name = "TC Electronic SCF";
 
   @override
   int get nuxIndex => 3;

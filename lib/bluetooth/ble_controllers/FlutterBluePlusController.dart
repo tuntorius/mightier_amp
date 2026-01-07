@@ -16,10 +16,11 @@ import 'package:mighty_plug_manager/utilities/list_extenstions.dart';
 
 class FBPScanResult extends BLEScanResult {
   @override
-  String get id => (device as FBPBleDevice).device.id.toString().toLowerCase();
+  String get id =>
+      (device as FBPBleDevice).device.remoteId.toString().toLowerCase();
 
   @override
-  String get name => (device as FBPBleDevice).device.name;
+  String get name => (device as FBPBleDevice).device.platformName;
 
   FBPScanResult(ScanResult sr) {
     device = FBPBleDevice(sr.device);
@@ -33,27 +34,25 @@ class FBPBleDevice extends BLEDevice {
   FBPBleDevice(this._device);
 
   @override
-  String get name => _device.name;
+  String get name => _device.platformName;
 
   @override
-  String get id => _device.id.toString().toLowerCase();
+  String get id => _device.remoteId.toString().toLowerCase();
 
   @override
   Stream<BleDeviceState> get state {
     StreamController<BleDeviceState> stateStream = StreamController();
-    StreamSubscription<BluetoothDeviceState> s = _device.state.listen((event) {
+    StreamSubscription<BluetoothConnectionState> s =
+        _device.connectionState.listen((event) {
       switch (event) {
-        case BluetoothDeviceState.disconnected:
+        case BluetoothConnectionState.disconnected:
           stateStream.add(BleDeviceState.disconnected);
           break;
-        case BluetoothDeviceState.connecting:
-          stateStream.add(BleDeviceState.connecting);
-          break;
-        case BluetoothDeviceState.connected:
+        case BluetoothConnectionState.connected:
           stateStream.add(BleDeviceState.connected);
           break;
-        case BluetoothDeviceState.disconnecting:
-          stateStream.add(BleDeviceState.disconnecting);
+        default:
+          // Handle other states if necessary, or ignore
           break;
       }
     });
@@ -66,7 +65,7 @@ class FBPBleDevice extends BLEDevice {
 }
 
 class FlutterBluePlusController extends BLEController {
-  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+  // FlutterBluePlus is now static only
 
   FBPBleDevice? _device;
   @override
@@ -76,14 +75,14 @@ class FlutterBluePlusController extends BLEController {
   bool _connectInProgress = false;
 
   StreamSubscription<bool>? _scanningStatusSubscription;
-  StreamSubscription<BluetoothState>? _bluetoothStateSubscription;
+  StreamSubscription<BluetoothAdapterState>? _bluetoothStateSubscription;
   StreamSubscription<List<ScanResult>>? _scanSubscription;
 
   FlutterBluePlusController(List<String> forcedDevices) : super(forcedDevices);
 
   @override
   Future<bool> isAvailable() {
-    return flutterBlue.isAvailable;
+    return FlutterBluePlus.isSupported;
   }
 
   @override
@@ -93,19 +92,17 @@ class FlutterBluePlusController extends BLEController {
     _subscribeScanningStatus();
     _subscribeScanResults();
 
-    flutterBlue.setLogLevel(LogLevel.info);
+    FlutterBluePlus.setLogLevel(LogLevel.info);
   }
 
   @override
   void startScanning() {
     if (bleState == BleState.off) return;
     setMidiSetupStatus(MidiSetupStatus.deviceSearching);
-    flutterBlue
-        .startScan(
+    FlutterBluePlus.startScan(
       timeout: const Duration(seconds: 8),
       //withServices: [Guid(midiService)]
-    )
-        .then((result) {
+    ).then((result) {
       //if device is not connected after the search - set to idle
       if (_device == null) setMidiSetupStatus(MidiSetupStatus.deviceIdle);
     });
@@ -114,7 +111,7 @@ class FlutterBluePlusController extends BLEController {
   @override
   Future stopScanning() {
     if (bleState == BleState.off) return Future.value(null);
-    return flutterBlue.stopScan();
+    return FlutterBluePlus.stopScan();
   }
 
   @override
@@ -123,7 +120,7 @@ class FlutterBluePlusController extends BLEController {
     var ownDevice = (device as FBPBleDevice).device;
 
     bool ampDevice = false;
-    if (deviceListProvider.call().containsPartial(ownDevice.name)) {
+    if (deviceListProvider.call().containsPartial(ownDevice.platformName)) {
       ampDevice = true;
       if (_connectInProgress || _device != null) {
         debugPrint("Denying secondary connection!");
@@ -136,7 +133,9 @@ class FlutterBluePlusController extends BLEController {
     setMidiSetupStatus(MidiSetupStatus.deviceConnecting);
     try {
       await ownDevice.connect(
-          autoConnect: false, timeout: const Duration(seconds: 5));
+          autoConnect: false,
+          timeout: const Duration(seconds: 5),
+          license: License.free);
     } on Exception {
       _connectInProgress = false;
       return null;
@@ -169,7 +168,7 @@ class FlutterBluePlusController extends BLEController {
           } else {
             characteristic.setNotifyValue(true);
             _connectInProgress = false;
-            return BLEConnection(characteristic.value);
+            return BLEConnection(characteristic.lastValueStream);
           }
         }
       }
@@ -186,8 +185,8 @@ class FlutterBluePlusController extends BLEController {
     _connectInProgress = false;
 
     setMidiSetupStatus(MidiSetupStatus.deviceConnected);
-    _deviceStreamSubscription = device.state.listen((event) {
-      if (event == BluetoothDeviceState.disconnected) {
+    _deviceStreamSubscription = device.connectionState.listen((event) {
+      if (event == BluetoothConnectionState.disconnected) {
         if (Platform.isAndroid) {
           //android deadObjectException fix
           device.clearGattCache().then((value) {
@@ -206,7 +205,7 @@ class FlutterBluePlusController extends BLEController {
   @override
   StreamSubscription<List<int>> registerDataListener(
       Function(List<int>) listener) {
-    return _midiCharacteristic!.value.listen(listener);
+    return _midiCharacteristic!.lastValueStream.listen(listener);
   }
 
   @override
@@ -229,15 +228,15 @@ class FlutterBluePlusController extends BLEController {
   }
 
   _subscribeBleState() {
-    _bluetoothStateSubscription = flutterBlue.state.listen((event) {
+    _bluetoothStateSubscription = FlutterBluePlus.adapterState.listen((event) {
       debugPrint(event.toString());
       switch (event) {
-        case BluetoothState.unknown:
+        case BluetoothAdapterState.unknown:
           //fix for ios not recognizing bluetooth on at startup
           if (Platform.isIOS) {
             Future.delayed(const Duration(milliseconds: 500)).then((value) {
-              flutterBlue.isOn.then((value) {
-                if (value) {
+              FlutterBluePlus.adapterState.first.then((value) {
+                if (value == BluetoothAdapterState.on) {
                   bleState = BleState.on;
                   setMidiSetupStatus(MidiSetupStatus.deviceSearching);
                   startScanning();
@@ -246,21 +245,21 @@ class FlutterBluePlusController extends BLEController {
             });
           }
           break;
-        case BluetoothState.unavailable:
-        case BluetoothState.unauthorized:
+        case BluetoothAdapterState.unavailable:
+        case BluetoothAdapterState.unauthorized:
           bleState = BleState.off;
           setMidiSetupStatus(MidiSetupStatus.bluetoothOff);
           break;
-        case BluetoothState.turningOn:
-        case BluetoothState.on:
+        case BluetoothAdapterState.turningOn:
+        case BluetoothAdapterState.on:
           bleState = BleState.on;
           setMidiSetupStatus(MidiSetupStatus.deviceSearching);
           startScanning();
           break;
-        case BluetoothState.turningOff:
-          flutterBlue.stopScan();
+        case BluetoothAdapterState.turningOff:
+          FlutterBluePlus.stopScan();
           break;
-        case BluetoothState.off:
+        case BluetoothAdapterState.off:
           bleState = BleState.off;
           setMidiSetupStatus(MidiSetupStatus.bluetoothOff);
           _device = null;
@@ -271,34 +270,35 @@ class FlutterBluePlusController extends BLEController {
   }
 
   _subscribeScanningStatus() {
-    _scanningStatusSubscription = flutterBlue.isScanning.listen((event) {
+    _scanningStatusSubscription = FlutterBluePlus.isScanning.listen((event) {
       setScanningStatus(event);
     });
   }
 
   _subscribeScanResults() {
-    _scanSubscription = flutterBlue.scanResults.listen((results) {
+    _scanSubscription = FlutterBluePlus.scanResults.listen((results) {
       List<ScanResult> nuxDevices = <ScanResult>[];
       List<ScanResult> controllerDevices = <ScanResult>[];
       //filter the scan results
       var devNames = deviceListProvider.call();
 
       for (ScanResult result in results) {
-        if (devNames.containsPartial(result.device.name)) {
+        if (devNames.containsPartial(result.device.platformName)) {
           nuxDevices.add(result);
         } else {
           bool validDevice = false;
           //check if it advertises the MIDI service
           for (var uuid in result.advertisementData.serviceUuids) {
-            if (uuid.toLowerCase() == BLEController.midiServiceGuid) {
+            if (uuid.toString().toLowerCase() ==
+                BLEController.midiServiceGuid) {
               validDevice = true;
             }
           }
 
           //check if it is in the special device list
           if (validDevice ||
-              forcedDevices.contains(result.advertisementData.localName) ||
-              forcedDevices.contains(result.device.name)) {
+              forcedDevices.contains(result.advertisementData.advName) ||
+              forcedDevices.contains(result.device.platformName)) {
             controllerDevices.add(result);
           }
         }
@@ -314,7 +314,7 @@ class FlutterBluePlusController extends BLEController {
       onScanResults(nuxBle, ctrlBle);
       setMidiSetupStatus(MidiSetupStatus.deviceFound);
       for (ScanResult r in results) {
-        debugPrint('${r.device.name} found! rssi: ${r.rssi}');
+        debugPrint('${r.device.platformName} found! rssi: ${r.rssi}');
       }
     });
   }

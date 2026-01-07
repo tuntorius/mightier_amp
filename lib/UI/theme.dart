@@ -85,7 +85,7 @@ ThemeData getTheme() {
       }),
     )),
 
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       contentTextStyle: const TextStyle(color: Colors.white),
       backgroundColor: Colors.grey[800],
       //shape: RoundedRectangleBorder(

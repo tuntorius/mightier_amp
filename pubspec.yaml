@@ -61,8 +61,7 @@ dependencies:
   uuid: ^4.5.2
   marquee: ^2.2.0
 
-  flutter_blue_plus:
-    path: ./plugins/flutter_blue_plus
+  flutter_blue_plus: ^2.1.0
 
   flutter_web_bluetooth: ^1.1.0
   
@@ -81,7 +80,7 @@ dependencies:
   share_plus: ^12.0.1
   convert: ^3.0.1
   pocketbase: ^0.23.0+1
-  google_fonts: ^6.3.3
+  google_fonts: ^7.0.0
 
   #webview_flutter: ^4.4.2
   #http: ^1.1.0
@@ -96,6 +95,11 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+  flutter_blue_plus_winrt: ^0.0.10
+
+# dependency_overrides:
+#   flutter_blue_plus_winrt:
+#     path: ./plugins/flutter_blue_plus_winrt_fixed
   
 flutter_icons:
   android: "launcher_icon"

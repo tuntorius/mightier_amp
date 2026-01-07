@@ -8,29 +8,26 @@
 .buildlog/
 .history
 .svn/
-
-# IntelliJ related
 *.iml
 *.ipr
 *.iws
+
+# IntelliJ related
 .idea/
+.idea/modules.xml
+.idea/libraries/
+.idea/copyright/
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/datasources.xml
+.idea/datasources.ids
+out/
 
-just_audio/
+# VS Code related
+**/.vscode/
 
-#ignore sign key
-/android/key.properties
-
-#ignore api keys and similar
-/lib/configKeys.dart
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# Flutter/Dart related
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -39,11 +36,61 @@ just_audio/
 .pub/
 build/
 
-# Web related
+# Android related
+**/android/local.properties
+**/android/key.properties
+**/android/app/src/main/res/values/googleservices.xml
+**/android/app/google-services.json
+**/android/.gradle/
+**/android/captures/
+**/android/build/
+**/android/app/build/
+**/android/key.jks
+**/android/keys.properties
+**/*.apk
+**/*.aab
+**/*.keystore
+**/.cxx/
+**/.kotlin/
+**/.externalNativeBuild/
+
+# iOS related
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/ephemeral/
+**/ios/DerivedData/
+**/ios/.generated/
+**/ios/.last_build_id
+**/ios/Pods/
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.h
+**/ios/Runner/GeneratedPluginRegistrant.m
+
+# Linux/Windows ephemeral
+**/linux/flutter/ephemeral/
+**/windows/flutter/ephemeral/
+
+# Generated plugin registrant
+**/GeneratedPluginRegistrant.java
+**/GeneratedPluginRegistrant.h
+**/GeneratedPluginRegistrant.m
+**/generated_plugin_registrant.cc
+**/generated_plugin_registrant.h
+**/generated_plugin_registrant.dart
+**/GeneratedPluginRegistrant.swift
+**/generated_plugins.cmake
 
 # Symbolication related
 app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# Local config
+/lib/configKeys.dart
+
+# Firebase
 .firebase/

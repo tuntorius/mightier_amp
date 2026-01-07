@@ -39,7 +39,7 @@ abstract class PlugAirAmplifier extends Amplifier {
 
 class TwinVerb extends PlugAirAmplifier {
   @override
-  final name = "Twin Verb";
+  final name = "Fender '65 Twin Reverb";
 
   @override
   int get defaultCab => TR212.cabIndex;
@@ -89,7 +89,7 @@ class TwinVerb extends PlugAirAmplifier {
 
 class JZ120 extends PlugAirAmplifier {
   @override
-  final name = "JZ 120";
+  final name = "Roland JC-120";
 
   @override
   int get nuxIndex => 1;
@@ -158,7 +158,7 @@ class JZ120 extends PlugAirAmplifier {
 
 class TweedDlx extends PlugAirAmplifier {
   @override
-  final name = "Tweed Dlx";
+  final name = "Fender Tweed Deluxe";
 
   @override
   int get nuxIndex => 2;
@@ -227,7 +227,7 @@ class TweedDlx extends PlugAirAmplifier {
 
 class Plexi extends PlugAirAmplifier {
   @override
-  final name = "Plexi";
+  final name = "Marshall Plexi";
 
   @override
   bool isSeparator = true;
@@ -277,7 +277,7 @@ class Plexi extends PlugAirAmplifier {
 
 class TopBoost extends PlugAirAmplifier {
   @override
-  final name = "Top Boost 30";
+  final name = "Vox AC30 Top Boost";
 
   @override
   int get nuxIndex => 4;
@@ -346,7 +346,7 @@ class TopBoost extends PlugAirAmplifier {
 
 class Lead100 extends PlugAirAmplifier {
   @override
-  final name = "Lead 100";
+  final name = "Soldano SLO-100";
 
   @override
   int get nuxIndex => 5;
@@ -414,7 +414,7 @@ class Lead100 extends PlugAirAmplifier {
 
 class Fireman extends PlugAirAmplifier {
   @override
-  final name = "Fireman";
+  final name = "Friedman BE-100";
 
   @override
   bool isSeparator = true;
@@ -458,7 +458,7 @@ class Fireman extends PlugAirAmplifier {
 
 class DIEVH4 extends PlugAirAmplifier {
   @override
-  final name = "DIE VH4";
+  final name = "Diezel VH4";
 
   @override
   int get nuxIndex => 7;
@@ -526,7 +526,7 @@ class DIEVH4 extends PlugAirAmplifier {
 
 class Recto extends PlugAirAmplifier {
   @override
-  final name = "Recto";
+  final name = "Mesa Boogie Rectifier";
 
   @override
   int get nuxIndex => 8;
@@ -596,7 +596,7 @@ class Recto extends PlugAirAmplifier {
 
 class Optima extends PlugAirAmplifier {
   @override
-  final name = "Optima";
+  final name = "Acoustic Simulator";
 
   @override
   bool isSeparator = true;
@@ -661,7 +661,7 @@ class Optima extends PlugAirAmplifier {
 
 class Stageman extends PlugAirAmplifier {
   @override
-  final name = "Stageman";
+  final name = "NUX Stageman";
 
   @override
   int get nuxIndex => 10;
@@ -722,7 +722,7 @@ class Stageman extends PlugAirAmplifier {
 
 class MLD extends PlugAirAmplifier {
   @override
-  final name = "MLD";
+  final name = "NUX Melvin Lee Davis Bass PA";
 
   @override
   bool isSeparator = true;
@@ -796,7 +796,7 @@ class MLD extends PlugAirAmplifier {
 
 class AGL extends PlugAirAmplifier {
   @override
-  final name = "AGL";
+  final name = "Aguilar";
 
   @override
   int get nuxIndex => 12;

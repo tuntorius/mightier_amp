@@ -43,7 +43,7 @@ abstract class PlugProAmplifier extends Amplifier {
 
 class JazzClean extends PlugProAmplifier {
   @override
-  final name = "Jazz Clean";
+  final name = "Roland JC-120";
 
   @override
   int get nuxIndex => 1;
@@ -111,7 +111,7 @@ class JazzClean extends PlugProAmplifier {
 
 class DeluxeRvb extends PlugProAmplifier {
   @override
-  final name = "Deluxe Rvb";
+  final name = "Fender '65 Deluxe Reverb";
 
   @override
   int get nuxIndex => 2;
@@ -166,7 +166,7 @@ class DeluxeRvb extends PlugProAmplifier {
 
 class BassMate extends PlugProAmplifier {
   @override
-  final name = "Bass Mate";
+  final name = "Fender Bassman";
 
   @override
   int get defaultCab => BS410.cabIndex;
@@ -234,7 +234,7 @@ class BassMate extends PlugProAmplifier {
 
 class Tweedy extends PlugProAmplifier {
   @override
-  final name = "Tweedy";
+  final name = "Fender Tweed Deluxe";
 
   @override
   int get defaultCab => DR112Pro.cabIndex;
@@ -278,7 +278,7 @@ class Tweedy extends PlugProAmplifier {
 
 class HiWire extends PlugProAmplifier {
   @override
-  final name = "Hiwire";
+  final name = "Hiwatt DR103";
 
   @override
   int get nuxIndex => 6;
@@ -341,7 +341,7 @@ class HiWire extends PlugProAmplifier {
 
 class CaliCrunch extends PlugProAmplifier {
   @override
-  final name = "Cali Crunch";
+  final name = "Mesa Boogie Crunch";
 
   @override
   int get nuxIndex => 7;
@@ -404,7 +404,7 @@ class CaliCrunch extends PlugProAmplifier {
 
 class ClassA15 extends PlugProAmplifier {
   @override
-  final name = "Class A15";
+  final name = "Vox AC15";
 
   @override
   int get nuxIndex => 8;
@@ -459,7 +459,7 @@ class ClassA15 extends PlugProAmplifier {
 
 class ClassA30 extends PlugProAmplifier {
   @override
-  final name = "Class A30";
+  final name = "Vox AC30";
 
   @override
   int get nuxIndex => 9;
@@ -514,7 +514,7 @@ class ClassA30 extends PlugProAmplifier {
 
 class Plexi100 extends PlugProAmplifier {
   @override
-  final name = "Plexi 100";
+  final name = "Marshall Super Lead 100";
 
   @override
   int get nuxIndex => 10;
@@ -577,7 +577,7 @@ class Plexi100 extends PlugProAmplifier {
 
 class Plexi45 extends PlugProAmplifier {
   @override
-  final name = "Plexi 45";
+  final name = "Marshall JTM45";
 
   @override
   int get nuxIndex => 11;
@@ -640,7 +640,7 @@ class Plexi45 extends PlugProAmplifier {
 
 class Brit800 extends PlugProAmplifier {
   @override
-  final name = "Brit 800";
+  final name = "Marshall JCM800";
 
   @override
   int get nuxIndex => 12;
@@ -703,7 +703,7 @@ class Brit800 extends PlugProAmplifier {
 
 class Pl1987x50 extends PlugProAmplifier {
   @override
-  final name = "1987x50";
+  final name = "Marshall 1987x";
 
   @override
   int get nuxIndex => 13;
@@ -766,7 +766,7 @@ class Pl1987x50 extends PlugProAmplifier {
 
 class Slo100 extends PlugProAmplifier {
   @override
-  final name = "Slo 100";
+  final name = "Soldano SLO-100";
 
   @override
   int get nuxIndex => 14;
@@ -829,7 +829,7 @@ class Slo100 extends PlugProAmplifier {
 
 class FiremanHBE extends PlugProAmplifier {
   @override
-  final name = "Fireman HBE";
+  final name = "Friedman BE-100";
 
   @override
   int get nuxIndex => 15;
@@ -892,7 +892,7 @@ class FiremanHBE extends PlugProAmplifier {
 
 class DualRect extends PlugProAmplifier {
   @override
-  final name = "Dual Rect";
+  final name = "Mesa Boogie Dual Rectifier";
 
   @override
   int get nuxIndex => 16;
@@ -955,7 +955,7 @@ class DualRect extends PlugProAmplifier {
 
 class DIEVH4 extends PlugProAmplifier {
   @override
-  final name = "DIE VH4";
+  final name = "Diezel VH4";
 
   @override
   int get nuxIndex => 17;
@@ -1018,7 +1018,7 @@ class DIEVH4 extends PlugProAmplifier {
 
 class MrZ38 extends PlugProAmplifier {
   @override
-  final name = "Mr. Z38";
+  final name = "Dr. Z Maz 38 Senior";
 
   @override
   int get nuxIndex => 20;
@@ -1081,7 +1081,7 @@ class MrZ38 extends PlugProAmplifier {
 
 class SuperRvb extends PlugProAmplifier {
   @override
-  final name = "Super Rvb";
+  final name = "Fender Super Reverb";
 
   @override
   int get nuxIndex => 21;
@@ -1144,7 +1144,7 @@ class SuperRvb extends PlugProAmplifier {
 
 class AGL extends PlugProAmplifier {
   @override
-  final name = "AGL";
+  final name = "Aguilar";
 
   @override
   bool isSeparator = true;
@@ -1212,7 +1212,7 @@ class AGL extends PlugProAmplifier {
 
 class MLD extends PlugProAmplifier {
   @override
-  final name = "MLD";
+  final name = "NUX Melvin Lee Davis Bass PA";
 
   @override
   int get nuxIndex => 27;
@@ -1275,7 +1275,7 @@ class MLD extends PlugProAmplifier {
 
 class OptimaAir extends PlugProAmplifier {
   @override
-  final name = "Optima Air";
+  final name = "NUX Optima Air";
 
   @override
   bool isSeparator = true;
@@ -1335,7 +1335,7 @@ class OptimaAir extends PlugProAmplifier {
 
 class Stageman extends PlugProAmplifier {
   @override
-  final name = "Stageman";
+  final name = "NUX Stageman";
 
   @override
   int get nuxIndex => 29;
@@ -1390,7 +1390,7 @@ class Stageman extends PlugProAmplifier {
 
 class TwinRvb extends PlugProAmplifier {
   @override
-  final name = "Twin Reverb";
+  final name = "Fender Twin Reverb";
 
   @override
   int get nuxIndex => 5;
@@ -1453,7 +1453,7 @@ class TwinRvb extends PlugProAmplifier {
 
 class VibroKing extends PlugProAmplifier {
   @override
-  final name = "Vibro King";
+  final name = "Fender Vibro-King";
 
   @override
   int get nuxIndex => 18;
@@ -1516,7 +1516,7 @@ class VibroKing extends PlugProAmplifier {
 
 class Budda extends PlugProAmplifier {
   @override
-  final name = "Budda";
+  final name = "Budda Superdrive";
 
   @override
   int get nuxIndex => 19;
@@ -1642,7 +1642,7 @@ class BritBlues extends PlugProAmplifier {
 
 class MatchD30 extends PlugProAmplifier {
   @override
-  final name = "Match D30";
+  final name = "Matchless DC-30";
 
   @override
   int get nuxIndex => 23;
@@ -1697,7 +1697,7 @@ class MatchD30 extends PlugProAmplifier {
 
 class Brit2000 extends PlugProAmplifier {
   @override
-  final name = "Brit 2000";
+  final name = "Marshall JCM2000 DSL";
 
   @override
   int get nuxIndex => 24;
@@ -1760,7 +1760,7 @@ class Brit2000 extends PlugProAmplifier {
 
 class UberHiGain extends PlugProAmplifier {
   @override
-  final name = "Uber HiGain";
+  final name = "Bogner Uberschall";
 
   @override
   int get nuxIndex => 25;

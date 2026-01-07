@@ -91,7 +91,7 @@ class Chorus extends Modulation {
 
 class Tremolo extends Modulation {
   @override
-  final name = "Tremolo";
+  final name = "Boss TR-2 Tremolo";
 
   @override
   int get nuxIndex => 2;
@@ -118,7 +118,7 @@ class Tremolo extends Modulation {
 
 class Vibe extends Modulation {
   @override
-  final name = "Vibe";
+  final name = "Boss VB-2 Vibrato";
 
   @override
   int get nuxIndex => 3;

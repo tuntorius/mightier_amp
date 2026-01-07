@@ -35,7 +35,7 @@ abstract class Delay extends Processor {
 
 class AnalogDelay extends Delay {
   @override
-  final name = "Analog Delay";
+  final name = "Boss DM-2 Analog";
 
   @override
   int get nuxIndex => 0;
@@ -71,7 +71,7 @@ class AnalogDelay extends Delay {
 
 class ModulationDelay extends Delay {
   @override
-  final name = "Modulation";
+  final name = "Ibanez Mod Delay II";
 
   @override
   int get nuxIndex => 1;
@@ -106,7 +106,7 @@ class ModulationDelay extends Delay {
 
 class DigitalDelay extends Delay {
   @override
-  final name = "Digital Delay";
+  final name = "Boss DD-3 Digital";
 
   @override
   int get nuxIndex => 2;

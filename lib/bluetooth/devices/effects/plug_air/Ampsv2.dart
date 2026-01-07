@@ -8,7 +8,7 @@ import 'Cabinet.dart';
 
 class JazzClean extends PlugAirAmplifier {
   @override
-  final name = "Jazz Clean";
+  final name = "Roland JC-120";
 
   @override
   int get nuxIndex => 0;
@@ -81,7 +81,7 @@ class JazzClean extends PlugAirAmplifier {
 
 class DeluxeRvb extends PlugAirAmplifier {
   @override
-  final name = "Deluxe Rvb";
+  final name = "Fender '65 Deluxe Reverb";
 
   @override
   int get nuxIndex => 1;
@@ -141,7 +141,7 @@ class DeluxeRvb extends PlugAirAmplifier {
 
 class TwinRvbV2 extends PlugAirAmplifier {
   @override
-  final name = "Twin Rvb";
+  final name = "Fender '65 Twin Reverb";
 
   @override
   int get defaultCab => TR212.cabIndex;
@@ -208,7 +208,7 @@ class TwinRvbV2 extends PlugAirAmplifier {
 
 class ClassA30 extends PlugAirAmplifier {
   @override
-  final name = "Class A30";
+  final name = "Vox AC30";
 
   @override
   int get nuxIndex => 3;
@@ -274,7 +274,7 @@ class ClassA30 extends PlugAirAmplifier {
 
 class Brit800 extends PlugAirAmplifier {
   @override
-  final name = "Brit 800";
+  final name = "Marshall JCM800";
 
   @override
   int get nuxIndex => 4;
@@ -342,7 +342,7 @@ class Brit800 extends PlugAirAmplifier {
 
 class Plexi1987x50 extends PlugAirAmplifier {
   @override
-  final name = "1987x50";
+  final name = "Marshall 1987x";
 
   @override
   int get nuxIndex => 5;
@@ -410,7 +410,7 @@ class Plexi1987x50 extends PlugAirAmplifier {
 
 class FiremanHBE extends PlugAirAmplifier {
   @override
-  final name = "Fireman HBE";
+  final name = "Friedman BE-100 HBE";
 
   @override
   int get nuxIndex => 6;
@@ -473,7 +473,7 @@ class FiremanHBE extends PlugAirAmplifier {
 
 class DualRect extends PlugAirAmplifier {
   @override
-  final name = "Dual Rect";
+  final name = "Mesa Boogie Dual Rectifier";
 
   @override
   int get nuxIndex => 7;
@@ -541,7 +541,7 @@ class DualRect extends PlugAirAmplifier {
 
 class DIEVH4v2 extends PlugAirAmplifier {
   @override
-  final name = "DIE VH4";
+  final name = "Diezel VH4";
 
   @override
   int get nuxIndex => 8;
@@ -609,7 +609,7 @@ class DIEVH4v2 extends PlugAirAmplifier {
 
 class AGLv2 extends PlugAirAmplifier {
   @override
-  final name = "AGL";
+  final name = "Aguilar DB 751";
 
   @override
   int get nuxIndex => 9;
@@ -682,7 +682,7 @@ class AGLv2 extends PlugAirAmplifier {
 
 class Starlift extends PlugAirAmplifier {
   @override
-  final name = "Starlift";
+  final name = "Nordstrand Starlift";
 
   @override
   int get nuxIndex => 10;
@@ -749,7 +749,7 @@ class Starlift extends PlugAirAmplifier {
 
 class MLDv2 extends PlugAirAmplifier {
   @override
-  final name = "MLD";
+  final name = "NUX Melvin Lee Davis Bass PA";
 
   @override
   int get nuxIndex => 11;
@@ -817,7 +817,7 @@ class MLDv2 extends PlugAirAmplifier {
 
 class Stagemanv2 extends PlugAirAmplifier {
   @override
-  final name = "Stageman";
+  final name = "NUX Stageman";
 
   @override
   int get nuxIndex => 12;

@@ -5,7 +5,7 @@ import 'Processor.dart';
 
 class NoiseGate2Param extends Processor {
   @override
-  final name = "Noise Gate";
+  final name = "Boss Noise Gate NF-1";
 
   @override
   int get nuxIndex => 0;
@@ -58,7 +58,7 @@ class NoiseGate2Param extends Processor {
 
 class NoiseGate1Param extends Processor {
   @override
-  final name = "Noise Gate";
+  final name = "Boss Noise Gate NF-1";
 
   @override
   int get nuxIndex => 0;
@@ -105,7 +105,7 @@ class NoiseGate1Param extends Processor {
 
 class NoiseGatePro extends Processor {
   @override
-  final name = "Noise Gate";
+  final name = "Boss Noise Gate NF-1";
 
   @override
   int get nuxIndex => 1;

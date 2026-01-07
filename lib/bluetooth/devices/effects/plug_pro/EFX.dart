@@ -39,7 +39,7 @@ abstract class EFXPro extends Processor {
 
 class DistortionPlus extends EFXPro {
   @override
-  final name = "Distortion+";
+  final name = "MXR Distortion+";
 
   @override
   int get nuxIndex => 1;
@@ -66,7 +66,7 @@ class DistortionPlus extends EFXPro {
 
 class RCBoost extends EFXPro {
   @override
-  final name = "RC Boost";
+  final name = "Xotic RC Booster";
 
   @override
   int get nuxIndex => 2;
@@ -109,7 +109,7 @@ class RCBoost extends EFXPro {
 
 class ACBoost extends EFXPro {
   @override
-  final name = "AC Boost";
+  final name = "Xotic AC Booster";
 
   @override
   int get nuxIndex => 3;
@@ -152,7 +152,7 @@ class ACBoost extends EFXPro {
 
 class DistOne extends EFXPro {
   @override
-  final name = "Dist One";
+  final name = "Boss DS-1";
 
   @override
   int get nuxIndex => 4;
@@ -187,7 +187,7 @@ class DistOne extends EFXPro {
 
 class TSDrive extends EFXPro {
   @override
-  final name = "T Screamer";
+  final name = "Ibanez TS9 Tube Screamer";
   @override
   int get nuxIndex => 5;
   @override
@@ -221,7 +221,7 @@ class TSDrive extends EFXPro {
 
 class BluesDrive extends EFXPro {
   @override
-  final name = "Blues Drive";
+  final name = "Boss BD-2 Blues Driver";
 
   @override
   int get nuxIndex => 6;
@@ -256,7 +256,7 @@ class BluesDrive extends EFXPro {
 
 class MorningDrive extends EFXPro {
   @override
-  final name = "Morning Drive";
+  final name = "JHS Morning Glory";
 
   @override
   int get nuxIndex => 7;
@@ -291,7 +291,7 @@ class MorningDrive extends EFXPro {
 
 class EatDist extends EFXPro {
   @override
-  final name = "Eat Dist";
+  final name = "ProCo Rat";
 
   @override
   int get nuxIndex => 8;
@@ -326,7 +326,7 @@ class EatDist extends EFXPro {
 
 class RedDirt extends EFXPro {
   @override
-  final name = "Red Dirt";
+  final name = "Keeley Red Dirt";
 
   @override
   int get nuxIndex => 9;
@@ -361,7 +361,7 @@ class RedDirt extends EFXPro {
 
 class Crunch extends EFXPro {
   @override
-  final name = "Crunch";
+  final name = "MI Audio Crunch Box";
 
   @override
   int get nuxIndex => 10;
@@ -396,7 +396,7 @@ class Crunch extends EFXPro {
 
 class MuffFuzz extends EFXPro {
   @override
-  final name = "Muff Fuzz";
+  final name = "Nano Big Muff PI";
 
   @override
   int get nuxIndex => 11;
@@ -431,7 +431,7 @@ class MuffFuzz extends EFXPro {
 
 class Katana extends EFXPro {
   @override
-  final name = "Katana";
+  final name = "Katana Clean Boost";
 
   @override
   int get nuxIndex => 12;
@@ -458,7 +458,7 @@ class Katana extends EFXPro {
 
 class STSinger extends EFXPro {
   @override
-  final name = "ST Singer";
+  final name = "Vertex Steel String";
 
   @override
   int get nuxIndex => 13;
@@ -496,7 +496,7 @@ class TouchWahPro extends EFXPro {
   int get nuxIndex => 14;
 
   @override
-  final name = "Touch Wah";
+  final name = "Boss T Wah";
 
   @override
   List<Parameter> parameters = [

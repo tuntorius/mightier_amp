@@ -180,7 +180,7 @@ class Delay4 extends Ambience {
 
 class RoomReverb extends Ambience {
   @override
-  final name = "Room";
+  final name = "MXR M300 Room";
 
   @override
   int get nuxIndex => 10;
@@ -207,7 +207,7 @@ class RoomReverb extends Ambience {
 
 class HallReverb extends Ambience {
   @override
-  final name = "Hall";
+  final name = "Lexicon 480L Hall";
 
   @override
   int get nuxIndex => 11;
@@ -234,7 +234,7 @@ class HallReverb extends Ambience {
 
 class PlateReverb extends Ambience {
   @override
-  final name = "Plate";
+  final name = "EMT 140 Plate";
 
   @override
   int get nuxIndex => 12;
@@ -261,7 +261,7 @@ class PlateReverb extends Ambience {
 
 class SpringReverb extends Ambience {
   @override
-  final name = "Spring";
+  final name = "Boss FRV-1 Fender '63 Spring";
 
   @override
   int get nuxIndex => 13;

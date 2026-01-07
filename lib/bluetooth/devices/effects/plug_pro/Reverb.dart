@@ -38,7 +38,7 @@ abstract class Reverb extends Processor {
 
 class RoomReverb extends Reverb {
   @override
-  final name = "Room";
+  final name = "MXR M300 Room";
 
   @override
   int get nuxIndex => 1;
@@ -73,7 +73,7 @@ class RoomReverb extends Reverb {
 
 class HallReverb extends Reverb {
   @override
-  final name = "Hall";
+  final name = "Lexicon 480L Hall";
 
   @override
   int get nuxIndex => 2;
@@ -115,7 +115,7 @@ class HallReverb extends Reverb {
 
 class PlateReverb extends Reverb {
   @override
-  final name = "Plate";
+  final name = "EMT 140 Plate";
 
   @override
   int get nuxIndex => 3;
@@ -142,7 +142,7 @@ class PlateReverb extends Reverb {
 
 class SpringReverb extends Reverb {
   @override
-  final name = "Spring";
+  final name = "Boss FRV-1 Fender '63 Spring";
 
   @override
   int get nuxIndex => 4;
@@ -169,7 +169,7 @@ class SpringReverb extends Reverb {
 
 class ShimmerReverb extends Reverb {
   @override
-  final name = "Shimmer";
+  final name = "Neunaber Seraphim Shimmer";
 
   @override
   int get nuxIndex => 5;
@@ -204,7 +204,7 @@ class ShimmerReverb extends Reverb {
 
 class DampReverbPro extends Reverb {
   @override
-  final name = "Damp";
+  final name = "NUX Damp";
 
   @override
   int get nuxIndex => 6;

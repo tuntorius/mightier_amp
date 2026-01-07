@@ -63,7 +63,7 @@ class V1960 extends CabinetMP2 {
   @override
   String get category => "Electric IR";
   @override
-  final cabName = "V1960";
+  final cabName = "Marshall 1960A";
   static int get cabIndex => 0;
   @override
   int get nuxIndex => cabIndex;
@@ -71,7 +71,7 @@ class V1960 extends CabinetMP2 {
 
 class A212 extends CabinetMP2 {
   @override
-  final cabName = "A212"; //Sunn A212???
+  final cabName = "VOX AC30 2x12"; //Sunn A212???
   static int get cabIndex => 1;
   @override
   int get nuxIndex => cabIndex;
@@ -79,7 +79,7 @@ class A212 extends CabinetMP2 {
 
 class BS410 extends CabinetMP2 {
   @override
-  final cabName = "BS410";
+  final cabName = "Fender Bassman 4x10";
   static int get cabIndex => 2;
   @override
   int get nuxIndex => cabIndex;
@@ -87,7 +87,7 @@ class BS410 extends CabinetMP2 {
 
 class DR112 extends CabinetMP2 {
   @override
-  final cabName = "DR112";
+  final cabName = "Fender Deluxe Reverb";
   static int get cabIndex => 3;
   @override
   int get nuxIndex => cabIndex;
@@ -95,7 +95,7 @@ class DR112 extends CabinetMP2 {
 
 class GB412 extends CabinetMP2 {
   @override
-  final cabName = "GB412";
+  final cabName = "Genz Benz GB412";
   static int get cabIndex => 4;
   @override
   int get nuxIndex => cabIndex;
@@ -103,7 +103,7 @@ class GB412 extends CabinetMP2 {
 
 class JZ120IR extends CabinetMP2 {
   @override
-  final cabName = "JZ120";
+  final cabName = "Roland JC-120";
   static int get cabIndex => 5;
   @override
   int get nuxIndex => cabIndex;
@@ -111,7 +111,7 @@ class JZ120IR extends CabinetMP2 {
 
 class TR212 extends CabinetMP2 {
   @override
-  final cabName = "TR212";
+  final cabName = "Fender Twin Reverb";
   @override
   int get nuxIndex => cabIndex;
   static int get cabIndex => 6;
@@ -119,7 +119,7 @@ class TR212 extends CabinetMP2 {
 
 class V412 extends CabinetMP2 {
   @override
-  final cabName = "V412";
+  final cabName = "Victory Amps V412";
   static int get cabIndex => 7;
   @override
   int get nuxIndex => cabIndex;
@@ -132,7 +132,7 @@ class AGLDB810 extends CabinetMP2 {
   @override
   String get category => "Bass IR";
   @override
-  final cabName = "AGL DB810";
+  final cabName = "Aguilar DB 810";
   static int get cabIndex => 8;
   @override
   int get nuxIndex => cabIndex;
@@ -140,7 +140,7 @@ class AGLDB810 extends CabinetMP2 {
 
 class AMPSV810 extends CabinetMP2 {
   @override
-  final cabName = "AMP SV810";
+  final cabName = "Ampeg SVT 8x10";
   static int get cabIndex => 9;
   @override
   int get nuxIndex => cabIndex;
@@ -148,7 +148,7 @@ class AMPSV810 extends CabinetMP2 {
 
 class MKB410 extends CabinetMP2 {
   @override
-  final cabName = "MKB 410";
+  final cabName = "Marbass 4x10";
   static int get cabIndex => 10;
   @override
   int get nuxIndex => cabIndex;
@@ -156,7 +156,7 @@ class MKB410 extends CabinetMP2 {
 
 class TRC410 extends CabinetMP2 {
   @override
-  final cabName = "TRC 410";
+  final cabName = "Trace Elliot 4x10";
   static int get cabIndex => 11;
   @override
   int get nuxIndex => cabIndex;
@@ -169,7 +169,7 @@ class GHBird extends CabinetMP2 {
   @override
   String get category => "Acoustic IR";
   @override
-  final cabName = "G HBird EG Magnetic";
+  final cabName = "Gibson Hummingbird";
   static int get cabIndex => 12;
   @override
   int get nuxIndex => cabIndex;
@@ -177,7 +177,7 @@ class GHBird extends CabinetMP2 {
 
 class GJ15 extends CabinetMP2 {
   @override
-  final cabName = "G J15 EG Magnetic";
+  final cabName = "Gibson J-15";
   static int get cabIndex => 13;
   @override
   int get nuxIndex => cabIndex;
@@ -185,7 +185,7 @@ class GJ15 extends CabinetMP2 {
 
 class MD45 extends CabinetMP2 {
   @override
-  final cabName = "M D45 EG Magnetic";
+  final cabName = "Martin D-45";
   static int get cabIndex => 14;
   @override
   int get nuxIndex => cabIndex;
@@ -193,7 +193,7 @@ class MD45 extends CabinetMP2 {
 
 class GIBJ200 extends CabinetMP2 {
   @override
-  final cabName = "GIB J200 EG Magnetic";
+  final cabName = "Gibson J-200";
   static int get cabIndex => 15;
   @override
   int get nuxIndex => cabIndex;
@@ -201,7 +201,7 @@ class GIBJ200 extends CabinetMP2 {
 
 class GIBJ45 extends CabinetMP2 {
   @override
-  final cabName = "GIB J45 EG Magnetic";
+  final cabName = "Gibson J-45";
   static int get cabIndex => 16;
   @override
   int get nuxIndex => cabIndex;
@@ -209,7 +209,7 @@ class GIBJ45 extends CabinetMP2 {
 
 class TL314 extends CabinetMP2 {
   @override
-  final cabName = "TL 314 EG Magnetic";
+  final cabName = "Taylor 314";
   static int get cabIndex => 17;
   @override
   int get nuxIndex => cabIndex;
@@ -217,7 +217,7 @@ class TL314 extends CabinetMP2 {
 
 class MHD28 extends CabinetMP2 {
   @override
-  final cabName = "M HD28 EG Magnetic";
+  final cabName = "Martin HD-28";
   static int get cabIndex => 18;
   @override
   int get nuxIndex => cabIndex;

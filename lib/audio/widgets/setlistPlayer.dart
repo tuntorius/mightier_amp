@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:marquee_text/marquee_text.dart';
+import 'package:marquee/marquee.dart';
 import 'package:mighty_plug_manager/UI/widgets/thickSlider.dart';
 import '../../UI/mightierIcons.dart';
 import '../../UI/widgets/VolumeDrawer.dart';
@@ -55,12 +55,11 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
   }
 
   Widget? createTitle() {
-    return MarqueeText(
-      text: TextSpan(
-          text: playerState.setlist?.items[playerState.currentTrack]
-                  .trackReference?.name ??
-              "No Track"),
-      speed: 20,
+    return Marquee(
+      text: playerState
+              .setlist?.items[playerState.currentTrack].trackReference?.name ??
+          "No Track",
+      velocity: 20,
     );
   }
 
@@ -397,12 +396,11 @@ class SetlistMiniPlayerState extends State<SetlistMiniPlayer> {
   }
 
   Widget? createTitle() {
-    return MarqueeText(
-      text: TextSpan(
-          text: playerState.setlist?.items[playerState.currentTrack]
-                  .trackReference?.name ??
-              "No Track"),
-      speed: 20,
+    return Marquee(
+      text: playerState
+              .setlist?.items[playerState.currentTrack].trackReference?.name ??
+          "No Track",
+      velocity: 20,
     );
   }
 

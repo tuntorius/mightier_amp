@@ -1,13 +1,14 @@
 buildscript {
-    ext.kotlin_version = '1.8.22'
+    ext.kotlin_version = '2.3.0'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        classpath 'com.android.tools.build:gradle:8.13.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.9.4"
     }
 }
 
@@ -16,18 +17,37 @@ allprojects {
         google()
         mavenCentral()
     }
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:deprecation"
-        }
-    }   
 }
-
-rootProject.buildDir = '../build'
 
 subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    plugins.withType(com.android.build.gradle.BasePlugin).configureEach {
+        project.android {
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_21
+                targetCompatibility JavaVersion.VERSION_21
+            }
+            
+            // Keep Kotlin and Java targets in sync to avoid build failures
+            if (project.plugins.hasPlugin('kotlin-android')) {
+                kotlinOptions {
+                    jvmTarget = '21'
+                }
+            }
+        }
+    }
 }
+
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                compileSdkVersion 36
+                buildToolsVersion "36.0.0"
+            }
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(':app')
 }

@@ -15,12 +15,15 @@ class PlatformUtils {
 
   static get isWindows => !kIsWeb && io.Platform.isWindows;
   static get isLinux => !kIsWeb && io.Platform.isLinux;
+  static get isMacOS => !kIsWeb && io.Platform.isMacOS;
 
   static Future<io.Directory?> getAppDataDirectory() async {
     if (PlatformUtils.isAndroid) {
       return getExternalStorageDirectory();
     } else if (PlatformUtils.isIOS) {
       return getApplicationDocumentsDirectory();
+    } else if (PlatformUtils.isMacOS) {
+      return getApplicationSupportDirectory();
     }
     return Future.error("getAppDataDirectory(): Platform not supported");
   }

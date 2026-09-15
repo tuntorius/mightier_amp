@@ -17,7 +17,7 @@ enum MidiSetupStatus {
   unknown
 }
 
-enum BleState { off, on }
+enum BleState { off, on, unknown }
 
 enum BleDeviceState { disconnected, connecting, connected, disconnecting }
 
@@ -70,10 +70,13 @@ abstract class BLEController {
       StreamController.broadcast();
   Stream<MidiSetupStatus> get status => _status.stream;
 
-  BleState _bleState = BleState.off;
+  BleState _bleState = BleState.unknown;
   @protected
   set bleState(BleState state) => _bleState = state;
   BleState get bleState => _bleState;
+
+  /// True when CoreBluetooth reports unauthorized (permission denied).
+  bool bluetoothPermissionDenied = false;
 
   @protected
   set currentStatus(MidiSetupStatus val) => _currentStatus = val;

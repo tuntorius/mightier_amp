@@ -11,6 +11,11 @@ This app aims to cover all the functionality of the original app plus many enhan
 - Tempo/Beat Trainer
 - Various other enhancements.
 
+## Supported platforms
+- Android
+- iOS
+- macOS (Apple Silicon, tested) — Bluetooth permission is required
+
 ## Supported Amps
 
 1.Mighty Plug / Mighty Air  

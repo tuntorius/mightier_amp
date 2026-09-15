@@ -38,6 +38,8 @@ class BLEMidiHandler {
   bool get permanentlyDenied => !PlatformUtils.isWeb && _permanentlyDenied;
 
   BleState get bleState => bleController.bleState;
+  bool get bluetoothPermissionDenied =>
+      bleController.bluetoothPermissionDenied;
   bool get isScanning => bleController.isScanning;
   bool get manualScan => _manualScan;
 
@@ -65,6 +67,8 @@ class BLEMidiHandler {
     if (PlatformUtils.isAndroid) {
       bleController = FlutterBluePlusController(forcedDevices);
     } else if (PlatformUtils.isIOS) {
+      bleController = FlutterBluePlusController(forcedDevices);
+    } else if (PlatformUtils.isMacOS) {
       bleController = FlutterBluePlusController(forcedDevices);
     } else if (PlatformUtils.isWeb) {
       bleController = WebBleController(forcedDevices);
@@ -130,7 +134,12 @@ class BLEMidiHandler {
 
     var available = await bleController.isAvailable();
     if (!available) {
-      onError(BleError.unavailable, null);
+      // On Apple platforms CBCentralManager often starts as Unknown, and the
+      // native plugin reports isAvailable=false until the real state arrives.
+      // Do not treat that transient state as permanent Bluetooth absence.
+      if (!PlatformUtils.isIOS && !PlatformUtils.isMacOS) {
+        onError(BleError.unavailable, null);
+      }
     }
 
     if (PlatformUtils.isAndroid && !noLocationNeeded) {

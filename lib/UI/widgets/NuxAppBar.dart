@@ -112,17 +112,18 @@ class _NuxAppBarState extends State<MAAppBar> {
                 StreamBuilder<int>(
                   stream: devControl.batteryPercentage,
                   builder: (context, batteryPercentage) {
+                    if (batteryPercentage.hasData &&
+                        batteryPercentage.data != null &&
+                        batteryPercentage.data != 0) {
+                      batteryValue = batteryPercentage.data;
+                    }
                     if (devControl.isConnected &&
-                        (batteryPercentage.data != 0 || batteryValue != null) &&
+                        batteryValue != null &&
+                        batteryValue != 0 &&
                         devControl.device.batterySupport) {
-                      if (batteryPercentage.hasData) {
-                        batteryValue = batteryPercentage.data;
-                      }
-                      if (batteryValue != null) {
-                        PageStorage.of(context).writeState(
-                            context, batteryValue,
-                            identifier: batteryKey);
-                      }
+                      PageStorage.of(context).writeState(
+                          context, batteryValue,
+                          identifier: batteryKey);
                       return Stack(
                         alignment: Alignment.center,
                         children: [

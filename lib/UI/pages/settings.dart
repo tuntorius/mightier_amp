@@ -13,6 +13,7 @@ import '../../bluetooth/ble_controllers/BLEController.dart';
 import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/features/tuner.dart';
 import '../../platform/simpleSharedPrefs.dart';
+import '../../platform/platformUtils.dart';
 import '../mightierIcons.dart';
 import '../widgets/deviceList.dart';
 import 'DebugConsolePage.dart';
@@ -232,8 +233,22 @@ class _SettingsState extends State<Settings> {
                 builder: (BuildContext context, snapshot) {
                   return StreamBuilder<bool>(
                       builder: (BuildContext context, snapshot) {
-                        var btOn = midiHandler.bleState == BleState.on;
-                        if (!btOn) {
+                        final bleState = midiHandler.bleState;
+                        if (bleState == BleState.unknown) {
+                          return const ListTile(
+                            title: Text("Initializing Bluetooth…"),
+                          );
+                        }
+                        if (midiHandler.bluetoothPermissionDenied) {
+                          return ListTile(
+                            title: Text(
+                              PlatformUtils.isMacOS
+                                  ? "Bluetooth permission required. Enable Mightier Amp in System Settings → Privacy & Security → Bluetooth."
+                                  : "Bluetooth permission required.",
+                            ),
+                          );
+                        }
+                        if (bleState != BleState.on) {
                           return const ListTile(
                             title: Text("Please, turn Bluetooth on!"),
                           );

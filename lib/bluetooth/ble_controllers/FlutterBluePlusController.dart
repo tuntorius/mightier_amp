@@ -98,7 +98,7 @@ class FlutterBluePlusController extends BLEController {
 
   @override
   void startScanning() {
-    if (bleState == BleState.off) return;
+    if (bleState != BleState.on) return;
     setMidiSetupStatus(MidiSetupStatus.deviceSearching);
     flutterBlue
         .startScan(
@@ -113,7 +113,7 @@ class FlutterBluePlusController extends BLEController {
 
   @override
   Future stopScanning() {
-    if (bleState == BleState.off) return Future.value(null);
+    if (bleState != BleState.on) return Future.value(null);
     return flutterBlue.stopScan();
   }
 
@@ -233,27 +233,26 @@ class FlutterBluePlusController extends BLEController {
       debugPrint(event.toString());
       switch (event) {
         case BluetoothState.unknown:
-          //fix for ios not recognizing bluetooth on at startup
-          if (Platform.isIOS) {
-            Future.delayed(const Duration(milliseconds: 500)).then((value) {
-              flutterBlue.isOn.then((value) {
-                if (value) {
-                  bleState = BleState.on;
-                  setMidiSetupStatus(MidiSetupStatus.deviceSearching);
-                  startScanning();
-                }
-              });
-            });
-          }
+          // CoreBluetooth starts as unknown while the stack initializes.
+          // Do not treat this transient state as Bluetooth off/unavailable.
+          bleState = BleState.unknown;
+          bluetoothPermissionDenied = false;
+          setMidiSetupStatus(MidiSetupStatus.unknown);
           break;
         case BluetoothState.unavailable:
+          bleState = BleState.off;
+          bluetoothPermissionDenied = false;
+          setMidiSetupStatus(MidiSetupStatus.bluetoothOff);
+          break;
         case BluetoothState.unauthorized:
           bleState = BleState.off;
+          bluetoothPermissionDenied = true;
           setMidiSetupStatus(MidiSetupStatus.bluetoothOff);
           break;
         case BluetoothState.turningOn:
         case BluetoothState.on:
           bleState = BleState.on;
+          bluetoothPermissionDenied = false;
           setMidiSetupStatus(MidiSetupStatus.deviceSearching);
           startScanning();
           break;
@@ -262,6 +261,7 @@ class FlutterBluePlusController extends BLEController {
           break;
         case BluetoothState.off:
           bleState = BleState.off;
+          bluetoothPermissionDenied = false;
           setMidiSetupStatus(MidiSetupStatus.bluetoothOff);
           _device = null;
           _connectInProgress = false;

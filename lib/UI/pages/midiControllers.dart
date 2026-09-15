@@ -93,7 +93,11 @@ class _MidiControllersState extends State<MidiControllers> {
                         ? const Text("Start Scanning")
                         : const Text("Stop Scanning")),
                 if (midiHandler.bleState == BleState.off)
-                  const Text("Enable Bluetooth to discover BLE MIDI devices"),
+                  Text(midiHandler.bluetoothPermissionDenied
+                      ? "Bluetooth permission required to discover BLE MIDI devices"
+                      : "Enable Bluetooth to discover BLE MIDI devices"),
+                if (midiHandler.bleState == BleState.unknown)
+                  const Text("Initializing Bluetooth…"),
                 const Divider(),
               ],
             );

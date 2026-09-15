@@ -93,7 +93,10 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     {
       switch (error) {
         case BleError.unavailable:
-          if (!PlatformUtils.isIOS) {
+          // iOS/macOS: CoreBluetooth may report unavailable while still
+          // initializing (Unknown). Permanent unsupported is rare on those
+          // platforms; avoid a false startup dialog.
+          if (!PlatformUtils.isIOS && !PlatformUtils.isMacOS) {
             AlertDialogs.showInfoDialog(context,
                 title: "Warning!",
                 description: "Your device does not support bluetooth!",

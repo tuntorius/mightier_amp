@@ -69,3 +69,17 @@ class LiteMK2FXID extends NuxFXID {
   static const delay = LiteFXID._internal(5);
   static const reverb = LiteFXID._internal(6);
 }
+
+class GP5FXID extends NuxFXID {
+  const GP5FXID._internal(int value) : super._internal(value);
+  static const nr = GP5FXID._internal(0);
+  static const pre = GP5FXID._internal(1);
+  static const dst = GP5FXID._internal(2);
+  static const amp = GP5FXID._internal(3);
+  static const cab = GP5FXID._internal(4);
+  static const eq = GP5FXID._internal(5);
+  static const mod = GP5FXID._internal(6);
+  static const dly = GP5FXID._internal(7);
+  static const rvb = GP5FXID._internal(8);
+  static const ns = GP5FXID._internal(9);
+}

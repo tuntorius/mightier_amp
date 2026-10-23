@@ -39,6 +39,7 @@ class EffectChainBar extends StatelessWidget {
         effectInfo: effect!,
         color: preset.effectColor(index),
         enabled: preset.slotEnabled(index),
+        blocked: preset.slotBlocked(index),
         selected: selected,
         reorderable: reorderable,
         key: Key(index.toString()),

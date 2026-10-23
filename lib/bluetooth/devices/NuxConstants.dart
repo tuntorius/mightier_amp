@@ -16,6 +16,7 @@ class EProductNo {
   static const MIGHTYBT_PID = 48;
   static const MIGHTYLITE_PID = 64;
   static const TAP5_PID = 102;
+  static const VALETONGP5_PID = 103;
 }
 
 class CherubSysExMessageID {

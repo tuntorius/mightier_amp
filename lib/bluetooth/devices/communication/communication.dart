@@ -2,8 +2,12 @@ import 'package:flutter/widgets.dart';
 
 import '../NuxConstants.dart';
 import '../NuxDevice.dart';
+import '../effects/Processor.dart';
 
 abstract class DeviceCommunication {
+  void syncOnConnect() {
+    //default no-op: only the GP-5BLE family overrides with the real BLE sync chain.
+  }
   @protected
   NuxDevice device;
   NuxDeviceConfiguration config;
@@ -55,6 +59,15 @@ abstract class DeviceCommunication {
         .midiCCSelectionValue;
     var data = createCCMessage(paramIndex, index);
     device.deviceControl.sendBLEData(data);
+  }
+
+  //devices with a custom parameter send protocol (e.g. the Valeton GP5
+  //which sends param values as float32 sysEx messages) override this
+  bool get customParameterSending => false;
+
+  //sends a parameter value - only called when [customParameterSending] is true
+  List<int> sendParameter(Parameter param) {
+    return [];
   }
 
   void saveCurrentPreset(int index);

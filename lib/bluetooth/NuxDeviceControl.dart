@@ -21,6 +21,7 @@ import 'devices/NuxMightyLiteMk2.dart';
 import 'devices/NuxMightyPlugAir.dart';
 import 'devices/NuxMightyPlugPro.dart';
 import 'devices/NuxMightySpace.dart';
+import 'devices/NuxValetonGP5.dart';
 import 'devices/effects/Processor.dart';
 
 enum DeviceConnectionState {
@@ -256,6 +257,7 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMightyLite(this));
     _deviceInstances.add(NuxMightyLiteMk2(this));
     _deviceInstances.add(NuxMighty8BTMk2(this));
+    _deviceInstances.add(NuxValetonGP5(this));
 
     //make it read from config
     String dev = SharedPrefs()
@@ -307,6 +309,7 @@ class NuxDeviceControl extends ChangeNotifier {
           //can't set version yet, firmware is unknown
           notifyListeners();
           _onConnect();
+          _device.communication.syncOnConnect();
         }
         break;
       case MidiSetupStatus.deviceDisconnected:
@@ -489,6 +492,13 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   List<int> sendParameter(Parameter param, bool returnOnly) {
+    //custom parameter protocol (e.g. Valeton GP5 float32 sysEx)
+    if (device.communication.customParameterSending) {
+      var data = device.communication.sendParameter(param);
+      if (!returnOnly && data.isNotEmpty) sendBLEData(data);
+      return data;
+    }
+
     int outVal;
 
     //implement master volume

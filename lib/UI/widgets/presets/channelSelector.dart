@@ -75,17 +75,19 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     super.initState();
   }
 
-  List<Widget> _createButtons(double _width) {
+  List<Widget> _createButtons(double _width, {double? horizontalButtonWidth}) {
     var disabledColor = Theme.of(context).disabledColor;
     List<Widget> buttons = <Widget>[];
 
     var tooltip = "";
     _presets = widget.device.getPresetsList();
-    int row1 = _width < 330 && _presets.length > 4
-        ? (_presets.length / 2).ceil()
-        : _presets.length;
+    int row1 = horizontalButtonWidth != null
+        ? _presets.length
+        : (_width < 330 && _presets.length > 4
+            ? (_presets.length / 2).ceil()
+            : _presets.length);
 
-    double width = (_width / row1).floorToDouble();
+    double width = horizontalButtonWidth ?? (_width / row1).floorToDouble();
     for (int i = 0; i < _presets.length; i++) {
       var col = i == widget.device.selectedChannel
           ? _presets[widget.device.selectedChannel].channelColor
@@ -104,11 +106,12 @@ class _ChannelSelectorState extends State<ChannelSelector> {
               color: col,
               size: 32,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6.0),
-              child: FittedBox(
-                  fit: BoxFit.fill, child: Text(_presets[i].channelName)),
-            ),
+            if (_presets[i].channelName.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: FittedBox(
+                    fit: BoxFit.fill, child: Text(_presets[i].channelName)),
+              ),
           ],
         );
       } else {
@@ -294,6 +297,16 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                     color: Colors.grey[900],
                     child: LayoutBuilder(
                       builder: (context, constraints) {
+                        if (_presets.length > 12) {
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: _createButtons(constraints.maxWidth,
+                                  horizontalButtonWidth: 48),
+                            ),
+                          );
+                        }
                         return Wrap(
                           alignment: WrapAlignment.center,
                           runAlignment: WrapAlignment.center,

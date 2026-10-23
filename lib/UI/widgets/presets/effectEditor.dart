@@ -30,6 +30,23 @@ class _EffectEditorState extends State<EffectEditor> {
     //create the widgets to edit them
     var selected = preset.getSelectedEffectForSlot(slot);
 
+    if (preset.slotBlocked(slot)) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.block, color: Colors.red, size: 40),
+          const SizedBox(width: 8),
+          Text(
+            "Replaced by NAM",
+            style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+                fontSize: 16),
+          ),
+        ],
+      );
+    }
+
     switch (prc[selected].editorUI) {
       case EffectEditorUI.Sliders:
         return SlidersEditor(preset: widget.preset, slot: widget.slot);

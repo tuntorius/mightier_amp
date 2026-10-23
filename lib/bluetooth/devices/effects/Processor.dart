@@ -20,6 +20,11 @@ class Parameter {
   bool masterVolume = false;
   MidiControllerHandle? midiControllerHandle;
 
+  /// the byte the GP-5's change-parameter command addresses for this parameter,
+  /// when that byte is not the parameter's position in the effect list
+  /// ([GP5Param.wireAddress]); null means the position is the address.
+  int? wireAddress;
+
   Parameter(
       {required this.value,
       required this.handle,
@@ -28,7 +33,8 @@ class Parameter {
       required this.midiCC,
       required this.devicePresetIndex,
       this.midiControllerHandle,
-      this.masterVolume = false});
+      this.masterVolume = false,
+      this.wireAddress});
 
   int get midiValue => formatter.valueToMidi7Bit(value);
   int get masterVolMidiValue => formatter

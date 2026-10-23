@@ -36,6 +36,10 @@ abstract class Preset {
   //checks if the effect slot can be switched on and off
   bool slotSwitchable(int index);
 
+  //returns whether the slot is currently unavailable for interaction
+  //(e.g. locked out because another block replaces it). Default: never.
+  bool slotBlocked(int index) => false;
+
   //returns whether the specific slot is on or off
   bool slotEnabled(int index);
 

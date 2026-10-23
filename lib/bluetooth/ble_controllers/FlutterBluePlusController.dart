@@ -9,6 +9,7 @@ MacOS is possible, due to almost 100% identical code to iOS
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/ble_controllers/BLEController.dart';
@@ -100,12 +101,12 @@ class FlutterBluePlusController extends BLEController {
   void startScanning() {
     if (bleState == BleState.off) return;
     setMidiSetupStatus(MidiSetupStatus.deviceSearching);
-    flutterBlue
-        .startScan(
-      timeout: const Duration(seconds: 8),
-      //withServices: [Guid(midiService)]
-    )
-        .then((result) {
+    flutterBlue.startScan(
+        timeout: const Duration(seconds: 8),
+        //bind the editor personality by service-UUID
+        //(requestDevice filters:[{services:[editor_service_uuid]}]) - this is what
+        //latches the config face instead of the echo-only audio face.
+        withServices: [Guid(BLEController.midiServiceGuid)]).then((result) {
       //if device is not connected after the search - set to idle
       if (_device == null) setMidiSetupStatus(MidiSetupStatus.deviceIdle);
     });
@@ -152,6 +153,12 @@ class FlutterBluePlusController extends BLEController {
       _device = device;
     }
 
+    //request a bigger MTU so larger notifications (e.g. the Valeton GP5
+    //patch list of 212 bytes) can be received
+    try {
+      await ownDevice.requestMtu(517);
+    } catch (_) {}
+
     List<BluetoothService> services = await ownDevice.discoverServices();
     //find midi service
     BluetoothService? midiService;
@@ -162,7 +169,13 @@ class FlutterBluePlusController extends BLEController {
     }
 
     if (midiService != null) {
-      for (var characteristic in midiService.characteristics) {
+      if (kDebugMode)
+        debugPrint('[GP5] midiService=${midiService.uuid} '
+            'chars=${midiService.characteristics?.length}');
+      for (var characteristic in midiService.characteristics ?? []) {
+        if (kDebugMode)
+          debugPrint(
+              '[GP5]   char=${characteristic.uuid} notify=${characteristic.properties?.notify}');
         if (characteristic.uuid == Guid(BLEController.midiCharacteristicGuid)) {
           if (ampDevice) {
             _connectAmpDevice(device.device, characteristic);

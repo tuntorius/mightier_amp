@@ -281,4 +281,77 @@ class ProcessorsList {
         color: Colors.orange,
         icon: Icons.blur_on),
   ];
+
+  static const List<ProcessorInfo> gp5List = [
+    ProcessorInfo(
+        shortName: "NR",
+        longName: "Noise Reduction",
+        keyName: "nr",
+        nuxFXID: GP5FXID.nr,
+        color: Colors.green,
+        icon: MightierIcons.gate),
+    ProcessorInfo(
+        shortName: "PRE",
+        longName: "Pre Effects",
+        keyName: "pre",
+        nuxFXID: GP5FXID.pre,
+        color: Colors.orange,
+        icon: MightierIcons.pedal),
+    ProcessorInfo(
+        shortName: "DST",
+        longName: "Distortion",
+        keyName: "dst",
+        nuxFXID: GP5FXID.dst,
+        color: Colors.orange,
+        icon: MightierIcons.pedal),
+    ProcessorInfo(
+        shortName: "AMP",
+        longName: "Amplifier",
+        keyName: "amp",
+        nuxFXID: GP5FXID.amp,
+        color: Colors.red,
+        icon: MightierIcons.amp),
+    ProcessorInfo(
+        shortName: "IR",
+        longName: "Cabinet",
+        keyName: "cab",
+        nuxFXID: GP5FXID.cab,
+        color: Color(0xFF29B6F6), //lightBlue[400]
+        icon: MightierIcons.cabinet),
+    ProcessorInfo(
+        shortName: "EQ",
+        longName: "Equalizer",
+        keyName: "eq",
+        nuxFXID: GP5FXID.eq,
+        color: Color(0xFFE0E0E0), //grey[300]
+        icon: MightierIcons.sliders),
+    ProcessorInfo(
+        shortName: "MOD",
+        longName: "Modulation",
+        keyName: "mod",
+        nuxFXID: GP5FXID.mod,
+        color: Color(0xFF7E57C2), //deepPurple[400]
+        icon: Icons.waves),
+    ProcessorInfo(
+        shortName: "DLY",
+        longName: "Delay",
+        keyName: "dly",
+        nuxFXID: GP5FXID.dly,
+        color: Color(0xFF4DD0E1), //cyan[300]
+        icon: Icons.blur_linear),
+    ProcessorInfo(
+        shortName: "RVB",
+        longName: "Reverb",
+        keyName: "rvb",
+        nuxFXID: GP5FXID.rvb,
+        color: Color(0xFFCE93D8), //purple[200]
+        icon: Icons.blur_on),
+    ProcessorInfo(
+        shortName: "NAM",
+        longName: "NAM Snaptones",
+        keyName: "ns",
+        nuxFXID: GP5FXID.ns,
+        color: Colors.teal,
+        icon: Icons.graphic_eq),
+  ];
 }

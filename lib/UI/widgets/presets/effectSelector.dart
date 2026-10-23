@@ -190,11 +190,13 @@ class _EffectSelectorState extends State<EffectSelector> {
             preset: _preset,
             reorderable: widget.device.reorderableFXChain,
             onTap: (i) {
+              if (_preset.slotBlocked(i)) return;
               setState(() {
                 _selectedSlot = i;
               });
             },
             onDoubleTap: (int i) {
+              if (_preset.slotBlocked(i)) return;
               if (_preset.slotSwitchable(i)) {
                 bool state = _preset.slotEnabled(i);
                 _setSlotEnabledState(i, !state);
@@ -275,10 +277,13 @@ class _EffectSelectorState extends State<EffectSelector> {
                     Tooltip(
                       message: "Toggle ${effectInfo.longName}",
                       child: Switch(
-                        value: _preset.slotEnabled(_selectedSlot),
-                        onChanged: (val) {
-                          _setSlotEnabledState(_selectedSlot, val);
-                        },
+                        value: _preset.slotEnabled(_selectedSlot) &&
+                            !_preset.slotBlocked(_selectedSlot),
+                        onChanged: _preset.slotBlocked(_selectedSlot)
+                            ? null
+                            : (val) {
+                                _setSlotEnabledState(_selectedSlot, val);
+                              },
                         activeColor: _effectColorBright,
                         inactiveThumbColor: Colors.grey,
                         inactiveTrackColor: Colors.grey[700],

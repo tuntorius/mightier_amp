@@ -5,6 +5,7 @@ import '../../../bluetooth/devices/effects/Processor.dart';
 class EffectChainButton extends StatelessWidget {
   final ProcessorInfo effectInfo;
   final bool enabled;
+  final bool blocked;
   final bool selected;
   final bool reorderable;
   final Color color;
@@ -16,6 +17,7 @@ class EffectChainButton extends StatelessWidget {
       {Key? key,
       required this.effectInfo,
       required this.enabled,
+      this.blocked = false,
       required this.selected,
       required this.color,
       this.onTap,
@@ -37,44 +39,59 @@ class EffectChainButton extends StatelessWidget {
             label: effectInfo.longName,
             selected: selected,
             child: GestureDetector(
-              onTap: onTap,
+              onTap: blocked ? null : onTap,
               onHorizontalDragStart: reorderable ? null : (details) {},
               onVerticalDragStart: (details) {
-                onDoubleTap?.call();
+                if (!blocked) onDoubleTap?.call();
               },
               child: Transform.translate(
                 offset: Offset(0, selected ? -5 : 0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                child: Stack(
                   children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 1),
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: selected
-                              ? _color
-                              : Theme.of(context).scaffoldBackgroundColor,
-                          border: Border.all(
-                            color: _color,
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 1),
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                              color: selected
+                                  ? _color
+                                  : Theme.of(context).scaffoldBackgroundColor,
+                              border: Border.all(
+                                color: _color,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(3))),
+                          child: Icon(
+                            effectInfo.icon,
+                            //size: 30,
+                            color: selected ? Colors.black : _color,
                           ),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(3))),
-                      child: Icon(
-                        effectInfo.icon,
-                        //size: 30,
-                        color: selected ? Colors.black : _color,
-                      ),
+                        ),
+                        ExcludeSemantics(
+                          child: Text(
+                            effectInfo.shortName,
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: enabled
+                                    ? null
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color),
+                          ),
+                        ),
+                      ],
                     ),
-                    ExcludeSemantics(
-                      child: Text(
-                        effectInfo.shortName,
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: enabled
-                                ? null
-                                : Theme.of(context).textTheme.bodySmall!.color),
+                    if (blocked)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: CustomPaint(
+                            painter: _BlockedPainter(color: Colors.red),
+                          ),
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -84,4 +101,21 @@ class EffectChainButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _BlockedPainter extends CustomPainter {
+  final Color color;
+  _BlockedPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color.withAlpha(200)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(Offset(0, size.height), Offset(size.width, 0), paint);
+  }
+
+  @override
+  bool shouldRepaint(_BlockedPainter oldDelegate) => oldDelegate.color != color;
 }

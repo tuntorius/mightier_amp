@@ -37,9 +37,6 @@ class PlugProFXID extends NuxFXID {
   static const reverb = PlugProFXID._internal(PresetDataIndexPlugPro.Head_iRVB);
   static const cab = PlugProFXID._internal(PresetDataIndexPlugPro.Head_iCAB);
   static const sr = PlugProFXID._internal(PresetDataIndexPlugPro.Head_iSR);
-
-  //@override
-  //bool operator ==(covariant NuxFXID other) => other.value == value;
 }
 
 class PlugBTFXID extends NuxFXID {
@@ -68,4 +65,14 @@ class LiteMK2FXID extends NuxFXID {
   static const mod = LiteFXID._internal(4);
   static const delay = LiteFXID._internal(5);
   static const reverb = LiteFXID._internal(6);
+}
+
+class MightyNamFXID extends NuxFXID {
+  const MightyNamFXID._internal(int value) : super._internal(value);
+  static const nam      = MightyNamFXID._internal(100);
+  static const cutEq    = MightyNamFXID._internal(101);
+  static const pitch    = MightyNamFXID._internal(102);
+  static const daisyWah = MightyNamFXID._internal(103);
+  static const fxA      = MightyNamFXID._internal(104);
+  static const fxB      = MightyNamFXID._internal(105);
 }

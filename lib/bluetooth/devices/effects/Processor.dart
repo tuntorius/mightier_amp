@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/ValueFormatter.dart';
-
 import '../NuxFXID.dart';
 import '../../../utilities/MathEx.dart';
 import '../value_formatters/SwitchFormatters.dart';
@@ -16,26 +15,44 @@ class Parameter {
   String handle;
   int midiCC;
   int devicePresetIndex;
-  double value;
+  
+  double _value;
+  
+  // Upper and lower boundaries populated from App Settings
+  double? limitMin;
+  double? limitMax;
+  
   bool masterVolume = false;
   MidiControllerHandle? midiControllerHandle;
 
   Parameter(
-      {required this.value,
+      {required double value,
       required this.handle,
       required this.formatter,
       required this.name,
       required this.midiCC,
       required this.devicePresetIndex,
       this.midiControllerHandle,
-      this.masterVolume = false});
+      this.masterVolume = false}) : _value = value;
+
+  double get value => _value;
+
+  // Clamps the value against user-defined boundaries before assigning
+  set value(double val) {
+    double clamped = val;
+    if (limitMin != null && clamped < limitMin!) clamped = limitMin!;
+    if (limitMax != null && clamped > limitMax!) clamped = limitMax!;
+    _value = clamped;
+  }
 
   int get midiValue => formatter.valueToMidi7Bit(value);
   int get masterVolMidiValue => formatter
       .valueToMidi7Bit(value * (NuxDeviceControl().masterVolume * 0.01));
-  set midiValue(mv) => value = formatter.midi7BitToValue(mv);
-  String get label => formatter.toLabel(value);
 
+  set midiValue(mv) => value = formatter.midi7BitToValue(mv);
+
+  String get label => formatter.toLabel(value);
+  
   double toHumanInput() {
     return formatter.toHumanInput(value);
   }
@@ -53,6 +70,7 @@ class ProcessorInfo {
   final NuxFXID nuxFXID;
   final Color color;
   final IconData icon;
+
   const ProcessorInfo(
       {required this.shortName,
       required this.longName,
@@ -66,7 +84,6 @@ enum EffectEditorUI { Sliders, EQ }
 
 abstract class Processor {
   String get name;
-
   List<Parameter> get parameters;
 
   //the number which the nux device uses to refer to the effect
@@ -74,12 +91,12 @@ abstract class Processor {
 
   //index in nux data array where the effect type is set
   int? get nuxEffectTypeIndex;
-
   int? get nuxEnableIndex;
   int get nuxEnableMask => 0x7f;
   bool get nuxEnableInverted => false;
 
   EffectEditorUI get editorUI;
+
   //The CC command that switches the effect on/off
   int get midiCCEnableValue;
 
@@ -127,7 +144,6 @@ abstract class Processor {
   void getNuxPayload(List<int> nuxData, bool enabled) {
     if (nuxEffectTypeIndex != null) nuxData[nuxEffectTypeIndex!] = nuxIndex;
     for (int i = 0; i < parameters.length; i++) {
-      //TODO: isn't this supposed to use valueformatter valueToMidi7Bit()
       int value = MathEx.map(
               parameters[i].value,
               parameters[i].formatter.min.toDouble(),

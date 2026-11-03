@@ -19,6 +19,7 @@ import 'devices/NuxMighty2040BT.dart';
 import 'devices/NuxMightyLite.dart';
 import 'devices/NuxMightyLiteMk2.dart';
 import 'devices/NuxMightyPlugAir.dart';
+import 'devices/NuxMightyNamPro.dart';
 import 'devices/NuxMightyPlugPro.dart';
 import 'devices/NuxMightySpace.dart';
 import 'devices/effects/Processor.dart';
@@ -174,13 +175,18 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   NuxDevice deviceFromBLEId(String id) {
+    // 1. Prevent overriding manual selection if the current device shares this BLE name
+    if (_device.productBLENames.containsPartial(id)) {
+      return _device;
+    }
+
+    // 2. Otherwise, fall back to the first match in the registry
     for (int i = 0; i < _deviceInstances.length; i++) {
       if (_deviceInstances[i].productBLENames.containsPartial(id)) {
         return _deviceInstances[i];
       }
     }
-
-    //return plug/air by default
+    // Return plug/air by default
     return _deviceInstances[0];
   }
 
@@ -250,6 +256,7 @@ class NuxDeviceControl extends ChangeNotifier {
     //create all supported devices
     _deviceInstances.add(NuxMightyPlug(this));
     _deviceInstances.add(NuxMightyPlugPro(this));
+    _deviceInstances.add(NuxMightyNamPro(this));
     _deviceInstances.add(NuxMightySpace(this));
     _deviceInstances.add(NuxMighty8BT(this));
     _deviceInstances.add(NuxMighty2040BT(this));

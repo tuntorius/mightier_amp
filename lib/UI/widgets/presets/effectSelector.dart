@@ -136,7 +136,7 @@ class _EffectSelectorState extends State<EffectSelector> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
-            "${f + 1}. ${effects[f].name}",
+            "${f + 1}.${effects[f].name}",
             style: TextStyle(
                 color: f == _preset.getSelectedEffectForSlot(_selectedSlot)
                     ? (TinyColor.fromColor(popupEffectColor).isLight()
@@ -241,6 +241,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                   itemBuilder: (context) => _effectItems,
                   onSelected: setSelectedEffect,
                   initialValue: _preset.getSelectedEffectForSlot(_selectedSlot),
+                  offset: const Offset(0, 4),
                   child: effectSelectButton,
                 )
               else
@@ -280,7 +281,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                     ),
                   if (_preset.slotSwitchable(_selectedSlot))
                     Tooltip(
-                      message: "Toggle ${effectInfo.longName}",
+                      message: "Toggle \${effectInfo.longName}",
                       child: Switch(
                         value: _preset.slotEnabled(_selectedSlot),
                         onChanged: (val) {

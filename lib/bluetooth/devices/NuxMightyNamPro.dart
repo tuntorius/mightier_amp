@@ -41,8 +41,9 @@ class NuxMightyNamPro extends NuxMightyPlugPro {
   @override
   int get effectsChainLength => 11;
 
+  // CHANGED: Isolate presets from standard mighty_plug_pro presets.
   @override
-  String get presetClass => "mighty_plug_pro";
+  String get presetClass => "mighty_nam_pro";
 
   @override
   List<String> get productBLENames => ["MIGHTY PLUG PRO", "MIGHTY NAM"];

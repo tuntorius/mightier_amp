@@ -3,7 +3,6 @@ import 'package:mighty_plug_manager/bluetooth/devices/value_formatters/SwitchFor
 
 import 'TempoFormatter.dart';
 import 'DecibelFormatter.dart';
-import 'PercentageFormatter.dart';
 
 enum InputType { SliderInput, SwitchInput }
 
@@ -37,7 +36,8 @@ class ValueFormatters {
 
   // ── mighty-nam Extra FX ──────────────────────────────────────────────────
   static NamFxPercentageFormatter namFxPercentage = NamFxPercentageFormatter();
-  static NamFxSemitoneFormatter namFxSemitone = NamFxSemitoneFormatter();}
+  static NamFxSemitoneFormatter namFxSemitone = NamFxSemitoneFormatter();
+}
 
 // ── mighty-nam Extra FX formatters ────────────────────────────────────────────
 
@@ -63,7 +63,7 @@ class NamFxPercentageFormatter extends ValueFormatter {
   double midi7BitToValue(int midi7bit) => midi7bit.toDouble();
 
   @override
-  String toLabel(double value) => '${value.round()} %';
+  String toLabel(double value) => value.round().toString() + ' %';
 }
 
 /// Semitone formatter for the mighty-nam Pitch effect.
@@ -92,7 +92,7 @@ class NamFxSemitoneFormatter extends ValueFormatter {
   String toLabel(double value) {
     final semitones = value.round() - 12;
     final sign = semitones > 0 ? '+' : '';
-    return '$sign$semitones st';
+    return sign + semitones.toString() + ' st';
   }
 }
 
@@ -112,5 +112,49 @@ abstract class ValueFormatter {
 
   double fromHumanInput(double value) {
     return value;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Consolidated Percentage Formatters
+// ─────────────────────────────────────────────────────────────────────────────
+
+class PercentageFormatter extends ValueFormatter {
+  @override
+  InputType get inputType => InputType.SliderInput;
+
+  @override
+  int valueToMidi7Bit(double value) {
+    return (value / 100 * 127).floor();
+  }
+
+  @override
+  double midi7BitToValue(int midi7bit) {
+    return (midi7bit / 127.0) * 100;
+  }
+
+  @override
+  String toLabel(double value) {
+    return value.round().toString() + "%";
+  }
+}
+
+class PercentageFormatterMPPro extends ValueFormatter {
+  @override
+  InputType get inputType => InputType.SliderInput;
+
+  @override
+  int valueToMidi7Bit(double value) {
+    return value.round();
+  }
+
+  @override
+  double midi7BitToValue(int midi7bit) {
+    return midi7bit.toDouble();
+  }
+
+  @override
+  String toLabel(double value) {
+    return value.round().toString() + "%";
   }
 }

@@ -12,7 +12,7 @@ const List<String> extraFxNames = [
   'Vibrato'
 ];
 
-/// Formats semitones (-12..+12 st), Hertz (0.05..8.00 Hz), and percentages.
+/// Formats semitones (-12..+12 semitones), Hertz (0.05..8.00 Hz), and percentages.
 class FxValueFormatter extends ValueFormatter {
   final int index;
   FxValueFormatter(this.index);
@@ -35,7 +35,9 @@ class FxValueFormatter extends ValueFormatter {
   @override
   String toLabel(double value) {
     if (index == 3) {
-      return '${value.round() - 12 > 0 ? '+' : ''}${value.round() - 12} semitones';
+      final semitones = value.round() - 12;
+      final sign = semitones > 0 ? '+' : '';
+      return '$sign$semitones semitones';
     } else if (index == 5) {
       final hz = 0.05 + 7.95 * value / 100;
       return '${hz.toStringAsFixed(2)} Hz';
@@ -83,12 +85,13 @@ abstract class NamExtraFX extends Processor {
   NamExtraFX(this.nuxIndex)
       : parameters = [
           if (nuxIndex == 1) _createParam('Pitch', 3, 12),
-          if (nuxIndex >= 3) ...[
+          if (nuxIndex >= 3 && nuxIndex <= 7) ...[
             _createParam('Rate', 5, 30),
             _createParam('Depth', 6, 50),
           ],
           if (nuxIndex == 4 || nuxIndex == 5) _createParam('Feedback', 7, 0),
-          if (nuxIndex == 2) ...[
+          // Map Daisy Wah (103) parameters securely
+          if (nuxIndex == 2 || nuxIndex == 103) ...[
             _createParam('Sensitivity', 8, 50),
             _createParam('Resonance', 9, 50),
           ],
@@ -101,8 +104,8 @@ abstract class NamExtraFX extends Processor {
         handle: 'fx_$index',
         value: value,
         formatter: FxValueFormatter(index),
-        devicePresetIndex: index,
-        midiCC: -1,
+        devicePresetIndex: index, // This matches the exact NF payload byte offset
+        midiCC: -1, // -1 forces NamProPreset.dart to intercept the write via NF SysEx
       );
 
   @override
@@ -154,4 +157,12 @@ class NamTremolo extends NamExtraFX {
 
 class NamVibrato extends NamExtraFX {
   NamVibrato() : super(7);
+}
+
+class NamDaisyWah extends NamExtraFX {
+  @override
+  final String name = "Daisy Wah";
+
+  // Native app override for custom wah routing
+  NamDaisyWah() : super(103);
 }

@@ -283,7 +283,10 @@ class _PresetListState extends State<PresetList>
 
   Widget _createPresetTree(Widget? header, bool hideNonApplicable) {
     List<DragAndDropListInterface> list = List.generate(
-        _lists.length, (index) => _buildList(index, hideNonApplicable));
+        _lists.length, (index) => _buildList(index, hideNonApplicable))
+        .where((element) => element != null)
+        .cast<DragAndDropListInterface>()
+        .toList();
 
     return SafeArea(
       child: CustomScrollView(
@@ -305,7 +308,10 @@ class _PresetListState extends State<PresetList>
 
   Widget _createPresetTreeSimple(bool hideNonApplicable) {
     List<DragAndDropListInterface> list = List.generate(
-        _lists.length, (index) => _buildList(index, hideNonApplicable));
+        _lists.length, (index) => _buildList(index, hideNonApplicable))
+        .where((element) => element != null)
+        .cast<DragAndDropListInterface>()
+        .toList();
     return _createDragDropList(list, null, false, disableScrolling: true);
   }
 
@@ -395,7 +401,25 @@ class _PresetListState extends State<PresetList>
 
   _buildList(int outerIndex, bool hideNonApplicable) {
     Map category = _lists[outerIndex];
-    List presets = category["presets"];
+    List allPresets = category["presets"];
+
+    // 1. Pre-filter the presets if hideNonApplicable is active
+    List presets = [];
+    if (hideNonApplicable) {
+      for (var p in allPresets) {
+        if (device.isPresetSupported(p)) {
+          presets.add(p);
+        }
+      }
+    } else {
+      presets = List.from(allPresets);
+    }
+
+    // 2. If the category is completely empty after filtering, return null to drop it from the tree.
+    // The library builder must filter out nulls before rendering.
+    if (presets.isEmpty && hideNonApplicable) {
+      return null;
+    }
 
     bool containsSelected = false;
     String currentUuid = NuxDeviceControl.instance().presetUUID;

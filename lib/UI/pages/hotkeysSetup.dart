@@ -121,8 +121,9 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
 
       var switchable = dev.getPreset(dev.selectedChannel).slotSwitchable(slot);
       var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(slot);
+      
       var fx = effects[0];
-      if (switchable) {
+      if (switchable && fx.midiControlOn != null && fx.midiControlOff != null && fx.midiControlToggle != null) {
         widgets.add(buildWidget(
             "Switch $name on",
             icon,
@@ -148,7 +149,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
             0,
             false));
       }
-      if (effects.length > 1) {
+      if (effects.length > 1 && fx.midiControlPrev != null && fx.midiControlNext != null) {
         widgets.add(buildWidget(
             "Previous $name",
             icon,
@@ -176,7 +177,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     var dev = NuxDeviceControl.instance().device;
 
     //add master volume
-    widgets.add(buildWidget("Volume", Icons.volume_up, Theme.of(context).iconTheme.color,
+    widgets.add(buildWidget("Volume", Icons.volume_up, null,
         HotkeyControl.MasterVolumeSet, 0, 0, true,
         infoButton: null));
 

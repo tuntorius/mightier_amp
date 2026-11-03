@@ -121,11 +121,26 @@ abstract class BLEController {
   void sendData(List<int> data) {
     var queueLength = dataQueue.length;
 
-    if (data[2] == MidiMessageValues.controlChange && dataQueue.isNotEmpty) {
-      //check if another CC message with the same code is in the queue and remove it
+    // Deduplicate standard CC messages to prevent saturation
+    if (data.length > 3 && data[2] == MidiMessageValues.controlChange && dataQueue.isNotEmpty) {
       dataQueue.removeWhere((element) =>
+          element.length > 3 &&
           element[2] == MidiMessageValues.controlChange &&
           element[3] == data[3]);
+    }
+
+    // Deduplicate custom NF SysEx messages so rapid slider movements don't choke the BLE queue.
+    // The mighty-nam payload writes op(1) inside [0x80, 0x80, 0xF0, 0x43, 0x58, 0x70, 0x04, 0x02, 0x4E, 0x46]
+    // where 0x4E ('N') is data[8] and 0x46 ('F') is data[9].
+    if (data.length > 10 &&
+        data[2] == MidiMessageValues.sysExStart &&
+        data[8] == 0x4E && 
+        data[9] == 0x46) {
+      dataQueue.removeWhere((element) =>
+          element.length > 10 &&
+          element[2] == MidiMessageValues.sysExStart &&
+          element[8] == 0x4E &&
+          element[9] == 0x46);
     }
 
     dataQueue.addLast(data);
@@ -149,8 +164,6 @@ abstract class BLEController {
   void dispose();
 
   void _queueSender() async {
-    //Stopwatch stopwatch = Stopwatch()..start();
-    //List<int> currentData = List<int>();
     bool noResponse = true;
     while (dataQueue.isNotEmpty) {
       if (connectedDevice == null) {
@@ -161,34 +174,7 @@ abstract class BLEController {
         if (isWriteReady) {
           var data = dataQueue.first;
 
-          //try to combine CC messages in single running message
-          //default MTU 23 bytes per packet (maybe 20???)
-          /*int elementsCount = 0;
-          if ((data[2] == MidiMessageValues.controlChange ||
-                  data[2] == MidiMessageValues.programChange) &&
-              dataQueue.length > 1) {
-            for (var element in dataQueue) {
-              if (element[2] == MidiMessageValues.controlChange ||
-                  element[2] == MidiMessageValues.programChange) {
-                elementsCount++;
-                if (elementsCount == 2) break;
-              } else {
-                break;
-              }
-            }
-            List<int> dataPacket = [data[0], data[1], data[2]];
-            for (int i = 0; i < elementsCount; i++) {
-              var dataElement = dataQueue.elementAt(i);
-              dataPacket.add(dataElement[3]);
-              dataPacket.add(dataElement[4]);
-            }
-            await writeToCharacteristic(dataPacket);
-            print("Combined: ${dataPacket.toString()}");
-            for (int i = 0; i < elementsCount; i++) {
-              dataQueue.removeFirst();
-            }
-          } else {*/
-          //any other message
+          // Special NUX system commands that require response
           if (Platform.isAndroid &&
               data[2] == MidiMessageValues.sysExStart &&
               data[6] == SyxMsg.kSYX_MODULELINK) {
@@ -201,22 +187,15 @@ abstract class BLEController {
           }
           noResponse = true;
           dataQueue.removeFirst();
-          //}
         } else {
           dataQueue.clear();
         }
       } catch (e) {
         debugPrint(e.toString());
-
-        //noResponse = false;
-        //await Future.delayed(const Duration(milliseconds: 50));
       }
     }
     _onQueueEmpty?.call();
     _onQueueEmpty = null;
-    // if (kDebugMode) {
-    //   Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
-    // }
   }
 
   @protected

@@ -17,7 +17,6 @@ const int _kNfReplyMinLength = 50;
 const int _kNfOpOffset = 11; // ts(0,1) + F0(2) + hdr(3..10) -> opEcho at 11
 
 /// Byte offset where the 32-byte config payload begins in a BLE-framed NF reply.
-/// raw index 15 + 2 BLE prefix = 17
 const int _kNfPayloadOffset = 17;
 
 class NamProCommunication extends PlugProCommunication {
@@ -29,11 +28,19 @@ class NamProCommunication extends PlugProCommunication {
   /// Transmits the 32-byte Faust configuration to the custom firmware
   /// via the custom "NF" SysEx protocol.
   void sendNfPayload(List<int> config32) {
-    if (!device.deviceControl.isConnected) return;
+    if (!device.deviceControl.isConnected) {
+      debugPrint("NamProComm: sendNfPayload skipped - Device not connected");
+      return;
+    }
+
+    debugPrint(">>> TRANSMITTING NF SYSEX (${config32.length} bytes): $config32");
+
     _nfNonce = (_nfNonce % 16383) + 1;
     final int token = _nfNonce;
     final int slot = device.selectedChannel;
 
+    // Fixed wire frame: exactly 52 bytes of MIDI SysEx (from 0xF0 to 0xF7).
+    // Preceded by [0x80, 0x80] BLE MIDI timestamp header (total 54 bytes).
     final List<int> payload = [
       0x80,
       0x80, // BLE MIDI timestamp header
@@ -52,9 +59,8 @@ class NamProCommunication extends PlugProCommunication {
       (token >> 7) & 127,
       0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, // 5 model checksum bytes (zero placeholder)
-      ...config32, // 32-byte Faust configuration payload
-      0x80,
-      MidiMessageValues.sysExEnd // 0xF7
+      ...config32, // Exactly 32 bytes Faust configuration payload
+      MidiMessageValues.sysExEnd // 0xF7 (SysEx end directly; no trailing 0x80)
     ];
 
     device.deviceControl.sendBLEData(payload);
@@ -104,15 +110,13 @@ class NamProCommunication extends PlugProCommunication {
   // NF Readback
   // ---------------------------------------------------------------------------
 
-  /// Sends a 14-byte NF query SysEx to read the live Extra FX state from the
-  /// hardware. Use [op] = 0 for the live edit buffer or [op] = 2 for the
-  /// stored preset slot.
   void requestNfPayload({int op = 0, int? slot}) {
     if (!device.deviceControl.isConnected) return;
     _nfNonce = (_nfNonce % 16383) + 1;
     final int token = _nfNonce;
     final int targetSlot = slot ?? device.selectedChannel;
 
+    // Strict 14-byte MIDI SysEx (F0 to F7), 16 bytes total over BLE including [0x80, 0x80]
     final List<int> frame = [
       0x80,
       0x80, // BLE MIDI timestamp header
@@ -129,15 +133,12 @@ class NamProCommunication extends PlugProCommunication {
       targetSlot == 255 ? 127 : targetSlot,
       token & 127,
       (token >> 7) & 127,
-      0x80,
-      MidiMessageValues.sysExEnd, // 0xF7
+      MidiMessageValues.sysExEnd, // 0xF7 (SysEx end directly; no trailing 0x80)
     ];
 
     device.deviceControl.sendBLEData(frame);
   }
 
-  /// Returns true if [data] begins with the NF SysEx header (including BLE
-  /// timestamp prefix) and has enough bytes to contain the 32-byte payload.
   bool _isNfReply(List<int> data) {
     if (data.length < _kNfReplyMinLength) return false;
     if (data[2] != MidiMessageValues.sysExStart) return false;
@@ -147,19 +148,12 @@ class NamProCommunication extends PlugProCommunication {
     return true;
   }
 
-  /// Handles an incoming NF SysEx reply by extracting the 32-byte config and
-  /// applying it to the active preset.
   void _handleNfReply(List<int> data) {
-    // op field: hardware echoes back (requested_op | 0x40)
-    // 0x40 (64) = read live reply, 0x42 (66) = read preset reply, 0x41 (65) = write ACK
     final int opEcho = data[_kNfOpOffset];
     final int requestedOp = opEcho & ~0x40;
 
-    // If requestedOp == 1 (write), it is an ACK for a write command we just sent.
-    // Ignore it so it does not overwrite active slider drags with outdated echo state.
-    if (requestedOp == 1) {
-      return;
-    }
+    // Ignore write ACK to avoid overwriting active user sliders
+    if (requestedOp == 1) return;
 
     final int payloadStart = _kNfPayloadOffset;
     if (data.length < payloadStart + 32) {
@@ -179,26 +173,17 @@ class NamProCommunication extends PlugProCommunication {
 
   @override
   void onDataReceive(List<int> data) {
-    // Intercept NF SysEx replies before the stock PlugPro handler sees them.
     if (_isNfReply(data)) {
       _handleNfReply(data);
       return;
     }
 
-    // After the stock handler confirms the current preset/channel, request the
-    // live NF state so the Extra FX blocks reflect what is actually loaded on
-    // the hardware.
-    //
-    // Packet layout (BLE-framed): [ts, ts, F0, 43, 58, 70, 04, 02, 4E, 46,
-    //   kSYSEX_PRIVATE(70), kSYX_CURPRESET(msg), dir, channel, 0x32(ready)]
     if (data.length > 9 &&
         data[2] == MidiMessageValues.sysExStart &&
         data[5] == SysexPrivacy.kSYSEX_PRIVATE &&
         data[6] == SyxMsg.kSYX_CURPRESET &&
         data[9] == 0x32) {
-      // Let the stock handler process the channel change first.
       super.onDataReceive(data);
-      // Then fetch the live NF state for the newly active channel.
       requestNfPayload(op: 0);
       return;
     }

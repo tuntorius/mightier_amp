@@ -374,5 +374,6 @@ class ProcessorsList {
         NamPhaser(),
         NamTremolo(),
         NamVibrato(),
+        NamDaisyWah(),
       ];
 }

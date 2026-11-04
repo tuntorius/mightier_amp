@@ -110,6 +110,20 @@ class NamProCommunication extends PlugProCommunication {
     super.saveCurrentPreset(index);
   }
 
+  @override
+  List<int> setChannel(int channel) {
+    final result = super.setChannel(channel);
+    // When the app changes the channel, force a fetch of the new NF parameters 
+    // shortly after to overwrite any unsaved local tweaks with the hardware truth.
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (device.deviceControl.isConnected) {
+        requestModelCrc();
+        requestNfPayload(op: 0, slot: channel);
+      }
+    });
+    return result;
+  }
+
   void requestNfPayload({int op = 0, int? slot}) {
     if (!device.deviceControl.isConnected) return;
     _nfNonce = (_nfNonce % 16383) + 1;
@@ -142,6 +156,8 @@ class NamProCommunication extends PlugProCommunication {
   void _handleNfReply(List<int> data) {
     final int opEcho = data[_kNfOpOffset];
     final int requestedOp = opEcho & ~0x40;
+    
+    // Ignore write ACK to avoid overwriting active user sliders
     if (requestedOp == 1) return;
 
     final int payloadStart = _kNfPayloadOffset;
@@ -187,7 +203,18 @@ class NamProCommunication extends PlugProCommunication {
       return;
     }
 
-    // 3. Fallback to standard NUX processing
+    // 3. CRITICAL FIX: Intercept Hardware LED Button (Program Change)
+    // When the user presses the physical button, the device sends a PC message.
+    // We MUST request the new model CRC and the fresh NF payload, 
+    // otherwise the app will retain unsaved changes from the previous channel.
+    if (data.length >= 4 && (data[2] & 0xF0) == MidiMessageValues.programChange) {
+      super.onDataReceive(data); // Let base class update selected channel
+      requestModelCrc();
+      requestNfPayload(op: 0);
+      return;
+    }
+
+    // 4. Fallback to standard NUX processing
     if (data.length > 9 &&
         data[2] == MidiMessageValues.sysExStart &&
         data[5] == SysexPrivacy.kSYSEX_PRIVATE &&
@@ -195,7 +222,7 @@ class NamProCommunication extends PlugProCommunication {
         data[9] == 0x32) {
       super.onDataReceive(data);
       
-      // When channel changes, request the new model CRC, which will auto-trigger parameter syncing
+      // When channel changes during initial connect, request the new model CRC & sync
       requestModelCrc();
       requestNfPayload(op: 0);
       return;

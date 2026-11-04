@@ -28,14 +28,23 @@ class EffectChainBar extends StatelessWidget {
     required this.reorderable,
   }) : super(key: key);
 
-  EffectChainButton buildItem(context, index) {
+  Widget buildItem(context, index) {
     var proc = preset.getFXIDFromSlot(index);
     var effect = device.getProcessorInfoByFXID(proc);
+    
+    // SAFEGUARD: If the effect doesn't exist (e.g. during a transition), render empty space
+    if (effect == null) {
+       return SizedBox(
+         key: Key(index.toString()), 
+         width: 50,
+       );
+    }
+    
     bool selected = index == device.selectedSlot;
 
     return EffectChainButton(
       index: index,
-      effectInfo: effect!,
+      effectInfo: effect,
       color: preset.effectColor(index),
       enabled: preset.slotEnabled(index),
       selected: selected,

@@ -26,6 +26,9 @@ class NamProPreset extends PlugProPreset {
   final List<Processor> _fxAList = ProcessorsList.buildExtraFxList();
   final List<Processor> _fxBList = ProcessorsList.buildExtraFxList();
 
+  List<Processor> get efxList => getEffectsForFXID(PlugProFXID.efx);
+  List<Processor> get modulationList => getEffectsForFXID(PlugProFXID.mod);
+
   bool fxAEnabled = false;
   bool fxBEnabled = false;
   int selectedFxA = 0;
@@ -118,9 +121,13 @@ class NamProPreset extends PlugProPreset {
       case PresetDataIndexPlugPro.Head_iEQ:
         return _namEqList;
       case PresetDataIndexPlugPro.Head_iEFX:
-        return efxList; 
+        var slot = getSlotFromFXID(fxid);
+        if (slot != null) return super.getEffectsForSlot(slot);
+        return [];
       case PresetDataIndexPlugPro.Head_iMOD:
-        return modulationList; 
+        var slot = getSlotFromFXID(fxid);
+        if (slot != null) return super.getEffectsForSlot(slot);
+        return [];
       default:
         var slot = getSlotFromFXID(fxid);
         if (slot != null) {
@@ -286,9 +293,23 @@ class NamProPreset extends PlugProPreset {
       }
       for (int i = 0; i < 9; i++) {
         if (start + i < nuxData.length) {
-          stockOrder.add(NuxFXID.fromInt(nuxData[start + i]));
+          // CRITICAL FIX: Only add the block to the chain if it actually exists in 
+          // this specific device's processor list (filters out the ghost Wah block)
+          var fxid = NuxFXID.fromInt(nuxData[start + i]);
+          if (device.getProcessorInfoByFXID(fxid) != null) {
+            stockOrder.add(fxid);
+          }
         }
       }
+    }
+
+    // FILL GAPS: If legacy preset data provides less than 9 standard blocks, fill them in.
+    if (stockOrder.length < 9) {
+       for (var defaultFxid in PresetDataIndexPlugPro.defaultEffects) {
+          if (!stockOrder.contains(defaultFxid)) {
+              stockOrder.add(defaultFxid);
+          }
+       }
     }
 
     processorAtSlot.clear();

@@ -38,15 +38,25 @@ class PresetEffectPreview extends StatelessWidget {
           fontSize: 14);
     }
 
-    for (int i = 0; i < dev.processorList.length; i++) {
-      ProcessorInfo pi = dev.processorList[i];
+    bool isNamPro = dev.presetClass == "mighty_nam_pro";
 
+    // CRITICAL FIX: Extract the exact chain order from the saved JSON keys
+    // instead of iterating over the static factory processorList.
+    List<ProcessorInfo> dynamicChainOrder = [];
+    for (String key in preset.keys) {
+      var pi = dev.getProcessorInfoByKey(key);
+      if (pi != null) {
+        dynamicChainOrder.add(pi);
+      }
+    }
+
+    for (ProcessorInfo pi in dynamicChainOrder) {
       Color color = pi.color;
 
       if (!enabled) color = color.withAlpha(128);
 
       if (preset.containsKey(pi.keyName)) {
-        if (pi.keyName == "amp") {
+        if (!isNamPro && pi.keyName == "amp") {
           var name =
               dev.getAmpNameByNuxIndex(preset[pi.keyName]["fx_type"], pVersion);
           widgets.insert(
@@ -55,10 +65,10 @@ class PresetEffectPreview extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Text(name, style: ampStyle),
               ));
-        } else if (pi.keyName == "cabinet") {
+        } else if (!isNamPro && pi.keyName == "cabinet") {
           continue;
         } else {
-          bool fxEnabled = preset[pi.keyName]["enabled"];
+          bool fxEnabled = preset[pi.keyName]["enabled"] ?? false;
           widgets.add(Icon(
             pi.icon,
             color: fxEnabled

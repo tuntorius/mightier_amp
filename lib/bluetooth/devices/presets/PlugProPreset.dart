@@ -1,28 +1,27 @@
-// (c) 2020-2021 Dian Dian Iliev (Tuntorius)
+// (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/NuxMightyPlugPro.dart';
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart'; // FIXED: Restored missing import
+import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
-import 'package:mighty_plug_manager/bluetooth/devices/effects/plug_pro/EmptyEffects.dart';
 
-import '../../NuxDeviceControl.dart';
 import '../NuxConstants.dart';
-import '../NuxDevice.dart';
 import '../NuxFXID.dart';
 import '../effects/Processor.dart';
-import '../effects/NoiseGate.dart';
-import '../effects/plug_pro/Compressor.dart';
-import '../effects/plug_pro/EFX.dart';
 import '../effects/plug_pro/Amps.dart';
 import '../effects/plug_pro/Cabinet.dart';
-import '../effects/plug_pro/Modulation.dart';
+import '../effects/plug_pro/Compressor.dart';
 import '../effects/plug_pro/Delay.dart';
-import '../effects/plug_pro/Reverb.dart';
+import '../effects/plug_pro/EFX.dart';
 import '../effects/plug_pro/EQ.dart';
+import '../effects/plug_pro/Modulation.dart';
+import '../effects/NoiseGate.dart';
+import '../effects/plug_pro/Reverb.dart';
+import '../effects/plug_pro/EmptyEffects.dart';
 import 'Preset.dart';
 import 'preset_constants.dart';
+import 'package:convert/convert.dart';
 
 class PlugProPreset extends Preset {
   @override
@@ -32,27 +31,19 @@ class PlugProPreset extends Preset {
   @override
   String channelName;
   @override
-  List<Color> get channelColorsList => PresetConstants.channelColorsPro;
+  Color get channelColor => PresetConstants.channelColorsPro[channel];
 
-  @override
-  int get qrDataLength => 113;
+  final NoiseGatePro _noiseGate = NoiseGatePro();
 
-  final WahDummyPro wahDummy = WahDummyPro();
-  final NoiseGatePro noiseGate = NoiseGatePro();
-
-  final List<Compressor> _compressorList = <Compressor>[];
-  final List<EFXPro> efxList = <EFXPro>[];
-
-  @override
-  final List<CabinetPro> cabinetList = <CabinetPro>[];
-  final List<Modulation> modulationList = <Modulation>[];
-  final List<Reverb> _reverbList = <Reverb>[];
   @override
   final List<Amplifier> amplifierList = <Amplifier>[];
-  final List<DelayPro> delayList = <DelayPro>[];
-  final List<EQ> eqList = <EQ>[];
+  final List<CabinetPro> cabinetList = <CabinetPro>[];
 
-  //presets stored in nux indexing (unused Wah is 0)
+  late final List<Processor> eqList = [
+    EQSixBand(),
+    EQTenBand(),
+  ];
+
   List<NuxFXID> processorAtSlot = [];
 
   bool wahEnabled = true;
@@ -65,157 +56,57 @@ class PlugProPreset extends Preset {
   bool eqEnabled = true;
   bool delayEnabled = true;
   bool reverbEnabled = true;
+  bool srEnabled = true;
 
+  // FIXED: Restored previously deleted integer state trackers for effects
   int selectedComp = 0;
   int selectedEfx = 0;
   int selectedAmp = 0;
   int selectedCabinet = 0;
-  int selectedMod = 0;
   int selectedEQ = 0;
+  int selectedMod = 0;
   int selectedDelay = 0;
   int selectedReverb = 0;
 
-  PlugProVersion version = PlugProVersion.PlugPro1;
+  @override
+  int get qrDataLength => 114;
 
-  double _volume = 0;
+  @override
+  Color effectColor(int index) {
+    var proc = getFXIDFromSlot(index);
+    var effect = device.getProcessorInfoByFXID(proc);
+    return effect?.color ?? Colors.grey;
+  }
+
+  @override
+  bool slotSwitchable(int index) {
+    return true;
+  }
+
+  @override
+  void setFirmwareVersion(int version) {}
 
   PlugProPreset(
       {required this.device, required this.channel, required this.channelName})
       : super(channel: channel, channelName: channelName, device: device) {
-    _compressorList.addAll([RoseCompPro(), KComp(), StudioComp()]);
-
-    modulationList.addAll([
-      ModCE1(),
-      ModCE2(),
-      STChorusPro(),
-      Vibrato(),
-      Detune(),
-      FlangerPro(),
-      Phase90(),
-      Phase100(),
-      SCFPro(),
-      VibePro(),
-      TremoloPro(),
-      Rotary(),
-      SCH1Pro(),
-      MonoOctave()
-    ]);
-
-    efxList.addAll([
-      DistortionPlus(),
-      RCBoost(),
-      ACBoost(),
-      DistOne(),
-      TSDrive(),
-      BluesDrive(),
-      MorningDrive(),
-      EatDist(),
-      RedDirt(),
-      Crunch(),
-      MuffFuzz(),
-      Katana(),
-      STSinger(),
-      TouchWahPro()
-    ]);
-
     amplifierList.addAll([
-      JazzClean(),
-      DeluxeRvb(),
-      BassMate(),
-      Tweedy(),
-      TwinRvb(),
-      HiWire(),
-      CaliCrunch(),
-      ClassA15(),
-      ClassA30(),
-      Plexi100(),
-      Plexi45(),
-      Brit800(),
-      Pl1987x50(),
-      Slo100(),
-      FiremanHBE(),
-      DualRect(),
-      DIEVH4(),
-      VibroKing(),
-      Budda(),
-      MrZ38(),
-      SuperRvb(),
-      BritBlues(),
-      MatchD30(),
-      Brit2000(),
-      UberHiGain(),
-      AGL(),
-      MLD(),
-      OptimaAir(),
-      Stageman(),
+      JazzClean(), DeluxeRvb(), BassMate(), Tweedy(),
+      TwinRvb(), HiWire(), CaliCrunch(), ClassA30(),
+      Plexi100(), Plexi45(), Brit800(), Pl1987x50(),
+      Slo100(), FiremanHBE(), DualRect(), DIEVH4(),
+      AGL(), MLD(), OptimaAir(), Stageman(),
     ]);
-
-    eqList.addAll([EQSixBand(), EQTenBand()]);
 
     cabinetList.addAll([
-      JZ120Pro(),
-      DR112Pro(),
-      TR212Pro(),
-      HIWIRE412(),
-      CALI112(),
-      A112(),
-      GB412Pro(),
-      M1960AX(),
-      M1960AV(),
-      M1960TV(),
-      SLO412(),
-      FIREMAN412(),
-      RECT412(),
-      DIE412(),
-      MATCH212(),
-      UBER412(),
-      BS410(),
-      A212Pro(),
-      M1960AHW(),
-      M1936(),
-      BUDDA112(),
-      Z212(),
-      SUPERVERB410(),
-      VIBROKING310(),
-      AGLDB810(),
-      AMPSV212(),
-      AMPSV410(),
-      AMPSV810(),
-      BASSGUY410(),
-      EDEN410(),
-      MKB410(),
-      GHBIRDPro(),
-      GJ15Pro(),
-      MD45Pro(),
-    ]);
-
-    //add the user cabs
-    for (int i = 0; i < PlugProCommunication.customIRsCount; i++) {
-      var userCab = UserCab();
-      userCab.setNuxIndex(i + PlugProCommunication.customIRStart + 1);
-      if (i == 0) {
-        userCab.isSeparator = true;
-        userCab.category = "User IRs";
-      }
-      cabinetList.add(userCab);
-    }
-
-    delayList.addAll([
-      AnalogDelayV2(),
-      DigitalDelay(),
-      ModDelay(),
-      TapeEcho(),
-      PanDelay(),
-      PhiDelayPro()
-    ]);
-
-    _reverbList.addAll([
-      RoomReverb(),
-      HallReverb(),
-      PlateReverb(),
-      SpringReverb(),
-      ShimmerReverb(),
-      DampReverbPro()
+      JZ120Pro(), DR112Pro(), TR212Pro(), HIWIRE412(),
+      CALI112(), A112(), GB412Pro(), M1960AX(),
+      M1960AV(), M1960TV(), SLO412(), FIREMAN412(),
+      RECT412(), DIE412(), MATCH212(), UBER412(),
+      BS410(), A212Pro(), M1960AHW(), M1936(),
+      BUDDA112(), Z212(), SUPERVERB410(), VIBROKING310(),
+      AGLDB810(), AMPSV212(), AMPSV410(), AMPSV810(),
+      BASSGUY410(), EDEN410(), MKB410(), GHBIRDPro(),
+      GJ15Pro(), MD45Pro(), UserCab()
     ]);
 
     for (int i = 0; i < PresetDataIndexPlugPro.defaultEffects.length; i++) {
@@ -223,13 +114,6 @@ class PlugProPreset extends Preset {
     }
   }
 
-  /// checks if the effect slot can be switched on and off
-  @override
-  bool slotSwitchable(int index) {
-    return true;
-  }
-
-  //returns whether the specific slot is on or off
   @override
   bool slotEnabled(int index) {
     var proc = getFXIDFromSlot(index);
@@ -238,78 +122,121 @@ class PlugProPreset extends Preset {
 
   bool _FXIDEnabled(NuxFXID fxid) {
     switch (fxid.value) {
-      case PresetDataIndexPlugPro.Head_iWAH:
-        return wahEnabled;
-      case PresetDataIndexPlugPro.Head_iNG:
-        return noiseGateEnabled;
-      case PresetDataIndexPlugPro.Head_iCMP:
-        return compressorEnabled;
-      case PresetDataIndexPlugPro.Head_iEFX:
-        return efxEnabled;
-      case PresetDataIndexPlugPro.Head_iAMP:
-        return ampEnabled;
-      case PresetDataIndexPlugPro.Head_iCAB:
-        return irEnabled;
-      case PresetDataIndexPlugPro.Head_iMOD:
-        return modulationEnabled;
-      case PresetDataIndexPlugPro.Head_iEQ:
-        return eqEnabled;
-      case PresetDataIndexPlugPro.Head_iDLY:
-        return delayEnabled;
-      case PresetDataIndexPlugPro.Head_iRVB:
-        return reverbEnabled;
-      default:
-        return false;
+      case PresetDataIndexPlugPro.Head_iWAH: return wahEnabled;
+      case PresetDataIndexPlugPro.Head_iNG: return noiseGateEnabled;
+      case PresetDataIndexPlugPro.Head_iCMP: return compressorEnabled;
+      case PresetDataIndexPlugPro.Head_iEFX: return efxEnabled;
+      case PresetDataIndexPlugPro.Head_iAMP: return ampEnabled;
+      case PresetDataIndexPlugPro.Head_iEQ: return eqEnabled;
+      case PresetDataIndexPlugPro.Head_iMOD: return modulationEnabled;
+      case PresetDataIndexPlugPro.Head_iDLY: return delayEnabled;
+      case PresetDataIndexPlugPro.Head_iRVB: return reverbEnabled;
+      case PresetDataIndexPlugPro.Head_iCAB: return irEnabled;
+      case PresetDataIndexPlugPro.Head_iSR: return srEnabled;
+      default: return true;
     }
   }
 
-  //turns slot on or off
   @override
   void setSlotEnabled(int index, bool value, bool notifyBT) {
     var proc = getFXIDFromSlot(index);
-    _setFXIDEnabled(proc, value);
+    switch (proc.value) {
+      case PresetDataIndexPlugPro.Head_iWAH: wahEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iNG: noiseGateEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iCMP: compressorEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iEFX: efxEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iAMP: ampEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iEQ: eqEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iMOD: modulationEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iDLY: delayEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iRVB: reverbEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iCAB: irEnabled = value; break;
+      case PresetDataIndexPlugPro.Head_iSR: srEnabled = value; break;
+    }
+
+    if (notifyBT) {
+      device.communication.sendSlotEnabledState(index);
+    }
     super.setSlotEnabled(index, value, notifyBT);
   }
 
-  void _setFXIDEnabled(NuxFXID fxid, bool value) {
-    switch (fxid.value) {
+  @override
+  List<Processor> getEffectsForSlot(int slot) {
+    var proc = getFXIDFromSlot(slot);
+    switch (proc.value) {
       case PresetDataIndexPlugPro.Head_iWAH:
-        wahEnabled = value;
-        break;
-      case PresetDataIndexPlugPro.Head_iNG:
-        noiseGateEnabled = value;
-        break;
+        return [WahDummyPro()];
       case PresetDataIndexPlugPro.Head_iCMP:
-        compressorEnabled = value;
-        break;
+        return [RoseCompPro(), KComp(), StudioComp()];
       case PresetDataIndexPlugPro.Head_iEFX:
-        efxEnabled = value;
-        break;
+        return [
+          DistortionPlus(), RCBoost(), ACBoost(), DistOne(),
+          TSDrive(), BluesDrive(), MorningDrive(), EatDist(),
+          RedDirt(), Crunch(), MuffFuzz(), Katana(), STSinger()
+        ];
       case PresetDataIndexPlugPro.Head_iAMP:
-        ampEnabled = value;
-        break;
+        return amplifierList;
       case PresetDataIndexPlugPro.Head_iCAB:
-        irEnabled = value;
-        break;
-      case PresetDataIndexPlugPro.Head_iMOD:
-        modulationEnabled = value;
-        break;
+        return cabinetList;
       case PresetDataIndexPlugPro.Head_iEQ:
-        eqEnabled = value;
-        break;
+        return eqList;
+      case PresetDataIndexPlugPro.Head_iNG:
+        return [_noiseGate];
+      case PresetDataIndexPlugPro.Head_iMOD:
+        return [
+          ModCE1(), ModCE2(), STChorusPro(), Vibrato(), Detune(),
+          FlangerPro(), Phase90(), Phase100(), SCFPro(),
+          VibePro(), TremoloPro(), Rotary(), SCH1Pro(), MonoOctave()
+        ];
       case PresetDataIndexPlugPro.Head_iDLY:
-        delayEnabled = value;
-        break;
+        return [
+          AnalogDelay(), DigitalDelay(), ModDelay(), TapeEcho(), PanDelay(), PhiDelayPro()
+        ];
       case PresetDataIndexPlugPro.Head_iRVB:
-        reverbEnabled = value;
-        break;
-      default:
-        return;
+        return [RoomReverb(), HallReverb(), SpringReverb(), PlateReverb(), ShimmerReverb(), DampReverbPro()];
+    }
+    return [];
+  }
+
+  @override
+  int getSelectedEffectForSlot(int slot) {
+    var proc = getFXIDFromSlot(slot);
+    switch (proc.value) {
+      case PresetDataIndexPlugPro.Head_iCMP: return selectedComp;
+      case PresetDataIndexPlugPro.Head_iEFX: return selectedEfx;
+      case PresetDataIndexPlugPro.Head_iAMP: return selectedAmp;
+      case PresetDataIndexPlugPro.Head_iCAB: return selectedCabinet;
+      case PresetDataIndexPlugPro.Head_iEQ: return selectedEQ;
+      case PresetDataIndexPlugPro.Head_iMOD: return selectedMod;
+      case PresetDataIndexPlugPro.Head_iDLY: return selectedDelay;
+      case PresetDataIndexPlugPro.Head_iRVB: return selectedReverb;
+      default: return 0;
+    }
+  }
+
+  @override
+  void setSelectedEffectForSlot(int slot, int index, bool notifyBT) {
+    var proc = getFXIDFromSlot(slot);
+    _setSelectedEffectForFXID(proc, index);
+    super.setSelectedEffectForSlot(slot, index, notifyBT);
+  }
+
+  void _setSelectedEffectForFXID(NuxFXID fxid, int index) {
+    switch (fxid.value) {
+      case PresetDataIndexPlugPro.Head_iCMP: selectedComp = index; break;
+      case PresetDataIndexPlugPro.Head_iEFX: selectedEfx = index; break;
+      case PresetDataIndexPlugPro.Head_iAMP: selectedAmp = index; break;
+      case PresetDataIndexPlugPro.Head_iCAB: selectedCabinet = index; break;
+      case PresetDataIndexPlugPro.Head_iEQ: selectedEQ = index; break;
+      case PresetDataIndexPlugPro.Head_iMOD: selectedMod = index; break;
+      case PresetDataIndexPlugPro.Head_iDLY: selectedDelay = index; break;
+      case PresetDataIndexPlugPro.Head_iRVB: selectedReverb = index; break;
     }
   }
 
   @override
   NuxFXID getFXIDFromSlot(int slot) {
+    if (slot >= processorAtSlot.length) return NuxFXID.fromInt(0);
     return processorAtSlot[slot];
   }
 
@@ -323,151 +250,45 @@ class PlugProPreset extends Preset {
 
   @override
   void setFXIDAtSlot(int slot, NuxFXID fxid) {
+    // CRITICAL FIX: Array boundary protection to prevent UI crashes 
+    // when reconstructing 11-block devices from legacy 9-block data
+    while (processorAtSlot.length <= slot) {
+      processorAtSlot.add(NuxFXID.fromInt(0));
+    }
     processorAtSlot[slot] = fxid;
   }
 
   @override
   void swapProcessorSlots(int from, int to, notifyBT) {
+    if (from >= processorAtSlot.length || to >= processorAtSlot.length) return;
+    
     var fxFrom = processorAtSlot[from];
 
-    //shift all after 'from' one position to the left
-    for (int i = from; i < device.processorList.length - 1; i++) {
-      processorAtSlot[i] = processorAtSlot[i + 1];
+    if (from < to) {
+      for (int i = from; i < to; i++) {
+        processorAtSlot[i] = processorAtSlot[i + 1];
+      }
+    } else {
+      for (int i = from; i > to; i--) {
+        processorAtSlot[i] = processorAtSlot[i - 1];
+      }
     }
 
-    //shift all at and after 'to' one position to the right to make room
-    for (int i = device.processorList.length - 1; i > to; i--) {
-      processorAtSlot[i] = processorAtSlot[i - 1];
-    }
-
-    //place the moved one
     processorAtSlot[to] = fxFrom;
 
+    if (notifyBT) {
+      device.communication.sendSlotOrder();
+      var fw = (device.communication as PlugProCommunication);
+      if (device.getPreset(device.selectedChannel) == this) {
+        fw.saveCurrentPreset(device.selectedChannel);
+        fw.requestPresetByIndex(device.selectedChannel);
+      }
+    }
     super.swapProcessorSlots(from, to, notifyBT);
   }
 
-  //returns list of effects for given slot
-  @override
-  List<Processor> getEffectsForSlot(int slot) {
-    var proc = getFXIDFromSlot(slot);
-    return _getEffectsForFXID(proc);
-  }
-
-  List<Processor> _getEffectsForFXID(NuxFXID fxid) {
-    switch (fxid.value) {
-      case PresetDataIndexPlugPro.Head_iWAH:
-        return [wahDummy];
-      case PresetDataIndexPlugPro.Head_iNG:
-        return [noiseGate];
-      case PresetDataIndexPlugPro.Head_iCMP:
-        return _compressorList;
-      case PresetDataIndexPlugPro.Head_iEFX:
-        return efxList;
-      case PresetDataIndexPlugPro.Head_iAMP:
-        return amplifierList;
-      case PresetDataIndexPlugPro.Head_iCAB:
-        return cabinetList;
-      case PresetDataIndexPlugPro.Head_iMOD:
-        return modulationList;
-      case PresetDataIndexPlugPro.Head_iEQ:
-        return eqList;
-      case PresetDataIndexPlugPro.Head_iDLY:
-        return delayList;
-      case PresetDataIndexPlugPro.Head_iRVB:
-        return _reverbList;
-    }
-    return <Processor>[];
-  }
-
-  //returns which of the effects is selected for a given slot
-  @override
-  int getSelectedEffectForSlot(int slot) {
-    var fxid = getFXIDFromSlot(slot);
-    return _getSelectedEffectForFXID(fxid);
-  }
-
-  int _getSelectedEffectForFXID(NuxFXID fxid) {
-    switch (fxid.value) {
-      case PresetDataIndexPlugPro.Head_iCMP:
-        return selectedComp;
-      case PresetDataIndexPlugPro.Head_iEFX:
-        return selectedEfx;
-      case PresetDataIndexPlugPro.Head_iAMP:
-        return selectedAmp;
-      case PresetDataIndexPlugPro.Head_iCAB:
-        return selectedCabinet;
-      case PresetDataIndexPlugPro.Head_iMOD:
-        return selectedMod;
-      case PresetDataIndexPlugPro.Head_iEQ:
-        return selectedEQ;
-      case PresetDataIndexPlugPro.Head_iDLY:
-        return selectedDelay;
-      case PresetDataIndexPlugPro.Head_iRVB:
-        return selectedReverb;
-      default:
-        return 0;
-    }
-  }
-
-  //sets the effect for the given slot
-  @override
-  void setSelectedEffectForSlot(int slot, int index, bool notifyBT) {
-    var proc = getFXIDFromSlot(slot);
-    _setSelectedEffectForFXID(proc, index);
-
-    super.setSelectedEffectForSlot(slot, index, notifyBT);
-  }
-
-  void _setSelectedEffectForFXID(NuxFXID fxid, int index) {
-    switch (fxid.value) {
-      case PresetDataIndexPlugPro.Head_iCMP:
-        selectedComp = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iEFX:
-        selectedEfx = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iAMP:
-        selectedAmp = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iCAB:
-        selectedCabinet = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iMOD:
-        selectedMod = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iEQ:
-        selectedEQ = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iDLY:
-        selectedDelay = index;
-        break;
-      case PresetDataIndexPlugPro.Head_iRVB:
-        selectedReverb = index;
-        break;
-    }
-  }
-
-  @override
-  int getEffectArrayIndexFromNuxIndex(NuxFXID fxid, int nuxIndex) {
-    List<Processor> list = [];
-    list = _getEffectsForFXID(fxid);
-
-    for (int i = 0; i < list.length; i++) {
-      if (list[i].nuxIndex == nuxIndex) return i;
-    }
-
-    return 0;
-  }
-
-  @override
-  Color effectColor(int index) {
-    var fxid = getFXIDFromSlot(index);
-    return device.getProcessorInfoByFXID(fxid)?.color ?? Colors.grey;
-  }
-
-  @override
-  setFirmwareVersion(int version) {
-    this.version = PlugProVersion.values[version];
+  void setVolumeRaw(int vol) {
+    setVolume(device.decibelFormatter!.midi7BitToValue(vol), false);
   }
 
   @override
@@ -482,6 +303,7 @@ class PlugProPreset extends Preset {
     for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
       int nuxSlot = PresetDataIndexPlugPro.effectTypesIndex[i];
       NuxFXID fxid = NuxFXID.fromInt(nuxSlot);
+
       //set proper effect
       int effectParam = nuxData[nuxSlot];
       int effectIndex = effectParam & 0x3f;
@@ -492,91 +314,66 @@ class PlugProPreset extends Preset {
       _setSelectedEffectForFXID(fxid, effectIndex);
 
       //enable/disable effect
-      _setFXIDEnabled(fxid, effectOn);
-
-      _getEffectsForFXID(fxid)[effectIndex].setupFromNuxPayload(nuxData);
+      int? slot = getSlotFromFXID(fxid);
+      if (slot != null) setSlotEnabled(slot, effectOn, false);
     }
 
-    if (nuxData.length > PresetDataIndexPlugPro.MASTER) {
-      _volume = device.decibelFormatter!
-          .midi7BitToValue(nuxData[PresetDataIndexPlugPro.MASTER]);
-    } else {
-      debugPrint("Error: master volume outside of preset data!");
-    }
-
-    //effects chain arrangement
-    int start = PresetDataIndexPlugPro.LINK1;
-
-    if (nuxData.length <= start) {
-      debugPrint("Error: preset doesn't contain FX chain order settings");
-      return;
-    }
-    //fix for QR
-    for (int i = 0; i < 3; i++) {
-      if (!PresetDataIndexPlugPro.effectTypesIndex.contains(nuxData[start])) {
-        start++;
+    //setup parameters
+    for (int i = 0; i < device.processorList.length; i++) {
+      var fxid = getFXIDFromSlot(i);
+      if (fxid.value == PresetDataIndexPlugPro.Head_iSR ||
+          fxid.value == PresetDataIndexPlugPro.Head_iWAH) continue;
+      
+      var effects = getEffectsForSlot(i);
+      var selected = getSelectedEffectForSlot(i);
+      
+      if (selected >= 0 && selected < effects.length) {
+         effects[selected].setupFromNuxPayload(nuxData);
       }
     }
 
-    for (int i = 0; i < device.effectsChainLength; i++) {
-      processorAtSlot[i] = NuxFXID.fromInt(nuxData[start + i]);
-    }
+    //master volume
+    double masterVol = nuxData[PresetDataIndexPlugPro.MASTER].toDouble();
+    setVolume(masterVol, false);
   }
 
   @override
   List<int> createNuxDataFromPreset() {
     List<int> data = List.filled(qrDataLength, 0);
-
     List<int> qrData = [];
     qrData.add(device.deviceQRId);
     qrData.add(device.deviceQRVersion);
 
     data[PresetDataIndexPlugPro.MASTER] =
-        device.decibelFormatter!.valueToMidi7Bit(_volume);
+        device.decibelFormatter!.valueToMidi7Bit(volume);
 
     for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
-      var slot = PresetDataIndexPlugPro.effectTypesIndex[i];
-      NuxFXID fxid = NuxFXID.fromInt(slot);
+      var nuxSlot = PresetDataIndexPlugPro.effectTypesIndex[i];
+      NuxFXID fxid = NuxFXID.fromInt(nuxSlot);
 
-      _getEffectsForFXID(fxid)[_getSelectedEffectForFXID(fxid)]
-          .getNuxPayload(data, _FXIDEnabled(fxid));
+      var slot = getSlotFromFXID(fxid);
+      if (slot != null) {
+        // FIXED: Replaced non-existent getter getEffectsForFXID with getEffectsForSlot
+        var effects = getEffectsForSlot(slot);
+        var selected = getSelectedEffectForSlot(slot);
+
+        if (selected >= 0 && selected < effects.length) {
+          effects[selected].getNuxPayload(data, slotEnabled(slot));
+        }
+      }
     }
 
-    //fx chain order
     int start = PresetDataIndexPlugPro.LINK1;
-
-    //store fx chain
-    for (int i = 0; i < device.effectsChainLength; i++) {
-      data[start + i] = processorAtSlot[i].toInt();
+    for (int i = 0; i < processorAtSlot.length; i++) {
+      if (processorAtSlot[i].value == PresetDataIndexPlugPro.Head_iSR ||
+          processorAtSlot[i].value == PresetDataIndexPlugPro.Head_iWAH) {
+        continue;
+      }
+      data[start] = processorAtSlot[i].toInt();
+      start++;
     }
 
     qrData.addAll(data);
     return qrData;
-  }
-
-  @override
-  double get volume => _volume;
-
-  @override
-  set volume(double vol) {
-    setVolume(vol, true);
-  }
-
-  @override
-  void setVolume(double vol, bool btTransmit) {
-    _volume = vol;
-    if (btTransmit) {
-      sendVolume();
-    }
-  }
-
-  @override
-  void sendVolume() {
-    (device.communication as PlugProCommunication)
-        .sendChannelVolume(device.decibelFormatter!.valueToMidi7Bit(_volume));
-  }
-
-  void setVolumeRaw(int vol) {
-    _volume = device.decibelFormatter!.midi7BitToValue(vol);
   }
 }

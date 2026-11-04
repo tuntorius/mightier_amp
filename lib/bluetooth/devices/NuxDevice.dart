@@ -568,7 +568,6 @@ abstract class NuxDevice extends ChangeNotifier {
   Preset? presetFromJson(Map<String, dynamic> preset, double? overrideLevel,
       {bool qrOnly = false, bool dontChangeChannel = false}) {
     var pVersion = preset["version"] ?? 0;
-
     var nuxChannel = preset["channel"];
 
     if (!qrOnly) {
@@ -584,7 +583,6 @@ abstract class NuxDevice extends ChangeNotifier {
     }
 
     Preset p;
-
     if (!qrOnly) {
       p = getPreset(selectedChannel);
     } else {
@@ -593,37 +591,63 @@ abstract class NuxDevice extends ChangeNotifier {
 
     if (preset.containsKey("volume")) p.setVolume(preset["volume"], !qrOnly);
 
-    //set the chain order first, if the device supports it
+    // Set the chain order first, if the device supports it
     if (reorderableFXChain) {
-      int index = 0;
+      List<String> keyOrder = [];
+
+      // 1. Extract keys currently present in the JSON
       for (String key in preset.keys) {
         var pInfo = getProcessorInfoByKey(key);
         if (pInfo != null) {
+          keyOrder.add(key);
+        }
+      }
+
+      // 2. CRITICAL SYNC FIX: Inject FX A and FX B at default positions if missing
+      if (presetClass == "mighty_nam_pro") {
+        if (!keyOrder.contains("fxa")) {
+          int insertIndex = keyOrder.length >= 2 ? 2 : keyOrder.length;
+          keyOrder.insert(insertIndex, "fxa");
+        }
+        if (!keyOrder.contains("fxb")) {
+          int insertIndex = keyOrder.length >= 3 ? 3 : keyOrder.length;
+          keyOrder.insert(insertIndex, "fxb");
+        }
+      }
+
+      // 3. FAILSAFE: Forcefully append any processor blocks that are completely 
+      // missing from the JSON so the UI chain never falls short and renders grey gaps.
+      for (var pInfo in p.device.processorList) {
+        if (!keyOrder.contains(pInfo.keyName)) {
+          keyOrder.add(pInfo.keyName);
+        }
+      }
+
+      // 4. Safely rebuild the slot array from scratch using the existing setter
+      for (int index = 0; index < keyOrder.length && index < p.device.effectsChainLength; index++) {
+        var pInfo = getProcessorInfoByKey(keyOrder[index]);
+        if (pInfo != null) {
           p.setFXIDAtSlot(index, pInfo.nuxFXID);
-          index++;
         }
       }
     }
 
-    //parse selected effects and apply them
+    // Parse selected effects and apply them
     for (String key in preset.keys) {
       int? index = getSlotByEffectKeyName(key);
       if (index != null) {
-        //get effect
         Map<String, dynamic> effect = preset[key];
-
         parseEffect(effect, index, p, pVersion, false, overrideLevel);
         if (!qrOnly) deviceControl.sendFullEffectSettings(index, false);
       }
     }
 
-    //parse unselected effects
+    // Parse unselected effects
     if (!qrOnly && preset.containsKey(PresetsStorage.inactiveEffectsKey)) {
       var inactives = preset[PresetsStorage.inactiveEffectsKey];
       for (String effectKey in inactives.keys) {
         int? index = getSlotByEffectKeyName(effectKey);
         if (index != null) {
-          //get effect
           for (var effect in inactives[effectKey]) {
             parseEffect(effect, index, p, pVersion, true, null);
           }
@@ -631,12 +655,8 @@ abstract class NuxDevice extends ChangeNotifier {
       }
     }
 
-    //send slot order last, because it's a message with a response
-    //and due to a bug in android ble stack causing a race condition
-    //it screws up the connection
     if (!qrOnly) communication.sendSlotOrder();
 
-    //update widgets
     if (!qrOnly) {
       deviceControl.forceNotifyListeners();
     } else {

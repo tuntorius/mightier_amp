@@ -1,8 +1,7 @@
 /* The original plugin used in Mightier Amp. For Android and iOS
 https://pub.dev/packages/flutter_blue_plus
 This plugin works great. Unfortunately it's only for mobile platforms.
-MacOS is possible, due to almost 100% identical code to iOS
-*/
+MacOS is possible, due to almost 100% identical code to iOS */
 
 import 'dart:async';
 import 'dart:io';
@@ -27,7 +26,6 @@ class FBPScanResult extends BLEScanResult {
 class FBPBleDevice extends BLEDevice {
   final BluetoothDevice _device;
   BluetoothDevice get device => _device;
-
   FBPBleDevice(this._device);
 
   @override
@@ -59,6 +57,7 @@ class FBPBleDevice extends BLEDevice {
     stateStream.onCancel = () {
       s.cancel();
     };
+
     return stateStream.stream;
   }
 }
@@ -74,6 +73,7 @@ class FlutterBluePlusController extends BLEController {
   StreamSubscription? _deviceStreamSubscription;
 
   bool _connectInProgress = false;
+
   StreamSubscription<bool>? _scanningStatusSubscription;
   StreamSubscription<BluetoothState>? _bluetoothStateSubscription;
   StreamSubscription<List<ScanResult>>? _scanSubscription;
@@ -116,15 +116,12 @@ class FlutterBluePlusController extends BLEController {
   @override
   Future<BLEConnection?> connectToDevice(BLEDevice device) async {
     bool ampDevice = deviceListProvider.call().containsPartial(device.name);
-
     if (_connectInProgress || (ampDevice && _device != null)) {
       debugPrint("BLE: Connection already in progress. Ignoring duplicate request.");
       return null;
     }
     _connectInProgress = true;
-
     BluetoothDevice fbpDevice = (device as FBPBleDevice).device;
-
     if (!ampDevice) {
       var state = await fbpDevice.state.first;
       if (state == BluetoothDeviceState.connected) {
@@ -138,12 +135,11 @@ class FlutterBluePlusController extends BLEController {
         await Future.delayed(const Duration(milliseconds: 500));
       }
     }
-
     await stopScanning();
     setMidiSetupStatus(MidiSetupStatus.deviceConnecting);
     
     try {
-      debugPrint("BLE: Initiating connection to " + device.name + "...");
+      debugPrint("BLE: Initiating connection to ${device.name}...");
       await fbpDevice.connect(autoConnect: false, timeout: const Duration(seconds: 5));
     } on Exception catch (e) {
       debugPrint("BLE: Connection failed with exception: $e");
@@ -162,8 +158,6 @@ class FlutterBluePlusController extends BLEController {
       _device = device as FBPBleDevice;
     }
 
-    // Negotiate higher MTU for Android so that multi-byte SysEx frames (> 20 bytes)
-    // transmit intact in a single unfragmented BLE packet.
     if (Platform.isAndroid) {
       try {
         debugPrint("BLE: Requesting MTU 256 for Android...");
@@ -232,7 +226,6 @@ class FlutterBluePlusController extends BLEController {
     _midiCharacteristic?.setNotifyValue(true);
     _connectInProgress = false;
     setMidiSetupStatus(MidiSetupStatus.deviceConnected);
-
     _deviceStreamSubscription = device.state.listen((event) {
       if (event == BluetoothDeviceState.disconnected) {
         if (Platform.isAndroid) {
@@ -363,16 +356,7 @@ class FlutterBluePlusController extends BLEController {
 
   @override
   Future writeToCharacteristic(List<int> data, bool noResponse) async {
-    // BLE MIDI characteristic requires Write Without Response.
-    // Forcing withoutResponse = false triggers GATT Long Write (Prepare Write),
-    // which causes embedded BLE MIDI firmware to reject the message.
-    bool writeWithoutResp = noResponse;
-    if (data.length > 9 &&
-        data[2] == MidiMessageValues.sysExStart &&
-        data[8] == 0x4E &&
-        data[9] == 0x46) {
-      writeWithoutResp = true;
-    }
-    return _midiCharacteristic!.write(data, withoutResponse: writeWithoutResp);
+    // BLE MIDI requires Write Without Response.
+    return _midiCharacteristic!.write(data, withoutResponse: true);
   }
 }

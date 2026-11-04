@@ -8,7 +8,6 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxMighty8BTMk2.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:mighty_plug_manager/utilities/list_extenstions.dart';
 import 'package:undo/undo.dart';
-
 import 'bleMidiHandler.dart';
 import 'ble_controllers/BLEController.dart';
 import 'devices/NuxConstants.dart';
@@ -58,13 +57,11 @@ class NuxDeviceControl extends ChangeNotifier {
 
   NuxDiagnosticData diagData = NuxDiagnosticData();
 
-  //holds current device
   late NuxDevice _device;
 
   StreamSubscription<List<int>>? rxSubscription;
   Timer? batteryTimer;
 
-  //Preset Name Stuff
   String _presetName = "";
   String presetCategory = "";
   String presetUUID = "";
@@ -77,7 +74,6 @@ class NuxDeviceControl extends ChangeNotifier {
   ValueNotifier presetNameNotifier = ValueNotifier<String>("");
 
   ValueNotifier<double> masterVolumeNotifier = ValueNotifier<double>(100);
-
   double _masterVolume = 100;
 
   ChangeStack get changes => device.presets[device.selectedChannel].changes;
@@ -105,18 +101,17 @@ class NuxDeviceControl extends ChangeNotifier {
     }
   }
 
-  //connect status control
   final StreamController<DeviceConnectionState> _connectStatus =
       StreamController.broadcast();
   final StreamController<int> _batteryPercentage =
       StreamController<int>.broadcast();
+
   Stream<DeviceConnectionState> get connectStatus => _connectStatus.stream;
   Stream<int> get batteryPercentage => _batteryPercentage.stream;
+
   bool get isConnected => _midiHandler.connectedDevice != null;
 
-  //list of all different nux devices
   final List<NuxDevice> _deviceInstances = <NuxDevice>[];
-
   List<NuxDevice> get deviceList => _deviceInstances;
 
   List<String> deviceBLEName() {
@@ -169,17 +164,14 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   NuxDevice deviceFromBLEId(String id) {
-    // 1. Prevent overriding manual selection if the current device shares this BLE name
     if (_device.productBLENames.containsPartial(id)) {
       return _device;
     }
-    // 2. Otherwise, fall back to the first match in the registry
     for (int i = 0; i < _deviceInstances.length; i++) {
       if (_deviceInstances[i].productBLENames.containsPartial(id)) {
         return _deviceInstances[i];
       }
     }
-    // Return plug/air by default
     return _deviceInstances[0];
   }
 
@@ -245,7 +237,6 @@ class NuxDeviceControl extends ChangeNotifier {
     _midiHandler.setAmpDeviceIdProvider(deviceBLEName);
     _midiHandler.status.listen(_statusListener);
 
-    //create all supported devices
     _deviceInstances.add(NuxMightyPlug(this));
     _deviceInstances.add(NuxMightyPlugPro(this));
     _deviceInstances.add(NuxMightyNamPro(this));
@@ -256,19 +247,20 @@ class NuxDeviceControl extends ChangeNotifier {
     _deviceInstances.add(NuxMightyLiteMk2(this));
     _deviceInstances.add(NuxMighty8BTMk2(this));
 
-    //make it read from config
     String dev = SharedPrefs()
         .getValue(SettingsKeys.device, _deviceInstances[0].productStringId);
-
     _device = getDeviceFromId(dev) ?? _deviceInstances[0];
+
     int ver = SharedPrefs().getValue(
         SettingsKeys.deviceVersion, _device.getAvailableVersions() - 1);
     _device.setFirmwareVersionByIndex(ver);
+
     updateDiagnosticsData(connected: false);
 
     if (device.fakeMasterVolume) {
       masterVolume = SharedPrefs().getValue(SettingsKeys.masterVolume, 100.0);
     }
+
     for (int i = 0; i < _deviceInstances.length; i++) {
       var dev = _deviceInstances[i];
       dev.parameterChanged.stream.listen(parameterChangedListener);
@@ -394,8 +386,6 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void parameterChangedListener(Parameter param) {
     if (!isConnected) return;
-
-    // INTERCEPT: Custom parameters that use SysEx instead of CC messages
     if (param.midiCC < 0) {
       if (device.communication is NamProCommunication) {
         var preset = device.getPreset(device.selectedChannel);
@@ -407,7 +397,6 @@ class NuxDeviceControl extends ChangeNotifier {
       }
       return;
     }
-
     sendParameter(param, false);
   }
 
@@ -436,15 +425,12 @@ class NuxDeviceControl extends ChangeNotifier {
     effect =
         preset.getEffectsForSlot(slot)[preset.getSelectedEffectForSlot(slot)];
     index = effect.nuxIndex;
-
     bool switchable = preset.slotSwitchable(slot);
     bool enabled = preset.slotEnabled(slot);
     bool distinctCCodes =
         effect.midiCCSelectionValue != effect.midiCCEnableValue;
-
     bool send = !switchable || (switchable && enabled) || force;
-    send = true; 
-    
+
     if (effect.midiCCSelectionValue >= 0) {
       if (distinctCCodes) {
         if (device.presets[0].getEffectsForSlot(slot).length > 1) {
@@ -456,8 +442,19 @@ class NuxDeviceControl extends ChangeNotifier {
     }
 
     if (send) {
-      for (int i = 0; i < effect.parameters.length; i++) {
-        sendParameter(effect.parameters[i], false);
+      // PREVENT PACKET STORM: Transmit consolidated SysEx once instead of per-parameter
+      bool isCustomSysEx = effect.parameters.isNotEmpty &&
+          effect.parameters.any((p) => p.midiCC < 0);
+      if (isCustomSysEx) {
+        if (device.communication is NamProCommunication &&
+            preset is NamProPreset) {
+          (device.communication as NamProCommunication)
+              .sendNfPayload(preset.generateNfPayload());
+        }
+      } else {
+        for (int i = 0; i < effect.parameters.length; i++) {
+          sendParameter(effect.parameters[i], false);
+        }
       }
     }
 
@@ -469,12 +466,26 @@ class NuxDeviceControl extends ChangeNotifier {
   void sendFullPresetSettings() {
     if (!isConnected) return;
     BLEMidiHandler.instance().clearDataQueue();
-
     if (!device.fakeMasterVolume) {
       device.presets[device.selectedChannel].sendVolume();
     }
+
+    bool sentCustomSysEx = false;
     for (var i = 0; i < device.processorList.length; i++) {
-      sendFullEffectSettings(i, false);
+      var preset = device.getPreset(device.selectedChannel);
+      var effect =
+          preset.getEffectsForSlot(i)[preset.getSelectedEffectForSlot(i)];
+      bool isCustomSysEx = effect.parameters.isNotEmpty &&
+          effect.parameters.any((p) => p.midiCC < 0);
+
+      if (isCustomSysEx) {
+        if (!sentCustomSysEx) {
+          sendFullEffectSettings(i, false);
+          sentCustomSysEx = true;
+        }
+      } else {
+        sendFullEffectSettings(i, false);
+      }
     }
 
     if (device.reorderableFXChain) {
@@ -489,7 +500,6 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   List<int> sendParameter(Parameter param, bool returnOnly) {
-    // FAILSAFE: Do not attempt to construct standard CC messages for custom parameters
     if (param.midiCC < 0) {
       if (!returnOnly && device.communication is NamProCommunication) {
         var preset = device.getPreset(device.selectedChannel);
@@ -500,14 +510,12 @@ class NuxDeviceControl extends ChangeNotifier {
       }
       return [];
     }
-
     int outVal;
     if (device.fakeMasterVolume && param.masterVolume) {
       outVal = param.masterVolMidiValue;
     } else {
       outVal = param.midiValue;
     }
-
     var data = createCCMessage(param.midiCC, outVal);
     if (!returnOnly) sendBLEData(data);
     return data;
@@ -524,9 +532,7 @@ class NuxDeviceControl extends ChangeNotifier {
         await Future.delayed(const Duration(milliseconds: 200));
       }
     }
-
     device.communication.saveCurrentPreset(device.selectedChannel);
-
     if (device.fakeMasterVolume) {
       _masterVolume = vol;
     }
@@ -536,7 +542,6 @@ class NuxDeviceControl extends ChangeNotifier {
   void resetNuxPresets() async {
     if (!isConnected) return;
     device.communication.sendReset();
-
     if (device.presetSaveSupport) {
       await Future.delayed(const Duration(seconds: 3));
       _connectStatus.add(DeviceConnectionState.connectionBegin);
@@ -546,19 +551,14 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void sendBLEData(List<int> data) {
     if (data.isEmpty) return;
-
-    // 1. Intercept naked 32-byte custom FX payloads
     if (data.length == 32 && data[0] != 0x80 && data[0] != 0xF0) {
       if (device.communication is NamProCommunication) {
         (device.communication as NamProCommunication).sendNfPayload(data);
         return;
       }
-    } 
-    // 2. If it's already a standard SysEx but missing the BLE header, wrap it
-    else if (data[0] == 0xF0) {
+    } else if (data[0] == 0xF0) {
       data = [0x80, 0x80, ...data];
     }
-
     _midiHandler.sendData(data);
   }
 

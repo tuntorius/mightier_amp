@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
-
 import '../devices/NuxConstants.dart';
 
 enum MidiSetupStatus {
@@ -34,9 +32,7 @@ typedef ScanResultsCallback = void Function(
 abstract class BLEScanResult {
   String get id;
   String get name;
-
   late BLEDevice _device;
-
   @protected
   set device(BLEDevice val) => _device = val;
   BLEDevice get device => _device;
@@ -56,7 +52,6 @@ abstract class BLEDevice {
 class BLEConnection {
   final Stream<List<int>> _dataStream;
   Stream<List<int>> get data => _dataStream;
-
   BLEConnection(this._dataStream);
 }
 
@@ -80,6 +75,7 @@ abstract class BLEController {
   MidiSetupStatus get currentStatus => _currentStatus;
 
   BLEDevice? get connectedDevice;
+
   final StreamController<bool> _scanStatus = StreamController.broadcast();
   Stream<bool> get isScanningStream => _scanStatus.stream;
 
@@ -118,33 +114,33 @@ abstract class BLEController {
   StreamSubscription<List<int>> registerDataListener(
       Function(List<int>) listener);
 
+  bool _isNfSysEx(List<int> data) {
+    return data.length > 10 &&
+        data[2] == MidiMessageValues.sysExStart &&
+        data[8] == 0x4E &&
+        data[9] == 0x46;
+  }
+
   void sendData(List<int> data) {
     var queueLength = dataQueue.length;
 
     // Deduplicate standard CC messages to prevent saturation
-    if (data.length > 3 && data[2] == MidiMessageValues.controlChange && dataQueue.isNotEmpty) {
+    if (data.length > 3 &&
+        data[2] == MidiMessageValues.controlChange &&
+        dataQueue.isNotEmpty) {
+      var inFlight = dataQueue.removeFirst();
       dataQueue.removeWhere((element) =>
           element.length > 3 &&
           element[2] == MidiMessageValues.controlChange &&
           element[3] == data[3]);
+      dataQueue.addFirst(inFlight);
     }
 
-    // Deduplicate custom NF SysEx messages so rapid slider movements don't choke the BLE queue.
-    // The mighty-nam payload writes op(1) inside [0x80, 0x80, 0xF0, 0x43, 0x58, 0x70, 0x04, 0x02, 0x4E, 0x46]
-    // where 0x4E ('N') is data[8] and 0x46 ('F') is data[9].
-    if (data.length > 10 &&
-        data[2] == MidiMessageValues.sysExStart &&
-        data[8] == 0x4E && 
-        data[9] == 0x46) {
-      if (dataQueue.length > 1) {
-        var first = dataQueue.removeFirst();
-        dataQueue.removeWhere((element) =>
-            element.length > 10 &&
-            element[2] == MidiMessageValues.sysExStart &&
-            element[8] == 0x4E &&
-            element[9] == 0x46);
-        dataQueue.addFirst(first);
-      }
+    // Deduplicate custom NF SysEx messages so rapid changes don't choke the BLE queue
+    if (_isNfSysEx(data) && dataQueue.isNotEmpty) {
+      var inFlight = dataQueue.removeFirst();
+      dataQueue.removeWhere((element) => _isNfSysEx(element));
+      dataQueue.addFirst(inFlight);
     }
 
     dataQueue.addLast(data);
@@ -168,39 +164,31 @@ abstract class BLEController {
   void dispose();
 
   void _queueSender() async {
-    bool noResponse = true;
     while (dataQueue.isNotEmpty) {
       if (connectedDevice == null) {
         dataQueue.clear();
         break;
       }
+      var data = dataQueue.first;
       try {
         if (isWriteReady) {
-          var data = dataQueue.first;
-
-          // Special NUX system commands that require response
-          if (Platform.isAndroid &&
-              data[2] == MidiMessageValues.sysExStart &&
-              data[6] == SyxMsg.kSYX_MODULELINK) {
-            noResponse = false;
-            await Future.delayed(const Duration(milliseconds: 100));
-          } else if (data.length > 10 &&
-              data[2] == MidiMessageValues.sysExStart &&
-              data[8] == 0x4E &&
-              data[9] == 0x46) {
-            noResponse = true;
-          }
-          await writeToCharacteristic(data, noResponse);
+          // BLE MIDI mandates Write Without Response (ATT Write Command).
+          // Forcing withoutResponse = false causes GATT errors on Android and stalls A2DP audio.
+          await writeToCharacteristic(data, true);
           if (Platform.isAndroid) {
-            await Future.delayed(const Duration(milliseconds: 10));
+            await Future.delayed(const Duration(milliseconds: 6));
           }
-          noResponse = true;
-          dataQueue.removeFirst();
         } else {
           dataQueue.clear();
+          break;
         }
       } catch (e) {
-        debugPrint(e.toString());
+        debugPrint("BLE write error: $e");
+      } finally {
+        // ALWAYS dequeue the packet to prevent infinite retry loops on failure
+        if (dataQueue.isNotEmpty && identical(dataQueue.first, data)) {
+          dataQueue.removeFirst();
+        }
       }
     }
     _onQueueEmpty?.call();
@@ -220,5 +208,6 @@ abstract class BLEController {
   }
 
   bool get isWriteReady;
+
   Future writeToCharacteristic(List<int> data, bool noResponse);
 }

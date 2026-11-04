@@ -2,7 +2,7 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart'; // FIXED: Restored missing import
+import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart'; 
 import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/plugProCommunication.dart';
 
@@ -58,7 +58,6 @@ class PlugProPreset extends Preset {
   bool reverbEnabled = true;
   bool srEnabled = true;
 
-  // FIXED: Restored previously deleted integer state trackers for effects
   int selectedComp = 0;
   int selectedEfx = 0;
   int selectedAmp = 0;
@@ -157,7 +156,7 @@ class PlugProPreset extends Preset {
     if (notifyBT) {
       device.communication.sendSlotEnabledState(index);
     }
-    super.setSlotEnabled(index, value, notifyBT);
+    super.setSlotEnabled(index, value, false); // Prevent CC double-fire
   }
 
   @override
@@ -250,8 +249,6 @@ class PlugProPreset extends Preset {
 
   @override
   void setFXIDAtSlot(int slot, NuxFXID fxid) {
-    // CRITICAL FIX: Array boundary protection to prevent UI crashes 
-    // when reconstructing 11-block devices from legacy 9-block data
     while (processorAtSlot.length <= slot) {
       processorAtSlot.add(NuxFXID.fromInt(0));
     }
@@ -313,12 +310,10 @@ class PlugProPreset extends Preset {
 
       _setSelectedEffectForFXID(fxid, effectIndex);
 
-      //enable/disable effect
       int? slot = getSlotFromFXID(fxid);
       if (slot != null) setSlotEnabled(slot, effectOn, false);
     }
 
-    //setup parameters
     for (int i = 0; i < device.processorList.length; i++) {
       var fxid = getFXIDFromSlot(i);
       if (fxid.value == PresetDataIndexPlugPro.Head_iSR ||
@@ -332,7 +327,6 @@ class PlugProPreset extends Preset {
       }
     }
 
-    //master volume
     double masterVol = nuxData[PresetDataIndexPlugPro.MASTER].toDouble();
     setVolume(masterVol, false);
   }
@@ -353,7 +347,6 @@ class PlugProPreset extends Preset {
 
       var slot = getSlotFromFXID(fxid);
       if (slot != null) {
-        // FIXED: Replaced non-existent getter getEffectsForFXID with getEffectsForSlot
         var effects = getEffectsForSlot(slot);
         var selected = getSelectedEffectForSlot(slot);
 

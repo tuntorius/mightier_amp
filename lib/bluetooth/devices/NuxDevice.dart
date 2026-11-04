@@ -522,6 +522,12 @@ abstract class NuxDevice extends ChangeNotifier {
         if (presetVersion == productVersion) {
           if (effect.containsKey(fx.parameters[f].handle)) {
             fx.parameters[f].value = effect[fx.parameters[f].handle];
+          } else {
+             // FALLBACK FOR OLDER PRESETS: Restores settings made before we renamed the handles
+             String fallbackHandle = "fx_${fx.parameters[f].devicePresetIndex}";
+             if (effect.containsKey(fallbackHandle)) {
+                fx.parameters[f].value = effect[fallbackHandle];
+             }
           }
         } else {
           var handle = fx.parameters[f].handle;
@@ -537,9 +543,9 @@ abstract class NuxDevice extends ChangeNotifier {
       {bool qrOnly = false, bool dontChangeChannel = false}) {
     var pVersion = preset["version"] ?? 0;
     var nuxChannel = preset["channel"] ?? selectedChannel;
+    
     if (!qrOnly) {
       BLEMidiHandler.instance().clearDataQueue();
-
       bool isSameChannel = (nuxChannel == selectedChannel);
       if (!dontChangeChannel || jamTrackChannelChange) {
         setSelectedChannel(nuxChannel,
@@ -565,13 +571,22 @@ abstract class NuxDevice extends ChangeNotifier {
       }
     }
 
-    // Snapshot Custom SysEx state prior to parsing to enable delta-checking
     List<int>? prevNfPayload;
     if (p is NamProPreset) {
       prevNfPayload = p.generateNfPayload();
+      
+      // ORPHAN PREVENTION: Disable FX A/B in memory if the JSON preset does not include them.
+      // This forces the delta-checker to transmit an explicit OFF state to the hardware.
+      bool hasFxa = preset.containsKey("fxa") || 
+                    (preset.containsKey(PresetsStorage.inactiveEffectsKey) && preset[PresetsStorage.inactiveEffectsKey].containsKey("fxa"));
+      bool hasFxb = preset.containsKey("fxb") || 
+                    (preset.containsKey(PresetsStorage.inactiveEffectsKey) && preset[PresetsStorage.inactiveEffectsKey].containsKey("fxb"));
+      
+      if (!hasFxa) (p as NamProPreset).fxAEnabled = false;
+      if (!hasFxb) (p as NamProPreset).fxBEnabled = false;
     }
 
-    // Parse effects and apply delta settings
+    // Parse effects and only transmit delta parameters over BLE
     for (String key in preset.keys) {
       int? index = getSlotByEffectKeyName(key);
       if (index != null) {
@@ -609,8 +624,7 @@ abstract class NuxDevice extends ChangeNotifier {
               if (distinctCCodes) {
                 if (deviceControl.device.presets[0]
                         .getEffectsForSlot(index)
-                        .length >
-                    1) {
+                        .length > 1) {
                   communication.sendSlotEffect(index, newEffect.nuxIndex);
                 }
               } else {
@@ -675,9 +689,45 @@ abstract class NuxDevice extends ChangeNotifier {
       }
     }
 
-    // PREVENT AUDIO DROPOUTS: Only broadcast slot order if this is an explicit FULL preset load.
-    // Automation (dontChangeChannel = true) passes partial payloads that shouldn't halt the DSP matrix.
-    if (!qrOnly && !dontChangeChannel) {
+    // AUDIO DROP FIX: Only invoke MODULELINK (which halts DSP) if the block order physically changed,
+    // and explicitly bypass if the device type disables reorderableFXChain.
+    bool orderChanged = false;
+    if (reorderableFXChain) {
+      List<NuxFXID> previousOrder = [];
+      for (int i = 0; i < p.device.effectsChainLength; i++) {
+        previousOrder.add(p.getFXIDFromSlot(i));
+      }
+
+      List<String> keyOrder = [];
+      for (String key in preset.keys) {
+        var pInfo = getProcessorInfoByKey(key);
+        if (pInfo != null) {
+          keyOrder.add(key);
+        }
+      }
+
+      for (var pInfo in p.device.processorList) {
+        if (!keyOrder.contains(pInfo.keyName)) {
+          keyOrder.add(pInfo.keyName);
+        }
+      }
+
+      for (int index = 0; index < keyOrder.length && index < p.device.effectsChainLength; index++) {
+        var pInfo = getProcessorInfoByKey(keyOrder[index]);
+        if (pInfo != null) {
+          p.setFXIDAtSlot(index, pInfo.nuxFXID);
+        }
+      }
+
+      for (int i = 0; i < p.device.effectsChainLength; i++) {
+        if (i >= previousOrder.length || previousOrder[i] != p.getFXIDFromSlot(i)) {
+          orderChanged = true;
+          break;
+        }
+      }
+    }
+
+    if (!qrOnly && !dontChangeChannel && orderChanged && reorderableFXChain) {
       communication.sendSlotOrder();
     }
 

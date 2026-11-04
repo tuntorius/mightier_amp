@@ -42,13 +42,9 @@ abstract class BLEDevice {
   String get name;
   String get id;
 
-  ///Returns a stream telling the connection state of a device
-  ///Used only for MIDI foot controllers and not for amps
   Stream<BleDeviceState> get state;
 }
 
-/// Ble connection class used for MIDI foot controllers only
-/// Not needed for amps
 class BLEConnection {
   final Stream<List<int>> _dataStream;
   Stream<List<int>> get data => _dataStream;
@@ -124,7 +120,6 @@ abstract class BLEController {
   void sendData(List<int> data) {
     var queueLength = dataQueue.length;
 
-    // Deduplicate standard CC messages to prevent saturation
     if (data.length > 3 &&
         data[2] == MidiMessageValues.controlChange &&
         dataQueue.isNotEmpty) {
@@ -136,7 +131,6 @@ abstract class BLEController {
       dataQueue.addFirst(inFlight);
     }
 
-    // Deduplicate custom NF SysEx messages so rapid changes don't choke the BLE queue
     if (_isNfSysEx(data) && dataQueue.isNotEmpty) {
       var inFlight = dataQueue.removeFirst();
       dataQueue.removeWhere((element) => _isNfSysEx(element));
@@ -172,11 +166,27 @@ abstract class BLEController {
       var data = dataQueue.first;
       try {
         if (isWriteReady) {
-          // BLE MIDI mandates Write Without Response (ATT Write Command).
-          // Forcing withoutResponse = false causes GATT errors on Android and stalls A2DP audio.
-          await writeToCharacteristic(data, true);
+          bool noResponse = true;
+
+          // PROTECT A2DP AUDIO: 
+          // If Android OS spams massive SysEx writes consecutively without response pacing, 
+          // it chokes the shared Bluetooth cache and drops music player audio.
+          if (Platform.isAndroid &&
+              data[2] == MidiMessageValues.sysExStart &&
+              data[6] == SyxMsg.kSYX_MODULELINK) {
+            noResponse = false;
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
+
+          await writeToCharacteristic(data, noResponse);
+          
           if (Platform.isAndroid) {
-            await Future.delayed(const Duration(milliseconds: 6));
+            // SysEx payload pacing to save the audio stream
+            if (data.length > 20) {
+              await Future.delayed(const Duration(milliseconds: 25));
+            } else {
+              await Future.delayed(const Duration(milliseconds: 8));
+            }
           }
         } else {
           dataQueue.clear();
@@ -185,7 +195,6 @@ abstract class BLEController {
       } catch (e) {
         debugPrint("BLE write error: $e");
       } finally {
-        // ALWAYS dequeue the packet to prevent infinite retry loops on failure
         if (dataQueue.isNotEmpty && identical(dataQueue.first, data)) {
           dataQueue.removeFirst();
         }

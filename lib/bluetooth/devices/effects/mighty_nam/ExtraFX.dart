@@ -24,22 +24,34 @@ class FxValueFormatter extends ValueFormatter {
   int get min => 0;
 
   @override
-  int get max => index == 3 ? 24 : 100;
+  int get max => 100; // UI Slider is always normalized 0-100
 
   @override
-  int valueToMidi7Bit(double value) => value.round();
+  int valueToMidi7Bit(double value) {
+    if (index == 3) {
+      // Pitch: Firmware strictly expects 0-24 absolute value
+      return ((value / 100) * 24).round().clamp(0, 24);
+    }
+    return value.round().clamp(0, 100);
+  }
 
   @override
-  double midi7BitToValue(int midi7bit) => midi7bit.toDouble();
+  double midi7BitToValue(int midi7bit) {
+    if (index == 3) {
+      // Pitch: Restore the 0-24 hardware value back to the 0-100 UI slider range
+      return (midi7bit / 24) * 100;
+    }
+    return midi7bit.clamp(0, 100).toDouble();
+  }
 
   @override
   String toLabel(double value) {
     if (index == 3) {
-      final semitones = value.round() - 12;
+      final semitones = ((value / 100) * 24).round() - 12;
       final sign = semitones > 0 ? '+' : '';
       return '$sign$semitones semitones';
     } else if (index == 5) {
-      final hz = 0.05 + 7.95 * value / 100;
+      final hz = 0.05 + 7.95 * (value / 100);
       return '${hz.toStringAsFixed(2)} Hz';
     }
     return '${value.round()}%';
@@ -96,7 +108,7 @@ abstract class NamExtraFX extends Processor {
 
   NamExtraFX(this.nuxIndex, {this.isFxB = false})
       : parameters = [
-          if (nuxIndex == 1) _createParam('Pitch', 3, 12, isFxB),
+          if (nuxIndex == 1) _createParam('Pitch', 3, 50, isFxB),
           if (nuxIndex >= 3 && nuxIndex <= 7) ...[
             _createParam('Rate', 5, 30, isFxB),
             _createParam('Depth', 6, 50, isFxB),
@@ -112,16 +124,22 @@ abstract class NamExtraFX extends Processor {
         ];
 
   static Parameter _createParam(
-          String name, int index, double value, bool isFxB) =>
-      Parameter(
-        name: name,
-        handle: 'fx_$index',
-        value: value,
-        formatter: FxValueFormatter(index),
-        devicePresetIndex: index, // Matches exact NF payload byte offset
-        midiCC: -1, // Intercepted via NF SysEx in NamProPreset.dart
-        midiControllerHandle: _resolveHandle(index, isFxB),
-      );
+      String name, int offset, double value, bool isFxB) {
+    // ROOT CAUSE FIX: The delta-checker uses the `handle` as a Map key. 
+    // We MUST differentiate the handles for FX A and FX B, otherwise they overwrite each other in memory
+    // and cause the UI to desync while spamming the Bluetooth connection with false delta updates!
+    String safeHandle = isFxB ? 'fxb_$offset' : 'fxa_$offset';
+
+    return Parameter(
+      name: name,
+      handle: safeHandle,
+      value: value,
+      formatter: FxValueFormatter(offset),
+      devicePresetIndex: offset, // Kept relative (0..9) for generateNfPayload() targeting
+      midiCC: -1, 
+      midiControllerHandle: _resolveHandle(offset, isFxB),
+    );
+  }
 
   static MidiControllerHandle? _resolveHandle(int paramIndex, bool isFxB) {
     if (isFxB) {
@@ -171,7 +189,7 @@ abstract class NamExtraFX extends Processor {
   void setupFromNfPayload(List<int> slice) {
     for (var param in parameters) {
       if (param.devicePresetIndex < slice.length) {
-        param.value = slice[param.devicePresetIndex].toDouble();
+        param.value = param.formatter.midi7BitToValue(slice[param.devicePresetIndex]);
       }
     }
   }
@@ -179,7 +197,7 @@ abstract class NamExtraFX extends Processor {
   void getNfPayload(List<int> slice) {
     for (var param in parameters) {
       if (param.devicePresetIndex < slice.length) {
-        slice[param.devicePresetIndex] = param.value.round();
+        slice[param.devicePresetIndex] = param.midiValue;
       }
     }
   }
@@ -217,6 +235,5 @@ class NamDaisyWah extends NamExtraFX {
   @override
   final String name = "Daisy Wah";
 
-  // Native app override for custom wah routing
   NamDaisyWah({bool isFxB = false}) : super(103, isFxB: isFxB);
 }

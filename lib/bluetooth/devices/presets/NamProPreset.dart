@@ -87,6 +87,7 @@ class NamProPreset extends PlugProPreset {
         (device.communication as NamProCommunication)
             .sendNfPayload(generateNfPayload());
       }
+      super.setSlotEnabled(index, value, false); // Prevent CC double-fire
       return;
     }
     if (proc == MightyNamFXID.fxB) {
@@ -95,6 +96,7 @@ class NamProPreset extends PlugProPreset {
         (device.communication as NamProCommunication)
             .sendNfPayload(generateNfPayload());
       }
+      super.setSlotEnabled(index, value, false); // Prevent CC double-fire
       return;
     }
     super.setSlotEnabled(index, value, notifyBT);
@@ -198,7 +200,7 @@ class NamProPreset extends PlugProPreset {
     config[2] = posA;
     for (var p in _fxAList[selectedFxA].parameters) {
       if (p.devicePresetIndex >= 3 && p.devicePresetIndex < 10) {
-        config[0 + p.devicePresetIndex] = p.midiValue;
+        config[0 + p.devicePresetIndex] = p.midiValue; 
       }
     }
 
@@ -213,7 +215,7 @@ class NamProPreset extends PlugProPreset {
     config[18] = posB;
     for (var p in _fxBList[selectedFxB].parameters) {
       if (p.devicePresetIndex >= 3 && p.devicePresetIndex < 10) {
-        config[16 + p.devicePresetIndex] = p.midiValue;
+        config[16 + p.devicePresetIndex] = p.midiValue; 
       }
     }
 

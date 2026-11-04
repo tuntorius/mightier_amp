@@ -17,12 +17,10 @@ class NuxMightyNamPro extends NuxMightyPlugPro {
   NuxMightyNamPro(NuxDeviceControl devControl) : super(devControl) {
     presets.clear();
     channelNames.clear();
-
     for (int i = 0; i < channelsCount; i++) {
       presets.add(NamProPreset(
           device: this, channel: i, channelName: (i + 1).toString()));
     }
-
     for (var preset in presets) {
       (preset as NamProPreset).setFirmwareVersion(version.index);
       channelNames.add("Channel ${preset.channelName}");
@@ -41,9 +39,13 @@ class NuxMightyNamPro extends NuxMightyPlugPro {
   @override
   int get effectsChainLength => 11;
 
-  // CHANGED: Isolate presets from standard mighty_plug_pro presets.
   @override
   String get presetClass => "mighty_nam_pro";
+
+  // CRITICAL FIX: The custom firmware has a rigid 11-block DSP topology.
+  // We lock this so presetFromJson skips sending kSYX_MODULELINK, protecting the A2DP audio stream.
+  @override
+  bool get reorderableFXChain => false;
 
   @override
   List<String> get productBLENames => ["MIGHTY PLUG PRO", "MIGHTY NAM"];

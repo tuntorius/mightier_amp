@@ -548,7 +548,6 @@ class NuxDeviceControl extends ChangeNotifier {
     }
   }
 
-  // CRITICAL FIX: Expose the handler's queue clearer so communication protocols can flush buffers
   void clearDataQueue() {
     _midiHandler.clearDataQueue();
   }

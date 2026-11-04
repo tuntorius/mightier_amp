@@ -39,8 +39,6 @@ class NamProPreset extends PlugProPreset {
     amplifierList.clear();
     amplifierList.add(NamAmp());
 
-    // Insert FX A and FX B at positions 2 and 3 to match the reference topology:
-    // [gate, comp, fxA, fxB, drive, nam, cab, eq, mod, delay, reverb]
     if (!processorAtSlot.contains(MightyNamFXID.fxA)) {
       processorAtSlot.insert(2, MightyNamFXID.fxA);
     }
@@ -120,9 +118,9 @@ class NamProPreset extends PlugProPreset {
       case PresetDataIndexPlugPro.Head_iEQ:
         return _namEqList;
       case PresetDataIndexPlugPro.Head_iEFX:
-        return efxList; // Preserves all 14 stock drive pedals
+        return efxList; 
       case PresetDataIndexPlugPro.Head_iMOD:
-        return modulationList; // Preserves all 14 stock modulations
+        return modulationList; 
       default:
         var slot = getSlotFromFXID(fxid);
         if (slot != null) {
@@ -147,46 +145,62 @@ class NamProPreset extends PlugProPreset {
     return 0;
   }
 
-  /// Compiles the 32-byte Faust configuration for FX A (0..15) and FX B (16..31).
   List<int> generateNfPayload() {
     final List<int> config = List<int>.filled(32, 0);
 
-    // Default configuration template matching defaultFx()
     for (int slot = 0; slot < 2; slot++) {
       final int offset = slot * 16;
-      config[offset + 0] = slot + 1; // 1 = Pitch, 2 = Auto Wah
-      config[offset + 1] = 0;        // Disabled
-      config[offset + 2] = slot + 2; // Position: FX A=2, FX B=3 (reference topology)
-      config[offset + 3] = 12;       // Pitch 0 semitones
-      config[offset + 4] = 100;      // Mix 100%
-      config[offset + 5] = 30;       // Rate
-      config[offset + 6] = 50;       // Depth
-      config[offset + 7] = 0;        // Feedback
-      config[offset + 8] = 50;       // Sensitivity
-      config[offset + 9] = 50;       // Resonance
+      config[offset + 0] = slot + 1; 
+      config[offset + 1] = 0;        
+      config[offset + 2] = slot + 2; 
+      config[offset + 3] = 12;       
+      config[offset + 4] = 100;      
+      config[offset + 5] = 30;       
+      config[offset + 6] = 50;       
+      config[offset + 7] = 0;        
+      config[offset + 8] = 50;       
+      config[offset + 9] = 50;       
     }
 
-    // Map FX A (Bytes 0-15)
     int posA = processorAtSlot.indexOf(MightyNamFXID.fxA);
     if (posA == -1) posA = 2;
-    config[0] = _fxAList[selectedFxA].nuxIndex;
+    posA = posA.clamp(0, 10);
+    config[0] = _fxAList[selectedFxA].nuxIndex.clamp(1, 7);
     config[1] = fxAEnabled ? 1 : 0;
     config[2] = posA;
     for (var p in _fxAList[selectedFxA].parameters) {
-      config[0 + p.devicePresetIndex] = p.midiValue;
+      if (p.devicePresetIndex >= 3 && p.devicePresetIndex < 10) {
+        config[0 + p.devicePresetIndex] = p.midiValue;
+      }
     }
 
-    // Map FX B (Bytes 16-31)
     int posB = processorAtSlot.indexOf(MightyNamFXID.fxB);
     if (posB == -1) posB = 3;
+    posB = posB.clamp(0, 10);
     if (posB == posA) {
-      posB = (posA == 3) ? 2 : posA + 1;
+      posB = (posA == 10) ? posA - 1 : posA + 1;
     }
-    config[16] = _fxBList[selectedFxB].nuxIndex;
+    config[16] = _fxBList[selectedFxB].nuxIndex.clamp(1, 7);
     config[17] = fxBEnabled ? 1 : 0;
     config[18] = posB;
     for (var p in _fxBList[selectedFxB].parameters) {
-      config[16 + p.devicePresetIndex] = p.midiValue;
+      if (p.devicePresetIndex >= 3 && p.devicePresetIndex < 10) {
+        config[16 + p.devicePresetIndex] = p.midiValue;
+      }
+    }
+
+    for (int slot = 0; slot < 2; slot++) {
+      int offset = slot * 16;
+      config[offset + 0] = config[offset + 0].clamp(1, 7);
+      config[offset + 1] = config[offset + 1].clamp(0, 1);
+      config[offset + 2] = config[offset + 2].clamp(0, 10);
+      config[offset + 3] = config[offset + 3].clamp(0, 24);
+      for (int i = 4; i < 10; i++) {
+        config[offset + i] = config[offset + i].clamp(0, 100);
+      }
+      for (int i = 10; i < 16; i++) {
+        config[offset + i] = 0;
+      }
     }
 
     return config;
@@ -197,7 +211,6 @@ class NamProPreset extends PlugProPreset {
     param.value = value;
     if (notify) {
       if (param.midiCC == -1) {
-        // Intercept Faust Extra FX parameter edits and transmit via NF SysEx
         if (device.communication is NamProCommunication) {
           (device.communication as NamProCommunication)
               .sendNfPayload(generateNfPayload());
@@ -232,7 +245,6 @@ class NamProPreset extends PlugProPreset {
     NuxDeviceControl.instance().diagData.lastNuxPreset = loadedPreset;
     NuxDeviceControl.instance().updateDiagnosticsData(nuxPreset: loadedPreset);
 
-    // 1. Parse standard 9 NUX slots from the NUX payload
     for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
       int nuxSlot = PresetDataIndexPlugPro.effectTypesIndex[i];
       NuxFXID fxid = NuxFXID.fromInt(nuxSlot);
@@ -259,7 +271,6 @@ class NamProPreset extends PlugProPreset {
       setVolumeRaw(nuxData[PresetDataIndexPlugPro.MASTER]);
     }
 
-    // 2. Preserve relative positions of FX A and FX B
     int posA = processorAtSlot.indexOf(MightyNamFXID.fxA);
     int posB = processorAtSlot.indexOf(MightyNamFXID.fxB);
     if (posA == -1) posA = 2;
@@ -280,7 +291,6 @@ class NamProPreset extends PlugProPreset {
       }
     }
 
-    // 3. Reconstruct 11-block order with FX A & B inserted at their relative positions
     processorAtSlot.clear();
     processorAtSlot.addAll(stockOrder);
     if (posA <= posB) {
@@ -292,18 +302,9 @@ class NamProPreset extends PlugProPreset {
     }
   }
 
-  /// Applies a 32-byte NF config payload received from the hardware.
-  ///
-  /// Bytes 0-15 describe FX A; bytes 16-31 describe FX B.
-  /// Layout per slot:
-  ///   [0/16] nuxIndex (1-based effect type)
-  ///   [1/17] enabled flag (1 = on)
-  ///   [2/18] chain position
-  ///   [3..15 / 19..31] per-effect parameter values
   void applyNfPayload(List<int> config32) {
     if (config32.length < 32) return;
 
-    // --- FX A (bytes 0-15) ---
     final int rawA = config32[0];
     final int newSelectedA = (rawA - 1).clamp(0, _fxAList.length - 1);
     selectedFxA = newSelectedA;
@@ -311,7 +312,6 @@ class NamProPreset extends PlugProPreset {
     (_fxAList[selectedFxA] as NamExtraFX)
         .setupFromNfPayload(config32.sublist(0, 16));
 
-    // --- FX B (bytes 16-31) ---
     final int rawB = config32[16];
     final int newSelectedB = (rawB - 1).clamp(0, _fxBList.length - 1);
     selectedFxB = newSelectedB;
@@ -319,21 +319,16 @@ class NamProPreset extends PlugProPreset {
     (_fxBList[selectedFxB] as NamExtraFX)
         .setupFromNfPayload(config32.sublist(16, 32));
 
-    // --- Update slot positions from reported chain positions ---
     final int reportedPosA = config32[2];
     final int reportedPosB = config32[18];
 
-    // Only reorder when the firmware reports positions that differ from what
-    // we have, and both positions are valid (within the 11-slot chain).
     final int currentPosA = processorAtSlot.indexOf(MightyNamFXID.fxA);
     final int currentPosB = processorAtSlot.indexOf(MightyNamFXID.fxB);
 
     if (reportedPosA != currentPosA || reportedPosB != currentPosB) {
-      // Remove FX A and FX B from wherever they are now.
       processorAtSlot.remove(MightyNamFXID.fxA);
       processorAtSlot.remove(MightyNamFXID.fxB);
 
-      // Re-insert at the firmware-reported positions, clamped to list bounds.
       if (reportedPosA <= reportedPosB) {
         processorAtSlot.insert(
             reportedPosA.clamp(0, processorAtSlot.length), MightyNamFXID.fxA);
@@ -358,7 +353,6 @@ class NamProPreset extends PlugProPreset {
     data[PresetDataIndexPlugPro.MASTER] =
         device.decibelFormatter!.valueToMidi7Bit(volume);
 
-    // Save stock NUX slots
     for (int i = 0; i < PresetDataIndexPlugPro.effectTypesIndex.length; i++) {
       var nuxSlot = PresetDataIndexPlugPro.effectTypesIndex[i];
       NuxFXID fxid = NuxFXID.fromInt(nuxSlot);
@@ -374,7 +368,6 @@ class NamProPreset extends PlugProPreset {
       }
     }
 
-    // Save stock 9-element order to prevent NUX firmware flash corruption
     int start = PresetDataIndexPlugPro.LINK1;
     int written = 0;
     for (int i = 0; i < processorAtSlot.length; i++) {

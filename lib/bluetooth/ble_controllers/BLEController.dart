@@ -136,11 +136,15 @@ abstract class BLEController {
         data[2] == MidiMessageValues.sysExStart &&
         data[8] == 0x4E && 
         data[9] == 0x46) {
-      dataQueue.removeWhere((element) =>
-          element.length > 10 &&
-          element[2] == MidiMessageValues.sysExStart &&
-          element[8] == 0x4E &&
-          element[9] == 0x46);
+      if (dataQueue.length > 1) {
+        var first = dataQueue.removeFirst();
+        dataQueue.removeWhere((element) =>
+            element.length > 10 &&
+            element[2] == MidiMessageValues.sysExStart &&
+            element[8] == 0x4E &&
+            element[9] == 0x46);
+        dataQueue.addFirst(first);
+      }
     }
 
     dataQueue.addLast(data);
@@ -180,6 +184,11 @@ abstract class BLEController {
               data[6] == SyxMsg.kSYX_MODULELINK) {
             noResponse = false;
             await Future.delayed(const Duration(milliseconds: 100));
+          } else if (data.length > 10 &&
+              data[2] == MidiMessageValues.sysExStart &&
+              data[8] == 0x4E &&
+              data[9] == 0x46) {
+            noResponse = true;
           }
           await writeToCharacteristic(data, noResponse);
           if (Platform.isAndroid) {

@@ -18,6 +18,8 @@ import 'devices/NuxMightyLite.dart';
 import 'devices/NuxMightyLiteMk2.dart';
 import 'devices/NuxMightyPlugAir.dart';
 import 'devices/NuxMightyNamPro.dart';
+import 'devices/communication/namProCommunication.dart';
+import 'devices/presets/NamProPreset.dart';
 import 'devices/NuxMightyPlugPro.dart';
 import 'devices/NuxMightySpace.dart';
 import 'devices/effects/Processor.dart';
@@ -395,13 +397,11 @@ class NuxDeviceControl extends ChangeNotifier {
 
     // INTERCEPT: Custom parameters that use SysEx instead of CC messages
     if (param.midiCC < 0) {
-      var preset = device.getPreset(device.selectedChannel);
-      for (int i = 0; i < device.effectsChainLength; i++) {
-        var selected = preset.getSelectedEffectForSlot(i);
-        var effect = preset.getEffectsForSlot(i)[selected];
-        if (effect.parameters.contains(param)) {
-          // Trigger a full block update to send the 32-byte SysEx payload.
-          sendFullEffectSettings(i, true);
+      if (device.communication is NamProCommunication) {
+        var preset = device.getPreset(device.selectedChannel);
+        if (preset is NamProPreset) {
+          (device.communication as NamProCommunication)
+              .sendNfPayload(preset.generateNfPayload());
           return;
         }
       }
@@ -489,16 +489,23 @@ class NuxDeviceControl extends ChangeNotifier {
   }
 
   List<int> sendParameter(Parameter param, bool returnOnly) {
+    // FAILSAFE: Do not attempt to construct standard CC messages for custom parameters
+    if (param.midiCC < 0) {
+      if (!returnOnly && device.communication is NamProCommunication) {
+        var preset = device.getPreset(device.selectedChannel);
+        if (preset is NamProPreset) {
+          (device.communication as NamProCommunication)
+              .sendNfPayload(preset.generateNfPayload());
+        }
+      }
+      return [];
+    }
+
     int outVal;
     if (device.fakeMasterVolume && param.masterVolume) {
       outVal = param.masterVolMidiValue;
     } else {
       outVal = param.midiValue;
-    }
-
-    // FAILSAFE: Do not attempt to construct standard CC messages for custom parameters
-    if (param.midiCC < 0) {
-      return [];
     }
 
     var data = createCCMessage(param.midiCC, outVal);
@@ -541,24 +548,11 @@ class NuxDeviceControl extends ChangeNotifier {
     if (data.isEmpty) return;
 
     // 1. Intercept naked 32-byte custom FX payloads
-    // If it lacks the BLE header (0x80) and SysEx header (0xF0), wrap it.
     if (data.length == 32 && data[0] != 0x80 && data[0] != 0xF0) {
-      int nonce = DateTime.now().millisecondsSinceEpoch % 16383;
-      int token = (nonce % 16383) + 1;
-      
-      List<int> sysEx = [
-        240, 67, 88, 112, 4, 2, 78, 70, 1, 
-        1, // op: 1 (Write)
-        _device.selectedChannel, 
-        token & 127, 
-        token >> 7,
-        0, 0, 0, 0, 0, 0, // model: 0
-        ...data,          // Insert the 32-byte inner payload here
-        247               // End of SysEx
-      ];
-      
-      // Add the BLE MIDI header
-      data = [0x80, 0x80, ...sysEx];
+      if (device.communication is NamProCommunication) {
+        (device.communication as NamProCommunication).sendNfPayload(data);
+        return;
+      }
     } 
     // 2. If it's already a standard SysEx but missing the BLE header, wrap it
     else if (data[0] == 0xF0) {

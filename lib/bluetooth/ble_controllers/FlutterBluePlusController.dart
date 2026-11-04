@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mighty_plug_manager/bluetooth/ble_controllers/BLEController.dart';
+import 'package:mighty_plug_manager/bluetooth/devices/NuxConstants.dart';
 import 'package:mighty_plug_manager/utilities/list_extenstions.dart';
 
 class FBPScanResult extends BLEScanResult {
@@ -365,6 +366,13 @@ class FlutterBluePlusController extends BLEController {
     // BLE MIDI characteristic requires Write Without Response.
     // Forcing withoutResponse = false triggers GATT Long Write (Prepare Write),
     // which causes embedded BLE MIDI firmware to reject the message.
-    return _midiCharacteristic!.write(data, withoutResponse: noResponse);
+    bool writeWithoutResp = noResponse;
+    if (data.length > 9 &&
+        data[2] == MidiMessageValues.sysExStart &&
+        data[8] == 0x4E &&
+        data[9] == 0x46) {
+      writeWithoutResp = true;
+    }
+    return _midiCharacteristic!.write(data, withoutResponse: writeWithoutResp);
   }
 }

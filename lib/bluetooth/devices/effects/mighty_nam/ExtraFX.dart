@@ -50,8 +50,11 @@ abstract class NamExtraFX extends Processor {
   @override
   final int nuxIndex;
 
+  final bool isFxB;
+
   @override
-  String get name => extraFxNames[nuxIndex - 1];
+  String get name =>
+      nuxIndex <= extraFxNames.length ? extraFxNames[nuxIndex - 1] : "Extra FX";
 
   @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
@@ -69,44 +72,95 @@ abstract class NamExtraFX extends Processor {
   int? get nuxEnableIndex => null;
 
   @override
-  MidiControllerHandle? get midiControlOff => null;
+  MidiControllerHandle? get midiControlOff =>
+      isFxB ? MidiControllerHandles.fxBOff : MidiControllerHandles.fxAOff;
+
   @override
-  MidiControllerHandle? get midiControlOn => null;
+  MidiControllerHandle? get midiControlOn =>
+      isFxB ? MidiControllerHandles.fxBOn : MidiControllerHandles.fxAOn;
+
   @override
-  MidiControllerHandle? get midiControlToggle => null;
+  MidiControllerHandle? get midiControlToggle =>
+      isFxB ? MidiControllerHandles.fxBToggle : MidiControllerHandles.fxAToggle;
+
   @override
-  MidiControllerHandle? get midiControlPrev => null;
+  MidiControllerHandle? get midiControlPrev =>
+      isFxB ? MidiControllerHandles.fxBPrev : MidiControllerHandles.fxAPrev;
+
   @override
-  MidiControllerHandle? get midiControlNext => null;
+  MidiControllerHandle? get midiControlNext =>
+      isFxB ? MidiControllerHandles.fxBNext : MidiControllerHandles.fxANext;
 
   @override
   final List<Parameter> parameters;
 
-  NamExtraFX(this.nuxIndex)
+  NamExtraFX(this.nuxIndex, {this.isFxB = false})
       : parameters = [
-          if (nuxIndex == 1) _createParam('Pitch', 3, 12),
+          if (nuxIndex == 1) _createParam('Pitch', 3, 12, isFxB),
           if (nuxIndex >= 3 && nuxIndex <= 7) ...[
-            _createParam('Rate', 5, 30),
-            _createParam('Depth', 6, 50),
+            _createParam('Rate', 5, 30, isFxB),
+            _createParam('Depth', 6, 50, isFxB),
           ],
-          if (nuxIndex == 4 || nuxIndex == 5) _createParam('Feedback', 7, 0),
+          if (nuxIndex == 4 || nuxIndex == 5)
+            _createParam('Feedback', 7, 0, isFxB),
           // Map Daisy Wah (103) parameters securely
           if (nuxIndex == 2 || nuxIndex == 103) ...[
-            _createParam('Sensitivity', 8, 50),
-            _createParam('Resonance', 9, 50),
+            _createParam('Sensitivity', 8, 50, isFxB),
+            _createParam('Resonance', 9, 50, isFxB),
           ],
-          _createParam('Mix', 4, 100),
+          _createParam('Mix', 4, 100, isFxB),
         ];
 
-  static Parameter _createParam(String name, int index, double value) =>
+  static Parameter _createParam(
+          String name, int index, double value, bool isFxB) =>
       Parameter(
         name: name,
         handle: 'fx_$index',
         value: value,
         formatter: FxValueFormatter(index),
-        devicePresetIndex: index, // This matches the exact NF payload byte offset
-        midiCC: -1, // -1 forces NamProPreset.dart to intercept the write via NF SysEx
+        devicePresetIndex: index, // Matches exact NF payload byte offset
+        midiCC: -1, // Intercepted via NF SysEx in NamProPreset.dart
+        midiControllerHandle: _resolveHandle(index, isFxB),
       );
+
+  static MidiControllerHandle? _resolveHandle(int paramIndex, bool isFxB) {
+    if (isFxB) {
+      switch (paramIndex) {
+        case 3:
+          return MidiControllerHandles.fxBPitch;
+        case 4:
+          return MidiControllerHandles.fxBMix;
+        case 5:
+          return MidiControllerHandles.fxBRate;
+        case 6:
+          return MidiControllerHandles.fxBDepth;
+        case 7:
+          return MidiControllerHandles.fxBFeedback;
+        case 8:
+          return MidiControllerHandles.fxBSensitivity;
+        case 9:
+          return MidiControllerHandles.fxBResonance;
+      }
+    } else {
+      switch (paramIndex) {
+        case 3:
+          return MidiControllerHandles.fxAPitch;
+        case 4:
+          return MidiControllerHandles.fxAMix;
+        case 5:
+          return MidiControllerHandles.fxARate;
+        case 6:
+          return MidiControllerHandles.fxADepth;
+        case 7:
+          return MidiControllerHandles.fxAFeedback;
+        case 8:
+          return MidiControllerHandles.fxASensitivity;
+        case 9:
+          return MidiControllerHandles.fxAResonance;
+      }
+    }
+    return null;
+  }
 
   @override
   void setupFromNuxPayload(List<int> nuxData) {}
@@ -132,31 +186,31 @@ abstract class NamExtraFX extends Processor {
 }
 
 class NamPitch extends NamExtraFX {
-  NamPitch() : super(1);
+  NamPitch({bool isFxB = false}) : super(1, isFxB: isFxB);
 }
 
 class NamAutoWah extends NamExtraFX {
-  NamAutoWah() : super(2);
+  NamAutoWah({bool isFxB = false}) : super(2, isFxB: isFxB);
 }
 
 class NamChorus extends NamExtraFX {
-  NamChorus() : super(3);
+  NamChorus({bool isFxB = false}) : super(3, isFxB: isFxB);
 }
 
 class NamFlanger extends NamExtraFX {
-  NamFlanger() : super(4);
+  NamFlanger({bool isFxB = false}) : super(4, isFxB: isFxB);
 }
 
 class NamPhaser extends NamExtraFX {
-  NamPhaser() : super(5);
+  NamPhaser({bool isFxB = false}) : super(5, isFxB: isFxB);
 }
 
 class NamTremolo extends NamExtraFX {
-  NamTremolo() : super(6);
+  NamTremolo({bool isFxB = false}) : super(6, isFxB: isFxB);
 }
 
 class NamVibrato extends NamExtraFX {
-  NamVibrato() : super(7);
+  NamVibrato({bool isFxB = false}) : super(7, isFxB: isFxB);
 }
 
 class NamDaisyWah extends NamExtraFX {
@@ -164,5 +218,5 @@ class NamDaisyWah extends NamExtraFX {
   final String name = "Daisy Wah";
 
   // Native app override for custom wah routing
-  NamDaisyWah() : super(103);
+  NamDaisyWah({bool isFxB = false}) : super(103, isFxB: isFxB);
 }

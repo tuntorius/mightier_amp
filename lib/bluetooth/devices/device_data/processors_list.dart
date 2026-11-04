@@ -366,14 +366,14 @@ class ProcessorsList {
         icon: Icons.blur_on),
   ];
 
-  static List<NamExtraFX> buildExtraFxList() => [
-        NamPitch(),
-        NamAutoWah(),
-        NamChorus(),
-        NamFlanger(),
-        NamPhaser(),
-        NamTremolo(),
-        NamVibrato(),
-        NamDaisyWah(),
+  static List<NamExtraFX> buildExtraFxList({bool isFxB = false}) => [
+        NamPitch(isFxB: isFxB),
+        NamAutoWah(isFxB: isFxB),
+        NamChorus(isFxB: isFxB),
+        NamFlanger(isFxB: isFxB),
+        NamPhaser(isFxB: isFxB),
+        NamTremolo(isFxB: isFxB),
+        NamVibrato(isFxB: isFxB),
+        NamDaisyWah(isFxB: isFxB),
       ];
 }

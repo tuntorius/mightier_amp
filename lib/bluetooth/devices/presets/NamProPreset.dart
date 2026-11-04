@@ -23,8 +23,9 @@ class NamProPreset extends PlugProPreset {
     HighLowCut(),
   ];
 
-  final List<Processor> _fxAList = ProcessorsList.buildExtraFxList();
-  final List<Processor> _fxBList = ProcessorsList.buildExtraFxList();
+  final List<Processor> _fxAList =
+      ProcessorsList.buildExtraFxList(isFxB: false);
+  final List<Processor> _fxBList = ProcessorsList.buildExtraFxList(isFxB: true);
 
   List<Processor> get efxList => getEffectsForFXID(PlugProFXID.efx);
   List<Processor> get modulationList => getEffectsForFXID(PlugProFXID.mod);
@@ -42,12 +43,31 @@ class NamProPreset extends PlugProPreset {
     amplifierList.clear();
     amplifierList.add(NamAmp());
 
+    _ensureCustomBlocks();
+  }
+
+  void _ensureCustomBlocks() {
     if (!processorAtSlot.contains(MightyNamFXID.fxA)) {
-      processorAtSlot.insert(2, MightyNamFXID.fxA);
+      processorAtSlot.insert(
+          2.clamp(0, processorAtSlot.length), MightyNamFXID.fxA);
     }
     if (!processorAtSlot.contains(MightyNamFXID.fxB)) {
-      processorAtSlot.insert(3, MightyNamFXID.fxB);
+      int posB = processorAtSlot.indexOf(MightyNamFXID.fxA) + 1;
+      processorAtSlot.insert(
+          posB.clamp(0, processorAtSlot.length), MightyNamFXID.fxB);
     }
+  }
+
+  @override
+  NuxFXID getFXIDFromSlot(int slot) {
+    _ensureCustomBlocks();
+    return super.getFXIDFromSlot(slot);
+  }
+
+  @override
+  int? getSlotFromFXID(NuxFXID fxid) {
+    _ensureCustomBlocks();
+    return super.getSlotFromFXID(fxid);
   }
 
   @override
@@ -153,20 +173,21 @@ class NamProPreset extends PlugProPreset {
   }
 
   List<int> generateNfPayload() {
+    _ensureCustomBlocks();
     final List<int> config = List<int>.filled(32, 0);
 
     for (int slot = 0; slot < 2; slot++) {
       final int offset = slot * 16;
-      config[offset + 0] = slot + 1; 
-      config[offset + 1] = 0;        
-      config[offset + 2] = slot + 2; 
-      config[offset + 3] = 12;       
-      config[offset + 4] = 100;      
-      config[offset + 5] = 30;       
-      config[offset + 6] = 50;       
-      config[offset + 7] = 0;        
-      config[offset + 8] = 50;       
-      config[offset + 9] = 50;       
+      config[offset + 0] = slot + 1;
+      config[offset + 1] = 0;
+      config[offset + 2] = slot + 2;
+      config[offset + 3] = 12;
+      config[offset + 4] = 100;
+      config[offset + 5] = 30;
+      config[offset + 6] = 50;
+      config[offset + 7] = 0;
+      config[offset + 8] = 50;
+      config[offset + 9] = 50;
     }
 
     int posA = processorAtSlot.indexOf(MightyNamFXID.fxA);
@@ -293,8 +314,6 @@ class NamProPreset extends PlugProPreset {
       }
       for (int i = 0; i < 9; i++) {
         if (start + i < nuxData.length) {
-          // CRITICAL FIX: Only add the block to the chain if it actually exists in 
-          // this specific device's processor list (filters out the ghost Wah block)
           var fxid = NuxFXID.fromInt(nuxData[start + i]);
           if (device.getProcessorInfoByFXID(fxid) != null) {
             stockOrder.add(fxid);
@@ -303,23 +322,26 @@ class NamProPreset extends PlugProPreset {
       }
     }
 
-    // FILL GAPS: If legacy preset data provides less than 9 standard blocks, fill them in.
     if (stockOrder.length < 9) {
-       for (var defaultFxid in PresetDataIndexPlugPro.defaultEffects) {
-          if (!stockOrder.contains(defaultFxid)) {
-              stockOrder.add(defaultFxid);
-          }
-       }
+      for (var defaultFxid in PresetDataIndexPlugPro.defaultEffects) {
+        if (!stockOrder.contains(defaultFxid)) {
+          stockOrder.add(defaultFxid);
+        }
+      }
     }
 
     processorAtSlot.clear();
     processorAtSlot.addAll(stockOrder);
     if (posA <= posB) {
-      processorAtSlot.insert(posA.clamp(0, processorAtSlot.length), MightyNamFXID.fxA);
-      processorAtSlot.insert(posB.clamp(0, processorAtSlot.length), MightyNamFXID.fxB);
+      processorAtSlot.insert(
+          posA.clamp(0, processorAtSlot.length), MightyNamFXID.fxA);
+      processorAtSlot.insert(
+          posB.clamp(0, processorAtSlot.length), MightyNamFXID.fxB);
     } else {
-      processorAtSlot.insert(posB.clamp(0, processorAtSlot.length), MightyNamFXID.fxB);
-      processorAtSlot.insert(posA.clamp(0, processorAtSlot.length), MightyNamFXID.fxA);
+      processorAtSlot.insert(
+          posB.clamp(0, processorAtSlot.length), MightyNamFXID.fxB);
+      processorAtSlot.insert(
+          posA.clamp(0, processorAtSlot.length), MightyNamFXID.fxA);
     }
   }
 
@@ -366,6 +388,7 @@ class NamProPreset extends PlugProPreset {
 
   @override
   List<int> createNuxDataFromPreset() {
+    _ensureCustomBlocks();
     List<int> data = List.filled(qrDataLength, 0);
     List<int> qrData = [];
     qrData.add(device.deviceQRId);

@@ -40,8 +40,6 @@ class PresetEffectPreview extends StatelessWidget {
 
     bool isNamPro = dev.presetClass == "mighty_nam_pro";
 
-    // CRITICAL FIX: Extract the exact chain order from the saved JSON keys
-    // instead of iterating over the static factory processorList.
     List<ProcessorInfo> dynamicChainOrder = [];
     for (String key in preset.keys) {
       var pi = dev.getProcessorInfoByKey(key);
@@ -56,9 +54,20 @@ class PresetEffectPreview extends StatelessWidget {
       if (!enabled) color = color.withAlpha(128);
 
       if (preset.containsKey(pi.keyName)) {
+        // SAFEGUARD: Ensure the JSON node is actually a Map before checking keys
+        var fxData = preset[pi.keyName];
+        if (fxData is! Map) continue; 
+
         if (!isNamPro && pi.keyName == "amp") {
-          var name =
-              dev.getAmpNameByNuxIndex(preset[pi.keyName]["fx_type"], pVersion);
+          // SAFEGUARD: Provide default type and catch out-of-bounds amp indices
+          int fxType = fxData["fx_type"] as int? ?? 0;
+          String name = "Amp";
+          try {
+            name = dev.getAmpNameByNuxIndex(fxType, pVersion);
+          } catch (e) {
+            name = "Unknown";
+          }
+          
           widgets.insert(
               0,
               Padding(
@@ -68,12 +77,12 @@ class PresetEffectPreview extends StatelessWidget {
         } else if (!isNamPro && pi.keyName == "cabinet") {
           continue;
         } else {
-          bool fxEnabled = preset[pi.keyName]["enabled"] ?? false;
+          bool fxEnabled = fxData["enabled"] as bool? ?? false;
           widgets.add(Icon(
             pi.icon,
             color: fxEnabled
                 ? color
-                : (isDark ? Colors.grey[700] : Colors.grey[400]),
+                : (isDark ? Colors.grey[700]! : Colors.grey[400]!),
             size: 16,
           ));
         }

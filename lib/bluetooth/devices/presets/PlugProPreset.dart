@@ -30,8 +30,15 @@ class PlugProPreset extends Preset {
   int channel;
   @override
   String channelName;
+  
+  // SAFEGUARD: Added fallback for channel colors list to prevent indexing crashes
   @override
-  Color get channelColor => PresetConstants.channelColorsPro[channel];
+  Color get channelColor {
+    if (channel >= 0 && channel < PresetConstants.channelColorsPro.length) {
+      return PresetConstants.channelColorsPro[channel];
+    }
+    return Colors.blue; 
+  }
 
   final NoiseGatePro _noiseGate = NoiseGatePro();
 
@@ -72,6 +79,8 @@ class PlugProPreset extends Preset {
 
   @override
   Color effectColor(int index) {
+    // SAFEGUARD: Ensure index is valid for the current processorAtSlot array
+    if (index < 0 || index >= processorAtSlot.length) return Colors.grey;
     var proc = getFXIDFromSlot(index);
     var effect = device.getProcessorInfoByFXID(proc);
     return effect?.color ?? Colors.grey;
@@ -235,7 +244,7 @@ class PlugProPreset extends Preset {
 
   @override
   NuxFXID getFXIDFromSlot(int slot) {
-    if (slot >= processorAtSlot.length) return NuxFXID.fromInt(0);
+    if (slot < 0 || slot >= processorAtSlot.length) return NuxFXID.fromInt(0);
     return processorAtSlot[slot];
   }
 

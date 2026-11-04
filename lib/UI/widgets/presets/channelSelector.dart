@@ -86,8 +86,15 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
     double itemWidth = (width / row1).floorToDouble();
 
+    // SAFEGUARD: Ensure we don't iterate past the available presets bounds
     for (int i = 0; i < _presets.length; i++) {
-      bool isSelected = i == widget.device.selectedChannel;
+      // SAFEGUARD: Check bounds against the device's selectedChannel explicitly 
+      // when firmware hot-swaps happen.
+      bool isSelected = false;
+      if (widget.device.selectedChannel >= 0 && widget.device.selectedChannel < _presets.length) {
+         isSelected = (i == widget.device.selectedChannel);
+      }
+      
       var col = isSelected
           ? _presets[widget.device.selectedChannel].channelColor
           : disabledColor;
@@ -134,7 +141,6 @@ class _ChannelSelectorState extends State<ChannelSelector> {
               _presets[i].channelName,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                // Luminance check added here:
                 color: isSelected 
                     ? (col.computeLuminance() > 0.5 ? Colors.black : Colors.white) 
                     : Theme.of(context).colorScheme.onSurface,
@@ -263,6 +269,11 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     layout = getEditorLayoutMode(MediaQuery.of(context));
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     _presets = widget.device.getPresetsList();
+    
+    // SAFEGUARD: Gracefully fall back if device selection is completely out of sync
+    if (widget.device.selectedChannel < 0 || widget.device.selectedChannel >= _presets.length) {
+       return const SizedBox.shrink();
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.max,

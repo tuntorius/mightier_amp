@@ -111,22 +111,27 @@ class PresetItem extends StatelessWidget {
     bool selected = item["uuid"] == device.deviceControl.presetUUID;
     bool newItem = item.containsKey("new");
 
-    var dev = NuxDeviceControl.instance()
-            .getDeviceFromPresetClass(item["product_id"]) ??
-        device;
+    // SAFEGUARD: Cast safely to prevent type errors on older presets
+    String? productId = item["product_id"] as String?;
+    var dev = productId != null
+        ? (NuxDeviceControl.instance().getDeviceFromPresetClass(productId) ?? device)
+        : device;
 
-    Color color = dev.getPreset(0).channelColorsList[item["channel"]];
+    // SAFEGUARD: Clamp channel index to prevent array out-of-bounds crashes
+    int channel = item["channel"] as int? ?? 0;
+    var colorsList = dev.getPreset(0).channelColorsList;
+    Color color = colorsList.isNotEmpty
+        ? colorsList[channel.clamp(0, colorsList.length - 1)]
+        : Colors.blue; 
 
     if (!enabled) color = TinyColor.fromColor(color).desaturate(90).color;
 
     int alpha = selected && !simplified ? 105 : 0;
 
-    // Use black/onSurface font when unselected in Light mode, white when selected or in Dark mode
     Color titleColor;
     if (!enabled) {
       titleColor = Theme.of(context).disabledColor;
     } else if (selected) {
-      // Dynamic contrast check replaced hardcoded white
       titleColor = isDark ? Colors.white : Theme.of(context).colorScheme.primary;
     } else {
       titleColor = Theme.of(context).colorScheme.onSurface;
@@ -176,7 +181,7 @@ class PresetItem extends StatelessWidget {
               ],
             ),
           ),
-          title: Text(item["name"], style: TextStyle(color: titleColor)),
+          title: Text(item["name"] ?? "Unnamed", style: TextStyle(color: titleColor)),
           subtitle:
               PresetEffectPreview(device: dev, preset: item, enabled: enabled),
           trailing: _createPresetTrailingWidget(item, context),

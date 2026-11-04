@@ -32,7 +32,7 @@ class EffectChainBar extends StatelessWidget {
     var proc = preset.getFXIDFromSlot(index);
     var effect = device.getProcessorInfoByFXID(proc);
     
-    // SAFEGUARD: If the effect doesn't exist (e.g. during a transition), render empty space
+    // SAFEGUARD: If the effect doesn't exist (e.g. out of bounds during a transition), render empty space
     if (effect == null) {
        return SizedBox(
          key: Key(index.toString()), 
@@ -41,12 +41,28 @@ class EffectChainBar extends StatelessWidget {
     }
     
     bool selected = index == device.selectedSlot;
+    
+    // SAFEGUARD: Ensure color lookup gracefully degrades
+    Color chainColor = Colors.grey;
+    try {
+      chainColor = preset.effectColor(index);
+    } catch (e) {
+      chainColor = Colors.grey;
+    }
+    
+    // SAFEGUARD: Ensure enabled lookup gracefully degrades
+    bool chainEnabled = true;
+    try {
+      chainEnabled = preset.slotEnabled(index);
+    } catch (e) {
+      chainEnabled = true;
+    }
 
     return EffectChainButton(
       index: index,
       effectInfo: effect,
-      color: preset.effectColor(index),
-      enabled: preset.slotEnabled(index),
+      color: chainColor,
+      enabled: chainEnabled,
       selected: selected,
       reorderable: reorderable,
       key: Key(index.toString()),
@@ -72,7 +88,7 @@ class EffectChainBar extends StatelessWidget {
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: device.effectsChainLength,
+        itemCount: device.effectsChainLength, // FIX: Reverted to device length to respect the base class
         proxyDecorator: (widget, index, animation) {
           return AnimatedBuilder(
             animation: animation,
@@ -102,7 +118,7 @@ class EffectChainBar extends StatelessWidget {
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: device.effectsChainLength,
+        itemCount: device.effectsChainLength, // FIX: Reverted to device length
         itemBuilder: buildItem,
       );
     }

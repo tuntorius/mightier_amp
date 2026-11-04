@@ -8,15 +8,16 @@ import 'plugProCommunication.dart';
 
 const List<int> _kNfHeader = [0x43, 0x58, 0x70, 0x04, 0x02, 0x4E, 0x46, 0x01];
 const int _kNfReplyMinLength = 50;
-const int _kNfOpOffset = 11; 
-const int _kNfPayloadOffset = 17; 
+const int _kNfOpOffset = 11;
+const int _kNfPayloadOffset = 17;
 
 class NamProCommunication extends PlugProCommunication {
   int _nfNonce = 0;
-  
+
   // Track the active model CRC harvested from the proprietary "NP" diagnostic poll
   List<int> activeModelCrc = [0, 0, 0, 0, 0];
   bool _crcReady = false;
+  bool _crcRequestPending = false; // Prevent cascading authorization requests
 
   NamProCommunication(NuxDevice device, NuxDeviceConfiguration config)
       : super(device, config);
@@ -24,16 +25,25 @@ class NamProCommunication extends PlugProCommunication {
   /// Requests the active model CRC from the firmware's diagnostic "NP" Page 5.
   void requestModelCrc() {
     if (!device.deviceControl.isConnected) return;
-    _crcReady = false;
     
+    if (_crcRequestPending) return;
+    _crcRequestPending = true;
+    _crcReady = false;
+
     // Proprietary command: [F0, 43, 58, 70, 04, 02, 4E, 50, 05, F7]
     // 4E 50 = "NP" (Nam Page), 05 = Page 5 (Checksum)
     final List<int> frame = [
-      0x80, 0x80, // BLE MIDI timestamp
-      MidiMessageValues.sysExStart, 
-      0x43, 0x58, SysexPrivacy.kSYSEX_PRIVATE, 0x04, 0x02, 
-      0x4E, 0x50, // 'N', 'P'
-      0x05,       // Page 5
+      0x80,
+      0x80, // BLE MIDI timestamp
+      MidiMessageValues.sysExStart,
+      0x43,
+      0x58,
+      SysexPrivacy.kSYSEX_PRIVATE,
+      0x04,
+      0x02,
+      0x4E,
+      0x50, // 'N', 'P'
+      0x05, // Page 5
       MidiMessageValues.sysExEnd
     ];
     device.deviceControl.sendBLEData(frame);
@@ -42,7 +52,7 @@ class NamProCommunication extends PlugProCommunication {
   void sendNfPayload(List<int> config32) {
     if (!device.deviceControl.isConnected) return;
 
-    // If we haven't harvested the CRC yet, request it and wait. 
+    // If we haven't harvested the CRC yet, request it and wait.
     // The reply handler will automatically resend the payload once it arrives.
     if (!_crcReady) {
       requestModelCrc();
@@ -53,12 +63,13 @@ class NamProCommunication extends PlugProCommunication {
     final int token = _nfNonce;
     final int slot = device.selectedChannel;
 
-    debugPrint(">>> TRANSMITTING NF SYSEX (${config32.length} bytes) | CRC: $activeModelCrc");
+    debugPrint(
+        ">>> TRANSMITTING NF SYSEX (${config32.length} bytes) | CRC: $activeModelCrc");
 
     // Strict 52-byte MIDI SysEx (from F0 to F7) with 2-byte BLE header.
     final List<int> payload = [
-      0x80, 0x80, 
-      MidiMessageValues.sysExStart, 
+      0x80, 0x80,
+      MidiMessageValues.sysExStart,
       0x43, 0x58, SysexPrivacy.kSYSEX_PRIVATE, 0x04, 0x02, 0x4E, 0x46, 0x01,
       0x01, // Write Op
       slot == 255 ? 127 : slot,
@@ -113,7 +124,7 @@ class NamProCommunication extends PlugProCommunication {
   @override
   List<int> setChannel(int channel) {
     final result = super.setChannel(channel);
-    // When the app changes the channel, force a fetch of the new NF parameters 
+    // When the app changes the channel, force a fetch of the new NF parameters
     // shortly after to overwrite any unsaved local tweaks with the hardware truth.
     Future.delayed(const Duration(milliseconds: 200), () {
       if (device.deviceControl.isConnected) {
@@ -131,14 +142,14 @@ class NamProCommunication extends PlugProCommunication {
     final int targetSlot = slot ?? device.selectedChannel;
 
     final List<int> frame = [
-      0x80, 0x80, 
-      MidiMessageValues.sysExStart, 
+      0x80, 0x80,
+      MidiMessageValues.sysExStart,
       0x43, 0x58, SysexPrivacy.kSYSEX_PRIVATE, 0x04, 0x02, 0x4E, 0x46, 0x01,
-      op & 0x7F, 
+      op & 0x7F,
       targetSlot == 255 ? 127 : targetSlot,
       token & 127,
       (token >> 7) & 127,
-      MidiMessageValues.sysExEnd, 
+      MidiMessageValues.sysExEnd,
     ];
 
     device.deviceControl.sendBLEData(frame);
@@ -156,7 +167,7 @@ class NamProCommunication extends PlugProCommunication {
   void _handleNfReply(List<int> data) {
     final int opEcho = data[_kNfOpOffset];
     final int requestedOp = opEcho & ~0x40;
-    
+
     // Ignore write ACK to avoid overwriting active user sliders
     if (requestedOp == 1) return;
 
@@ -176,9 +187,12 @@ class NamProCommunication extends PlugProCommunication {
     // 1. Check for proprietary "NP" diagnostic page replies (specifically Page 5 for the CRC)
     if (data.length >= 17 &&
         data[2] == MidiMessageValues.sysExStart &&
-        data[3] == 0x43 && data[4] == 0x58 && data[5] == 0x70 &&
-        data[6] == 0x04 && data[7] == 0x02 && data[8] == 0x01) {
-      
+        data[3] == 0x43 &&
+        data[4] == 0x58 &&
+        data[5] == 0x70 &&
+        data[6] == 0x04 &&
+        data[7] == 0x02 &&
+        data[8] == 0x01) {
       final int page = data[9];
       final int status = data[10];
 
@@ -186,12 +200,13 @@ class NamProCommunication extends PlugProCommunication {
       if (page == 0x05 && status == 0) {
         activeModelCrc = data.sublist(11, 16);
         _crcReady = true;
+        _crcRequestPending = false; // Reset the gate lock
         debugPrint("NamProComm: Harvested Active Model CRC: $activeModelCrc");
-        
+
         // Resend the slider data now that we have the authorization key
         final preset = device.getPreset(device.selectedChannel);
         if (preset is NamProPreset) {
-           sendNfPayload(preset.generateNfPayload());
+          sendNfPayload(preset.generateNfPayload());
         }
       }
       return;
@@ -204,13 +219,20 @@ class NamProCommunication extends PlugProCommunication {
     }
 
     // 3. CRITICAL FIX: Intercept Hardware LED Button (Program Change)
-    // When the user presses the physical button, the device sends a PC message.
-    // We MUST request the new model CRC and the fresh NF payload, 
-    // otherwise the app will retain unsaved changes from the previous channel.
-    if (data.length >= 4 && (data[2] & 0xF0) == MidiMessageValues.programChange) {
-      super.onDataReceive(data); // Let base class update selected channel
-      requestModelCrc();
-      requestNfPayload(op: 0);
+    // Ignore redundant PC echoes for the currently active channel to prevent BLE buffer stalls.
+    if (data.length >= 4 &&
+        (data[2] & 0xF0) == MidiMessageValues.programChange) {
+      
+      int targetChannel = data[3];
+      if (targetChannel != device.selectedChannel) {
+        super.onDataReceive(data); // Let base class update selected channel
+        
+        // Clear the current queue to stop redundant NF SysEx packets in flight from the old channel
+        device.deviceControl.clearDataQueue();
+        
+        requestModelCrc();
+        requestNfPayload(op: 0);
+      }
       return;
     }
 
@@ -221,7 +243,7 @@ class NamProCommunication extends PlugProCommunication {
         data[6] == SyxMsg.kSYX_CURPRESET &&
         data[9] == 0x32) {
       super.onDataReceive(data);
-      
+
       // When channel changes during initial connect, request the new model CRC & sync
       requestModelCrc();
       requestNfPayload(op: 0);

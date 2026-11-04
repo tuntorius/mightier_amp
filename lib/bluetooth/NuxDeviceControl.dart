@@ -442,7 +442,6 @@ class NuxDeviceControl extends ChangeNotifier {
     }
 
     if (send) {
-      // PREVENT PACKET STORM: Transmit consolidated SysEx once instead of per-parameter
       bool isCustomSysEx = effect.parameters.isNotEmpty &&
           effect.parameters.any((p) => p.midiCC < 0);
       if (isCustomSysEx) {
@@ -465,7 +464,7 @@ class NuxDeviceControl extends ChangeNotifier {
 
   void sendFullPresetSettings() {
     if (!isConnected) return;
-    BLEMidiHandler.instance().clearDataQueue();
+    clearDataQueue();
     if (!device.fakeMasterVolume) {
       device.presets[device.selectedChannel].sendVolume();
     }
@@ -547,6 +546,11 @@ class NuxDeviceControl extends ChangeNotifier {
       _connectStatus.add(DeviceConnectionState.connectionBegin);
       requestPresetDelayed(3000);
     }
+  }
+
+  // CRITICAL FIX: Expose the handler's queue clearer so communication protocols can flush buffers
+  void clearDataQueue() {
+    _midiHandler.clearDataQueue();
   }
 
   void sendBLEData(List<int> data) {

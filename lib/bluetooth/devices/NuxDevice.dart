@@ -166,6 +166,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void toggleChannelActive(int channel) {
     config.activeChannels[channel] = !config.activeChannels[channel];
+    //check for at least one channel enabled
     bool hasEnabled = false;
     for (var act in config.activeChannels) {
       if (act == true) hasEnabled = true;
@@ -196,6 +197,7 @@ abstract class NuxDevice extends ChangeNotifier {
 
   void onConnect() {
     nuxPresetsReceived = false;
+    //reset nux data
     for (int i = 0; i < presets.length; i++) {
       presets[i].resetNuxData();
     }
@@ -249,8 +251,10 @@ abstract class NuxDevice extends ChangeNotifier {
     communication.setEcoMode(enabled);
   }
 
+  //used for master volume control
   void sendAmpLevel() {
     if (fakeMasterVolume) {
+      //amps are at slot 1
       var preset = getPreset(selectedChannel);
       var amp = preset.getEffectsForSlot(amplifierSlotIndex)[
           preset.getSelectedEffectForSlot(amplifierSlotIndex)];
@@ -300,6 +304,7 @@ abstract class NuxDevice extends ChangeNotifier {
     var newIndex = index;
     if (!nativeActiveChannelsSupport) {
       int attempts = 0;
+      //channel skipping
       while (config.activeChannels[newIndex] == false) {
         newIndex++;
         attempts++;
@@ -311,15 +316,18 @@ abstract class NuxDevice extends ChangeNotifier {
       setSelectedChannel(index,
           notifyBT: false, notifyUI: true, sendFullPreset: false);
     } else {
+      //skipped - update ui
       setSelectedChannel(newIndex,
           notifyBT: true, sendFullPreset: false, notifyUI: true);
     }
     getPreset(selectedChannel).setupPresetFromNuxData();
+    //immediately set the amp level
     sendAmpLevel();
   }
 
   void _handleKnobReceiveData(List<int> data) {
     if (data.length < 3) return;
+    //scan through the effects to find which one is controlled
     var preset = getPreset(selectedChannel);
     for (int i = 0; i < effectsChainLength; i++) {
       var selected = preset.getSelectedEffectForSlot(i);
@@ -514,9 +522,6 @@ abstract class NuxDevice extends ChangeNotifier {
         if (presetVersion == productVersion) {
           if (effect.containsKey(fx.parameters[f].handle)) {
             fx.parameters[f].value = effect[fx.parameters[f].handle];
-          } else {
-            debugPrint(
-                "Warning: No key ${fx.parameters[f].handle} for effect $fxTypeNuxIndex in slot $fxTypeNuxIndex");
           }
         } else {
           var handle = fx.parameters[f].handle;
@@ -535,7 +540,6 @@ abstract class NuxDevice extends ChangeNotifier {
     if (!qrOnly) {
       BLEMidiHandler.instance().clearDataQueue();
 
-      // SAME-CHANNEL BYPASS: Do not fire hardware Program Change if staying on the active channel
       bool isSameChannel = (nuxChannel == selectedChannel);
       if (!dontChangeChannel || jamTrackChannelChange) {
         setSelectedChannel(nuxChannel,
@@ -554,7 +558,6 @@ abstract class NuxDevice extends ChangeNotifier {
       p = getCustomPreset(nuxChannel);
     }
 
-    // Volume Delta Check
     if (preset.containsKey("volume")) {
       double newVol = (preset["volume"] as num).toDouble();
       if ((p.volume - newVol).abs() > 0.001) {
@@ -562,64 +565,13 @@ abstract class NuxDevice extends ChangeNotifier {
       }
     }
 
-    // CHAIN ORDER CHECK: Compare existing slots to prevent redundant kSYX_MODULELINK halts
-    bool orderChanged = false;
-    if (reorderableFXChain) {
-      List<NuxFXID> previousOrder = [];
-      for (int i = 0; i < p.device.effectsChainLength; i++) {
-        previousOrder.add(p.getFXIDFromSlot(i));
-      }
-
-      List<String> keyOrder = [];
-      for (String key in preset.keys) {
-        var pInfo = getProcessorInfoByKey(key);
-        if (pInfo != null) {
-          keyOrder.add(key);
-        }
-      }
-
-      if (presetClass == "mighty_nam_pro") {
-        if (!keyOrder.contains("fxa")) {
-          int insertIndex = keyOrder.length >= 2 ? 2 : keyOrder.length;
-          keyOrder.insert(insertIndex, "fxa");
-        }
-        if (!keyOrder.contains("fxb")) {
-          int insertIndex = keyOrder.length >= 3 ? 3 : keyOrder.length;
-          keyOrder.insert(insertIndex, "fxb");
-        }
-      }
-
-      for (var pInfo in p.device.processorList) {
-        if (!keyOrder.contains(pInfo.keyName)) {
-          keyOrder.add(pInfo.keyName);
-        }
-      }
-
-      for (int index = 0;
-          index < keyOrder.length && index < p.device.effectsChainLength;
-          index++) {
-        var pInfo = getProcessorInfoByKey(keyOrder[index]);
-        if (pInfo != null) {
-          p.setFXIDAtSlot(index, pInfo.nuxFXID);
-        }
-      }
-
-      for (int i = 0; i < p.device.effectsChainLength; i++) {
-        if (i >= previousOrder.length ||
-            previousOrder[i] != p.getFXIDFromSlot(i)) {
-          orderChanged = true;
-          break;
-        }
-      }
-    }
-
-    // Snapshot Custom SysEx state prior to in-memory mutations
+    // Snapshot Custom SysEx state prior to parsing to enable delta-checking
     List<int>? prevNfPayload;
     if (p is NamProPreset) {
       prevNfPayload = p.generateNfPayload();
     }
 
-    // Parse effects and only transmit delta parameters over BLE
+    // Parse effects and apply delta settings
     for (String key in preset.keys) {
       int? index = getSlotByEffectKeyName(key);
       if (index != null) {
@@ -692,7 +644,6 @@ abstract class NuxDevice extends ChangeNotifier {
       }
     }
 
-    // Transmit consolidated custom SysEx ONLY if payload delta was detected
     if (!qrOnly && p is NamProPreset && communication is NamProCommunication) {
       List<int> newNfPayload = p.generateNfPayload();
       bool nfPayloadChanged = false;
@@ -712,7 +663,6 @@ abstract class NuxDevice extends ChangeNotifier {
       }
     }
 
-    // Inactive effects parse
     if (!qrOnly && preset.containsKey(PresetsStorage.inactiveEffectsKey)) {
       var inactives = preset[PresetsStorage.inactiveEffectsKey];
       for (String effectKey in inactives.keys) {
@@ -725,8 +675,9 @@ abstract class NuxDevice extends ChangeNotifier {
       }
     }
 
-    // Only transmit topology command if physical block order has changed
-    if (!qrOnly && orderChanged) {
+    // PREVENT AUDIO DROPOUTS: Only broadcast slot order if this is an explicit FULL preset load.
+    // Automation (dontChangeChannel = true) passes partial payloads that shouldn't halt the DSP matrix.
+    if (!qrOnly && !dontChangeChannel) {
       communication.sendSlotOrder();
     }
 

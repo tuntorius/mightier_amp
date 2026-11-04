@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+
 import '../devices/NuxConstants.dart';
 
 enum MidiSetupStatus {
@@ -41,13 +42,13 @@ abstract class BLEScanResult {
 abstract class BLEDevice {
   String get name;
   String get id;
-
   Stream<BleDeviceState> get state;
 }
 
 class BLEConnection {
   final Stream<List<int>> _dataStream;
   Stream<List<int>> get data => _dataStream;
+
   BLEConnection(this._dataStream);
 }
 
@@ -71,10 +72,8 @@ abstract class BLEController {
   MidiSetupStatus get currentStatus => _currentStatus;
 
   BLEDevice? get connectedDevice;
-
   final StreamController<bool> _scanStatus = StreamController.broadcast();
   Stream<bool> get isScanningStream => _scanStatus.stream;
-
   bool _isScanning = false;
   bool get isScanning => _isScanning;
 
@@ -85,7 +84,6 @@ abstract class BLEController {
 
   @protected
   late ScanResultsCallback onScanResults;
-
   @protected
   List<String> forcedDevices;
 
@@ -103,10 +101,8 @@ abstract class BLEController {
 
   void startScanning();
   void stopScanning();
-
   Future<BLEConnection?> connectToDevice(BLEDevice device);
   void disconnectDevice();
-
   StreamSubscription<List<int>> registerDataListener(
       Function(List<int>) listener);
 
@@ -119,7 +115,6 @@ abstract class BLEController {
 
   void sendData(List<int> data) {
     var queueLength = dataQueue.length;
-
     if (data.length > 3 &&
         data[2] == MidiMessageValues.controlChange &&
         dataQueue.isNotEmpty) {
@@ -130,7 +125,6 @@ abstract class BLEController {
           element[3] == data[3]);
       dataQueue.addFirst(inFlight);
     }
-
     if (_isNfSysEx(data) && dataQueue.isNotEmpty) {
       var inFlight = dataQueue.removeFirst();
       dataQueue.removeWhere((element) => _isNfSysEx(element));
@@ -169,18 +163,19 @@ abstract class BLEController {
           bool noResponse = true;
 
           // PROTECT A2DP AUDIO: 
-          // If Android OS spams massive SysEx writes consecutively without response pacing, 
+          // If the OS spams massive SysEx writes consecutively without response pacing,
           // it chokes the shared Bluetooth cache and drops music player audio.
-          if (Platform.isAndroid &&
+          if ((Platform.isAndroid || Platform.isIOS) &&
+              data.length > 6 &&
               data[2] == MidiMessageValues.sysExStart &&
               data[6] == SyxMsg.kSYX_MODULELINK) {
             noResponse = false;
             await Future.delayed(const Duration(milliseconds: 100));
           }
-
-          await writeToCharacteristic(data, noResponse);
           
-          if (Platform.isAndroid) {
+          await writeToCharacteristic(data, noResponse);
+
+          if (Platform.isAndroid || Platform.isIOS) {
             // SysEx payload pacing to save the audio stream
             if (data.length > 20) {
               await Future.delayed(const Duration(milliseconds: 25));
@@ -217,6 +212,5 @@ abstract class BLEController {
   }
 
   bool get isWriteReady;
-
   Future writeToCharacteristic(List<int> data, bool noResponse);
 }

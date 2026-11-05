@@ -31,13 +31,17 @@ class _EqualizerEditorState extends State<EqualizerEditor> {
         builder: (BuildContext context, BoxConstraints constraints) {
       var screenWidth = constraints.maxWidth;
       var layout = getEditorLayoutMode(MediaQuery.of(context));
+      bool isDark = Theme.of(context).brightness == Brightness.dark;
 
       List<Parameter> params = widget.eqEffect.parameters;
       List<Widget> sliders = [];
       for (int i = 0; i < params.length; i++) {
         var param = params[i];
+        
+        // Use Orange in Light mode to ensure the slider remains visible against white
         Color color =
-            (i == 0 && params.length > 6) ? Colors.amber : Colors.blue;
+            (i == 0 && params.length > 6) ? (isDark ? Colors.amber : Colors.orange) : Colors.blue;
+            
         if (!widget.enabled) {
           color = TinyColor.fromColor(color).desaturate(80).color;
         }

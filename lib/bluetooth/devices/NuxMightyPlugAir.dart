@@ -119,6 +119,7 @@ class NuxMightyPlug extends NuxDevice {
   List<Preset> guitarPresets = <Preset>[];
   List<Preset> bassPresets = <Preset>[];
 
+  @override
   List<String> channelNames = [];
 
   NuxMightyPlug(NuxDeviceControl devControl) : super(devControl) {

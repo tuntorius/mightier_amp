@@ -22,7 +22,9 @@ public class SwiftFlutterBarcodeScannerPlugin: NSObject, ScanBarcodeDelegate {
     public static var scanMode = ScanMode.QR.index
     
     public static func initScanner() {
-        viewController = (UIApplication.shared.delegate?.window??.rootViewController)!
+        if let rootVC = UIApplication.shared.delegate?.window??.rootViewController {
+            viewController = rootVC
+        }
     }
     
     /// Check for camera availability

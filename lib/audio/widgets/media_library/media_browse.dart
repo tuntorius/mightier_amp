@@ -34,6 +34,13 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
     });
   }
 
+  @override
+  void dispose() {
+    editingController.dispose();
+    _refreshController.close();
+    super.dispose();
+  }
+
   Future<void> getArtists({bool refresh = true}) async {
     final OnAudioQuery audioQuery = OnAudioQuery();
     if (artists.isEmpty || refresh) artists = await audioQuery.queryArtists();
@@ -67,23 +74,22 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
                       break;
                     case ConnectionState.active:
                     case ConnectionState.done:
-                      List<ArtistModel> _artists;
+                      List<ArtistModel> displayArtists;
                       var searchText = editingController.text.toLowerCase();
                       if (editingController.text.isNotEmpty) {
-                        _artists = <ArtistModel>[];
-                        for (var item in artists) {
-                          if (item.artist.toLowerCase().contains(searchText)) {
-                            _artists.add(item);
-                          }
-                        }
+                        displayArtists = artists
+                            .where((item) => item.artist
+                                .toLowerCase()
+                                .contains(searchText))
+                            .toList();
                       } else {
-                        _artists = artists;
+                        displayArtists = artists;
                       }
 
                       return RefreshIndicator(
                         onRefresh: getArtists,
                         child: ListView.builder(
-                            itemCount: _artists.length,
+                            itemCount: displayArtists.length,
                             itemBuilder: (BuildContext ctxt, int index) {
                               return Padding(
                                 padding:
@@ -94,15 +100,15 @@ class _MediaLibraryBrowserState extends State<MediaLibraryBrowser> {
                                           .push(MaterialPageRoute(
                                               builder: (context) =>
                                                   ArtistAlbums(
-                                                      _artists[index].artist,
+                                                      displayArtists[index].artist,
                                                       artistId:
-                                                          _artists[index].id)));
+                                                          displayArtists[index].id)));
                                       if (result != null) {
                                         Navigator.of(context).pop(result);
                                       }
                                     },
                                     title: Text(
-                                      _artists[index].artist,
+                                      displayArtists[index].artist,
                                     ),
                                     trailing:
                                         const Icon(Icons.keyboard_arrow_right)),

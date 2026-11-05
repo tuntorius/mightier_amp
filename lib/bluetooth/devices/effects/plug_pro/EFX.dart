@@ -452,7 +452,8 @@ class Katana extends EFXPro {
         value: 0,
         formatter: ValueFormatters.boostModePro,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxMode),
   ];
 }
 
@@ -506,7 +507,8 @@ class TouchWahPro extends EFXPro {
         value: 1,
         formatter: ValueFormatters.touchWahFormatterLiteMk2,
         devicePresetIndex: PresetDataIndexPlugPro.EFX_Para1,
-        midiCC: MidiCCValuesPro.EFX_Para1),
+        midiCC: MidiCCValuesPro.EFX_Para1,
+        midiControllerHandle: MidiControllerHandles.efxMode),
     Parameter(
         name: "Wow",
         handle: "wow",

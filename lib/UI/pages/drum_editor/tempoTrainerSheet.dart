@@ -74,7 +74,6 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
                 return CircularProgressIndicator(
                   value: fill,
                   strokeWidth: 10,
-                  //backgroundColor: Colors.grey[300],
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     Colors.green,
                   ),
@@ -201,7 +200,7 @@ class _TempoTrainerSheetState extends State<TempoTrainerSheet>
               child: Text(
                 _tempoTrainer.enable ? "${device.drumsTempo.round()} bpm" : "",
                 style: DrumEditor.fontStyle.copyWith(
-                    color: widget.enabled ? Colors.white : Colors.grey[600]),
+                    color: widget.enabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).disabledColor),
               ),
             ),
           )

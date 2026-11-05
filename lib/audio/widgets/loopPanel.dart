@@ -26,16 +26,6 @@ class LoopPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          /*ElevatedButton(
-            onPressed: () {
-              onAddLoop();
-            },
-            child: Text("Insert Loop Points"),
-          ),
-          const SizedBox(
-            width: 8,
-          ),*/
-
           CheckboxListTile(
               title: const Text("Enable Loop"),
               value: automation.loopEnable,
@@ -56,7 +46,7 @@ class LoopPanel extends StatelessWidget {
             "Loop Times",
             style: TextStyle(
                 fontSize: dense ? 12 : 16,
-                color: automation.loopEnable ? Colors.white : Colors.grey[700]),
+                color: automation.loopEnable ? Theme.of(context).colorScheme.onSurface : Theme.of(context).disabledColor),
           )),
           AbsorbPointer(
             absorbing: !automation.loopEnable,
@@ -67,11 +57,9 @@ class LoopPanel extends StatelessWidget {
               maxValue: 20,
               selectedTextStyle: TextStyle(
                   fontSize: 22,
-                  color:
-                      automation.loopEnable ? Colors.white : Colors.grey[700]),
+                  color: automation.loopEnable ? Theme.of(context).colorScheme.onSurface : Theme.of(context).disabledColor),
               textStyle: TextStyle(
-                  color:
-                      automation.loopEnable ? Colors.grey : Colors.grey[800]),
+                  color: automation.loopEnable ? Theme.of(context).hintColor : Theme.of(context).disabledColor),
               zeroSymbol: "∞",
               value: automation.loopTimes,
               onChanged: automation.loopEnable == false
@@ -81,33 +69,6 @@ class LoopPanel extends StatelessWidget {
                     },
             ),
           )
-          /*Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  child: Text("Edit"),
-                  onPressed: automation.selectedEvent == null
-                      ? null
-                      : () {
-                          //onEditEvent(automation.selectedEvent!);
-                        },
-                ),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  child: Text("Delete"),
-                  onPressed: automation.selectedEvent == null
-                      ? null
-                      : () {
-                          //onDelete();
-                        },
-                ),
-              )
-            ],
-          ),*/
         ],
       ),
     );

@@ -10,9 +10,7 @@ export 'package:flutter_midi_command_platform_interface/flutter_midi_command_pla
 
 class MidiCommand {
   factory MidiCommand() {
-    if (_instance == null) {
-      _instance = MidiCommand._();
-    }
+    _instance ??= MidiCommand._();
     return _instance!;
   }
 
@@ -22,7 +20,7 @@ class MidiCommand {
 
   static MidiCommandPlatform? __platform;
 
-  StreamController<Uint8List> _txStreamCtrl = StreamController.broadcast();
+  final StreamController<Uint8List> _txStreamCtrl = StreamController.broadcast();
 
   /// Get the platform specific implementation
   static MidiCommandPlatform get _platform {

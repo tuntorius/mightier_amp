@@ -5,7 +5,7 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:mighty_plug_manager/UI/widgets/presets/EffectChainBar.dart';
+import 'EffectChainBar.dart';
 import 'package:mighty_plug_manager/platform/simpleSharedPrefs.dart';
 import 'package:undo/undo.dart';
 import '../../../bluetooth/NuxDeviceControl.dart';
@@ -44,12 +44,9 @@ class _EffectSelectorState extends State<EffectSelector> {
   }
 
   void setSelectedEffect(dynamic index) {
-    //the index param is always int, it's dynamic because the menu widget requires that
-
     setState(() {
       var device = NuxDeviceControl.instance().device;
       var effectSlot = _selectedSlot;
-      //put new effect in stack
       var oldEffect = (
         slot: _selectedSlot,
         index: _preset.getSelectedEffectForSlot(_selectedSlot),
@@ -67,7 +64,6 @@ class _EffectSelectorState extends State<EffectSelector> {
       if (device.cabinetSupport &&
           SharedPrefs().getInt(SettingsKeys.changeCabs, 1) == 1) {
         if (_selectedSlot == device.amplifierSlotIndex) {
-          //get the cabinet for this amp and set it
           Processor amp = _preset.getEffectsForSlot(_selectedSlot)[index];
           if (amp is Amplifier) {
             var proc = _preset.getFXIDFromSlot(device.cabinetSlotIndex);
@@ -98,6 +94,7 @@ class _EffectSelectorState extends State<EffectSelector> {
   @override
   Widget build(BuildContext context) {
     var layout = getEditorLayoutMode(MediaQuery.of(context));
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     _preset = widget.preset;
 
     _effectColor = _preset.effectColor(_selectedSlot);
@@ -107,13 +104,9 @@ class _EffectSelectorState extends State<EffectSelector> {
     var proc = _preset.getFXIDFromSlot(_selectedSlot);
     var effectInfo = widget.device.getProcessorInfoByFXID(proc)!;
 
-    //create effect models dropdown list
     List<Processor> effects = _preset.getEffectsForSlot(_selectedSlot);
 
-    //effect color for popup menu. Make sure it's contrasty to the text
     var popupEffectColor = _effectColor;
-
-    //try to darken up to 2 times until the color is not light anymore
     for (int i = 0; i < 2; i++) {
       if (TinyColor.fromColor(popupEffectColor).isLight()) {
         popupEffectColor =
@@ -126,13 +119,12 @@ class _EffectSelectorState extends State<EffectSelector> {
             _selectedSlot)[_preset.getSelectedEffectForSlot(_selectedSlot)]
         .name;
 
-    //create popup menu
     _effectItems = <custom.PopupMenuEntry<dynamic>>[];
     for (int f = 0; f < effects.length; f++) {
       if (effects[f].isSeparator == true) {
         _effectItems.add(custom.PopupMenuDivider(
           text: effects[f].category,
-          color: Colors.grey,
+          color: isDark ? Colors.grey : Colors.grey[700],
         ));
       }
 
@@ -144,10 +136,28 @@ class _EffectSelectorState extends State<EffectSelector> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
-            "${f + 1}. ${effects[f].name}",
+            "${f + 1}.${effects[f].name}",
+            style: TextStyle(
+                color: f == _preset.getSelectedEffectForSlot(_selectedSlot)
+                    ? (TinyColor.fromColor(popupEffectColor).isLight()
+                        ? Colors.black
+                        : Colors.white)
+                    : Theme.of(context).textTheme.bodyLarge?.color),
           ),
         ),
       ));
+    }
+
+    // Ensure arrows and text have enough contrast in Light Mode
+    Color arrowAndTextColor = _effectColorBright;
+    if (!isDark && TinyColor.fromColor(arrowAndTextColor).isLight()) {
+      arrowAndTextColor = TinyColor.fromColor(arrowAndTextColor).darken(35).color;
+    }
+
+    // Ensure the switch thumb and track are visible in Light Mode
+    Color switchActiveColor = _effectColorBright;
+    if (!isDark && TinyColor.fromColor(switchActiveColor).isLight()) {
+      switchActiveColor = TinyColor.fromColor(switchActiveColor).darken(15).color;
     }
 
     var effectSelectButton = Container(
@@ -163,7 +173,7 @@ class _EffectSelectorState extends State<EffectSelector> {
           children: [
             Icon(
               effectInfo.icon,
-              color: _effectColorBright,
+              color: arrowAndTextColor,
             ),
             const SizedBox(
               width: 5,
@@ -171,7 +181,7 @@ class _EffectSelectorState extends State<EffectSelector> {
             Text(
               effectInfo.longName,
               style: TextStyle(
-                  color: _effectColorBright, fontWeight: FontWeight.bold),
+                  color: arrowAndTextColor, fontWeight: FontWeight.bold),
             ),
             if (_effectItems.length > 1) const SizedBox(height: 1, width: 8),
             if (_effectItems.length > 1) Text(_selectedEffectName)
@@ -204,16 +214,13 @@ class _EffectSelectorState extends State<EffectSelector> {
               var old = from + to * 100;
               setState(() {
                 NuxDeviceControl.instance().changes.add(Change<int>(old, () {
-                      //get type of old slot
                       var selectedType = _preset.getFXIDFromSlot(_selectedSlot);
                       _preset.swapProcessorSlots(from, to, true);
                       _selectSlotByFXID(selectedType);
                     }, (oldVal) {
-                      //get type of old slot
                       var selectedType = _preset.getFXIDFromSlot(_selectedSlot);
                       int from = oldVal % 100;
                       int to = (oldVal / 100).floor();
-                      //positions are swapped on undo
                       _preset.swapProcessorSlots(to, from, true);
                       _selectSlotByFXID(selectedType);
                     }));
@@ -234,6 +241,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                   itemBuilder: (context) => _effectItems,
                   onSelected: setSelectedEffect,
                   initialValue: _preset.getSelectedEffectForSlot(_selectedSlot),
+                  offset: const Offset(0, 4),
                   child: effectSelectButton,
                 )
               else
@@ -256,7 +264,7 @@ class _EffectSelectorState extends State<EffectSelector> {
                       icon: Transform.rotate(
                           angle: pi,
                           child: Icon(Icons.play_arrow,
-                              color: _effectColorBright)),
+                              color: arrowAndTextColor)),
                       iconSize: 30,
                     ),
                   if (_effectItems.length > 1)
@@ -268,20 +276,22 @@ class _EffectSelectorState extends State<EffectSelector> {
                         if (effect > effects.length - 1) effect = 0;
                         setSelectedEffect(effect);
                       },
-                      icon: Icon(Icons.play_arrow, color: _effectColorBright),
+                      icon: Icon(Icons.play_arrow, color: arrowAndTextColor),
                       iconSize: 30,
                     ),
                   if (_preset.slotSwitchable(_selectedSlot))
                     Tooltip(
-                      message: "Toggle ${effectInfo.longName}",
+                      message: "Toggle \${effectInfo.longName}",
                       child: Switch(
                         value: _preset.slotEnabled(_selectedSlot),
                         onChanged: (val) {
                           _setSlotEnabledState(_selectedSlot, val);
                         },
-                        activeColor: _effectColorBright,
-                        inactiveThumbColor: Colors.grey,
-                        inactiveTrackColor: Colors.grey[700],
+                        activeColor: switchActiveColor,
+                        // This explicitly differentiates the track from the thumb
+                        activeTrackColor: switchActiveColor.withOpacity(0.4), 
+                        inactiveThumbColor: isDark ? Colors.grey : Colors.grey[400],
+                        inactiveTrackColor: isDark ? Colors.grey[700] : Colors.grey[300],
                       ),
                     ),
                 ],

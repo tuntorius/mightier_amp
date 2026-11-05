@@ -31,12 +31,14 @@ class ControllerHotkey {
 
   //whether to invert knob/slider style value
   bool invertSlider;
+  
+  // Sweep constraints
+  double minLimit;
+  double maxLimit;
 
   final Function(HotkeyControl) onHotkeyReceived;
 
-  NuxDevice? _cachedDevice;
   int? _cachedSlot;
-  int? _cachedFX;
   int? _cachedParameter;
 
   ControllerHotkey(
@@ -46,7 +48,9 @@ class ControllerHotkey {
       required this.subIndex,
       required this.hotkeyCode,
       required this.hotkeyName,
-      required this.invertSlider});
+      required this.invertSlider,
+      this.minLimit = 0.0,
+      this.maxLimit = 1.0});
 
   execute(int? value) {
     var device = NuxDeviceControl().device;
@@ -242,6 +246,9 @@ class ControllerHotkey {
       case HotkeyControl.NextPresetCategory:
         _changeToAdjacentPreset(device, false, PresetChangeDirection.next);
         break;
+      case HotkeyControl.ToggleTuner:
+        onHotkeyReceived(control);
+        break;
       default:
         onHotkeyReceived(control);
     }
@@ -250,7 +257,13 @@ class ControllerHotkey {
   double midiToPercentage(int? midiVal) {
     var val = midiVal ?? 0;
     if (invertSlider) val = 127 - val;
-    return (val / 127) * 100;
+    
+    // Normalize to 0.0 - 1.0 and scale to configured boundaries
+    double normalized = val / 127.0;
+    double scaled = minLimit + (normalized * (maxLimit - minLimit));
+    
+    // Return as 0-100 percentage for downstream mapping
+    return scaled * 100.0;
   }
 
   void _changeToAdjacentPreset(
@@ -286,7 +299,7 @@ class ControllerHotkey {
   }
 
   void _delayTapTempo(NuxDevice device) {
-    var p = _getEffectCached(device);
+    var p = _getEffectDynamic(device);
 
     if (_cachedSlot == null || _cachedSlot! >= device.effectsChainLength) {
       return;
@@ -307,13 +320,20 @@ class ControllerHotkey {
   }
 
   void _hotkeyParameterSet(int? value, NuxDevice device) {
-    var p = _getEffectCached(device);
+    var p = _getEffectDynamic(device);
 
-    if (_cachedSlot == null || _cachedSlot! >= device.effectsChainLength) {
+    if (_cachedSlot == null || 
+        _cachedSlot! >= device.effectsChainLength || 
+        _cachedParameter == null) {
       return;
     }
+    
     var selectedFX = p.getSelectedEffectForSlot(_cachedSlot!);
     var effect = p.getEffectsForSlot(_cachedSlot!)[selectedFX];
+
+    if (_cachedParameter! >= effect.parameters.length) {
+      return;
+    }
 
     double val = midiToPercentage(value);
 
@@ -329,31 +349,22 @@ class ControllerHotkey {
         value, 0, 100, formatter.min.toDouble(), formatter.max.toDouble());
   }
 
-  Preset _getEffectCached(NuxDevice device) {
+  Preset _getEffectDynamic(NuxDevice device) {
     ControllerHandleId id = ControllerHandleId.values[index];
-
-    bool deviceChanged = device != _cachedDevice;
-    _cachedDevice = device;
-
     var p = device.getPreset(device.selectedChannel);
 
-    //find slot and cache it
-    if (deviceChanged ||
-        _cachedSlot == null ||
-        _cachedFX != p.getSelectedEffectForSlot(_cachedSlot!)) {
-      _cachedSlot = null;
-      _cachedFX = null;
-      _cachedParameter = null;
-      for (int i = 0; i < device.effectsChainLength; i++) {
-        var selectedFX = p.getSelectedEffectForSlot(i);
-        var effect = p.getEffectsForSlot(i)[selectedFX];
-        var paramIndex = _findParameterByControllerHandleId(effect, id);
-        if (paramIndex != null) {
-          _cachedSlot = i;
-          _cachedFX = selectedFX;
-          _cachedParameter = paramIndex;
-          break;
-        }
+    _cachedSlot = null;
+    _cachedParameter = null;
+    
+    // Always resolve the target dynamically.
+    for (int i = 0; i < device.effectsChainLength; i++) {
+      var selectedFX = p.getSelectedEffectForSlot(i);
+      var effect = p.getEffectsForSlot(i)[selectedFX];
+      var paramIndex = _findParameterByControllerHandleId(effect, id);
+      if (paramIndex != null) {
+        _cachedSlot = i;
+        _cachedParameter = paramIndex;
+        break;
       }
     }
     return p;
@@ -407,6 +418,8 @@ class ControllerHotkey {
     data["index"] = index;
     data["subIndex"] = subIndex;
     data["invert"] = invertSlider;
+    data["minLimit"] = minLimit;
+    data["maxLimit"] = maxLimit;
     return data;
   }
 
@@ -419,6 +432,8 @@ class ControllerHotkey {
         index: json["index"],
         subIndex: json["subIndex"],
         invertSlider: json["invert"] ?? false,
+        minLimit: (json["minLimit"] ?? 0.0).toDouble(),
+        maxLimit: (json["maxLimit"] ?? 1.0).toDouble(),
         onHotkeyReceived: onReceived);
     return hk;
   }

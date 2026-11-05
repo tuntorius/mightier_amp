@@ -25,10 +25,10 @@ class QRExportDialog {
             IconButton(
                 icon: Icon(
                   Icons.adaptive.arrow_back,
-                  color: Colors.white,
+                  color: Theme.of(context).iconTheme.color,
                 ),
                 onPressed: () => Navigator.of(context).pop()),
-            const Text("Share QR Code", style: TextStyle(color: Colors.white)),
+            Text("Share QR Code", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
           ],
         ),
         insetPadding: EdgeInsets.zero,
@@ -41,7 +41,7 @@ class QRExportDialog {
               Screenshot(
                 controller: screenshotController,
                 child: ColoredBox(
-                  color: Colors.white,
+                  color: Colors.white, // Kept strictly white for proper QR Scanning
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: Column(
@@ -69,16 +69,14 @@ class QRExportDialog {
                   if (!PlatformUtils.isIOS)
                     ElevatedButton.icon(
                         onPressed: () async {
-                          //var path = '$directory';
-                          //fileSave
                           var data = await screenshotController.capture();
                           if (data != null) {
                             saveFile("image/png", presetName, data);
                           }
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.save_alt,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                         label: const Text("Save")),
                   const SizedBox(
@@ -97,8 +95,6 @@ class QRExportDialog {
                         var tracksPath =
                             path.join(storageDirectory?.path ?? "", "");
 
-                        //var path = '$directory';
-
                         await screenshotController.captureAndSave(tracksPath,
                             fileName: "preset.png");
 
@@ -111,7 +107,7 @@ class QRExportDialog {
                       },
                       icon: Icon(
                         Icons.adaptive.share,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                       label: const Text("Share"))
                 ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PresetForm extends StatefulWidget {
+  const PresetForm({super.key});
+
   @override
   _PresetFormState createState() => _PresetFormState();
 }
@@ -71,7 +73,7 @@ class _PresetFormState extends State<PresetForm> {
                 decoration: const InputDecoration(
                   labelText: "Instrument",
                 ),
-                value: _instrument,
+                initialValue: _instrument,
                 items: _instrumentOptions
                     .map((instrument) => DropdownMenuItem(
                           value: instrument,
@@ -85,7 +87,7 @@ class _PresetFormState extends State<PresetForm> {
                 decoration: const InputDecoration(
                   labelText: "Genre",
                 ),
-                value: _genre,
+                initialValue: _genre,
                 items: _genreOptions
                     .map((genre) => DropdownMenuItem(
                           value: genre,

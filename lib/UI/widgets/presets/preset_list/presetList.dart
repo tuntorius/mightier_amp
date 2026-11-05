@@ -44,11 +44,21 @@ class _PresetListState extends State<PresetList>
   final TextEditingController _searchText = TextEditingController(text: "");
   late ScrollController _scrollController;
 
+  // Variables for Expand/Collapse All
+  bool _expandAll = false;
+  int _expandToggleCount = 0;
+
+  // Variables for Dynamic Selection Scrolling
+  final GlobalKey _selectedPresetKey = GlobalKey();
+  String _lastPresetUuid = "";
+  bool _isVisible = true;
+
   @override
   void initState() {
     super.initState();
 
     if (widget.visibilityEventHandler != null) {
+      _isVisible = false; 
       widget.visibilityEventHandler!.onTabSelected = _onTabSelected;
       widget.visibilityEventHandler!.onTabDeselected = _onTabDeselected;
     }
@@ -75,14 +85,21 @@ class _PresetListState extends State<PresetList>
   }
 
   void _onTabSelected() {
+    _isVisible = true;
     _registerListeners();
     if (mounted) {
       setState(() {});
+      
+      // Always attempt to center the preset when coming back to the tab, 
+      // especially after a cold start where the layout wasn't ready yet.
+      String currentUuid = NuxDeviceControl.instance().presetUUID;
+      _lastPresetUuid = currentUuid;
+      _scrollToSelected();
     }
   }
 
   void _onTabDeselected() {
-    print("on deselected");
+    _isVisible = false;
     NuxDeviceControl.instance().removeListener(refreshPresets);
     PresetsStorage().removeListener(refreshPresets);
     NuxDeviceControl.instance()
@@ -94,15 +111,47 @@ class _PresetListState extends State<PresetList>
   }
 
   void refreshPresets() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+
+      // Only Auto-Scroll if the Preset List tab is actually visible on screen
+      if (_isVisible) {
+        String currentUuid = NuxDeviceControl.instance().presetUUID;
+        if (currentUuid != _lastPresetUuid) {
+          _lastPresetUuid = currentUuid;
+          _scrollToSelected();
+        }
+      }
+    }
   }
 
-  void _openToneShare() {
-    //Navigator.of(context)
-    //    .push(MaterialPageRoute(builder: (context) => const ToneShare()));
+  void _scrollToSelected() {
+    // Add an initial delay to allow tab slide transitions and category 
+    // expansion animations to finish before looking for the widget.
+    Future.delayed(const Duration(milliseconds: 350), () {
+      _tryScroll(15); // Try 15 times, waiting 150ms between each attempt
+    });
+  }
 
-    //Navigator.of(context)
-    //    .push(MaterialPageRoute(builder: (context) => MightyPatchesPage()));
+  void _tryScroll(int attemptsLeft) {
+    if (attemptsLeft <= 0 || !mounted) return;
+    
+    // If the widget has finally rendered in the tree, scroll to it
+    if (_selectedPresetKey.currentContext != null) {
+      Scrollable.ensureVisible(
+        _selectedPresetKey.currentContext!,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.5, // Center the item vertically
+      ).catchError((e) {
+        debugPrint("Scroll error caught: $e");
+      });
+    } else {
+      // If it hasn't rendered yet (still animating open), try again shortly
+      Future.delayed(const Duration(milliseconds: 150), () {
+        _tryScroll(attemptsLeft - 1);
+      });
+    }
   }
 
   Widget _mainPopupMenu() {
@@ -132,21 +181,33 @@ class _PresetListState extends State<PresetList>
       );
     } else if (!widget.simplified) {
       return ListTile(
-        // shape: RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.circular(20),
-        //     side: BorderSide(color: Colors.grey)),
         contentPadding: const EdgeInsets.only(left: 16, right: 0),
         title: const Text("Presets"),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            /*if (kDebugMode)
-              IconButton(
-                  onPressed: _openToneShare,
-                  icon: const Icon(
-                    Icons.cloud_download,
-                    size: 28,
-                  )),*/
+            IconButton(
+                tooltip: "Expand All",
+                onPressed: () {
+                  _expandAll = true;
+                  _expandToggleCount++;
+                  setState(() {});
+                },
+                icon: const Icon(
+                  Icons.expand_more,
+                  size: 28,
+                )),
+            IconButton(
+                tooltip: "Collapse All",
+                onPressed: () {
+                  _expandAll = false;
+                  _expandToggleCount++;
+                  setState(() {});
+                },
+                icon: const Icon(
+                  Icons.expand_less,
+                  size: 28,
+                )),
             IconButton(
                 onPressed: () {
                   _showSearch = true;
@@ -197,7 +258,6 @@ class _PresetListState extends State<PresetList>
       },
       itemGhostOpacity: 1,
       itemDragOffset: const Offset(30, 0),
-      // listGhost is mandatory when using expansion tiles to prevent multiple widgets using the same globalkey
       listGhost: Container(
         color: Colors.blue,
         child: Padding(
@@ -223,10 +283,14 @@ class _PresetListState extends State<PresetList>
 
   Widget _createPresetTree(Widget? header, bool hideNonApplicable) {
     List<DragAndDropListInterface> list = List.generate(
-        _lists.length, (index) => _buildList(index, hideNonApplicable));
+        _lists.length, (index) => _buildList(index, hideNonApplicable))
+        .where((element) => element != null)
+        .cast<DragAndDropListInterface>()
+        .toList();
 
     return SafeArea(
       child: CustomScrollView(
+        cacheExtent: 10000, 
         slivers: [
           if (header != null)
             SliverAppBar(
@@ -244,7 +308,10 @@ class _PresetListState extends State<PresetList>
 
   Widget _createPresetTreeSimple(bool hideNonApplicable) {
     List<DragAndDropListInterface> list = List.generate(
-        _lists.length, (index) => _buildList(index, hideNonApplicable));
+        _lists.length, (index) => _buildList(index, hideNonApplicable))
+        .where((element) => element != null)
+        .cast<DragAndDropListInterface>()
+        .toList();
     return _createDragDropList(list, null, false, disableScrolling: true);
   }
 
@@ -262,6 +329,7 @@ class _PresetListState extends State<PresetList>
     presetList.sort((a, b) => a["name"].compareTo(b["name"]));
     return SafeArea(
       child: CustomScrollView(
+        cacheExtent: 10000, 
         slivers: [
           SliverAppBar(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -280,9 +348,6 @@ class _PresetListState extends State<PresetList>
                 return _presetWidget(presetList[index], hideNonApplicable);
               },
               itemCount: presetList.length,
-              // prototypeItem: const ListTile(
-              //   subtitle: SizedBox.shrink(),
-              // ),
             )
         ],
       ),
@@ -336,13 +401,64 @@ class _PresetListState extends State<PresetList>
 
   _buildList(int outerIndex, bool hideNonApplicable) {
     Map category = _lists[outerIndex];
-    List presets = category["presets"];
+    List allPresets = category["presets"];
+
+    // 1. Pre-filter the presets if hideNonApplicable is active
+    List presets = [];
+    if (hideNonApplicable) {
+      for (var p in allPresets) {
+        if (device.isPresetSupported(p)) {
+          presets.add(p);
+        }
+      }
+    } else {
+      presets = List.from(allPresets);
+    }
+
+    // 2. If the category is completely empty after filtering, return null to drop it from the tree.
+    // The library builder must filter out nulls before rendering.
+    if (presets.isEmpty && hideNonApplicable) {
+      return null;
+    }
+
+    bool containsSelected = false;
+    String currentUuid = NuxDeviceControl.instance().presetUUID;
+    for (var p in presets) {
+      if (p["uuid"] == currentUuid) {
+        containsSelected = true;
+        break;
+      }
+    }
+
+    bool shouldExpand = _expandAll || containsSelected;
+    Key tileKey = Key(
+        "${category["name"]}_${_expandToggleCount}_${containsSelected ? "active" : "inactive"}");
+
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DragAndDropListExpansion(
+      initiallyExpanded: shouldExpand,
       canDrag: !widget.simplified,
-      title: Text(category["name"]),
-      titleColor: Colors.grey[700],
-      titleColorExpanded: Colors.grey[600],
-      itemsBackgroundColor: Colors.grey[900]!,
+      title: Container(
+        decoration: isDark
+            ? null
+            : BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Colors.grey[300]!, width: 1.0),
+                ),
+              ),
+        padding: EdgeInsets.only(top: isDark ? 0 : 8.0),
+        child: Text(
+          category["name"],
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      titleColor: isDark ? Colors.grey[800] : Colors.transparent,
+      titleColorExpanded: isDark ? Colors.grey[700] : Colors.transparent,
+      itemsBackgroundColor: isDark ? Colors.grey[900]! : Colors.transparent,
       trailing: widget.simplified
           ? null
           : PopupMenuButton(
@@ -359,25 +475,33 @@ class _PresetListState extends State<PresetList>
             ),
       children: List.generate(presets.length,
           (index) => _buildPresetItem(presets[index], hideNonApplicable)),
-      listKey: ObjectKey(category),
+      listKey: tileKey,
     );
   }
 
   Widget _presetWidget(Map<String, dynamic> item, bool hideNonApplicable) {
-    return PresetWidget(
-        simplified: widget.simplified,
-        device: device,
-        hideNonApplicable: hideNonApplicable,
-        onTap: widget.onTap,
-        preset: item);
+    bool isSelected = item["uuid"] == NuxDeviceControl.instance().presetUUID;
+    return Container(
+      key: isSelected ? _selectedPresetKey : null,
+      child: PresetWidget(
+          simplified: widget.simplified,
+          device: device,
+          hideNonApplicable: hideNonApplicable,
+          onTap: widget.onTap,
+          preset: item),
+    );
   }
 
   _buildPresetItem(Map<String, dynamic> item, bool hideNonApplicable) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return DragAndDropItem(
       canDrag: !widget.simplified,
       feedbackWidget: ListTile(
-        tileColor: const Color.fromARGB(127, 127, 127, 127),
-        title: Text(item["name"]),
+        tileColor: isDark 
+            ? const Color.fromARGB(127, 127, 127, 127) 
+            : const Color.fromARGB(200, 240, 240, 240),
+        title: Text(item["name"], style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
       ),
       child: _presetWidget(item, hideNonApplicable),
     );
@@ -408,10 +532,6 @@ class _PresetListState extends State<PresetList>
   @override
   bool get wantKeepAlive => true;
 
-  ///
-  ///Actions
-  ///
-  ///
   void mainMenuActions(action) {
     switch (action) {
       case PresetsTopMenuActions.ExportAll:
@@ -423,10 +543,6 @@ class _PresetListState extends State<PresetList>
     }
   }
 
-  ///
-  /// Preset actions
-  ///
-  ///
   void _deleteCategory(String category) {
     AlertDialogs.showConfirmDialog(context,
         title: "Confirm",
@@ -462,7 +578,6 @@ class _PresetListState extends State<PresetList>
         });
   }
 
-  //if category is empty string it exports all categories
   void _exportCategory(String category) {
     String? data = PresetsStorage().presetsToJson(category);
 

@@ -83,7 +83,6 @@ class _AudioEditorState extends State<AudioEditor> {
 
     automation.positionStream.listen(playPositionUpdate);
     automation.playerStateStream.listen(playerStateUpdate);
-    //automation.eventStream.listen(eventUpdate);
 
     controller.addListener(() {
       if (controller.page == null) return;
@@ -217,7 +216,9 @@ class _AudioEditorState extends State<AudioEditor> {
 
   AutomationEventType? showEventType() {
     if (showType == AutomationEventType.loop &&
-        (!automation.loopEnable || !automation.useLoopPoints)) return null;
+        (!automation.loopEnable || !automation.useLoopPoints)) {
+      return null;
+    }
     return showType;
   }
 
@@ -304,7 +305,7 @@ class _AudioEditorState extends State<AudioEditor> {
                   ),
                   if (state != EditorState.play)
                     ColoredBox(
-                        color: Colors.grey[700]!,
+                        color: Theme.of(context).cardColor,
                         child: const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text(
@@ -325,9 +326,9 @@ class _AudioEditorState extends State<AudioEditor> {
                   });
                 },
                 height: 70,
-                child: const Icon(
+                child: Icon(
                   Icons.skip_previous,
-                  color: Colors.white,
+                  color: Theme.of(context).iconTheme.color,
                   size: 50,
                 ),
               ),
@@ -342,25 +343,25 @@ class _AudioEditorState extends State<AudioEditor> {
                               ProcessingState.completed
                       ? Icons.play_arrow
                       : Icons.pause,
-                  color: Colors.white,
+                  color: Theme.of(context).iconTheme.color,
                   size: 50,
                 ),
               ),
               MaterialButton(
                 onPressed: stepLeft, //move event left
                 height: 70,
-                child: const Icon(
+                child: Icon(
                   Icons.chevron_left,
-                  color: Colors.white,
+                  color: Theme.of(context).iconTheme.color,
                   size: 60,
                 ),
               ),
               MaterialButton(
                 onPressed: stepRight, //move event left
                 height: 70,
-                child: const Icon(
+                child: Icon(
                   Icons.chevron_right,
-                  color: Colors.white,
+                  color: Theme.of(context).iconTheme.color,
                   size: 60,
                 ),
               ),

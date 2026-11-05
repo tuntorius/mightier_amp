@@ -50,8 +50,8 @@ class GuitarBackingTracksSource extends OnlineSource {
       var url = "$baseUrl$suggestionsPath${query[0]}/$query.js";
       var result = await http.get(Uri.parse(url));
       if (result.statusCode == 200) {
-        List<dynamic> _res = jsonDecode(result.body)['suggestions'];
-        return _res.map((e) => e.toString()).toList();
+        List<dynamic> res = jsonDecode(result.body)['suggestions'];
+        return res.map((e) => e.toString()).toList();
       }
     }
 

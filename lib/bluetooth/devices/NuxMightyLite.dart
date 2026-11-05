@@ -83,6 +83,7 @@ class NuxMightyLite extends NuxDevice {
   @override
   List<ProcessorInfo> get processorList => ProcessorsList.liteList;
 
+  @override
   List<String> channelNames = [];
 
   NuxMightyLite(NuxDeviceControl devControl) : super(devControl) {

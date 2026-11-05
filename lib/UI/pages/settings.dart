@@ -14,6 +14,7 @@ import '../../bluetooth/devices/NuxDevice.dart';
 import '../../bluetooth/devices/features/tuner.dart';
 import '../../platform/simpleSharedPrefs.dart';
 import '../mightierIcons.dart';
+import '../theme.dart';
 import '../widgets/deviceList.dart';
 import 'DebugConsolePage.dart';
 import 'developerPage.dart';
@@ -88,9 +89,20 @@ class _SettingsState extends State<Settings> {
             ),
           ListTileTheme(
             minLeadingWidth: 0,
-            iconColor: Colors.white,
+            iconColor: Theme.of(context).iconTheme.color,
             child: Column(
               children: [
+                SwitchListTile(
+                  title: const Text("Dark Mode"),
+                  value: SharedPrefs().getValue(SettingsKeys.darkMode, true),
+                  onChanged: (val) {
+                    setState(() {
+                      SharedPrefs().setValue(SettingsKeys.darkMode, val);
+                      themeModeNotifier.value =
+                          val ? ThemeMode.dark : ThemeMode.light;
+                    });
+                  },
+                ),
                 SwitchListTile(
                   title: const Text("Keep Screen On"),
                   value: SharedPrefs()
@@ -184,7 +196,6 @@ class _SettingsState extends State<Settings> {
                       );
                     },
                   ),
-                //Automatically set matching cabinet when changing an amp
                 CheckboxListTile(
                     title: const Text("Set matching cabinets automatically"),
                     value:
@@ -342,18 +353,6 @@ class _SettingsState extends State<Settings> {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const DeveloperPage()));
                 }),
-          // ListTile(
-          //   title: Text("More Info"),
-          //   onTap: () {
-          //     showAboutDialog(
-          //       context: context,
-          //       applicationIcon:
-          //           Icon(MightierIcons.amp, color: Colors.blue, size: 30),
-          //       applicationVersion: _version,
-          //       applicationLegalese: "© 2021 Dian Iliev (Tuntori)",
-          //     );
-          //   },
-          // ),
         ],
       ),
     );

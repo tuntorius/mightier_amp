@@ -55,7 +55,7 @@ class ThickRangeSlider extends StatefulWidget {
 
 class _ThickRangeSliderState extends State<ThickRangeSlider> {
   SliderRangeValues factor =
-      SliderRangeValues(0.2, 0.8); //normalized position in 0-1
+      SliderRangeValues(0.2, 0.8); 
   SliderRangeValues pos = SliderRangeValues(0, 1);
   int lastTapDown = 0;
   int emitCounter = 0;
@@ -67,8 +67,6 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
 
   int handleIndex = 0;
 
-  // Returns a number between min and max, proportional to value, which must
-  // be between 0.0 and 1.0.
   double _lerpSingle(double value) {
     assert(value >= 0.0);
     assert(value <= 1.0);
@@ -80,7 +78,6 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
         _lerpSingle(values.start), _lerpSingle(values.end));
   }
 
-  //same as above, only with custom min and max
   double _lerp2Single(double value, double min, double max) {
     assert(value >= 0.0);
     assert(value <= 1.0);
@@ -91,8 +88,6 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
     return SliderRangeValues(_lerp2Single(values.start, min, max),
         _lerp2Single(values.end, min, max));
   }
-
-  // Returns a number between 0.0 and 1.0, given a value between min and max.
 
   double _unlerpSingle(double value) {
     assert(value <= widget.max);
@@ -111,14 +106,12 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
   void initState() {
     super.initState();
 
-    //range check
     assert(widget.min < widget.max);
     assert(
         widget.values.start >= widget.min && widget.values.start <= widget.max);
     assert(widget.values.end >= widget.min && widget.values.end <= widget.max);
     assert(widget.values.start <= widget.values.end);
     assert(widget.skipEmitting > 0);
-    //normalize value to 0-1
     factor = _unlerp(widget.values);
   }
 
@@ -165,7 +158,6 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
   void dragEnd(DragEndDetails details) {
     if (!widget.enabled) return;
     scale = 1;
-    //call the last factor value here
     widget.onChanged?.call(_lerp(factor), false);
     widget.onDragEnd?.call(_lerp(factor));
     SemanticsService.announce(
@@ -173,40 +165,6 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
   }
 
   void manualValueEnter() {
-    /*
-    String dialogValue = _lerp(factor).toStringAsFixed(2);
-
-    AlertDialogs.showInputDialog(context,
-        title: "Enter Value",
-        description: "Enter new value for ${widget.label}",
-        cancelButton: "Cancel",
-        confirmButton: "Set",
-        selectAll: true,
-        keyboardType: TextInputType.number,
-        value: dialogValue,
-        validation: (value) {
-          double? val = double.tryParse(value);
-          if (val == null) return false;
-
-          double min = 0, max = 0;
-
-          //Check for range
-          min = widget.min;
-          max = widget.max;
-
-          if (val < min || val > max) return false;
-          return true;
-        },
-        validationErrorMessage: "Value not valid",
-        confirmColor: Theme.of(context).hintColor,
-        onConfirm: (value) {
-          var val = double.parse(value);
-
-          widget.onDragStart?.call(widget.values);
-          widget.onChanged?.call(val, false);
-          widget.onDragEnd?.call(val);
-        });
-        */
   }
 
   @override
@@ -252,8 +210,7 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
                           ? TinyColor.fromColor(widget.activeColor)
                               .darken(15)
                               .color
-                          : Colors.grey[800],
-                      //width: max(factor * width, 0),
+                          : Theme.of(context).disabledColor, 
                     ),
                   ),
                   Positioned(
@@ -263,7 +220,7 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
                       child: Container(
                           color: widget.enabled
                               ? widget.activeColor
-                              : Colors.grey[700],
+                              : Theme.of(context).disabledColor,
                           width: 20)),
                   Positioned(
                       left: positionHandles.end - 10,
@@ -272,7 +229,7 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
                       child: Container(
                           color: widget.enabled
                               ? widget.activeColor
-                              : Colors.grey[700],
+                              : Theme.of(context).disabledColor,
                           width: 20)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -283,16 +240,16 @@ class _ThickRangeSliderState extends State<ThickRangeSlider> {
                             widget.label,
                             style: TextStyle(
                                 color: widget.enabled
-                                    ? Colors.white
-                                    : Colors.grey[600],
+                                    ? Theme.of(context).colorScheme.onSurface
+                                    : Theme.of(context).hintColor,
                                 fontSize: 20),
                           ),
                           Text(
                             widget.labelFormatter(_lerp(factor)),
                             style: TextStyle(
                                 color: widget.enabled
-                                    ? Colors.white
-                                    : Colors.grey[600],
+                                    ? Theme.of(context).colorScheme.onSurface
+                                    : Theme.of(context).hintColor,
                                 fontSize: 20),
                           )
                         ]),

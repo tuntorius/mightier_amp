@@ -20,29 +20,23 @@ enum PresetItemActions {
 class PresetsPopupMenus {
   //mainMenu
   static final presetsMenu = <PopupMenuEntry>[
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetsTopMenuActions.ExportAll,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.archive,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Backup All"),
+          Icon(Icons.archive),
+          SizedBox(width: 5),
+          Text("Backup All"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetsTopMenuActions.Import,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.unarchive,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Restore"),
+          Icon(Icons.unarchive),
+          SizedBox(width: 5),
+          Text("Restore"),
         ],
       ),
     ),
@@ -50,136 +44,106 @@ class PresetsPopupMenus {
 
   //menu for category
   static final List<PopupMenuEntry> popupMenuCategory = <PopupMenuEntry>[
-    PopupMenuItem(
+    const PopupMenuItem(
       value: CategoryMenuActions.Delete,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.delete,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Delete"),
+          Icon(Icons.delete),
+          SizedBox(width: 5),
+          Text("Delete"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: CategoryMenuActions.Rename,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.drive_file_rename_outline,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Rename"),
+          Icon(Icons.drive_file_rename_outline),
+          SizedBox(width: 5),
+          Text("Rename"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: CategoryMenuActions.Export,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.archive,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Backup Category"),
+          Icon(Icons.archive),
+          SizedBox(width: 5),
+          Text("Backup Category"),
         ],
       ),
     )
   ];
 
   static final List<PopupMenuEntry> popupMenuPreset = <PopupMenuEntry>[
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetItemActions.Delete,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.delete,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Delete"),
+          Icon(Icons.delete),
+          SizedBox(width: 5),
+          Text("Delete"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetItemActions.ChangeChannel,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.circle,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Change Channel"),
+          Icon(Icons.circle),
+          SizedBox(width: 5),
+          Text("Change Channel"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetItemActions.ChangeCategory,
       child: Row(
         children: <Widget>[
-          Icon(
-            MightierIcons.tag,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Change Category"),
+          Icon(MightierIcons.tag),
+          SizedBox(width: 5),
+          Text("Change Category"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetItemActions.Rename,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.drive_file_rename_outline,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Rename"),
+          Icon(Icons.drive_file_rename_outline),
+          SizedBox(width: 5),
+          Text("Rename"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetItemActions.Duplicate,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.copy,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Duplicate"),
+          Icon(Icons.copy),
+          SizedBox(width: 5),
+          Text("Duplicate"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetItemActions.ExportQR,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.qr_code_2,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Share as QR Code"),
+          Icon(Icons.qr_code_2),
+          SizedBox(width: 5),
+          Text("Share as QR Code"),
         ],
       ),
     ),
-    PopupMenuItem(
+    const PopupMenuItem(
       value: PresetItemActions.Export,
       child: Row(
         children: <Widget>[
-          Icon(
-            Icons.archive,
-            color: AppThemeConfig.contextMenuIconColor,
-          ),
-          const SizedBox(width: 5),
-          const Text("Backup Preset"),
+          Icon(Icons.archive),
+          SizedBox(width: 5),
+          Text("Backup Preset"),
         ],
       ),
     )

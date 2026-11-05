@@ -30,23 +30,22 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
     super.initState();
     playerState.addListener(_onPlayerStateChange);
     _positionSub = playerState.positionStream.listen(_onPlayerPosition);
-    NuxDeviceControl().addListener(_onPlayerStateChange);
+    // Removed NuxDeviceControl listener to prevent BLE flood from blocking audio transport UI updates
   }
 
   @override
   void dispose() {
     super.dispose();
     playerState.removeListener(_onPlayerStateChange);
-    NuxDeviceControl().removeListener(_onPlayerStateChange);
     _positionSub?.cancel();
   }
 
   void _onPlayerPosition(Duration position) {
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   void _onPlayerStateChange() {
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -59,23 +58,30 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
       text: TextSpan(
           text: playerState.setlist?.items[playerState.currentTrack]
                   .trackReference?.name ??
-              "No Track"),
+              "No Track",
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
       speed: 20,
     );
   }
 
   Widget createPlayerView(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return LayoutBuilder(builder: (context, constraints) {
+      double maxDur = playerState.getDuration().inMilliseconds.toDouble();
+      double currentPos = playerState.currentPosition.inMilliseconds.toDouble();
+      if (maxDur <= 0) maxDur = 1.0;
+      if (currentPos > maxDur) currentPos = maxDur;
+
       return Material(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: ListView(
-          //crossAxisAlignment: CrossAxisAlignment.stretch,
-          //physics: const NeverScrollableScrollPhysics(),
           children: [
             ListTile(
-              tileColor: Colors.grey[850],
+              tileColor: isDark ? Colors.grey[850] : Colors.grey[200],
               leading: IconButton(
                 iconSize: 32,
+                color: Theme.of(context).iconTheme.color,
                 onPressed: playerState.toggleExpanded,
                 icon: const Icon(Icons.keyboard_arrow_down),
               ),
@@ -96,14 +102,15 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
                     data: SliderThemeData(
                         trackShape: SliderRepeatTrackShape(state: playerState)),
                     child: Slider(
-                      value:
-                          playerState.currentPosition.inMilliseconds.toDouble(),
+                      value: currentPos,
+                      max: maxDur,
                       onChanged: (value) {
-                        setState(() {
-                          playerState.setPosition(value.round());
-                        });
+                        if (mounted) {
+                          setState(() {
+                            playerState.setPosition(value.round());
+                          });
+                        }
                       },
-                      max: playerState.getDuration().inMilliseconds.toDouble(),
                       onChangeStart: (val) {
                         playerState.setPositionUpdateMode(true);
                       },
@@ -117,15 +124,12 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
                 ],
               ),
             ),
-            /*ListTile(
-              title: Text("Current preset: aoufh"),
-            ),*/
             CheckboxListTile(
                 title: const Text("Auto Advance"),
                 value: playerState.autoAdvance,
                 onChanged: (value) {
                   playerState.autoAdvance = value ?? true;
-                  setState(() {});
+                  if (mounted) setState(() {});
                 }),
             if (playerState.automation != null &&
                 playerState.automation!.loopEnable &&
@@ -136,8 +140,7 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
                   child: const Text("Cancel Loop"),
                   onPressed: () {
                     playerState.automation?.forceLoopDisable();
-
-                    setState(() {});
+                    if (mounted) setState(() {});
                   },
                 ),
               ),
@@ -146,12 +149,12 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
               onSemitonesChanged: (val) {
                 playerState.pitch = val;
                 playerState.automation?.setPitch(val);
-                setState(() {});
+                if (mounted) setState(() {});
               },
               onSpeedChanged: (speed) {
                 playerState.speed = speed;
                 playerState.automation?.setSpeed(speed);
-                setState(() {});
+                if (mounted) setState(() {});
               },
               semitones: playerState.pitch,
               speed: playerState.speed,
@@ -168,11 +171,11 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
                 min: -20,
                 max: 20,
                 snapToCenter: true,
-                labelFormatter: (val) =>
-                    "${playerState.gain.toStringAsFixed(1)} db",
+                // FIX: Corrected raw string interpolation syntax error
+                labelFormatter: (val) => val.toStringAsFixed(1) + " dB",
                 onChanged: (value, skip) {
                   playerState.gain = value;
-                  setState(() {});
+                  if (mounted) setState(() {});
                 },
                 onDragEnd: (value) {
                   SharedPrefs()
@@ -207,17 +210,14 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
     totalIconSize = math.min(totalIconSize, 70);
     var iconSize = totalIconSize - 14;
     var padding = const EdgeInsets.all(7);
+    Color iconColor = Theme.of(context).iconTheme.color ?? Colors.white;
+
     return [
       IconButton(
         padding: padding,
-        onPressed: () {
-          playerState.previous();
-        },
+        onPressed: playerState.previous,
         iconSize: iconSize,
-        icon: const Icon(
-          Icons.skip_previous,
-          color: Colors.white,
-        ),
+        icon: Icon(Icons.skip_previous, color: iconColor),
       ),
       IconButton(
         padding: padding,
@@ -227,22 +227,17 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
                   .inMilliseconds);
         },
         iconSize: iconSize,
-        icon: const Icon(
-          Icons.fast_rewind,
-          color: Colors.white,
-        ),
+        icon: Icon(Icons.fast_rewind, color: iconColor),
       ),
       IconButton(
         padding: padding,
-        onPressed: () {
-          playerState.playPause();
-        },
+        onPressed: playerState.playPause,
         iconSize: iconSize,
         icon: Icon(
           playerState.state == PlayerState.play
               ? Icons.pause
               : Icons.play_arrow,
-          color: Colors.white,
+          color: iconColor,
         ),
       ),
       IconButton(
@@ -253,28 +248,19 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
                   .inMilliseconds);
         },
         iconSize: iconSize,
-        icon: const Icon(
-          Icons.fast_forward,
-          color: Colors.white,
-        ),
+        icon: Icon(Icons.fast_forward, color: iconColor),
       ),
       IconButton(
         padding: padding,
         onPressed: playerState.next,
         iconSize: iconSize,
-        icon: const Icon(
-          Icons.skip_next,
-          color: Colors.white,
-        ),
+        icon: Icon(Icons.skip_next, color: iconColor),
       ),
       IconButton(
         padding: padding,
         onPressed: playerState.toggleABRepeat,
         iconSize: iconSize,
-        icon: Icon(
-          getABRepeatIcon(),
-          color: Colors.white,
-        ),
+        icon: Icon(getABRepeatIcon(), color: iconColor),
       ),
     ];
   }
@@ -297,7 +283,7 @@ class SliderRepeatTrackShape extends RoundedRectSliderTrackShape {
       loopEnabled = true;
       var points = state.automation!.getLoopPoints();
       var dur = state.automation!.duration.inMicroseconds;
-      if (points.length == 2 && state.automation!.useLoopPoints) {
+      if (dur > 0 && points.length == 2 && state.automation!.useLoopPoints) {
         p1 = points[0].eventTime.inMicroseconds / dur;
         p2 = points[1].eventTime.inMicroseconds / dur;
       } else if (!state.automation!.useLoopPoints) {
@@ -329,7 +315,7 @@ class SliderRepeatTrackShape extends RoundedRectSliderTrackShape {
       isDiscrete: isDiscrete,
     );
 
-    if (state.automation != null && loopEnabled) {
+    if (state.automation != null && loopEnabled && state.automation!.duration.inMicroseconds > 0) {
       var pos1 = (trackRect.right - trackRect.left) * p1 + trackRect.left;
       var pos2 = (trackRect.right - trackRect.left) * p2 + trackRect.left;
       var posPercentage = state.currentPosition.inMicroseconds /
@@ -389,11 +375,11 @@ class SetlistMiniPlayerState extends State<SetlistMiniPlayer> {
   }
 
   void _opPlayerPosition(Duration position) {
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   void _onPlayerStateChange() {
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   Widget? createTitle() {
@@ -401,28 +387,39 @@ class SetlistMiniPlayerState extends State<SetlistMiniPlayer> {
       text: TextSpan(
           text: playerState.setlist?.items[playerState.currentTrack]
                   .trackReference?.name ??
-              "No Track"),
+              "No Track",
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
       speed: 20,
     );
   }
 
   List<Widget> createMiniTrackControls() {
+    Color iconColor = Theme.of(context).iconTheme.color ?? Colors.white;
+
     return [
+      IconButton(
+        onPressed: playerState.previous,
+        icon: Icon(
+          Icons.skip_previous,
+          color: iconColor,
+          size: 30,
+        ),
+      ),
       IconButton(
         onPressed: playerState.playPause,
         icon: Icon(
           playerState.state == PlayerState.play
               ? Icons.pause
               : Icons.play_arrow,
-          color: Colors.white,
+          color: iconColor,
           size: 30,
         ),
       ),
       IconButton(
         onPressed: playerState.next,
-        icon: const Icon(
+        icon: Icon(
           Icons.skip_next,
-          color: Colors.white,
+          color: iconColor,
           size: 30,
         ),
       )
@@ -431,12 +428,15 @@ class SetlistMiniPlayerState extends State<SetlistMiniPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Material(
-      color: Colors.grey[850],
+      color: isDark ? Colors.grey[850] : Colors.grey[200],
       child: ListTile(
         onTap: playerState.toggleExpanded,
         leading: IconButton(
           iconSize: 32,
+          color: Theme.of(context).iconTheme.color,
           onPressed: playerState.toggleExpanded,
           icon: const Icon(Icons.keyboard_arrow_up),
         ),

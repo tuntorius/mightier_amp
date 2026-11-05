@@ -18,8 +18,6 @@ class ArtistAlbums extends StatelessWidget {
         artist, WithFiltersType.ALBUMS,
         args: AlbumsArgs.ARTIST);
 
-    //Future<List<AlbumModel>> album =
-    //    audioQuery.getAlbumsFromArtist(artist: artist);
     return Scaffold(
       appBar: AppBar(title: Text("$artist albums")),
       body: FutureBuilder<List<dynamic>>(
@@ -53,7 +51,7 @@ class ArtistAlbums extends StatelessWidget {
                           },
                           title: Text(
                             snapshot.data![index]["album"],
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                           ),
                           trailing: const Icon(Icons.keyboard_arrow_right)),
                     );

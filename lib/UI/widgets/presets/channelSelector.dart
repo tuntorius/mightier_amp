@@ -1,6 +1,5 @@
 // (c) 2020-2021 Dian Iliev (Tuntorius)
 // This code is licensed under MIT license (see LICENSE.md for details)
-//
 
 import 'package:flutter/material.dart';
 import 'package:mighty_plug_manager/UI/popups/alertDialogs.dart';
@@ -9,6 +8,7 @@ import 'package:mighty_plug_manager/bluetooth/NuxDeviceControl.dart';
 import 'package:mighty_plug_manager/platform/fileSaver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_utils/qr_utils.dart';
+
 import '../../../bluetooth/devices/presets/Preset.dart';
 import '../../../bluetooth/devices/NuxDevice.dart';
 import '../../../platform/platformUtils.dart';
@@ -35,7 +35,6 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         children: <Widget>[
           Icon(
             Icons.qr_code_scanner,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Scan QR"),
@@ -48,7 +47,6 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         children: <Widget>[
           Icon(
             Icons.qr_code_2,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Import QR Image"),
@@ -61,7 +59,6 @@ class _ChannelSelectorState extends State<ChannelSelector> {
         children: <Widget>[
           Icon(
             Icons.qr_code_2,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Share QR"),
@@ -75,19 +72,30 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     super.initState();
   }
 
-  List<Widget> _createButtons(double _width) {
-    var disabledColor = Theme.of(context).disabledColor;
-    List<Widget> buttons = <Widget>[];
+  List<Widget> _createButtons(double width) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    var disabledColor = isDark ? Theme.of(context).disabledColor : Colors.grey[400]!;
 
+    List<Widget> buttons = <Widget>[];
     var tooltip = "";
     _presets = widget.device.getPresetsList();
-    int row1 = _width < 330 && _presets.length > 4
+
+    int row1 = width < 330 && _presets.length > 4
         ? (_presets.length / 2).ceil()
         : _presets.length;
 
-    double width = (_width / row1).floorToDouble();
+    double itemWidth = (width / row1).floorToDouble();
+
+    // SAFEGUARD: Ensure we don't iterate past the available presets bounds
     for (int i = 0; i < _presets.length; i++) {
-      var col = i == widget.device.selectedChannel
+      // SAFEGUARD: Check bounds against the device's selectedChannel explicitly 
+      // when firmware hot-swaps happen.
+      bool isSelected = false;
+      if (widget.device.selectedChannel >= 0 && widget.device.selectedChannel < _presets.length) {
+         isSelected = (i == widget.device.selectedChannel);
+      }
+      
+      var col = isSelected
           ? _presets[widget.device.selectedChannel].channelColor
           : disabledColor;
 
@@ -107,7 +115,13 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6.0),
               child: FittedBox(
-                  fit: BoxFit.fill, child: Text(_presets[i].channelName)),
+                  fit: BoxFit.fill,
+                  child: Text(
+                    _presets[i].channelName,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  )),
             ),
           ],
         );
@@ -125,7 +139,12 @@ class _ChannelSelectorState extends State<ChannelSelector> {
             ),
             Text(
               _presets[i].channelName,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isSelected 
+                    ? (col.computeLuminance() > 0.5 ? Colors.black : Colors.white) 
+                    : Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ],
         );
@@ -144,11 +163,8 @@ class _ChannelSelectorState extends State<ChannelSelector> {
           widget.device.toggleChannelActive(i);
         },
         child: Container(
-          //use container with color to expand hittest area for the gesture detector
-          //better to use the same as the background color to imitate transparency
-          //than to use translucent hittest (slow)
-          color: Theme.of(context).scaffoldBackgroundColor,
-          width: width,
+          color: Colors.transparent,
+          width: itemWidth,
           height:
               AppThemeConfig.toggleButtonHeight(widget.device.longChannelNames),
           child: Semantics(
@@ -166,10 +182,10 @@ class _ChannelSelectorState extends State<ChannelSelector> {
 
   qrPopupSelection(pos) async {
     switch (pos) {
-      case 1: //scan qr
+      case 1:
         var result = await Permission.camera.request();
         if (result.isPermanentlyDenied) {
-          //TODO: Explain why camera is needed and open settings
+          // Explained in settings
         }
         final content = await QrUtils.scanQR;
         if (content?.isNotEmpty ?? false) {
@@ -208,8 +224,9 @@ class _ChannelSelectorState extends State<ChannelSelector> {
               description: "It will be displayed below the QR code.",
               value: "",
               onConfirm: (value) => {showQRExport(img, value)});
-        } else
+        } else {
           showQRExport(img, name);
+        }
     }
   }
 
@@ -237,7 +254,6 @@ class _ChannelSelectorState extends State<ChannelSelector> {
     bool success = result == PresetQRError.Ok;
     NuxDeviceControl.instance().changes.clearHistory();
     setState(() {});
-
     var message = QrUtils.QRMessages[result.index];
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: success ? Colors.green : Colors.red,
@@ -251,8 +267,13 @@ class _ChannelSelectorState extends State<ChannelSelector> {
   @override
   Widget build(BuildContext context) {
     layout = getEditorLayoutMode(MediaQuery.of(context));
-
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     _presets = widget.device.getPresetsList();
+    
+    // SAFEGUARD: Gracefully fall back if device selection is completely out of sync
+    if (widget.device.selectedChannel < 0 || widget.device.selectedChannel >= _presets.length) {
+       return const SizedBox.shrink();
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -262,8 +283,9 @@ class _ChannelSelectorState extends State<ChannelSelector> {
           padding: const EdgeInsets.all(8),
           child: Container(
             decoration: BoxDecoration(
-                color: Colors.grey[800],
-                border: Border.all(color: Theme.of(context).disabledColor),
+                color: isDark ? Colors.grey[800] : Theme.of(context).cardColor,
+                border: Border.all(
+                    color: isDark ? Theme.of(context).disabledColor : Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(6)),
             child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -273,17 +295,21 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                       return qrMenu;
                     },
                     onSelected: qrPopupSelection,
-                    child: const SizedBox(
+                    child: SizedBox(
                       width: 60,
                       child: Column(
                         children: [
                           Icon(
                             Icons.qr_code_2,
                             size: 32,
+                            color: Theme.of(context).iconTheme.color,
                           ),
                           Text(
                             "QR Code",
                             textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           )
                         ],
                       ),
@@ -291,7 +317,7 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                 Expanded(
                   child: Container(
                     constraints: const BoxConstraints(minHeight: 60),
-                    color: Colors.grey[900],
+                    color: isDark ? Colors.grey[900] : Colors.grey[100],
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         return Wrap(
@@ -321,8 +347,17 @@ class _ChannelSelectorState extends State<ChannelSelector> {
                                 ? Icons.check_circle
                                 : Icons.circle_outlined,
                             size: 30,
+                            color: widget.device.getChannelActive(
+                                    widget.device.selectedChannel)
+                                ? Colors.green
+                                : Theme.of(context).iconTheme.color,
                           ),
-                          const Text("Active")
+                          Text(
+                            "Active",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          )
                         ],
                       ),
                     ),

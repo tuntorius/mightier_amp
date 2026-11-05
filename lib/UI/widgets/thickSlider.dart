@@ -62,22 +62,18 @@ class _ThickSliderState extends State<ThickSlider> {
 
   bool ownUpdate = false;
 
-  // Returns a number between min and max, proportional to value, which must
-  // be between 0.0 and 1.0.
   double _lerp(double value) {
     assert(value >= 0.0);
     assert(value <= 1.0);
     return value * (widget.max - widget.min) + widget.min;
   }
 
-  //same as above, only with custom min and max
   double _lerp2(double value, double min, double max) {
     assert(value >= 0.0);
     assert(value <= 1.0);
     return value * (max - min) + min;
   }
 
-  // Returns a number between 0.0 and 1.0, given a value between min and max.
   double _unlerp(double value) {
     assert(value <= widget.max);
     assert(value >= widget.min);
@@ -86,7 +82,6 @@ class _ThickSliderState extends State<ThickSlider> {
         : 0.0;
   }
 
-  //lerp with an optional snap to center
   double _lerpSnap(double value) {
     if (widget.snapToCenter) {
       if (value >= 0.475 && value <= 0.525) return _lerp(0.5);
@@ -94,7 +89,6 @@ class _ThickSliderState extends State<ThickSlider> {
     return _lerp(value);
   }
 
-  //lerp with an optional snap to center with min & max
   double _lerpSnap2(double value, double min, double max) {
     if (widget.snapToCenter) {
       if (value >= 0.475 && value <= 0.525) return _lerp2(0.5, min, max);
@@ -106,11 +100,9 @@ class _ThickSliderState extends State<ThickSlider> {
   void initState() {
     super.initState();
 
-    //range check
     assert(widget.min < widget.max);
     assert(widget.value >= widget.min && widget.value <= widget.max);
     assert(widget.skipEmitting > 0);
-    //normalize value to 0-1
     factor = _unlerp(widget.value);
   }
 
@@ -148,7 +140,6 @@ class _ThickSliderState extends State<ThickSlider> {
   void dragEnd(DragEndDetails details) {
     if (!widget.enabled) return;
     scale = 1;
-    //call the last factor value here
     widget.onChanged?.call(_lerpSnap(factor), false);
     widget.onDragEnd?.call(_lerpSnap(factor));
     ownUpdate = true;
@@ -176,7 +167,6 @@ class _ThickSliderState extends State<ThickSlider> {
 
           double min = 0, max = 0;
 
-          //Check for range
           if (widget.parameter == null) {
             min = widget.min;
             max = widget.max;
@@ -199,7 +189,6 @@ class _ThickSliderState extends State<ThickSlider> {
           var val = double.parse(value);
 
           if (widget.parameter != null) {
-            //unscale value back
             val = widget.parameter!.fromHumanInput(val);
           }
           factor = _unlerp(val);
@@ -252,7 +241,7 @@ class _ThickSliderState extends State<ThickSlider> {
                         ? TinyColor.fromColor(widget.activeColor)
                             .darken(15)
                             .color
-                        : Colors.grey[800],
+                        : Theme.of(context).disabledColor, // Replaces Colors.grey[800]
                     width: max(factor * width, 0),
                   ),
                   Positioned(
@@ -262,7 +251,7 @@ class _ThickSliderState extends State<ThickSlider> {
                       child: Container(
                           color: widget.enabled
                               ? widget.activeColor
-                              : Colors.grey[700],
+                              : Colors.grey, // Replaces Colors.grey[700]
                           width: 20)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -273,16 +262,16 @@ class _ThickSliderState extends State<ThickSlider> {
                             widget.label,
                             style: TextStyle(
                                 color: widget.enabled
-                                    ? Colors.white
-                                    : Colors.grey[600],
+                                    ? Theme.of(context).colorScheme.onSurface // Replaces Colors.white
+                                    : Theme.of(context).hintColor, // Replaces Colors.grey[600]
                                 fontSize: 20),
                           ),
                           Text(
                             widget.labelFormatter(_lerpSnap(factor)),
                             style: TextStyle(
                                 color: widget.enabled
-                                    ? Colors.white
-                                    : Colors.grey[600],
+                                    ? Theme.of(context).colorScheme.onSurface // Replaces Colors.white
+                                    : Theme.of(context).hintColor, // Replaces Colors.grey[600]
                                 fontSize: 20),
                           )
                         ]),

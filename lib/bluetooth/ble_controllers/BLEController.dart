@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 
 import '../devices/NuxConstants.dart';
@@ -34,9 +33,7 @@ typedef ScanResultsCallback = void Function(
 abstract class BLEScanResult {
   String get id;
   String get name;
-
   late BLEDevice _device;
-
   @protected
   set device(BLEDevice val) => _device = val;
   BLEDevice get device => _device;
@@ -45,14 +42,9 @@ abstract class BLEScanResult {
 abstract class BLEDevice {
   String get name;
   String get id;
-
-  ///Returns a stream telling the connection state of a device
-  ///Used only for MIDI foot controllers and not for amps
   Stream<BleDeviceState> get state;
 }
 
-/// Ble connection class used for MIDI foot controllers only
-/// Not needed for amps
 class BLEConnection {
   final Stream<List<int>> _dataStream;
   Stream<List<int>> get data => _dataStream;
@@ -82,7 +74,6 @@ abstract class BLEController {
   BLEDevice? get connectedDevice;
   final StreamController<bool> _scanStatus = StreamController.broadcast();
   Stream<bool> get isScanningStream => _scanStatus.stream;
-
   bool _isScanning = false;
   bool get isScanning => _isScanning;
 
@@ -93,7 +84,6 @@ abstract class BLEController {
 
   @protected
   late ScanResultsCallback onScanResults;
-
   @protected
   List<String> forcedDevices;
 
@@ -111,21 +101,34 @@ abstract class BLEController {
 
   void startScanning();
   void stopScanning();
-
   Future<BLEConnection?> connectToDevice(BLEDevice device);
   void disconnectDevice();
-
   StreamSubscription<List<int>> registerDataListener(
       Function(List<int>) listener);
 
+  bool _isNfSysEx(List<int> data) {
+    return data.length > 10 &&
+        data[2] == MidiMessageValues.sysExStart &&
+        data[8] == 0x4E &&
+        data[9] == 0x46;
+  }
+
   void sendData(List<int> data) {
     var queueLength = dataQueue.length;
-
-    if (data[2] == MidiMessageValues.controlChange && dataQueue.isNotEmpty) {
-      //check if another CC message with the same code is in the queue and remove it
+    if (data.length > 3 &&
+        data[2] == MidiMessageValues.controlChange &&
+        dataQueue.isNotEmpty) {
+      var inFlight = dataQueue.removeFirst();
       dataQueue.removeWhere((element) =>
+          element.length > 3 &&
           element[2] == MidiMessageValues.controlChange &&
           element[3] == data[3]);
+      dataQueue.addFirst(inFlight);
+    }
+    if (_isNfSysEx(data) && dataQueue.isNotEmpty) {
+      var inFlight = dataQueue.removeFirst();
+      dataQueue.removeWhere((element) => _isNfSysEx(element));
+      dataQueue.addFirst(inFlight);
     }
 
     dataQueue.addLast(data);
@@ -149,74 +152,51 @@ abstract class BLEController {
   void dispose();
 
   void _queueSender() async {
-    //Stopwatch stopwatch = Stopwatch()..start();
-    //List<int> currentData = List<int>();
-    bool noResponse = true;
     while (dataQueue.isNotEmpty) {
       if (connectedDevice == null) {
         dataQueue.clear();
         break;
       }
+      var data = dataQueue.first;
       try {
         if (isWriteReady) {
-          var data = dataQueue.first;
+          bool noResponse = true;
 
-          //try to combine CC messages in single running message
-          //default MTU 23 bytes per packet (maybe 20???)
-          /*int elementsCount = 0;
-          if ((data[2] == MidiMessageValues.controlChange ||
-                  data[2] == MidiMessageValues.programChange) &&
-              dataQueue.length > 1) {
-            for (var element in dataQueue) {
-              if (element[2] == MidiMessageValues.controlChange ||
-                  element[2] == MidiMessageValues.programChange) {
-                elementsCount++;
-                if (elementsCount == 2) break;
-              } else {
-                break;
-              }
-            }
-            List<int> dataPacket = [data[0], data[1], data[2]];
-            for (int i = 0; i < elementsCount; i++) {
-              var dataElement = dataQueue.elementAt(i);
-              dataPacket.add(dataElement[3]);
-              dataPacket.add(dataElement[4]);
-            }
-            await writeToCharacteristic(dataPacket);
-            print("Combined: ${dataPacket.toString()}");
-            for (int i = 0; i < elementsCount; i++) {
-              dataQueue.removeFirst();
-            }
-          } else {*/
-          //any other message
-          if (Platform.isAndroid &&
+          // PROTECT A2DP AUDIO: 
+          // If the OS spams massive SysEx writes consecutively without response pacing,
+          // it chokes the shared Bluetooth cache and drops music player audio.
+          if ((Platform.isAndroid || Platform.isIOS) &&
+              data.length > 6 &&
               data[2] == MidiMessageValues.sysExStart &&
               data[6] == SyxMsg.kSYX_MODULELINK) {
             noResponse = false;
             await Future.delayed(const Duration(milliseconds: 100));
           }
+          
           await writeToCharacteristic(data, noResponse);
-          if (Platform.isAndroid) {
-            await Future.delayed(const Duration(milliseconds: 10));
+
+          if (Platform.isAndroid || Platform.isIOS) {
+            // SysEx payload pacing to save the audio stream
+            if (data.length > 20) {
+              await Future.delayed(const Duration(milliseconds: 25));
+            } else {
+              await Future.delayed(const Duration(milliseconds: 8));
+            }
           }
-          noResponse = true;
-          dataQueue.removeFirst();
-          //}
         } else {
           dataQueue.clear();
+          break;
         }
       } catch (e) {
-        debugPrint(e.toString());
-
-        //noResponse = false;
-        //await Future.delayed(const Duration(milliseconds: 50));
+        debugPrint("BLE write error: $e");
+      } finally {
+        if (dataQueue.isNotEmpty && identical(dataQueue.first, data)) {
+          dataQueue.removeFirst();
+        }
       }
     }
     _onQueueEmpty?.call();
     _onQueueEmpty = null;
-    // if (kDebugMode) {
-    //   Settings.print('sending executed in ${stopwatch.elapsed.inMilliseconds}');
-    // }
   }
 
   @protected

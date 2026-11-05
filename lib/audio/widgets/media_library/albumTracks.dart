@@ -28,13 +28,10 @@ class _AlbumTracksState extends State<AlbumTracks> {
   void initState() {
     super.initState();
     songs = audioQuery.queryAudiosFrom(AudiosFromType.ALBUM_ID, widget.albumId);
-    //songs = audioQuery.getSongsFromArtistAlbum(
-    //    albumId: widget.albumId, artist: widget.artist);
   }
 
   void multiselectHandler(int index) {
     if (selected.isEmpty || !selected.containsKey(index)) {
-      //fill it first if not created
       selected[index] = true;
       _multiselectMode = true;
     } else {
@@ -56,24 +53,22 @@ class _AlbumTracksState extends State<AlbumTracks> {
         selected.containsKey(index)
             ? Icons.check_circle
             : Icons.brightness_1_outlined,
-        color: selected.containsKey(index) ? null : Colors.grey[800],
+        color: selected.containsKey(index) ? null : Theme.of(context).disabledColor,
       );
     }
-
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return NestedWillPopScope(
       onWillPop: () {
-        //collapse player if extended
-
         if (_multiselectMode) {
           deselectAll();
           return Future.value(false);
         }
-
         return Future.value(true);
       },
       child: Scaffold(
@@ -91,8 +86,8 @@ class _AlbumTracksState extends State<AlbumTracks> {
               case ConnectionState.done:
                 songList = snapshot.data!;
                 return ListTileTheme(
-                  selectedTileColor: const Color.fromARGB(255, 9, 51, 116),
-                  selectedColor: Colors.white,
+                  selectedTileColor: isDark ? const Color.fromARGB(255, 9, 51, 116) : Colors.blue[100],
+                  selectedColor: Theme.of(context).colorScheme.onSurface,
                   child: ListView.builder(
                       itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext ctxt, int index) {
@@ -106,14 +101,13 @@ class _AlbumTracksState extends State<AlbumTracks> {
                                   multiselectHandler(index);
                                   return;
                                 }
-                                //return list of 1 track
                                 Navigator.of(context)
                                     .pop([snapshot.data![index]]);
                               },
                               onLongPress: () => multiselectHandler(index),
                               title: Text(
                                 snapshot.data![index].title,
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                               ),
                               trailing: createTrailingWidget(context, index)),
                         );

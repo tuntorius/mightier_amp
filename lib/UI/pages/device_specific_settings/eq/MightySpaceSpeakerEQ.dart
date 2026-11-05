@@ -24,17 +24,7 @@ class _SpaceSpeakerEQSettingsState extends State<SpaceSpeakerEQSettings> {
   bool _requestInProgress = false;
 
   static const List<int> defaultSpeakerEQ = [
-    0x32,
-    0x49,
-    0x4b,
-    0x40,
-    0x32,
-    0x43,
-    0x24,
-    0x32,
-    0x32,
-    0x22,
-    0x51
+    0x32, 0x49, 0x4b, 0x40, 0x32, 0x43, 0x24, 0x32, 0x32, 0x22, 0x51
   ];
 
   @override
@@ -53,7 +43,6 @@ class _SpaceSpeakerEQSettingsState extends State<SpaceSpeakerEQSettings> {
       eqGroup: device.config.speakerEQGroup,
       onChanged: (int? value) {
         if (value != null) {
-          //request another
           device.config.speakerEQGroup = value;
           communication.setSpeakerEq(value);
           _requestEQData(device.config.speakerEQGroup);
@@ -109,7 +98,6 @@ class _SpaceSpeakerEQSettingsState extends State<SpaceSpeakerEQSettings> {
             }
             return ListTileTheme(
                 minLeadingWidth: 0,
-                iconColor: Colors.white,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,

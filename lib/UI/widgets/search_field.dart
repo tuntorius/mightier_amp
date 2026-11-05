@@ -16,9 +16,8 @@ class SearchField extends StatelessWidget {
       controller: textEditingController,
       autofocus: true,
       decoration: InputDecoration(
-        suffixIconColor: Colors.white,
-        focusColor: Colors.white,
-        //focusedBorder: InputBorder.none,
+        suffixIconColor: Theme.of(context).iconTheme.color,
+        focusColor: Theme.of(context).iconTheme.color,
         prefixIcon: const Icon(Icons.search),
         border: InputBorder.none,
         suffixIcon: IconButton(

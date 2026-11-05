@@ -1,39 +1,23 @@
 group 'com.boskokg.flutter_blue_plus'
 version '1.0'
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2'
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.1'
-    }
-}
-
-rootProject.allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'com.google.protobuf'
 
 android {
+    compileSdk 34
     compileSdkVersion 34
     namespace 'com.boskokg.flutter_blue_plus'
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 24
     }
+
     sourceSets {
         main {
             proto {

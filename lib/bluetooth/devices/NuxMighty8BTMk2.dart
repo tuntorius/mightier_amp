@@ -6,7 +6,6 @@ import 'package:mighty_plug_manager/bluetooth/devices/NuxDevice.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/communication/communication.dart';
 import 'package:mighty_plug_manager/bluetooth/devices/effects/Processor.dart';
 
-import '../../UI/pages/device_specific_settings/LiteMk2Settings.dart';
 import 'NuxConstants.dart';
 import 'communication/liteMk2Communication.dart';
 import 'device_data/drumstyles.dart';

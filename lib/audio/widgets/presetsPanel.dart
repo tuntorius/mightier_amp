@@ -23,7 +23,6 @@ class PresetsPanel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: ListView(
-        //crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -89,7 +88,7 @@ class PresetsPanel extends StatelessWidget {
             color: automation.initialEvent.getPresetUuid() == ""
                 ? Colors.orange[700]
                 : Colors.blue,
-            textColor: Colors.white,
+            textColor: Theme.of(context).colorScheme.onSurface,
             child: const Text("Edit Initial Parameters"),
             onPressed: () {
               onEditEvent(automation.initialEvent, true);

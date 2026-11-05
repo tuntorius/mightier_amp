@@ -62,8 +62,8 @@ class PresetsStorage extends ChangeNotifier {
   _loadPresets() async {
     try {
       if (_presetsFile != null) {
-        var _presetJson = await _presetsFile!.readAsString();
-        var data = json.decode(_presetJson);
+        var presetJson = await _presetsFile!.readAsString();
+        var data = json.decode(presetJson);
 
         if (data is List) {
           debugPrint("Old preset format");
@@ -447,20 +447,20 @@ class PresetsStorage extends ChangeNotifier {
     presetData = fixPresetCompatibility(presetData);
     presetData.remove("category");
 
-    String? _name = name;
+    String? name0 = name;
     //check if exists
     if (p != null) {
       if (_presetsEquivalent(presetData, p)) return false;
 
       //difference - find free name and save as that
-      _name = _findFreeName(name, category);
+      name0 = _findFreeName(name, category);
     }
 
     //highlight that the preset is new
     presetData["new"] = true;
 
     //save preset
-    if (_name != null) savePreset(presetData, _name, category);
+    if (name0 != null) savePreset(presetData, name0, category);
     return true;
   }
 

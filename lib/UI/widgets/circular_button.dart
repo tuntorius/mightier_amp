@@ -22,7 +22,7 @@ class CircularButton extends StatelessWidget {
         shape: const CircleBorder(),
         padding: EdgeInsets.all(iconPadding),
         backgroundColor: backgroundColor,
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       child: Icon(
         icon,

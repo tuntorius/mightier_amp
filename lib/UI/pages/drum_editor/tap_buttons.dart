@@ -61,9 +61,9 @@ class TapButtons extends StatelessWidget {
             child: ElevatedButton(
               onPressed: enabled ? _onTapTempo : null,
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.resolveWith(
+                overlayColor: WidgetStateProperty.resolveWith(
                   (states) {
-                    return states.contains(MaterialState.pressed)
+                    return states.contains(WidgetState.pressed)
                         ? Colors.lightBlue[100]
                         : null;
                   },

@@ -1,3 +1,6 @@
+// (c) 2020-2021 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -16,20 +19,6 @@ class TunerPage extends StatefulWidget {
 
   //how many cents is half of the scale
   static const scaleSize = 50;
-
-  static const colors = [
-    Colors.white,
-    Color.fromARGB(255, 119, 202, 29),
-    Colors.yellow,
-    Colors.red
-  ];
-
-  static const colorsInactive = [
-    Color(0x32FFFFFF),
-    Color.fromARGB(50, 119, 202, 29),
-    Color(0x32FFEB3B),
-    Color(0x32F44336)
-  ];
 
   static List<String> notes = [
     "A ",
@@ -62,6 +51,26 @@ class _TunerPageState extends State<TunerPage> {
 
   final List<DropdownMenuItem<TunerMode>> _modeItems = [];
   final List<DropdownMenuItem<int>> _referenceItems = [];
+
+  // Dynamic colors for the active tuner indicators
+  List<Color> _getColors(bool isDark) {
+    return [
+      isDark ? Colors.white : Colors.green[800]!, // Emerald / Forest Green for Light Mode (In Tune)
+      isDark ? const Color.fromARGB(255, 119, 202, 29) : Colors.green[600]!, // Slightly off
+      isDark ? Colors.yellow : Colors.amber[600]!, // Moderately off
+      Colors.red // Far off
+    ];
+  }
+
+  // Dynamic colors for the inactive tuner indicators (with low opacity)
+  List<Color> _getInactiveColors(bool isDark) {
+    return [
+      isDark ? const Color(0x32FFFFFF) : Colors.green[800]!.withOpacity(0.2),
+      isDark ? const Color.fromARGB(50, 119, 202, 29) : Colors.green[600]!.withOpacity(0.2),
+      isDark ? const Color(0x32FFEB3B) : Colors.amber[600]!.withOpacity(0.2),
+      isDark ? const Color(0x32F44336) : Colors.red.withOpacity(0.2)
+    ];
+  }
 
   @override
   void initState() {
@@ -131,6 +140,10 @@ class _TunerPageState extends State<TunerPage> {
   }
 
   Widget _indicator() {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    var activeColorsList = _getColors(isDark);
+    var inactiveColorsList = _getInactiveColors(isDark);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         var width = (constraints.maxWidth / TunerPage.indicatorsAmount) * 0.7;
@@ -160,8 +173,8 @@ class _TunerPageState extends State<TunerPage> {
           bool active = _validDetection &&
               (data.note != 0 || data.stringNumber != 0 || data.cents != 0);
           Color color = active && i == activeIndex
-              ? TunerPage.colors[colorIndex]
-              : TunerPage.colorsInactive[colorIndex];
+              ? activeColorsList[colorIndex]
+              : inactiveColorsList[colorIndex];
 
           indicators.add(Container(
             width: central ? width * 1.5 : width,

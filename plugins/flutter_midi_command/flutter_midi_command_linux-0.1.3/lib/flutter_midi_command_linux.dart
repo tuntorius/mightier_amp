@@ -9,8 +9,8 @@ import 'alsa_generated_bindings.dart' as a;
 
 final alsa = a.ALSA(DynamicLibrary.open("libasound.so.2"));
 
-final int SND_RAWMIDI_STREAM_INPUT = 1;
-final int SND_RAWMIDI_STREAM_OUTPUT = 0;
+const int SND_RAWMIDI_STREAM_INPUT = 1;
+const int SND_RAWMIDI_STREAM_OUTPUT = 0;
 
 int lengthOfMessageType(int type) {
   int midiType = type & 0xF0;
@@ -60,16 +60,11 @@ void _rxIsolate(Tuple2<SendPort, int> args) {
   List<int> rxBuffer = [];
 
   while (true) {
-    if (inPort == null) {
-      print("no inport");
-      break;
-    }
-
     if ((status = alsa.snd_rawmidi_read(inPort, buffer.cast(), 1)) < 0) {
       print("Problem reading MIDI input:${FlutterMidiCommandLinux.stringFromNative(alsa.snd_strerror(status))}");
     } else {
       // print("byte ${buffer.value}");
-      if (rxBuffer.length == 0) {
+      if (rxBuffer.isEmpty) {
         msgLength = lengthOfMessageType(buffer.value);
       }
 
@@ -87,7 +82,7 @@ void _rxIsolate(Tuple2<SendPort, int> args) {
 class LinuxMidiDevice extends MidiDevice {
   Pointer<Pointer<a.snd_rawmidi_>>? outPort;
   Pointer<Pointer<a.snd_rawmidi_>>? inPort;
-  StreamController<MidiPacket> _rxStreamCtrl;
+  final StreamController<MidiPacket> _rxStreamCtrl;
   Isolate? _isolate;
 
   ReceivePort? errorPort;
@@ -150,7 +145,7 @@ class LinuxMidiDevice extends MidiDevice {
 
     connected = true;
 
-    errorPort = new ReceivePort();
+    errorPort = ReceivePort();
     receivePort = ReceivePort();
     _isolate = await Isolate.spawn(_rxIsolate, Tuple2(receivePort!.sendPort, inPort!.value.address), onError: errorPort!.sendPort).catchError((err, stackTrace) {
       print("Could not launch RX isolate. $err\nStackTrace: $stackTrace");
@@ -211,12 +206,12 @@ class LinuxMidiDevice extends MidiDevice {
 }
 
 class FlutterMidiCommandLinux extends MidiCommandPlatform {
-  StreamController<MidiPacket> _rxStreamController = StreamController<MidiPacket>.broadcast();
+  final StreamController<MidiPacket> _rxStreamController = StreamController<MidiPacket>.broadcast();
   late Stream<MidiPacket> _rxStream;
-  StreamController<String> _setupStreamController = StreamController<String>.broadcast();
+  final StreamController<String> _setupStreamController = StreamController<String>.broadcast();
   late Stream<String> _setupStream;
 
-  Map<String, LinuxMidiDevice> _connectedDevices = Map<String, LinuxMidiDevice>();
+  final Map<String, LinuxMidiDevice> _connectedDevices = <String, LinuxMidiDevice>{};
 
   /// A constructor that allows tests to override the window object used by the plugin.
   FlutterMidiCommandLinux() {
@@ -315,9 +310,11 @@ class FlutterMidiCommandLinux extends MidiCommandPlatform {
   /// Starts scanning for BLE MIDI devices.
   ///
   /// Found devices will be included in the list returned by [devices].
+  @override
   Future<void> startScanningForBluetoothDevices() async {}
 
   /// Stops scanning for BLE MIDI devices.
+  @override
   void stopScanningForBluetoothDevices() {}
 
   /// Connects to the device.
@@ -351,9 +348,9 @@ class FlutterMidiCommandLinux extends MidiCommandPlatform {
 
   @override
   void teardown() {
-    _connectedDevices.values.forEach((device) {
+    for (var device in _connectedDevices.values) {
       disconnectDevice(device, remove: false);
-    });
+    }
     _connectedDevices.clear();
     _setupStreamController.add("deviceDisconnected");
   }
@@ -369,10 +366,10 @@ class FlutterMidiCommandLinux extends MidiCommandPlatform {
     for (var i = 0; i < data.length; i++) {
       buffer[i] = data[i];
     }
-    _connectedDevices.values.forEach((device) {
+    for (var device in _connectedDevices.values) {
       // print("send to $device");
       device.send(buffer, data.length);
-    });
+    }
 
     calloc.free(buffer);
   }

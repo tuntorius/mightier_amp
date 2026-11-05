@@ -42,7 +42,6 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
 
   void multiselectHandler(int index) {
     if (selected.isEmpty || !selected.containsKey(index)) {
-      //fill it first if not created
       selected[index] = true;
       _multiselectMode = true;
     } else {
@@ -64,10 +63,9 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
         selected.containsKey(index)
             ? Icons.check_circle
             : Icons.brightness_1_outlined,
-        color: selected.containsKey(index) ? null : Colors.grey[800],
+        color: selected.containsKey(index) ? null : Theme.of(context).disabledColor,
       );
     }
-
     return null;
   }
 
@@ -90,8 +88,6 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
 
   void previewPlay(int index) async {
     if (playedTrack != null && index == playedTrack) {
-      // player?.pause();
-      // setState(() {});
       return;
     }
     await player?.dispose();
@@ -114,6 +110,8 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return NestedWillPopScope(
       onWillPop: () {
         if (_multiselectMode) {
@@ -128,8 +126,8 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
         appBar: AppBar(title: Text(widget.source.name)),
         body: ListTileTheme(
           minLeadingWidth: 0,
-          selectedTileColor: const Color.fromARGB(255, 9, 51, 116),
-          selectedColor: Colors.white,
+          selectedTileColor: isDark ? const Color.fromARGB(255, 9, 51, 116) : Colors.blue[100],
+          selectedColor: Theme.of(context).colorScheme.onSurface,
           child: Column(
             children: [
               TypeAheadField(
@@ -173,7 +171,6 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
                                 multiselectHandler(index);
                                 return;
                               }
-                              //return list of 1 track
                               tracks[index].url = await widget.source
                                   .getTrackUri(tracks[index]);
                               closeTrack();

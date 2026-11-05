@@ -56,7 +56,6 @@ class _NuxAppBarState extends State<MAAppBar> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _hotkeySub?.cancel();
   }
@@ -89,7 +88,7 @@ class _NuxAppBarState extends State<MAAppBar> {
           Container(
             height: kToolbarHeight,
             width: kToolbarHeight,
-            color: Theme.of(context).primaryColor,
+            color: Colors.transparent, // Inherit dynamic appbar color instead of forcing primary
             child: IconButton(
               icon: Icon(
                 widget.expanded ? Icons.arrow_left : Icons.arrow_right,
@@ -128,14 +127,15 @@ class _NuxAppBarState extends State<MAAppBar> {
                         children: [
                           Transform.rotate(
                               angle: pi / 2,
-                              child: const Icon(
+                              child: Icon(
                                 Icons.battery_full,
                                 size: 40,
+                                color: Theme.of(context).iconTheme.color,
                               )),
                           Text(
                             "$batteryValue%",
-                            style: const TextStyle(
-                                color: Colors.black,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.surface, // Punches out of the battery icon dynamically
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold),
                           )
@@ -170,36 +170,34 @@ class _NuxAppBarState extends State<MAAppBar> {
                   stream: BLEMidiHandler.instance().status,
                   builder: (context, snapshot) {
                     IconData icon = Icons.bluetooth_disabled;
-                    Color color = Colors.grey;
+                    Color color = Theme.of(context).iconTheme.color ?? Colors.grey;
                     var status = BLEMidiHandler.instance().currentStatus;
                     switch (status) {
                       case MidiSetupStatus.bluetoothOff:
                         icon = Icons.bluetooth_disabled;
+                        color = Theme.of(context).disabledColor;
                         break;
                       case MidiSetupStatus.deviceIdle:
                       case MidiSetupStatus.deviceConnecting:
                         icon = Icons.bluetooth;
                         break;
-                      case MidiSetupStatus
-                            .deviceFound: //note device found is issued
-                      //during search only, but here it means nothing
-                      //so keep search status
+                      case MidiSetupStatus.deviceFound:
                       case MidiSetupStatus.deviceSearching:
-                        icon = Icons.bluetooth_searching;
-                        return const BlinkWidget(
+                        return BlinkWidget(
                           interval: 500,
                           children: [
                             Icon(
                               Icons.bluetooth_searching,
-                              color: Colors.grey,
+                              color: Theme.of(context).disabledColor,
                             ),
-                            Icon(Icons.bluetooth_searching)
+                            const Icon(Icons.bluetooth_searching)
                           ],
                         );
 
                       case MidiSetupStatus.deviceConnected:
                         icon = Icons.bluetooth_connected;
-                        color = Colors.white;
+                        // Avoid hardcoded white, use primary accent color
+                        color = Theme.of(context).colorScheme.primary; 
                         batteryValue = null;
                         break;
                       case MidiSetupStatus.deviceDisconnected:

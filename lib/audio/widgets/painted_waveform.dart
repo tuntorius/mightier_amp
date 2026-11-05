@@ -70,16 +70,16 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
 
   void scroll(d) {
     if (widget.sampleData == null) return;
-    var _fullScale = widget.sampleData!.data.length / canvasSize;
-    var _position = (d.localPosition.dx * _fullScale).round();
-    var _extent = ((endPosition - startPosition) / 2).round();
+    var fullScale = widget.sampleData!.data.length / canvasSize;
+    var position = (d.localPosition.dx * fullScale).round();
+    var extent = ((endPosition - startPosition) / 2).round();
 
-    if (_position - _extent < 0) _position = _extent;
-    if (_position + _extent > widget.sampleData!.data.length - 1) {
-      _position = widget.sampleData!.data.length - 1 - _extent;
+    if (position - extent < 0) position = extent;
+    if (position + extent > widget.sampleData!.data.length - 1) {
+      position = widget.sampleData!.data.length - 1 - extent;
     }
-    startPosition = _position - _extent;
-    endPosition = _position + _extent;
+    startPosition = position - extent;
+    endPosition = position + extent;
     _offset = -_scale * startPosition;
     setState(() {});
   }
@@ -118,8 +118,8 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
     final double newOffset = d.focalPoint.dx - normalizedOffset * newScale;
 
     setState(() {
-      var _oldScale = _scale;
-      var _oldOffset = _offset;
+      var oldScale = _scale;
+      var oldOffset = _offset;
       _scale = newScale;
       _offset = newOffset;
 
@@ -133,7 +133,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
       //limit right boundary
       if (canvasSize / _scale + startPosition >
           widget.sampleData!.data.length - 1) {
-        _offset = _oldOffset;
+        _offset = oldOffset;
         //i think we should not manipulate the scale
         //we should adjust the offset
         endPosition = widget.sampleData!.data.length - 1;
@@ -141,7 +141,7 @@ class _PaintedWaveformState extends State<PaintedWaveform> {
         //calculate offset based on end position and new scale
         startPosition = endPosition - (canvasSize / _scale).round();
 
-        _scale = _oldScale;
+        _scale = oldScale;
 
         if (startPosition < 0) startPosition = 0;
       } else {

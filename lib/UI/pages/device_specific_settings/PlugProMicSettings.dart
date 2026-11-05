@@ -31,7 +31,6 @@ class _PlugProMicSettingsState extends State<PlugProMicSettings> {
       ),
       body: ListTileTheme(
         minLeadingWidth: 0,
-        iconColor: Colors.white,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

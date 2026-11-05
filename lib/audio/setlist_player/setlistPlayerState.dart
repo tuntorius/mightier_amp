@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../platform/simpleSharedPrefs.dart';
 import '../automationController.dart';
 import '../models/setlist.dart';
+import '../trackdata/trackData.dart';
 
 enum PlayerState { idle, play, pause }
 
@@ -27,7 +28,7 @@ class SetlistPlayerState extends ChangeNotifier {
   Setlist? setlist;
   int currentTrack = 0;
   Duration currentPosition = const Duration(seconds: 0);
-  bool _autoAdvance = true;
+  bool _autoAdvance = false; // Disabled by default
   bool _inPositionUpdateMode = false;
 
   bool _expanded = false;
@@ -66,6 +67,18 @@ class SetlistPlayerState extends ChangeNotifier {
   }
 
   AutomationController? _automation;
+
+  Future<void> _ensureSetlistLoaded() async {
+    if (setlist != null) return;
+    try {
+      if (TrackData().setlists.isNotEmpty) {
+        setlist = TrackData().setlists.first;
+        currentTrack = 0;
+      }
+    } catch (e) {
+      debugPrint("Could not auto-load setlist: $e");
+    }
+  }
 
   void openTrack(int setlistIndex) async {
     currentTrack = setlistIndex;
@@ -106,13 +119,16 @@ class SetlistPlayerState extends ChangeNotifier {
   }
 
   Future playPause() async {
+    await _ensureSetlistLoaded();
     if (setlist == null) return;
     if (_automation == null) await _openTrack(currentTrack);
     await _automation?.playPause();
-    if (_automation!.player.playerState.playing == false) {
-      state = PlayerState.pause;
-    } else {
-      state = PlayerState.play;
+    if (_automation != null) {
+      if (_automation!.player.playerState.playing == false) {
+        state = PlayerState.pause;
+      } else {
+        state = PlayerState.play;
+      }
     }
     debugPrint(state.toString());
     notifyListeners();
@@ -131,7 +147,13 @@ class SetlistPlayerState extends ChangeNotifier {
   }
 
   void previous() async {
+    await _ensureSetlistLoaded();
+    if (setlist == null) return;
+    if (_automation == null) {
+      await _openTrack(currentTrack);
+    }
     if (_automation == null) return;
+
     if (currentTrack == 0 || _automation!.player.position.inSeconds > 3) {
       _automation!.rewind();
       currentPosition = const Duration(milliseconds: 0);
@@ -146,6 +168,7 @@ class SetlistPlayerState extends ChangeNotifier {
   }
 
   void next() async {
+    await _ensureSetlistLoaded();
     if (setlist == null) return;
     if (currentTrack < setlist!.items.length - 1) {
       await closeTrack();

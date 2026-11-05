@@ -57,22 +57,18 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
   double width = 0;
   double height = 0;
 
-  // Returns a number between min and max, proportional to value, which must
-  // be between 0.0 and 1.0.
   double _lerp(double value) {
     assert(value >= 0.0);
     assert(value <= 1.0);
     return value * (widget.max - widget.min) + widget.min;
   }
 
-  //same as above, only with custom min and max
-  double _lerp2(double value, double _min, double _max) {
+  double _lerp2(double value, double min, double max) {
     assert(value >= 0.0);
     assert(value <= 1.0);
-    return value * (_max - _min) + _min;
+    return value * (max - min) + min;
   }
 
-  // Returns a number between 0.0 and 1.0, given a value between min and max.
   double _unlerp(double value) {
     assert(value <= widget.max);
     assert(value >= widget.min);
@@ -85,11 +81,9 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
   void initState() {
     super.initState();
 
-    //range check
     assert(widget.min < widget.max);
     assert(widget.value >= widget.min && widget.value <= widget.max);
     assert(widget.skipEmitting >= 0);
-    //normalize value to 0-1
     factor = _unlerp(widget.value);
   }
 
@@ -127,7 +121,6 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
   void dragEnd(DragEndDetails details) {
     if (!widget.enabled) return;
     scale = 1;
-    //call the last factor value here
     widget.onChanged?.call(_lerp(factor), false);
     widget.onDragEnd?.call(_lerp(factor));
   }
@@ -152,7 +145,6 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
 
           double min = 0, max = 0;
 
-          //Check for range
           if (widget.parameter == null) {
             min = widget.min;
             max = widget.max;
@@ -170,7 +162,6 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
           var val = double.parse(value);
 
           if (widget.parameter != null) {
-            //unscale value back
             val = widget.parameter!.fromHumanInput(val);
           }
 
@@ -214,7 +205,7 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
                   height: max(factor * height, 0),
                   color: widget.enabled
                       ? TinyColor.fromColor(widget.activeColor).darken(15).color
-                      : Colors.grey[800],
+                      : Theme.of(context).disabledColor, // Replaces hardcoded Colors.grey[800]
                   width: width * 0.5,
                 ),
                 Positioned(
@@ -224,7 +215,7 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
                     child: Container(
                         color: widget.enabled
                             ? widget.activeColor
-                            : Colors.grey[700],
+                            : Colors.grey, // Replaces hardcoded Colors.grey[700]
                         height: 20)),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6.0),
@@ -235,16 +226,16 @@ class _VerticalThickSliderState extends State<VerticalThickSlider> {
                           widget.labelFormatter(_lerp(factor)),
                           style: TextStyle(
                               color: widget.enabled
-                                  ? Colors.white
-                                  : Colors.grey[600],
+                                  ? Theme.of(context).colorScheme.onSurface // Replaces Colors.white
+                                  : Theme.of(context).hintColor, // Replaces Colors.grey[600]
                               fontSize: 20),
                         ),
                         Text(
                           widget.label,
                           style: TextStyle(
                               color: widget.enabled
-                                  ? Colors.white
-                                  : Colors.grey[600],
+                                  ? Theme.of(context).colorScheme.onSurface // Replaces Colors.white
+                                  : Theme.of(context).hintColor, // Replaces Colors.grey[600]
                               fontSize: 20),
                         )
                       ]),

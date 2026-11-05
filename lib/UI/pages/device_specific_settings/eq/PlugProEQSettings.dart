@@ -41,7 +41,6 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
         eqGroup: device.config.bluetoothGroup,
         onChanged: (int? value) {
           if (value != null) {
-            //request another
             device.config.bluetoothGroup = value;
             communication.setBTEq(value);
             _requestEQData(device.config.bluetoothGroup);
@@ -107,7 +106,6 @@ class _PlugProEQSettingsState extends State<PlugProEQSettings> {
             }
             return ListTileTheme(
                 minLeadingWidth: 0,
-                iconColor: Colors.white,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,

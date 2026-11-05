@@ -73,15 +73,15 @@ class _DragAndDropListTarget extends State<DragAndDropListTarget>
               if (candidateData.isNotEmpty) {}
               return Container();
             },
-            onWillAccept: (incoming) {
+            onWillAcceptWithDetails: (incoming) {
               bool accept = true;
               if (widget.parameters.listTargetOnWillAccept != null) {
                 accept =
-                    widget.parameters.listTargetOnWillAccept!(incoming, widget);
+                    widget.parameters.listTargetOnWillAccept!(incoming.data, widget);
               }
               if (accept && mounted) {
                 setState(() {
-                  _hoveredDraggable = incoming;
+                  _hoveredDraggable = incoming.data;
                 });
               }
               return accept;
@@ -93,10 +93,10 @@ class _DragAndDropListTarget extends State<DragAndDropListTarget>
                 });
               }
             },
-            onAccept: (incoming) {
+            onAcceptWithDetails: (incoming) {
               if (mounted) {
                 setState(() {
-                  widget.onDropOnLastTarget(incoming, widget);
+                  widget.onDropOnLastTarget(incoming.data, widget);
                   _hoveredDraggable = null;
                 });
               }

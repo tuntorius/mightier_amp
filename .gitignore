@@ -47,3 +47,5 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 .firebase/
+# Widget Preview related
+.widget_preview/

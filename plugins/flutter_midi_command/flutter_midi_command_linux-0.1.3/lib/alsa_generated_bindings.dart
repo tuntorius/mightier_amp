@@ -18,12 +18,12 @@ class ALSA {
       : _lookup = lookup;
 
   int access(
-    ffi.Pointer<ffi.Int8> __name,
-    int __type,
+    ffi.Pointer<ffi.Int8> _name,
+    int _type,
   ) {
     return _access(
-      __name,
-      __type,
+      _name,
+      _type,
     );
   }
 
@@ -31,16 +31,16 @@ class ALSA {
   late final _dart_access _access = _access_ptr.asFunction<_dart_access>();
 
   int faccessat(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __file,
-    int __type,
-    int __flag,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _file,
+    int _type,
+    int _flag,
   ) {
     return _faccessat(
-      __fd,
-      __file,
-      __type,
-      __flag,
+      _fd,
+      _file,
+      _type,
+      _flag,
     );
   }
 
@@ -50,14 +50,14 @@ class ALSA {
       _faccessat_ptr.asFunction<_dart_faccessat>();
 
   int lseek(
-    int __fd,
-    int __offset,
-    int __whence,
+    int _fd,
+    int _offset,
+    int _whence,
   ) {
     return _lseek(
-      __fd,
-      __offset,
-      __whence,
+      _fd,
+      _offset,
+      _whence,
     );
   }
 
@@ -65,10 +65,10 @@ class ALSA {
   late final _dart_lseek _lseek = _lseek_ptr.asFunction<_dart_lseek>();
 
   int close(
-    int __fd,
+    int _fd,
   ) {
     return _close(
-      __fd,
+      _fd,
     );
   }
 
@@ -76,14 +76,14 @@ class ALSA {
   late final _dart_close _close = _close_ptr.asFunction<_dart_close>();
 
   int read(
-    int __fd,
-    ffi.Pointer<ffi.Void> __buf,
-    int __nbytes,
+    int _fd,
+    ffi.Pointer<ffi.Void> _buf,
+    int _nbytes,
   ) {
     return _read(
-      __fd,
-      __buf,
-      __nbytes,
+      _fd,
+      _buf,
+      _nbytes,
     );
   }
 
@@ -91,14 +91,14 @@ class ALSA {
   late final _dart_read _read = _read_ptr.asFunction<_dart_read>();
 
   int write(
-    int __fd,
-    ffi.Pointer<ffi.Void> __buf,
-    int __n,
+    int _fd,
+    ffi.Pointer<ffi.Void> _buf,
+    int _n,
   ) {
     return _write(
-      __fd,
-      __buf,
-      __n,
+      _fd,
+      _buf,
+      _n,
     );
   }
 
@@ -106,16 +106,16 @@ class ALSA {
   late final _dart_write _write = _write_ptr.asFunction<_dart_write>();
 
   int pread(
-    int __fd,
-    ffi.Pointer<ffi.Void> __buf,
-    int __nbytes,
-    int __offset,
+    int _fd,
+    ffi.Pointer<ffi.Void> _buf,
+    int _nbytes,
+    int _offset,
   ) {
     return _pread(
-      __fd,
-      __buf,
-      __nbytes,
-      __offset,
+      _fd,
+      _buf,
+      _nbytes,
+      _offset,
     );
   }
 
@@ -123,16 +123,16 @@ class ALSA {
   late final _dart_pread _pread = _pread_ptr.asFunction<_dart_pread>();
 
   int pwrite(
-    int __fd,
-    ffi.Pointer<ffi.Void> __buf,
-    int __n,
-    int __offset,
+    int _fd,
+    ffi.Pointer<ffi.Void> _buf,
+    int _n,
+    int _offset,
   ) {
     return _pwrite(
-      __fd,
-      __buf,
-      __n,
-      __offset,
+      _fd,
+      _buf,
+      _n,
+      _offset,
     );
   }
 
@@ -140,10 +140,10 @@ class ALSA {
   late final _dart_pwrite _pwrite = _pwrite_ptr.asFunction<_dart_pwrite>();
 
   int pipe(
-    ffi.Pointer<ffi.Int32> __pipedes,
+    ffi.Pointer<ffi.Int32> _pipedes,
   ) {
     return _pipe(
-      __pipedes,
+      _pipedes,
     );
   }
 
@@ -151,10 +151,10 @@ class ALSA {
   late final _dart_pipe _pipe = _pipe_ptr.asFunction<_dart_pipe>();
 
   int alarm(
-    int __seconds,
+    int _seconds,
   ) {
     return _alarm(
-      __seconds,
+      _seconds,
     );
   }
 
@@ -162,10 +162,10 @@ class ALSA {
   late final _dart_alarm _alarm = _alarm_ptr.asFunction<_dart_alarm>();
 
   int sleep(
-    int __seconds,
+    int _seconds,
   ) {
     return _sleep(
-      __seconds,
+      _seconds,
     );
   }
 
@@ -173,12 +173,12 @@ class ALSA {
   late final _dart_sleep _sleep = _sleep_ptr.asFunction<_dart_sleep>();
 
   int ualarm(
-    int __value,
-    int __interval,
+    int _value,
+    int _interval,
   ) {
     return _ualarm(
-      __value,
-      __interval,
+      _value,
+      _interval,
     );
   }
 
@@ -186,10 +186,10 @@ class ALSA {
   late final _dart_ualarm _ualarm = _ualarm_ptr.asFunction<_dart_ualarm>();
 
   int usleep(
-    int __useconds,
+    int _useconds,
   ) {
     return _usleep(
-      __useconds,
+      _useconds,
     );
   }
 
@@ -204,14 +204,14 @@ class ALSA {
   late final _dart_pause _pause = _pause_ptr.asFunction<_dart_pause>();
 
   int chown(
-    ffi.Pointer<ffi.Int8> __file,
-    int __owner,
-    int __group,
+    ffi.Pointer<ffi.Int8> _file,
+    int _owner,
+    int _group,
   ) {
     return _chown(
-      __file,
-      __owner,
-      __group,
+      _file,
+      _owner,
+      _group,
     );
   }
 
@@ -219,14 +219,14 @@ class ALSA {
   late final _dart_chown _chown = _chown_ptr.asFunction<_dart_chown>();
 
   int fchown(
-    int __fd,
-    int __owner,
-    int __group,
+    int _fd,
+    int _owner,
+    int _group,
   ) {
     return _fchown(
-      __fd,
-      __owner,
-      __group,
+      _fd,
+      _owner,
+      _group,
     );
   }
 
@@ -234,14 +234,14 @@ class ALSA {
   late final _dart_fchown _fchown = _fchown_ptr.asFunction<_dart_fchown>();
 
   int lchown(
-    ffi.Pointer<ffi.Int8> __file,
-    int __owner,
-    int __group,
+    ffi.Pointer<ffi.Int8> _file,
+    int _owner,
+    int _group,
   ) {
     return _lchown(
-      __file,
-      __owner,
-      __group,
+      _file,
+      _owner,
+      _group,
     );
   }
 
@@ -249,18 +249,18 @@ class ALSA {
   late final _dart_lchown _lchown = _lchown_ptr.asFunction<_dart_lchown>();
 
   int fchownat(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __file,
-    int __owner,
-    int __group,
-    int __flag,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _file,
+    int _owner,
+    int _group,
+    int _flag,
   ) {
     return _fchownat(
-      __fd,
-      __file,
-      __owner,
-      __group,
-      __flag,
+      _fd,
+      _file,
+      _owner,
+      _group,
+      _flag,
     );
   }
 
@@ -270,10 +270,10 @@ class ALSA {
       _fchownat_ptr.asFunction<_dart_fchownat>();
 
   int chdir(
-    ffi.Pointer<ffi.Int8> __path,
+    ffi.Pointer<ffi.Int8> _path,
   ) {
     return _chdir(
-      __path,
+      _path,
     );
   }
 
@@ -281,10 +281,10 @@ class ALSA {
   late final _dart_chdir _chdir = _chdir_ptr.asFunction<_dart_chdir>();
 
   int fchdir(
-    int __fd,
+    int _fd,
   ) {
     return _fchdir(
-      __fd,
+      _fd,
     );
   }
 
@@ -292,12 +292,12 @@ class ALSA {
   late final _dart_fchdir _fchdir = _fchdir_ptr.asFunction<_dart_fchdir>();
 
   ffi.Pointer<ffi.Int8> getcwd(
-    ffi.Pointer<ffi.Int8> __buf,
-    int __size,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _size,
   ) {
     return _getcwd(
-      __buf,
-      __size,
+      _buf,
+      _size,
     );
   }
 
@@ -305,10 +305,10 @@ class ALSA {
   late final _dart_getcwd _getcwd = _getcwd_ptr.asFunction<_dart_getcwd>();
 
   ffi.Pointer<ffi.Int8> getwd(
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<ffi.Int8> _buf,
   ) {
     return _getwd(
-      __buf,
+      _buf,
     );
   }
 
@@ -316,10 +316,10 @@ class ALSA {
   late final _dart_getwd _getwd = _getwd_ptr.asFunction<_dart_getwd>();
 
   int dup(
-    int __fd,
+    int _fd,
   ) {
     return _dup(
-      __fd,
+      _fd,
     );
   }
 
@@ -327,12 +327,12 @@ class ALSA {
   late final _dart_dup _dup = _dup_ptr.asFunction<_dart_dup>();
 
   int dup2(
-    int __fd,
-    int __fd2,
+    int _fd,
+    int _fd2,
   ) {
     return _dup2(
-      __fd,
-      __fd2,
+      _fd,
+      _fd2,
     );
   }
 
@@ -348,14 +348,14 @@ class ALSA {
       ___environ.value = value;
 
   int execve(
-    ffi.Pointer<ffi.Int8> __path,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __argv,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __envp,
+    ffi.Pointer<ffi.Int8> _path,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _argv,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _envp,
   ) {
     return _execve(
-      __path,
-      __argv,
-      __envp,
+      _path,
+      _argv,
+      _envp,
     );
   }
 
@@ -363,14 +363,14 @@ class ALSA {
   late final _dart_execve _execve = _execve_ptr.asFunction<_dart_execve>();
 
   int fexecve(
-    int __fd,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __argv,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __envp,
+    int _fd,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _argv,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _envp,
   ) {
     return _fexecve(
-      __fd,
-      __argv,
-      __envp,
+      _fd,
+      _argv,
+      _envp,
     );
   }
 
@@ -378,12 +378,12 @@ class ALSA {
   late final _dart_fexecve _fexecve = _fexecve_ptr.asFunction<_dart_fexecve>();
 
   int execv(
-    ffi.Pointer<ffi.Int8> __path,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __argv,
+    ffi.Pointer<ffi.Int8> _path,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _argv,
   ) {
     return _execv(
-      __path,
-      __argv,
+      _path,
+      _argv,
     );
   }
 
@@ -391,12 +391,12 @@ class ALSA {
   late final _dart_execv _execv = _execv_ptr.asFunction<_dart_execv>();
 
   int execle(
-    ffi.Pointer<ffi.Int8> __path,
-    ffi.Pointer<ffi.Int8> __arg,
+    ffi.Pointer<ffi.Int8> _path,
+    ffi.Pointer<ffi.Int8> _arg,
   ) {
     return _execle(
-      __path,
-      __arg,
+      _path,
+      _arg,
     );
   }
 
@@ -404,12 +404,12 @@ class ALSA {
   late final _dart_execle _execle = _execle_ptr.asFunction<_dart_execle>();
 
   int execl(
-    ffi.Pointer<ffi.Int8> __path,
-    ffi.Pointer<ffi.Int8> __arg,
+    ffi.Pointer<ffi.Int8> _path,
+    ffi.Pointer<ffi.Int8> _arg,
   ) {
     return _execl(
-      __path,
-      __arg,
+      _path,
+      _arg,
     );
   }
 
@@ -417,12 +417,12 @@ class ALSA {
   late final _dart_execl _execl = _execl_ptr.asFunction<_dart_execl>();
 
   int execvp(
-    ffi.Pointer<ffi.Int8> __file,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __argv,
+    ffi.Pointer<ffi.Int8> _file,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _argv,
   ) {
     return _execvp(
-      __file,
-      __argv,
+      _file,
+      _argv,
     );
   }
 
@@ -430,12 +430,12 @@ class ALSA {
   late final _dart_execvp _execvp = _execvp_ptr.asFunction<_dart_execvp>();
 
   int execlp(
-    ffi.Pointer<ffi.Int8> __file,
-    ffi.Pointer<ffi.Int8> __arg,
+    ffi.Pointer<ffi.Int8> _file,
+    ffi.Pointer<ffi.Int8> _arg,
   ) {
     return _execlp(
-      __file,
-      __arg,
+      _file,
+      _arg,
     );
   }
 
@@ -443,10 +443,10 @@ class ALSA {
   late final _dart_execlp _execlp = _execlp_ptr.asFunction<_dart_execlp>();
 
   int nice(
-    int __inc,
+    int _inc,
   ) {
     return _nice(
-      __inc,
+      _inc,
     );
   }
 
@@ -454,10 +454,10 @@ class ALSA {
   late final _dart_nice _nice = _nice_ptr.asFunction<_dart_nice>();
 
   void _exit(
-    int __status,
+    int _status,
   ) {
     return __exit(
-      __status,
+      _status,
     );
   }
 
@@ -465,12 +465,12 @@ class ALSA {
   late final _dart__exit __exit = __exit_ptr.asFunction<_dart__exit>();
 
   int pathconf(
-    ffi.Pointer<ffi.Int8> __path,
-    int __name,
+    ffi.Pointer<ffi.Int8> _path,
+    int _name,
   ) {
     return _pathconf(
-      __path,
-      __name,
+      _path,
+      _name,
     );
   }
 
@@ -480,12 +480,12 @@ class ALSA {
       _pathconf_ptr.asFunction<_dart_pathconf>();
 
   int fpathconf(
-    int __fd,
-    int __name,
+    int _fd,
+    int _name,
   ) {
     return _fpathconf(
-      __fd,
-      __name,
+      _fd,
+      _name,
     );
   }
 
@@ -495,10 +495,10 @@ class ALSA {
       _fpathconf_ptr.asFunction<_dart_fpathconf>();
 
   int sysconf(
-    int __name,
+    int _name,
   ) {
     return _sysconf(
-      __name,
+      _name,
     );
   }
 
@@ -506,14 +506,14 @@ class ALSA {
   late final _dart_sysconf _sysconf = _sysconf_ptr.asFunction<_dart_sysconf>();
 
   int confstr(
-    int __name,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __len,
+    int _name,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _len,
   ) {
     return _confstr(
-      __name,
-      __buf,
-      __len,
+      _name,
+      _buf,
+      _len,
     );
   }
 
@@ -542,10 +542,10 @@ class ALSA {
   late final _dart_getpgrp _getpgrp = _getpgrp_ptr.asFunction<_dart_getpgrp>();
 
   int __getpgid(
-    int __pid,
+    int _pid,
   ) {
     return ___getpgid(
-      __pid,
+      _pid,
     );
   }
 
@@ -555,10 +555,10 @@ class ALSA {
       ___getpgid_ptr.asFunction<_dart___getpgid>();
 
   int getpgid(
-    int __pid,
+    int _pid,
   ) {
     return _getpgid(
-      __pid,
+      _pid,
     );
   }
 
@@ -566,12 +566,12 @@ class ALSA {
   late final _dart_getpgid _getpgid = _getpgid_ptr.asFunction<_dart_getpgid>();
 
   int setpgid(
-    int __pid,
-    int __pgid,
+    int _pid,
+    int _pgid,
   ) {
     return _setpgid(
-      __pid,
-      __pgid,
+      _pid,
+      _pgid,
     );
   }
 
@@ -593,10 +593,10 @@ class ALSA {
   late final _dart_setsid _setsid = _setsid_ptr.asFunction<_dart_setsid>();
 
   int getsid(
-    int __pid,
+    int _pid,
   ) {
     return _getsid(
-      __pid,
+      _pid,
     );
   }
 
@@ -632,12 +632,12 @@ class ALSA {
   late final _dart_getegid _getegid = _getegid_ptr.asFunction<_dart_getegid>();
 
   int getgroups(
-    int __size,
-    ffi.Pointer<ffi.Uint32> __list,
+    int _size,
+    ffi.Pointer<ffi.Uint32> _list,
   ) {
     return _getgroups(
-      __size,
-      __list,
+      _size,
+      _list,
     );
   }
 
@@ -647,10 +647,10 @@ class ALSA {
       _getgroups_ptr.asFunction<_dart_getgroups>();
 
   int setuid(
-    int __uid,
+    int _uid,
   ) {
     return _setuid(
-      __uid,
+      _uid,
     );
   }
 
@@ -658,12 +658,12 @@ class ALSA {
   late final _dart_setuid _setuid = _setuid_ptr.asFunction<_dart_setuid>();
 
   int setreuid(
-    int __ruid,
-    int __euid,
+    int _ruid,
+    int _euid,
   ) {
     return _setreuid(
-      __ruid,
-      __euid,
+      _ruid,
+      _euid,
     );
   }
 
@@ -673,10 +673,10 @@ class ALSA {
       _setreuid_ptr.asFunction<_dart_setreuid>();
 
   int seteuid(
-    int __uid,
+    int _uid,
   ) {
     return _seteuid(
-      __uid,
+      _uid,
     );
   }
 
@@ -684,10 +684,10 @@ class ALSA {
   late final _dart_seteuid _seteuid = _seteuid_ptr.asFunction<_dart_seteuid>();
 
   int setgid(
-    int __gid,
+    int _gid,
   ) {
     return _setgid(
-      __gid,
+      _gid,
     );
   }
 
@@ -695,12 +695,12 @@ class ALSA {
   late final _dart_setgid _setgid = _setgid_ptr.asFunction<_dart_setgid>();
 
   int setregid(
-    int __rgid,
-    int __egid,
+    int _rgid,
+    int _egid,
   ) {
     return _setregid(
-      __rgid,
-      __egid,
+      _rgid,
+      _egid,
     );
   }
 
@@ -710,10 +710,10 @@ class ALSA {
       _setregid_ptr.asFunction<_dart_setregid>();
 
   int setegid(
-    int __gid,
+    int _gid,
   ) {
     return _setegid(
-      __gid,
+      _gid,
     );
   }
 
@@ -735,10 +735,10 @@ class ALSA {
   late final _dart_vfork _vfork = _vfork_ptr.asFunction<_dart_vfork>();
 
   ffi.Pointer<ffi.Int8> ttyname(
-    int __fd,
+    int _fd,
   ) {
     return _ttyname(
-      __fd,
+      _fd,
     );
   }
 
@@ -746,14 +746,14 @@ class ALSA {
   late final _dart_ttyname _ttyname = _ttyname_ptr.asFunction<_dart_ttyname>();
 
   int ttyname_r(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __buflen,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _buflen,
   ) {
     return _ttyname_r(
-      __fd,
-      __buf,
-      __buflen,
+      _fd,
+      _buf,
+      _buflen,
     );
   }
 
@@ -763,10 +763,10 @@ class ALSA {
       _ttyname_r_ptr.asFunction<_dart_ttyname_r>();
 
   int isatty(
-    int __fd,
+    int _fd,
   ) {
     return _isatty(
-      __fd,
+      _fd,
     );
   }
 
@@ -781,12 +781,12 @@ class ALSA {
   late final _dart_ttyslot _ttyslot = _ttyslot_ptr.asFunction<_dart_ttyslot>();
 
   int link(
-    ffi.Pointer<ffi.Int8> __from,
-    ffi.Pointer<ffi.Int8> __to,
+    ffi.Pointer<ffi.Int8> _from,
+    ffi.Pointer<ffi.Int8> _to,
   ) {
     return _link(
-      __from,
-      __to,
+      _from,
+      _to,
     );
   }
 
@@ -794,18 +794,18 @@ class ALSA {
   late final _dart_link _link = _link_ptr.asFunction<_dart_link>();
 
   int linkat(
-    int __fromfd,
-    ffi.Pointer<ffi.Int8> __from,
-    int __tofd,
-    ffi.Pointer<ffi.Int8> __to,
-    int __flags,
+    int _fromfd,
+    ffi.Pointer<ffi.Int8> _from,
+    int _tofd,
+    ffi.Pointer<ffi.Int8> _to,
+    int _flags,
   ) {
     return _linkat(
-      __fromfd,
-      __from,
-      __tofd,
-      __to,
-      __flags,
+      _fromfd,
+      _from,
+      _tofd,
+      _to,
+      _flags,
     );
   }
 
@@ -813,12 +813,12 @@ class ALSA {
   late final _dart_linkat _linkat = _linkat_ptr.asFunction<_dart_linkat>();
 
   int symlink(
-    ffi.Pointer<ffi.Int8> __from,
-    ffi.Pointer<ffi.Int8> __to,
+    ffi.Pointer<ffi.Int8> _from,
+    ffi.Pointer<ffi.Int8> _to,
   ) {
     return _symlink(
-      __from,
-      __to,
+      _from,
+      _to,
     );
   }
 
@@ -826,14 +826,14 @@ class ALSA {
   late final _dart_symlink _symlink = _symlink_ptr.asFunction<_dart_symlink>();
 
   int readlink(
-    ffi.Pointer<ffi.Int8> __path,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __len,
+    ffi.Pointer<ffi.Int8> _path,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _len,
   ) {
     return _readlink(
-      __path,
-      __buf,
-      __len,
+      _path,
+      _buf,
+      _len,
     );
   }
 
@@ -843,14 +843,14 @@ class ALSA {
       _readlink_ptr.asFunction<_dart_readlink>();
 
   int symlinkat(
-    ffi.Pointer<ffi.Int8> __from,
-    int __tofd,
-    ffi.Pointer<ffi.Int8> __to,
+    ffi.Pointer<ffi.Int8> _from,
+    int _tofd,
+    ffi.Pointer<ffi.Int8> _to,
   ) {
     return _symlinkat(
-      __from,
-      __tofd,
-      __to,
+      _from,
+      _tofd,
+      _to,
     );
   }
 
@@ -860,16 +860,16 @@ class ALSA {
       _symlinkat_ptr.asFunction<_dart_symlinkat>();
 
   int readlinkat(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __path,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __len,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _path,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _len,
   ) {
     return _readlinkat(
-      __fd,
-      __path,
-      __buf,
-      __len,
+      _fd,
+      _path,
+      _buf,
+      _len,
     );
   }
 
@@ -879,10 +879,10 @@ class ALSA {
       _readlinkat_ptr.asFunction<_dart_readlinkat>();
 
   int unlink(
-    ffi.Pointer<ffi.Int8> __name,
+    ffi.Pointer<ffi.Int8> _name,
   ) {
     return _unlink(
-      __name,
+      _name,
     );
   }
 
@@ -890,14 +890,14 @@ class ALSA {
   late final _dart_unlink _unlink = _unlink_ptr.asFunction<_dart_unlink>();
 
   int unlinkat(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __name,
-    int __flag,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _name,
+    int _flag,
   ) {
     return _unlinkat(
-      __fd,
-      __name,
-      __flag,
+      _fd,
+      _name,
+      _flag,
     );
   }
 
@@ -907,10 +907,10 @@ class ALSA {
       _unlinkat_ptr.asFunction<_dart_unlinkat>();
 
   int rmdir(
-    ffi.Pointer<ffi.Int8> __path,
+    ffi.Pointer<ffi.Int8> _path,
   ) {
     return _rmdir(
-      __path,
+      _path,
     );
   }
 
@@ -918,10 +918,10 @@ class ALSA {
   late final _dart_rmdir _rmdir = _rmdir_ptr.asFunction<_dart_rmdir>();
 
   int tcgetpgrp(
-    int __fd,
+    int _fd,
   ) {
     return _tcgetpgrp(
-      __fd,
+      _fd,
     );
   }
 
@@ -931,12 +931,12 @@ class ALSA {
       _tcgetpgrp_ptr.asFunction<_dart_tcgetpgrp>();
 
   int tcsetpgrp(
-    int __fd,
-    int __pgrp_id,
+    int _fd,
+    int _pgrp_id,
   ) {
     return _tcsetpgrp(
-      __fd,
-      __pgrp_id,
+      _fd,
+      _pgrp_id,
     );
   }
 
@@ -955,12 +955,12 @@ class ALSA {
       _getlogin_ptr.asFunction<_dart_getlogin>();
 
   int getlogin_r(
-    ffi.Pointer<ffi.Int8> __name,
-    int __name_len,
+    ffi.Pointer<ffi.Int8> _name,
+    int _name_len,
   ) {
     return _getlogin_r(
-      __name,
-      __name_len,
+      _name,
+      _name_len,
     );
   }
 
@@ -970,10 +970,10 @@ class ALSA {
       _getlogin_r_ptr.asFunction<_dart_getlogin_r>();
 
   int setlogin(
-    ffi.Pointer<ffi.Int8> __name,
+    ffi.Pointer<ffi.Int8> _name,
   ) {
     return _setlogin(
-      __name,
+      _name,
     );
   }
 
@@ -1008,14 +1008,14 @@ class ALSA {
   set optopt(int value) => _optopt.value = value;
 
   int getopt(
-    int ___argc,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> ___argv,
-    ffi.Pointer<ffi.Int8> __shortopts,
+    int __argc,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> __argv,
+    ffi.Pointer<ffi.Int8> _shortopts,
   ) {
     return _getopt(
-      ___argc,
-      ___argv,
-      __shortopts,
+      __argc,
+      __argv,
+      _shortopts,
     );
   }
 
@@ -1023,12 +1023,12 @@ class ALSA {
   late final _dart_getopt _getopt = _getopt_ptr.asFunction<_dart_getopt>();
 
   int gethostname(
-    ffi.Pointer<ffi.Int8> __name,
-    int __len,
+    ffi.Pointer<ffi.Int8> _name,
+    int _len,
   ) {
     return _gethostname(
-      __name,
-      __len,
+      _name,
+      _len,
     );
   }
 
@@ -1038,12 +1038,12 @@ class ALSA {
       _gethostname_ptr.asFunction<_dart_gethostname>();
 
   int sethostname(
-    ffi.Pointer<ffi.Int8> __name,
-    int __len,
+    ffi.Pointer<ffi.Int8> _name,
+    int _len,
   ) {
     return _sethostname(
-      __name,
-      __len,
+      _name,
+      _len,
     );
   }
 
@@ -1053,10 +1053,10 @@ class ALSA {
       _sethostname_ptr.asFunction<_dart_sethostname>();
 
   int sethostid(
-    int __id,
+    int _id,
   ) {
     return _sethostid(
-      __id,
+      _id,
     );
   }
 
@@ -1066,12 +1066,12 @@ class ALSA {
       _sethostid_ptr.asFunction<_dart_sethostid>();
 
   int getdomainname(
-    ffi.Pointer<ffi.Int8> __name,
-    int __len,
+    ffi.Pointer<ffi.Int8> _name,
+    int _len,
   ) {
     return _getdomainname(
-      __name,
-      __len,
+      _name,
+      _len,
     );
   }
 
@@ -1081,12 +1081,12 @@ class ALSA {
       _getdomainname_ptr.asFunction<_dart_getdomainname>();
 
   int setdomainname(
-    ffi.Pointer<ffi.Int8> __name,
-    int __len,
+    ffi.Pointer<ffi.Int8> _name,
+    int _len,
   ) {
     return _setdomainname(
-      __name,
-      __len,
+      _name,
+      _len,
     );
   }
 
@@ -1103,10 +1103,10 @@ class ALSA {
   late final _dart_vhangup _vhangup = _vhangup_ptr.asFunction<_dart_vhangup>();
 
   int revoke(
-    ffi.Pointer<ffi.Int8> __file,
+    ffi.Pointer<ffi.Int8> _file,
   ) {
     return _revoke(
-      __file,
+      _file,
     );
   }
 
@@ -1114,16 +1114,16 @@ class ALSA {
   late final _dart_revoke _revoke = _revoke_ptr.asFunction<_dart_revoke>();
 
   int profil(
-    ffi.Pointer<ffi.Uint16> __sample_buffer,
-    int __size,
-    int __offset,
-    int __scale,
+    ffi.Pointer<ffi.Uint16> _sample_buffer,
+    int _size,
+    int _offset,
+    int _scale,
   ) {
     return _profil(
-      __sample_buffer,
-      __size,
-      __offset,
-      __scale,
+      _sample_buffer,
+      _size,
+      _offset,
+      _scale,
     );
   }
 
@@ -1131,10 +1131,10 @@ class ALSA {
   late final _dart_profil _profil = _profil_ptr.asFunction<_dart_profil>();
 
   int acct(
-    ffi.Pointer<ffi.Int8> __name,
+    ffi.Pointer<ffi.Int8> _name,
   ) {
     return _acct(
-      __name,
+      _name,
     );
   }
 
@@ -1169,12 +1169,12 @@ class ALSA {
       _setusershell_ptr.asFunction<_dart_setusershell>();
 
   int daemon(
-    int __nochdir,
-    int __noclose,
+    int _nochdir,
+    int _noclose,
   ) {
     return _daemon(
-      __nochdir,
-      __noclose,
+      _nochdir,
+      _noclose,
     );
   }
 
@@ -1182,10 +1182,10 @@ class ALSA {
   late final _dart_daemon _daemon = _daemon_ptr.asFunction<_dart_daemon>();
 
   int chroot(
-    ffi.Pointer<ffi.Int8> __path,
+    ffi.Pointer<ffi.Int8> _path,
   ) {
     return _chroot(
-      __path,
+      _path,
     );
   }
 
@@ -1193,10 +1193,10 @@ class ALSA {
   late final _dart_chroot _chroot = _chroot_ptr.asFunction<_dart_chroot>();
 
   ffi.Pointer<ffi.Int8> getpass(
-    ffi.Pointer<ffi.Int8> __prompt,
+    ffi.Pointer<ffi.Int8> _prompt,
   ) {
     return _getpass(
-      __prompt,
+      _prompt,
     );
   }
 
@@ -1204,10 +1204,10 @@ class ALSA {
   late final _dart_getpass _getpass = _getpass_ptr.asFunction<_dart_getpass>();
 
   int fsync(
-    int __fd,
+    int _fd,
   ) {
     return _fsync(
-      __fd,
+      _fd,
     );
   }
 
@@ -1249,12 +1249,12 @@ class ALSA {
       _getdtablesize_ptr.asFunction<_dart_getdtablesize>();
 
   int truncate(
-    ffi.Pointer<ffi.Int8> __file,
-    int __length,
+    ffi.Pointer<ffi.Int8> _file,
+    int _length,
   ) {
     return _truncate(
-      __file,
-      __length,
+      _file,
+      _length,
     );
   }
 
@@ -1264,12 +1264,12 @@ class ALSA {
       _truncate_ptr.asFunction<_dart_truncate>();
 
   int ftruncate(
-    int __fd,
-    int __length,
+    int _fd,
+    int _length,
   ) {
     return _ftruncate(
-      __fd,
-      __length,
+      _fd,
+      _length,
     );
   }
 
@@ -1279,10 +1279,10 @@ class ALSA {
       _ftruncate_ptr.asFunction<_dart_ftruncate>();
 
   int brk(
-    ffi.Pointer<ffi.Void> __addr,
+    ffi.Pointer<ffi.Void> _addr,
   ) {
     return _brk(
-      __addr,
+      _addr,
     );
   }
 
@@ -1290,10 +1290,10 @@ class ALSA {
   late final _dart_brk _brk = _brk_ptr.asFunction<_dart_brk>();
 
   ffi.Pointer<ffi.Void> sbrk(
-    int __delta,
+    int _delta,
   ) {
     return _sbrk(
-      __delta,
+      _delta,
     );
   }
 
@@ -1301,10 +1301,10 @@ class ALSA {
   late final _dart_sbrk _sbrk = _sbrk_ptr.asFunction<_dart_sbrk>();
 
   int syscall(
-    int __sysno,
+    int _sysno,
   ) {
     return _syscall(
-      __sysno,
+      _sysno,
     );
   }
 
@@ -1312,14 +1312,14 @@ class ALSA {
   late final _dart_syscall _syscall = _syscall_ptr.asFunction<_dart_syscall>();
 
   int lockf(
-    int __fd,
-    int __cmd,
-    int __len,
+    int _fd,
+    int _cmd,
+    int _len,
   ) {
     return _lockf(
-      __fd,
-      __cmd,
-      __len,
+      _fd,
+      _cmd,
+      _len,
     );
   }
 
@@ -1327,10 +1327,10 @@ class ALSA {
   late final _dart_lockf _lockf = _lockf_ptr.asFunction<_dart_lockf>();
 
   int fdatasync(
-    int __fildes,
+    int _fildes,
   ) {
     return _fdatasync(
-      __fildes,
+      _fildes,
     );
   }
 
@@ -1340,12 +1340,12 @@ class ALSA {
       _fdatasync_ptr.asFunction<_dart_fdatasync>();
 
   ffi.Pointer<ffi.Int8> crypt(
-    ffi.Pointer<ffi.Int8> __key,
-    ffi.Pointer<ffi.Int8> __salt,
+    ffi.Pointer<ffi.Int8> _key,
+    ffi.Pointer<ffi.Int8> _salt,
   ) {
     return _crypt(
-      __key,
-      __salt,
+      _key,
+      _salt,
     );
   }
 
@@ -1353,12 +1353,12 @@ class ALSA {
   late final _dart_crypt _crypt = _crypt_ptr.asFunction<_dart_crypt>();
 
   int getentropy(
-    ffi.Pointer<ffi.Void> __buffer,
-    int __length,
+    ffi.Pointer<ffi.Void> _buffer,
+    int _length,
   ) {
     return _getentropy(
-      __buffer,
-      __length,
+      _buffer,
+      _length,
     );
   }
 
@@ -1389,10 +1389,10 @@ class ALSA {
   set stderr(ffi.Pointer<IO_FILE_> value) => _stderr.value = value;
 
   int remove(
-    ffi.Pointer<ffi.Int8> __filename,
+    ffi.Pointer<ffi.Int8> _filename,
   ) {
     return _remove(
-      __filename,
+      _filename,
     );
   }
 
@@ -1400,12 +1400,12 @@ class ALSA {
   late final _dart_remove _remove = _remove_ptr.asFunction<_dart_remove>();
 
   int rename(
-    ffi.Pointer<ffi.Int8> __old,
-    ffi.Pointer<ffi.Int8> __new,
+    ffi.Pointer<ffi.Int8> _old,
+    ffi.Pointer<ffi.Int8> _new,
   ) {
     return _rename(
-      __old,
-      __new,
+      _old,
+      _new,
     );
   }
 
@@ -1413,16 +1413,16 @@ class ALSA {
   late final _dart_rename _rename = _rename_ptr.asFunction<_dart_rename>();
 
   int renameat(
-    int __oldfd,
-    ffi.Pointer<ffi.Int8> __old,
-    int __newfd,
-    ffi.Pointer<ffi.Int8> __new,
+    int _oldfd,
+    ffi.Pointer<ffi.Int8> _old,
+    int _newfd,
+    ffi.Pointer<ffi.Int8> _new,
   ) {
     return _renameat(
-      __oldfd,
-      __old,
-      __newfd,
-      __new,
+      _oldfd,
+      _old,
+      _newfd,
+      _new,
     );
   }
 
@@ -1439,10 +1439,10 @@ class ALSA {
   late final _dart_tmpfile _tmpfile = _tmpfile_ptr.asFunction<_dart_tmpfile>();
 
   ffi.Pointer<ffi.Int8> tmpnam(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Int8> _s,
   ) {
     return _tmpnam(
-      __s,
+      _s,
     );
   }
 
@@ -1450,10 +1450,10 @@ class ALSA {
   late final _dart_tmpnam _tmpnam = _tmpnam_ptr.asFunction<_dart_tmpnam>();
 
   ffi.Pointer<ffi.Int8> tmpnam_r(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Int8> _s,
   ) {
     return _tmpnam_r(
-      __s,
+      _s,
     );
   }
 
@@ -1463,12 +1463,12 @@ class ALSA {
       _tmpnam_r_ptr.asFunction<_dart_tmpnam_r>();
 
   ffi.Pointer<ffi.Int8> tempnam(
-    ffi.Pointer<ffi.Int8> __dir,
-    ffi.Pointer<ffi.Int8> __pfx,
+    ffi.Pointer<ffi.Int8> _dir,
+    ffi.Pointer<ffi.Int8> _pfx,
   ) {
     return _tempnam(
-      __dir,
-      __pfx,
+      _dir,
+      _pfx,
     );
   }
 
@@ -1476,10 +1476,10 @@ class ALSA {
   late final _dart_tempnam _tempnam = _tempnam_ptr.asFunction<_dart_tempnam>();
 
   int fclose(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fclose(
-      __stream,
+      _stream,
     );
   }
 
@@ -1487,10 +1487,10 @@ class ALSA {
   late final _dart_fclose _fclose = _fclose_ptr.asFunction<_dart_fclose>();
 
   int fflush(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fflush(
-      __stream,
+      _stream,
     );
   }
 
@@ -1498,10 +1498,10 @@ class ALSA {
   late final _dart_fflush _fflush = _fflush_ptr.asFunction<_dart_fflush>();
 
   int fflush_unlocked(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fflush_unlocked(
-      __stream,
+      _stream,
     );
   }
 
@@ -1511,12 +1511,12 @@ class ALSA {
       _fflush_unlocked_ptr.asFunction<_dart_fflush_unlocked>();
 
   ffi.Pointer<IO_FILE_> fopen(
-    ffi.Pointer<ffi.Int8> __filename,
-    ffi.Pointer<ffi.Int8> __modes,
+    ffi.Pointer<ffi.Int8> _filename,
+    ffi.Pointer<ffi.Int8> _modes,
   ) {
     return _fopen(
-      __filename,
-      __modes,
+      _filename,
+      _modes,
     );
   }
 
@@ -1524,14 +1524,14 @@ class ALSA {
   late final _dart_fopen _fopen = _fopen_ptr.asFunction<_dart_fopen>();
 
   ffi.Pointer<IO_FILE_> freopen(
-    ffi.Pointer<ffi.Int8> __filename,
-    ffi.Pointer<ffi.Int8> __modes,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Int8> _filename,
+    ffi.Pointer<ffi.Int8> _modes,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _freopen(
-      __filename,
-      __modes,
-      __stream,
+      _filename,
+      _modes,
+      _stream,
     );
   }
 
@@ -1539,12 +1539,12 @@ class ALSA {
   late final _dart_freopen _freopen = _freopen_ptr.asFunction<_dart_freopen>();
 
   ffi.Pointer<IO_FILE_> fdopen(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __modes,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _modes,
   ) {
     return _fdopen(
-      __fd,
-      __modes,
+      _fd,
+      _modes,
     );
   }
 
@@ -1552,14 +1552,14 @@ class ALSA {
   late final _dart_fdopen _fdopen = _fdopen_ptr.asFunction<_dart_fdopen>();
 
   ffi.Pointer<IO_FILE_> fmemopen(
-    ffi.Pointer<ffi.Void> __s,
-    int __len,
-    ffi.Pointer<ffi.Int8> __modes,
+    ffi.Pointer<ffi.Void> _s,
+    int _len,
+    ffi.Pointer<ffi.Int8> _modes,
   ) {
     return _fmemopen(
-      __s,
-      __len,
-      __modes,
+      _s,
+      _len,
+      _modes,
     );
   }
 
@@ -1569,12 +1569,12 @@ class ALSA {
       _fmemopen_ptr.asFunction<_dart_fmemopen>();
 
   ffi.Pointer<IO_FILE_> open_memstream(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __bufloc,
-    ffi.Pointer<ffi.Uint64> __sizeloc,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _bufloc,
+    ffi.Pointer<ffi.Uint64> _sizeloc,
   ) {
     return _open_memstream(
-      __bufloc,
-      __sizeloc,
+      _bufloc,
+      _sizeloc,
     );
   }
 
@@ -1584,12 +1584,12 @@ class ALSA {
       _open_memstream_ptr.asFunction<_dart_open_memstream>();
 
   void setbuf(
-    ffi.Pointer<IO_FILE_> __stream,
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<IO_FILE_> _stream,
+    ffi.Pointer<ffi.Int8> _buf,
   ) {
     return _setbuf(
-      __stream,
-      __buf,
+      _stream,
+      _buf,
     );
   }
 
@@ -1597,16 +1597,16 @@ class ALSA {
   late final _dart_setbuf _setbuf = _setbuf_ptr.asFunction<_dart_setbuf>();
 
   int setvbuf(
-    ffi.Pointer<IO_FILE_> __stream,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __modes,
-    int __n,
+    ffi.Pointer<IO_FILE_> _stream,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _modes,
+    int _n,
   ) {
     return _setvbuf(
-      __stream,
-      __buf,
-      __modes,
-      __n,
+      _stream,
+      _buf,
+      _modes,
+      _n,
     );
   }
 
@@ -1614,14 +1614,14 @@ class ALSA {
   late final _dart_setvbuf _setvbuf = _setvbuf_ptr.asFunction<_dart_setvbuf>();
 
   void setbuffer(
-    ffi.Pointer<IO_FILE_> __stream,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __size,
+    ffi.Pointer<IO_FILE_> _stream,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _size,
   ) {
     return _setbuffer(
-      __stream,
-      __buf,
-      __size,
+      _stream,
+      _buf,
+      _size,
     );
   }
 
@@ -1631,10 +1631,10 @@ class ALSA {
       _setbuffer_ptr.asFunction<_dart_setbuffer>();
 
   void setlinebuf(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _setlinebuf(
-      __stream,
+      _stream,
     );
   }
 
@@ -1644,12 +1644,12 @@ class ALSA {
       _setlinebuf_ptr.asFunction<_dart_setlinebuf>();
 
   int fprintf(
-    ffi.Pointer<IO_FILE_> __stream,
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<IO_FILE_> _stream,
+    ffi.Pointer<ffi.Int8> _format,
   ) {
     return _fprintf(
-      __stream,
-      __format,
+      _stream,
+      _format,
     );
   }
 
@@ -1657,10 +1657,10 @@ class ALSA {
   late final _dart_fprintf _fprintf = _fprintf_ptr.asFunction<_dart_fprintf>();
 
   int printf(
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<ffi.Int8> _format,
   ) {
     return _printf(
-      __format,
+      _format,
     );
   }
 
@@ -1668,12 +1668,12 @@ class ALSA {
   late final _dart_printf _printf = _printf_ptr.asFunction<_dart_printf>();
 
   int sprintf(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _format,
   ) {
     return _sprintf(
-      __s,
-      __format,
+      _s,
+      _format,
     );
   }
 
@@ -1681,14 +1681,14 @@ class ALSA {
   late final _dart_sprintf _sprintf = _sprintf_ptr.asFunction<_dart_sprintf>();
 
   int vfprintf(
-    ffi.Pointer<IO_FILE_> __s,
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<_va_list_tag_> __arg,
+    ffi.Pointer<IO_FILE_> _s,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<_va_list_tag_> _arg,
   ) {
     return _vfprintf(
-      __s,
-      __format,
-      __arg,
+      _s,
+      _format,
+      _arg,
     );
   }
 
@@ -1698,12 +1698,12 @@ class ALSA {
       _vfprintf_ptr.asFunction<_dart_vfprintf>();
 
   int vprintf(
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<_va_list_tag_> __arg,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<_va_list_tag_> _arg,
   ) {
     return _vprintf(
-      __format,
-      __arg,
+      _format,
+      _arg,
     );
   }
 
@@ -1711,14 +1711,14 @@ class ALSA {
   late final _dart_vprintf _vprintf = _vprintf_ptr.asFunction<_dart_vprintf>();
 
   int vsprintf(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<_va_list_tag_> __arg,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<_va_list_tag_> _arg,
   ) {
     return _vsprintf(
-      __s,
-      __format,
-      __arg,
+      _s,
+      _format,
+      _arg,
     );
   }
 
@@ -1728,14 +1728,14 @@ class ALSA {
       _vsprintf_ptr.asFunction<_dart_vsprintf>();
 
   int snprintf(
-    ffi.Pointer<ffi.Int8> __s,
-    int __maxlen,
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<ffi.Int8> _s,
+    int _maxlen,
+    ffi.Pointer<ffi.Int8> _format,
   ) {
     return _snprintf(
-      __s,
-      __maxlen,
-      __format,
+      _s,
+      _maxlen,
+      _format,
     );
   }
 
@@ -1745,16 +1745,16 @@ class ALSA {
       _snprintf_ptr.asFunction<_dart_snprintf>();
 
   int vsnprintf(
-    ffi.Pointer<ffi.Int8> __s,
-    int __maxlen,
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<_va_list_tag_> __arg,
+    ffi.Pointer<ffi.Int8> _s,
+    int _maxlen,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<_va_list_tag_> _arg,
   ) {
     return _vsnprintf(
-      __s,
-      __maxlen,
-      __format,
-      __arg,
+      _s,
+      _maxlen,
+      _format,
+      _arg,
     );
   }
 
@@ -1764,14 +1764,14 @@ class ALSA {
       _vsnprintf_ptr.asFunction<_dart_vsnprintf>();
 
   int vdprintf(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __fmt,
-    ffi.Pointer<_va_list_tag_> __arg,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _fmt,
+    ffi.Pointer<_va_list_tag_> _arg,
   ) {
     return _vdprintf(
-      __fd,
-      __fmt,
-      __arg,
+      _fd,
+      _fmt,
+      _arg,
     );
   }
 
@@ -1781,12 +1781,12 @@ class ALSA {
       _vdprintf_ptr.asFunction<_dart_vdprintf>();
 
   int dprintf(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __fmt,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _fmt,
   ) {
     return _dprintf(
-      __fd,
-      __fmt,
+      _fd,
+      _fmt,
     );
   }
 
@@ -1794,12 +1794,12 @@ class ALSA {
   late final _dart_dprintf _dprintf = _dprintf_ptr.asFunction<_dart_dprintf>();
 
   int fscanf(
-    ffi.Pointer<IO_FILE_> __stream,
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<IO_FILE_> _stream,
+    ffi.Pointer<ffi.Int8> _format,
   ) {
     return _fscanf(
-      __stream,
-      __format,
+      _stream,
+      _format,
     );
   }
 
@@ -1807,10 +1807,10 @@ class ALSA {
   late final _dart_fscanf _fscanf = _fscanf_ptr.asFunction<_dart_fscanf>();
 
   int scanf(
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<ffi.Int8> _format,
   ) {
     return _scanf(
-      __format,
+      _format,
     );
   }
 
@@ -1818,12 +1818,12 @@ class ALSA {
   late final _dart_scanf _scanf = _scanf_ptr.asFunction<_dart_scanf>();
 
   int sscanf(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _format,
   ) {
     return _sscanf(
-      __s,
-      __format,
+      _s,
+      _format,
     );
   }
 
@@ -1831,14 +1831,14 @@ class ALSA {
   late final _dart_sscanf _sscanf = _sscanf_ptr.asFunction<_dart_sscanf>();
 
   int vfscanf(
-    ffi.Pointer<IO_FILE_> __s,
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<_va_list_tag_> __arg,
+    ffi.Pointer<IO_FILE_> _s,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<_va_list_tag_> _arg,
   ) {
     return _vfscanf(
-      __s,
-      __format,
-      __arg,
+      _s,
+      _format,
+      _arg,
     );
   }
 
@@ -1846,12 +1846,12 @@ class ALSA {
   late final _dart_vfscanf _vfscanf = _vfscanf_ptr.asFunction<_dart_vfscanf>();
 
   int vscanf(
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<_va_list_tag_> __arg,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<_va_list_tag_> _arg,
   ) {
     return _vscanf(
-      __format,
-      __arg,
+      _format,
+      _arg,
     );
   }
 
@@ -1859,14 +1859,14 @@ class ALSA {
   late final _dart_vscanf _vscanf = _vscanf_ptr.asFunction<_dart_vscanf>();
 
   int vsscanf(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<_va_list_tag_> __arg,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<_va_list_tag_> _arg,
   ) {
     return _vsscanf(
-      __s,
-      __format,
-      __arg,
+      _s,
+      _format,
+      _arg,
     );
   }
 
@@ -1874,10 +1874,10 @@ class ALSA {
   late final _dart_vsscanf _vsscanf = _vsscanf_ptr.asFunction<_dart_vsscanf>();
 
   int fgetc(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fgetc(
-      __stream,
+      _stream,
     );
   }
 
@@ -1885,10 +1885,10 @@ class ALSA {
   late final _dart_fgetc _fgetc = _fgetc_ptr.asFunction<_dart_fgetc>();
 
   int getc(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _getc(
-      __stream,
+      _stream,
     );
   }
 
@@ -1903,10 +1903,10 @@ class ALSA {
   late final _dart_getchar _getchar = _getchar_ptr.asFunction<_dart_getchar>();
 
   int getc_unlocked(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _getc_unlocked(
-      __stream,
+      _stream,
     );
   }
 
@@ -1925,10 +1925,10 @@ class ALSA {
       _getchar_unlocked_ptr.asFunction<_dart_getchar_unlocked>();
 
   int fgetc_unlocked(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fgetc_unlocked(
-      __stream,
+      _stream,
     );
   }
 
@@ -1938,12 +1938,12 @@ class ALSA {
       _fgetc_unlocked_ptr.asFunction<_dart_fgetc_unlocked>();
 
   int fputc(
-    int __c,
-    ffi.Pointer<IO_FILE_> __stream,
+    int _c,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fputc(
-      __c,
-      __stream,
+      _c,
+      _stream,
     );
   }
 
@@ -1951,12 +1951,12 @@ class ALSA {
   late final _dart_fputc _fputc = _fputc_ptr.asFunction<_dart_fputc>();
 
   int putc(
-    int __c,
-    ffi.Pointer<IO_FILE_> __stream,
+    int _c,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _putc(
-      __c,
-      __stream,
+      _c,
+      _stream,
     );
   }
 
@@ -1964,10 +1964,10 @@ class ALSA {
   late final _dart_putc _putc = _putc_ptr.asFunction<_dart_putc>();
 
   int putchar(
-    int __c,
+    int _c,
   ) {
     return _putchar(
-      __c,
+      _c,
     );
   }
 
@@ -1975,12 +1975,12 @@ class ALSA {
   late final _dart_putchar _putchar = _putchar_ptr.asFunction<_dart_putchar>();
 
   int fputc_unlocked(
-    int __c,
-    ffi.Pointer<IO_FILE_> __stream,
+    int _c,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fputc_unlocked(
-      __c,
-      __stream,
+      _c,
+      _stream,
     );
   }
 
@@ -1990,12 +1990,12 @@ class ALSA {
       _fputc_unlocked_ptr.asFunction<_dart_fputc_unlocked>();
 
   int putc_unlocked(
-    int __c,
-    ffi.Pointer<IO_FILE_> __stream,
+    int _c,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _putc_unlocked(
-      __c,
-      __stream,
+      _c,
+      _stream,
     );
   }
 
@@ -2005,10 +2005,10 @@ class ALSA {
       _putc_unlocked_ptr.asFunction<_dart_putc_unlocked>();
 
   int putchar_unlocked(
-    int __c,
+    int _c,
   ) {
     return _putchar_unlocked(
-      __c,
+      _c,
     );
   }
 
@@ -2018,10 +2018,10 @@ class ALSA {
       _putchar_unlocked_ptr.asFunction<_dart_putchar_unlocked>();
 
   int getw(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _getw(
-      __stream,
+      _stream,
     );
   }
 
@@ -2029,12 +2029,12 @@ class ALSA {
   late final _dart_getw _getw = _getw_ptr.asFunction<_dart_getw>();
 
   int putw(
-    int __w,
-    ffi.Pointer<IO_FILE_> __stream,
+    int _w,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _putw(
-      __w,
-      __stream,
+      _w,
+      _stream,
     );
   }
 
@@ -2042,14 +2042,14 @@ class ALSA {
   late final _dart_putw _putw = _putw_ptr.asFunction<_dart_putw>();
 
   ffi.Pointer<ffi.Int8> fgets(
-    ffi.Pointer<ffi.Int8> __s,
-    int __n,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Int8> _s,
+    int _n,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fgets(
-      __s,
-      __n,
-      __stream,
+      _s,
+      _n,
+      _stream,
     );
   }
 
@@ -2057,16 +2057,16 @@ class ALSA {
   late final _dart_fgets _fgets = _fgets_ptr.asFunction<_dart_fgets>();
 
   int __getdelim(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __lineptr,
-    ffi.Pointer<ffi.Uint64> __n,
-    int __delimiter,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _lineptr,
+    ffi.Pointer<ffi.Uint64> _n,
+    int _delimiter,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return ___getdelim(
-      __lineptr,
-      __n,
-      __delimiter,
-      __stream,
+      _lineptr,
+      _n,
+      _delimiter,
+      _stream,
     );
   }
 
@@ -2076,16 +2076,16 @@ class ALSA {
       ___getdelim_ptr.asFunction<_dart___getdelim>();
 
   int getdelim(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __lineptr,
-    ffi.Pointer<ffi.Uint64> __n,
-    int __delimiter,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _lineptr,
+    ffi.Pointer<ffi.Uint64> _n,
+    int _delimiter,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _getdelim(
-      __lineptr,
-      __n,
-      __delimiter,
-      __stream,
+      _lineptr,
+      _n,
+      _delimiter,
+      _stream,
     );
   }
 
@@ -2095,14 +2095,14 @@ class ALSA {
       _getdelim_ptr.asFunction<_dart_getdelim>();
 
   int getline(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __lineptr,
-    ffi.Pointer<ffi.Uint64> __n,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _lineptr,
+    ffi.Pointer<ffi.Uint64> _n,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _getline(
-      __lineptr,
-      __n,
-      __stream,
+      _lineptr,
+      _n,
+      _stream,
     );
   }
 
@@ -2110,12 +2110,12 @@ class ALSA {
   late final _dart_getline _getline = _getline_ptr.asFunction<_dart_getline>();
 
   int fputs(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fputs(
-      __s,
-      __stream,
+      _s,
+      _stream,
     );
   }
 
@@ -2123,10 +2123,10 @@ class ALSA {
   late final _dart_fputs _fputs = _fputs_ptr.asFunction<_dart_fputs>();
 
   int puts(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Int8> _s,
   ) {
     return _puts(
-      __s,
+      _s,
     );
   }
 
@@ -2134,12 +2134,12 @@ class ALSA {
   late final _dart_puts _puts = _puts_ptr.asFunction<_dart_puts>();
 
   int ungetc(
-    int __c,
-    ffi.Pointer<IO_FILE_> __stream,
+    int _c,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _ungetc(
-      __c,
-      __stream,
+      _c,
+      _stream,
     );
   }
 
@@ -2147,16 +2147,16 @@ class ALSA {
   late final _dart_ungetc _ungetc = _ungetc_ptr.asFunction<_dart_ungetc>();
 
   int fread(
-    ffi.Pointer<ffi.Void> __ptr,
-    int __size,
-    int __n,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Void> _ptr,
+    int _size,
+    int _n,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fread(
-      __ptr,
-      __size,
-      __n,
-      __stream,
+      _ptr,
+      _size,
+      _n,
+      _stream,
     );
   }
 
@@ -2164,16 +2164,16 @@ class ALSA {
   late final _dart_fread _fread = _fread_ptr.asFunction<_dart_fread>();
 
   int fwrite(
-    ffi.Pointer<ffi.Void> __ptr,
-    int __size,
-    int __n,
-    ffi.Pointer<IO_FILE_> __s,
+    ffi.Pointer<ffi.Void> _ptr,
+    int _size,
+    int _n,
+    ffi.Pointer<IO_FILE_> _s,
   ) {
     return _fwrite(
-      __ptr,
-      __size,
-      __n,
-      __s,
+      _ptr,
+      _size,
+      _n,
+      _s,
     );
   }
 
@@ -2181,16 +2181,16 @@ class ALSA {
   late final _dart_fwrite _fwrite = _fwrite_ptr.asFunction<_dart_fwrite>();
 
   int fread_unlocked(
-    ffi.Pointer<ffi.Void> __ptr,
-    int __size,
-    int __n,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Void> _ptr,
+    int _size,
+    int _n,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fread_unlocked(
-      __ptr,
-      __size,
-      __n,
-      __stream,
+      _ptr,
+      _size,
+      _n,
+      _stream,
     );
   }
 
@@ -2200,16 +2200,16 @@ class ALSA {
       _fread_unlocked_ptr.asFunction<_dart_fread_unlocked>();
 
   int fwrite_unlocked(
-    ffi.Pointer<ffi.Void> __ptr,
-    int __size,
-    int __n,
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<ffi.Void> _ptr,
+    int _size,
+    int _n,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fwrite_unlocked(
-      __ptr,
-      __size,
-      __n,
-      __stream,
+      _ptr,
+      _size,
+      _n,
+      _stream,
     );
   }
 
@@ -2219,14 +2219,14 @@ class ALSA {
       _fwrite_unlocked_ptr.asFunction<_dart_fwrite_unlocked>();
 
   int fseek(
-    ffi.Pointer<IO_FILE_> __stream,
-    int __off,
-    int __whence,
+    ffi.Pointer<IO_FILE_> _stream,
+    int _off,
+    int _whence,
   ) {
     return _fseek(
-      __stream,
-      __off,
-      __whence,
+      _stream,
+      _off,
+      _whence,
     );
   }
 
@@ -2234,10 +2234,10 @@ class ALSA {
   late final _dart_fseek _fseek = _fseek_ptr.asFunction<_dart_fseek>();
 
   int ftell(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _ftell(
-      __stream,
+      _stream,
     );
   }
 
@@ -2245,10 +2245,10 @@ class ALSA {
   late final _dart_ftell _ftell = _ftell_ptr.asFunction<_dart_ftell>();
 
   void rewind(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _rewind(
-      __stream,
+      _stream,
     );
   }
 
@@ -2256,14 +2256,14 @@ class ALSA {
   late final _dart_rewind _rewind = _rewind_ptr.asFunction<_dart_rewind>();
 
   int fseeko(
-    ffi.Pointer<IO_FILE_> __stream,
-    int __off,
-    int __whence,
+    ffi.Pointer<IO_FILE_> _stream,
+    int _off,
+    int _whence,
   ) {
     return _fseeko(
-      __stream,
-      __off,
-      __whence,
+      _stream,
+      _off,
+      _whence,
     );
   }
 
@@ -2271,10 +2271,10 @@ class ALSA {
   late final _dart_fseeko _fseeko = _fseeko_ptr.asFunction<_dart_fseeko>();
 
   int ftello(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _ftello(
-      __stream,
+      _stream,
     );
   }
 
@@ -2282,12 +2282,12 @@ class ALSA {
   late final _dart_ftello _ftello = _ftello_ptr.asFunction<_dart_ftello>();
 
   int fgetpos(
-    ffi.Pointer<IO_FILE_> __stream,
-    ffi.Pointer<_fpos_t_> __pos,
+    ffi.Pointer<IO_FILE_> _stream,
+    ffi.Pointer<_fpos_t_> _pos,
   ) {
     return _fgetpos(
-      __stream,
-      __pos,
+      _stream,
+      _pos,
     );
   }
 
@@ -2295,12 +2295,12 @@ class ALSA {
   late final _dart_fgetpos _fgetpos = _fgetpos_ptr.asFunction<_dart_fgetpos>();
 
   int fsetpos(
-    ffi.Pointer<IO_FILE_> __stream,
-    ffi.Pointer<_fpos_t_> __pos,
+    ffi.Pointer<IO_FILE_> _stream,
+    ffi.Pointer<_fpos_t_> _pos,
   ) {
     return _fsetpos(
-      __stream,
-      __pos,
+      _stream,
+      _pos,
     );
   }
 
@@ -2308,10 +2308,10 @@ class ALSA {
   late final _dart_fsetpos _fsetpos = _fsetpos_ptr.asFunction<_dart_fsetpos>();
 
   void clearerr(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _clearerr(
-      __stream,
+      _stream,
     );
   }
 
@@ -2321,10 +2321,10 @@ class ALSA {
       _clearerr_ptr.asFunction<_dart_clearerr>();
 
   int feof(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _feof(
-      __stream,
+      _stream,
     );
   }
 
@@ -2332,10 +2332,10 @@ class ALSA {
   late final _dart_feof _feof = _feof_ptr.asFunction<_dart_feof>();
 
   int ferror(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _ferror(
-      __stream,
+      _stream,
     );
   }
 
@@ -2343,10 +2343,10 @@ class ALSA {
   late final _dart_ferror _ferror = _ferror_ptr.asFunction<_dart_ferror>();
 
   void clearerr_unlocked(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _clearerr_unlocked(
-      __stream,
+      _stream,
     );
   }
 
@@ -2356,10 +2356,10 @@ class ALSA {
       _clearerr_unlocked_ptr.asFunction<_dart_clearerr_unlocked>();
 
   int feof_unlocked(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _feof_unlocked(
-      __stream,
+      _stream,
     );
   }
 
@@ -2369,10 +2369,10 @@ class ALSA {
       _feof_unlocked_ptr.asFunction<_dart_feof_unlocked>();
 
   int ferror_unlocked(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _ferror_unlocked(
-      __stream,
+      _stream,
     );
   }
 
@@ -2382,10 +2382,10 @@ class ALSA {
       _ferror_unlocked_ptr.asFunction<_dart_ferror_unlocked>();
 
   void perror(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Int8> _s,
   ) {
     return _perror(
-      __s,
+      _s,
     );
   }
 
@@ -2407,10 +2407,10 @@ class ALSA {
       _sys_errlist.value = value;
 
   int fileno(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fileno(
-      __stream,
+      _stream,
     );
   }
 
@@ -2418,10 +2418,10 @@ class ALSA {
   late final _dart_fileno _fileno = _fileno_ptr.asFunction<_dart_fileno>();
 
   int fileno_unlocked(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _fileno_unlocked(
-      __stream,
+      _stream,
     );
   }
 
@@ -2431,12 +2431,12 @@ class ALSA {
       _fileno_unlocked_ptr.asFunction<_dart_fileno_unlocked>();
 
   ffi.Pointer<IO_FILE_> popen(
-    ffi.Pointer<ffi.Int8> __command,
-    ffi.Pointer<ffi.Int8> __modes,
+    ffi.Pointer<ffi.Int8> _command,
+    ffi.Pointer<ffi.Int8> _modes,
   ) {
     return _popen(
-      __command,
-      __modes,
+      _command,
+      _modes,
     );
   }
 
@@ -2444,10 +2444,10 @@ class ALSA {
   late final _dart_popen _popen = _popen_ptr.asFunction<_dart_popen>();
 
   int pclose(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _pclose(
-      __stream,
+      _stream,
     );
   }
 
@@ -2455,10 +2455,10 @@ class ALSA {
   late final _dart_pclose _pclose = _pclose_ptr.asFunction<_dart_pclose>();
 
   ffi.Pointer<ffi.Int8> ctermid(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Int8> _s,
   ) {
     return _ctermid(
-      __s,
+      _s,
     );
   }
 
@@ -2466,10 +2466,10 @@ class ALSA {
   late final _dart_ctermid _ctermid = _ctermid_ptr.asFunction<_dart_ctermid>();
 
   void flockfile(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _flockfile(
-      __stream,
+      _stream,
     );
   }
 
@@ -2479,10 +2479,10 @@ class ALSA {
       _flockfile_ptr.asFunction<_dart_flockfile>();
 
   int ftrylockfile(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _ftrylockfile(
-      __stream,
+      _stream,
     );
   }
 
@@ -2492,10 +2492,10 @@ class ALSA {
       _ftrylockfile_ptr.asFunction<_dart_ftrylockfile>();
 
   void funlockfile(
-    ffi.Pointer<IO_FILE_> __stream,
+    ffi.Pointer<IO_FILE_> _stream,
   ) {
     return _funlockfile(
-      __stream,
+      _stream,
     );
   }
 
@@ -2541,10 +2541,10 @@ class ALSA {
       ___ctype_get_mb_cur_max_ptr.asFunction<_dart___ctype_get_mb_cur_max>();
 
   double atof(
-    ffi.Pointer<ffi.Int8> __nptr,
+    ffi.Pointer<ffi.Int8> _nptr,
   ) {
     return _atof(
-      __nptr,
+      _nptr,
     );
   }
 
@@ -2552,10 +2552,10 @@ class ALSA {
   late final _dart_atof _atof = _atof_ptr.asFunction<_dart_atof>();
 
   int atoi(
-    ffi.Pointer<ffi.Int8> __nptr,
+    ffi.Pointer<ffi.Int8> _nptr,
   ) {
     return _atoi(
-      __nptr,
+      _nptr,
     );
   }
 
@@ -2563,10 +2563,10 @@ class ALSA {
   late final _dart_atoi _atoi = _atoi_ptr.asFunction<_dart_atoi>();
 
   int atol(
-    ffi.Pointer<ffi.Int8> __nptr,
+    ffi.Pointer<ffi.Int8> _nptr,
   ) {
     return _atol(
-      __nptr,
+      _nptr,
     );
   }
 
@@ -2574,10 +2574,10 @@ class ALSA {
   late final _dart_atol _atol = _atol_ptr.asFunction<_dart_atol>();
 
   int atoll(
-    ffi.Pointer<ffi.Int8> __nptr,
+    ffi.Pointer<ffi.Int8> _nptr,
   ) {
     return _atoll(
-      __nptr,
+      _nptr,
     );
   }
 
@@ -2585,12 +2585,12 @@ class ALSA {
   late final _dart_atoll _atoll = _atoll_ptr.asFunction<_dart_atoll>();
 
   double strtod(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Int8> _nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _endptr,
   ) {
     return _strtod(
-      __nptr,
-      __endptr,
+      _nptr,
+      _endptr,
     );
   }
 
@@ -2598,12 +2598,12 @@ class ALSA {
   late final _dart_strtod _strtod = _strtod_ptr.asFunction<_dart_strtod>();
 
   double strtof(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Int8> _nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _endptr,
   ) {
     return _strtof(
-      __nptr,
-      __endptr,
+      _nptr,
+      _endptr,
     );
   }
 
@@ -2611,14 +2611,14 @@ class ALSA {
   late final _dart_strtof _strtof = _strtof_ptr.asFunction<_dart_strtof>();
 
   int strtol(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
-    int __base,
+    ffi.Pointer<ffi.Int8> _nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _endptr,
+    int _base,
   ) {
     return _strtol(
-      __nptr,
-      __endptr,
-      __base,
+      _nptr,
+      _endptr,
+      _base,
     );
   }
 
@@ -2626,14 +2626,14 @@ class ALSA {
   late final _dart_strtol _strtol = _strtol_ptr.asFunction<_dart_strtol>();
 
   int strtoul(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
-    int __base,
+    ffi.Pointer<ffi.Int8> _nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _endptr,
+    int _base,
   ) {
     return _strtoul(
-      __nptr,
-      __endptr,
-      __base,
+      _nptr,
+      _endptr,
+      _base,
     );
   }
 
@@ -2641,14 +2641,14 @@ class ALSA {
   late final _dart_strtoul _strtoul = _strtoul_ptr.asFunction<_dart_strtoul>();
 
   int strtoq(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
-    int __base,
+    ffi.Pointer<ffi.Int8> _nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _endptr,
+    int _base,
   ) {
     return _strtoq(
-      __nptr,
-      __endptr,
-      __base,
+      _nptr,
+      _endptr,
+      _base,
     );
   }
 
@@ -2656,14 +2656,14 @@ class ALSA {
   late final _dart_strtoq _strtoq = _strtoq_ptr.asFunction<_dart_strtoq>();
 
   int strtouq(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
-    int __base,
+    ffi.Pointer<ffi.Int8> _nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _endptr,
+    int _base,
   ) {
     return _strtouq(
-      __nptr,
-      __endptr,
-      __base,
+      _nptr,
+      _endptr,
+      _base,
     );
   }
 
@@ -2671,14 +2671,14 @@ class ALSA {
   late final _dart_strtouq _strtouq = _strtouq_ptr.asFunction<_dart_strtouq>();
 
   int strtoll(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
-    int __base,
+    ffi.Pointer<ffi.Int8> _nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _endptr,
+    int _base,
   ) {
     return _strtoll(
-      __nptr,
-      __endptr,
-      __base,
+      _nptr,
+      _endptr,
+      _base,
     );
   }
 
@@ -2686,14 +2686,14 @@ class ALSA {
   late final _dart_strtoll _strtoll = _strtoll_ptr.asFunction<_dart_strtoll>();
 
   int strtoull(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
-    int __base,
+    ffi.Pointer<ffi.Int8> _nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _endptr,
+    int _base,
   ) {
     return _strtoull(
-      __nptr,
-      __endptr,
-      __base,
+      _nptr,
+      _endptr,
+      _base,
     );
   }
 
@@ -2703,10 +2703,10 @@ class ALSA {
       _strtoull_ptr.asFunction<_dart_strtoull>();
 
   ffi.Pointer<ffi.Int8> l64a(
-    int __n,
+    int _n,
   ) {
     return _l64a(
-      __n,
+      _n,
     );
   }
 
@@ -2714,10 +2714,10 @@ class ALSA {
   late final _dart_l64a _l64a = _l64a_ptr.asFunction<_dart_l64a>();
 
   int a64l(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Int8> _s,
   ) {
     return _a64l(
-      __s,
+      _s,
     );
   }
 
@@ -2725,18 +2725,18 @@ class ALSA {
   late final _dart_a64l _a64l = _a64l_ptr.asFunction<_dart_a64l>();
 
   int select(
-    int __nfds,
-    ffi.Pointer<fd_set> __readfds,
-    ffi.Pointer<fd_set> __writefds,
-    ffi.Pointer<fd_set> __exceptfds,
-    ffi.Pointer<timeval> __timeout,
+    int _nfds,
+    ffi.Pointer<fd_set> _readfds,
+    ffi.Pointer<fd_set> _writefds,
+    ffi.Pointer<fd_set> _exceptfds,
+    ffi.Pointer<timeval> _timeout,
   ) {
     return _select(
-      __nfds,
-      __readfds,
-      __writefds,
-      __exceptfds,
-      __timeout,
+      _nfds,
+      _readfds,
+      _writefds,
+      _exceptfds,
+      _timeout,
     );
   }
 
@@ -2744,20 +2744,20 @@ class ALSA {
   late final _dart_select _select = _select_ptr.asFunction<_dart_select>();
 
   int pselect(
-    int __nfds,
-    ffi.Pointer<fd_set> __readfds,
-    ffi.Pointer<fd_set> __writefds,
-    ffi.Pointer<fd_set> __exceptfds,
-    ffi.Pointer<timespec> __timeout,
-    ffi.Pointer<_sigset_t_> __sigmask,
+    int _nfds,
+    ffi.Pointer<fd_set> _readfds,
+    ffi.Pointer<fd_set> _writefds,
+    ffi.Pointer<fd_set> _exceptfds,
+    ffi.Pointer<timespec> _timeout,
+    ffi.Pointer<_sigset_t_> _sigmask,
   ) {
     return _pselect(
-      __nfds,
-      __readfds,
-      __writefds,
-      __exceptfds,
-      __timeout,
-      __sigmask,
+      _nfds,
+      _readfds,
+      _writefds,
+      _exceptfds,
+      _timeout,
+      _sigmask,
     );
   }
 
@@ -2772,10 +2772,10 @@ class ALSA {
   late final _dart_random _random = _random_ptr.asFunction<_dart_random>();
 
   void srandom(
-    int __seed,
+    int _seed,
   ) {
     return _srandom(
-      __seed,
+      _seed,
     );
   }
 
@@ -2783,14 +2783,14 @@ class ALSA {
   late final _dart_srandom _srandom = _srandom_ptr.asFunction<_dart_srandom>();
 
   ffi.Pointer<ffi.Int8> initstate(
-    int __seed,
-    ffi.Pointer<ffi.Int8> __statebuf,
-    int __statelen,
+    int _seed,
+    ffi.Pointer<ffi.Int8> _statebuf,
+    int _statelen,
   ) {
     return _initstate(
-      __seed,
-      __statebuf,
-      __statelen,
+      _seed,
+      _statebuf,
+      _statelen,
     );
   }
 
@@ -2800,10 +2800,10 @@ class ALSA {
       _initstate_ptr.asFunction<_dart_initstate>();
 
   ffi.Pointer<ffi.Int8> setstate(
-    ffi.Pointer<ffi.Int8> __statebuf,
+    ffi.Pointer<ffi.Int8> _statebuf,
   ) {
     return _setstate(
-      __statebuf,
+      _statebuf,
     );
   }
 
@@ -2813,12 +2813,12 @@ class ALSA {
       _setstate_ptr.asFunction<_dart_setstate>();
 
   int random_r(
-    ffi.Pointer<random_data> __buf,
-    ffi.Pointer<ffi.Int32> __result,
+    ffi.Pointer<random_data> _buf,
+    ffi.Pointer<ffi.Int32> _result,
   ) {
     return _random_r(
-      __buf,
-      __result,
+      _buf,
+      _result,
     );
   }
 
@@ -2828,12 +2828,12 @@ class ALSA {
       _random_r_ptr.asFunction<_dart_random_r>();
 
   int srandom_r(
-    int __seed,
-    ffi.Pointer<random_data> __buf,
+    int _seed,
+    ffi.Pointer<random_data> _buf,
   ) {
     return _srandom_r(
-      __seed,
-      __buf,
+      _seed,
+      _buf,
     );
   }
 
@@ -2843,16 +2843,16 @@ class ALSA {
       _srandom_r_ptr.asFunction<_dart_srandom_r>();
 
   int initstate_r(
-    int __seed,
-    ffi.Pointer<ffi.Int8> __statebuf,
-    int __statelen,
-    ffi.Pointer<random_data> __buf,
+    int _seed,
+    ffi.Pointer<ffi.Int8> _statebuf,
+    int _statelen,
+    ffi.Pointer<random_data> _buf,
   ) {
     return _initstate_r(
-      __seed,
-      __statebuf,
-      __statelen,
-      __buf,
+      _seed,
+      _statebuf,
+      _statelen,
+      _buf,
     );
   }
 
@@ -2862,12 +2862,12 @@ class ALSA {
       _initstate_r_ptr.asFunction<_dart_initstate_r>();
 
   int setstate_r(
-    ffi.Pointer<ffi.Int8> __statebuf,
-    ffi.Pointer<random_data> __buf,
+    ffi.Pointer<ffi.Int8> _statebuf,
+    ffi.Pointer<random_data> _buf,
   ) {
     return _setstate_r(
-      __statebuf,
-      __buf,
+      _statebuf,
+      _buf,
     );
   }
 
@@ -2884,10 +2884,10 @@ class ALSA {
   late final _dart_rand _rand = _rand_ptr.asFunction<_dart_rand>();
 
   void srand(
-    int __seed,
+    int _seed,
   ) {
     return _srand(
-      __seed,
+      _seed,
     );
   }
 
@@ -2895,10 +2895,10 @@ class ALSA {
   late final _dart_srand _srand = _srand_ptr.asFunction<_dart_srand>();
 
   int rand_r(
-    ffi.Pointer<ffi.Uint32> __seed,
+    ffi.Pointer<ffi.Uint32> _seed,
   ) {
     return _rand_r(
-      __seed,
+      _seed,
     );
   }
 
@@ -2913,10 +2913,10 @@ class ALSA {
   late final _dart_drand48 _drand48 = _drand48_ptr.asFunction<_dart_drand48>();
 
   double erand48(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.Uint16> _xsubi,
   ) {
     return _erand48(
-      __xsubi,
+      _xsubi,
     );
   }
 
@@ -2931,10 +2931,10 @@ class ALSA {
   late final _dart_lrand48 _lrand48 = _lrand48_ptr.asFunction<_dart_lrand48>();
 
   int nrand48(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.Uint16> _xsubi,
   ) {
     return _nrand48(
-      __xsubi,
+      _xsubi,
     );
   }
 
@@ -2949,10 +2949,10 @@ class ALSA {
   late final _dart_mrand48 _mrand48 = _mrand48_ptr.asFunction<_dart_mrand48>();
 
   int jrand48(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.Uint16> _xsubi,
   ) {
     return _jrand48(
-      __xsubi,
+      _xsubi,
     );
   }
 
@@ -2960,10 +2960,10 @@ class ALSA {
   late final _dart_jrand48 _jrand48 = _jrand48_ptr.asFunction<_dart_jrand48>();
 
   void srand48(
-    int __seedval,
+    int _seedval,
   ) {
     return _srand48(
-      __seedval,
+      _seedval,
     );
   }
 
@@ -2971,10 +2971,10 @@ class ALSA {
   late final _dart_srand48 _srand48 = _srand48_ptr.asFunction<_dart_srand48>();
 
   ffi.Pointer<ffi.Uint16> seed48(
-    ffi.Pointer<ffi.Uint16> __seed16v,
+    ffi.Pointer<ffi.Uint16> _seed16v,
   ) {
     return _seed48(
-      __seed16v,
+      _seed16v,
     );
   }
 
@@ -2982,10 +2982,10 @@ class ALSA {
   late final _dart_seed48 _seed48 = _seed48_ptr.asFunction<_dart_seed48>();
 
   void lcong48(
-    ffi.Pointer<ffi.Uint16> __param,
+    ffi.Pointer<ffi.Uint16> _param,
   ) {
     return _lcong48(
-      __param,
+      _param,
     );
   }
 
@@ -2993,12 +2993,12 @@ class ALSA {
   late final _dart_lcong48 _lcong48 = _lcong48_ptr.asFunction<_dart_lcong48>();
 
   int drand48_r(
-    ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Double> __result,
+    ffi.Pointer<drand48_data> _buffer,
+    ffi.Pointer<ffi.Double> _result,
   ) {
     return _drand48_r(
-      __buffer,
-      __result,
+      _buffer,
+      _result,
     );
   }
 
@@ -3008,14 +3008,14 @@ class ALSA {
       _drand48_r_ptr.asFunction<_dart_drand48_r>();
 
   int erand48_r(
-    ffi.Pointer<ffi.Uint16> __xsubi,
-    ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Double> __result,
+    ffi.Pointer<ffi.Uint16> _xsubi,
+    ffi.Pointer<drand48_data> _buffer,
+    ffi.Pointer<ffi.Double> _result,
   ) {
     return _erand48_r(
-      __xsubi,
-      __buffer,
-      __result,
+      _xsubi,
+      _buffer,
+      _result,
     );
   }
 
@@ -3025,12 +3025,12 @@ class ALSA {
       _erand48_r_ptr.asFunction<_dart_erand48_r>();
 
   int lrand48_r(
-    ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Int64> __result,
+    ffi.Pointer<drand48_data> _buffer,
+    ffi.Pointer<ffi.Int64> _result,
   ) {
     return _lrand48_r(
-      __buffer,
-      __result,
+      _buffer,
+      _result,
     );
   }
 
@@ -3040,14 +3040,14 @@ class ALSA {
       _lrand48_r_ptr.asFunction<_dart_lrand48_r>();
 
   int nrand48_r(
-    ffi.Pointer<ffi.Uint16> __xsubi,
-    ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Int64> __result,
+    ffi.Pointer<ffi.Uint16> _xsubi,
+    ffi.Pointer<drand48_data> _buffer,
+    ffi.Pointer<ffi.Int64> _result,
   ) {
     return _nrand48_r(
-      __xsubi,
-      __buffer,
-      __result,
+      _xsubi,
+      _buffer,
+      _result,
     );
   }
 
@@ -3057,12 +3057,12 @@ class ALSA {
       _nrand48_r_ptr.asFunction<_dart_nrand48_r>();
 
   int mrand48_r(
-    ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Int64> __result,
+    ffi.Pointer<drand48_data> _buffer,
+    ffi.Pointer<ffi.Int64> _result,
   ) {
     return _mrand48_r(
-      __buffer,
-      __result,
+      _buffer,
+      _result,
     );
   }
 
@@ -3072,14 +3072,14 @@ class ALSA {
       _mrand48_r_ptr.asFunction<_dart_mrand48_r>();
 
   int jrand48_r(
-    ffi.Pointer<ffi.Uint16> __xsubi,
-    ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Int64> __result,
+    ffi.Pointer<ffi.Uint16> _xsubi,
+    ffi.Pointer<drand48_data> _buffer,
+    ffi.Pointer<ffi.Int64> _result,
   ) {
     return _jrand48_r(
-      __xsubi,
-      __buffer,
-      __result,
+      _xsubi,
+      _buffer,
+      _result,
     );
   }
 
@@ -3089,12 +3089,12 @@ class ALSA {
       _jrand48_r_ptr.asFunction<_dart_jrand48_r>();
 
   int srand48_r(
-    int __seedval,
-    ffi.Pointer<drand48_data> __buffer,
+    int _seedval,
+    ffi.Pointer<drand48_data> _buffer,
   ) {
     return _srand48_r(
-      __seedval,
-      __buffer,
+      _seedval,
+      _buffer,
     );
   }
 
@@ -3104,12 +3104,12 @@ class ALSA {
       _srand48_r_ptr.asFunction<_dart_srand48_r>();
 
   int seed48_r(
-    ffi.Pointer<ffi.Uint16> __seed16v,
-    ffi.Pointer<drand48_data> __buffer,
+    ffi.Pointer<ffi.Uint16> _seed16v,
+    ffi.Pointer<drand48_data> _buffer,
   ) {
     return _seed48_r(
-      __seed16v,
-      __buffer,
+      _seed16v,
+      _buffer,
     );
   }
 
@@ -3119,12 +3119,12 @@ class ALSA {
       _seed48_r_ptr.asFunction<_dart_seed48_r>();
 
   int lcong48_r(
-    ffi.Pointer<ffi.Uint16> __param,
-    ffi.Pointer<drand48_data> __buffer,
+    ffi.Pointer<ffi.Uint16> _param,
+    ffi.Pointer<drand48_data> _buffer,
   ) {
     return _lcong48_r(
-      __param,
-      __buffer,
+      _param,
+      _buffer,
     );
   }
 
@@ -3134,10 +3134,10 @@ class ALSA {
       _lcong48_r_ptr.asFunction<_dart_lcong48_r>();
 
   ffi.Pointer<ffi.Void> malloc(
-    int __size,
+    int _size,
   ) {
     return _malloc(
-      __size,
+      _size,
     );
   }
 
@@ -3145,12 +3145,12 @@ class ALSA {
   late final _dart_malloc _malloc = _malloc_ptr.asFunction<_dart_malloc>();
 
   ffi.Pointer<ffi.Void> calloc(
-    int __nmemb,
-    int __size,
+    int _nmemb,
+    int _size,
   ) {
     return _calloc(
-      __nmemb,
-      __size,
+      _nmemb,
+      _size,
     );
   }
 
@@ -3158,12 +3158,12 @@ class ALSA {
   late final _dart_calloc _calloc = _calloc_ptr.asFunction<_dart_calloc>();
 
   ffi.Pointer<ffi.Void> realloc(
-    ffi.Pointer<ffi.Void> __ptr,
-    int __size,
+    ffi.Pointer<ffi.Void> _ptr,
+    int _size,
   ) {
     return _realloc(
-      __ptr,
-      __size,
+      _ptr,
+      _size,
     );
   }
 
@@ -3171,14 +3171,14 @@ class ALSA {
   late final _dart_realloc _realloc = _realloc_ptr.asFunction<_dart_realloc>();
 
   ffi.Pointer<ffi.Void> reallocarray(
-    ffi.Pointer<ffi.Void> __ptr,
-    int __nmemb,
-    int __size,
+    ffi.Pointer<ffi.Void> _ptr,
+    int _nmemb,
+    int _size,
   ) {
     return _reallocarray(
-      __ptr,
-      __nmemb,
-      __size,
+      _ptr,
+      _nmemb,
+      _size,
     );
   }
 
@@ -3188,10 +3188,10 @@ class ALSA {
       _reallocarray_ptr.asFunction<_dart_reallocarray>();
 
   void free(
-    ffi.Pointer<ffi.Void> __ptr,
+    ffi.Pointer<ffi.Void> _ptr,
   ) {
     return _free(
-      __ptr,
+      _ptr,
     );
   }
 
@@ -3199,10 +3199,10 @@ class ALSA {
   late final _dart_free _free = _free_ptr.asFunction<_dart_free>();
 
   ffi.Pointer<ffi.Void> alloca(
-    int __size,
+    int _size,
   ) {
     return _alloca(
-      __size,
+      _size,
     );
   }
 
@@ -3210,10 +3210,10 @@ class ALSA {
   late final _dart_alloca _alloca = _alloca_ptr.asFunction<_dart_alloca>();
 
   ffi.Pointer<ffi.Void> valloc(
-    int __size,
+    int _size,
   ) {
     return _valloc(
-      __size,
+      _size,
     );
   }
 
@@ -3221,14 +3221,14 @@ class ALSA {
   late final _dart_valloc _valloc = _valloc_ptr.asFunction<_dart_valloc>();
 
   int posix_memalign(
-    ffi.Pointer<ffi.Pointer<ffi.Void>> __memptr,
-    int __alignment,
-    int __size,
+    ffi.Pointer<ffi.Pointer<ffi.Void>> _memptr,
+    int _alignment,
+    int _size,
   ) {
     return _posix_memalign(
-      __memptr,
-      __alignment,
-      __size,
+      _memptr,
+      _alignment,
+      _size,
     );
   }
 
@@ -3238,12 +3238,12 @@ class ALSA {
       _posix_memalign_ptr.asFunction<_dart_posix_memalign>();
 
   ffi.Pointer<ffi.Void> aligned_alloc(
-    int __alignment,
-    int __size,
+    int _alignment,
+    int _size,
   ) {
     return _aligned_alloc(
-      __alignment,
-      __size,
+      _alignment,
+      _size,
     );
   }
 
@@ -3260,10 +3260,10 @@ class ALSA {
   late final _dart_abort _abort = _abort_ptr.asFunction<_dart_abort>();
 
   int atexit(
-    ffi.Pointer<ffi.NativeFunction<_typedefC_1>> __func,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_1>> _func,
   ) {
     return _atexit(
-      __func,
+      _func,
     );
   }
 
@@ -3271,10 +3271,10 @@ class ALSA {
   late final _dart_atexit _atexit = _atexit_ptr.asFunction<_dart_atexit>();
 
   int at_quick_exit(
-    ffi.Pointer<ffi.NativeFunction<_typedefC_2>> __func,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_2>> _func,
   ) {
     return _at_quick_exit(
-      __func,
+      _func,
     );
   }
 
@@ -3284,12 +3284,12 @@ class ALSA {
       _at_quick_exit_ptr.asFunction<_dart_at_quick_exit>();
 
   int on_exit(
-    ffi.Pointer<ffi.NativeFunction<_typedefC_3>> __func,
-    ffi.Pointer<ffi.Void> __arg,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_3>> _func,
+    ffi.Pointer<ffi.Void> _arg,
   ) {
     return _on_exit(
-      __func,
-      __arg,
+      _func,
+      _arg,
     );
   }
 
@@ -3297,10 +3297,10 @@ class ALSA {
   late final _dart_on_exit _on_exit = _on_exit_ptr.asFunction<_dart_on_exit>();
 
   void exit(
-    int __status,
+    int _status,
   ) {
     return _exit_1(
-      __status,
+      _status,
     );
   }
 
@@ -3308,10 +3308,10 @@ class ALSA {
   late final _dart_exit _exit_1 = _exit_ptr.asFunction<_dart_exit>();
 
   void quick_exit(
-    int __status,
+    int _status,
   ) {
     return _quick_exit(
-      __status,
+      _status,
     );
   }
 
@@ -3321,10 +3321,10 @@ class ALSA {
       _quick_exit_ptr.asFunction<_dart_quick_exit>();
 
   void _Exit(
-    int __status,
+    int _status,
   ) {
     return __Exit(
-      __status,
+      _status,
     );
   }
 
@@ -3332,10 +3332,10 @@ class ALSA {
   late final _dart__Exit __Exit = __Exit_ptr.asFunction<_dart__Exit>();
 
   ffi.Pointer<ffi.Int8> getenv(
-    ffi.Pointer<ffi.Int8> __name,
+    ffi.Pointer<ffi.Int8> _name,
   ) {
     return _getenv(
-      __name,
+      _name,
     );
   }
 
@@ -3343,10 +3343,10 @@ class ALSA {
   late final _dart_getenv _getenv = _getenv_ptr.asFunction<_dart_getenv>();
 
   int putenv(
-    ffi.Pointer<ffi.Int8> __string,
+    ffi.Pointer<ffi.Int8> _string,
   ) {
     return _putenv(
-      __string,
+      _string,
     );
   }
 
@@ -3354,14 +3354,14 @@ class ALSA {
   late final _dart_putenv _putenv = _putenv_ptr.asFunction<_dart_putenv>();
 
   int setenv(
-    ffi.Pointer<ffi.Int8> __name,
-    ffi.Pointer<ffi.Int8> __value,
-    int __replace,
+    ffi.Pointer<ffi.Int8> _name,
+    ffi.Pointer<ffi.Int8> _value,
+    int _replace,
   ) {
     return _setenv(
-      __name,
-      __value,
-      __replace,
+      _name,
+      _value,
+      _replace,
     );
   }
 
@@ -3369,10 +3369,10 @@ class ALSA {
   late final _dart_setenv _setenv = _setenv_ptr.asFunction<_dart_setenv>();
 
   int unsetenv(
-    ffi.Pointer<ffi.Int8> __name,
+    ffi.Pointer<ffi.Int8> _name,
   ) {
     return _unsetenv(
-      __name,
+      _name,
     );
   }
 
@@ -3391,10 +3391,10 @@ class ALSA {
       _clearenv_ptr.asFunction<_dart_clearenv>();
 
   ffi.Pointer<ffi.Int8> mktemp(
-    ffi.Pointer<ffi.Int8> __template,
+    ffi.Pointer<ffi.Int8> _template,
   ) {
     return _mktemp(
-      __template,
+      _template,
     );
   }
 
@@ -3402,10 +3402,10 @@ class ALSA {
   late final _dart_mktemp _mktemp = _mktemp_ptr.asFunction<_dart_mktemp>();
 
   int mkstemp(
-    ffi.Pointer<ffi.Int8> __template,
+    ffi.Pointer<ffi.Int8> _template,
   ) {
     return _mkstemp(
-      __template,
+      _template,
     );
   }
 
@@ -3413,12 +3413,12 @@ class ALSA {
   late final _dart_mkstemp _mkstemp = _mkstemp_ptr.asFunction<_dart_mkstemp>();
 
   int mkstemps(
-    ffi.Pointer<ffi.Int8> __template,
-    int __suffixlen,
+    ffi.Pointer<ffi.Int8> _template,
+    int _suffixlen,
   ) {
     return _mkstemps(
-      __template,
-      __suffixlen,
+      _template,
+      _suffixlen,
     );
   }
 
@@ -3428,10 +3428,10 @@ class ALSA {
       _mkstemps_ptr.asFunction<_dart_mkstemps>();
 
   ffi.Pointer<ffi.Int8> mkdtemp(
-    ffi.Pointer<ffi.Int8> __template,
+    ffi.Pointer<ffi.Int8> _template,
   ) {
     return _mkdtemp(
-      __template,
+      _template,
     );
   }
 
@@ -3439,10 +3439,10 @@ class ALSA {
   late final _dart_mkdtemp _mkdtemp = _mkdtemp_ptr.asFunction<_dart_mkdtemp>();
 
   int system(
-    ffi.Pointer<ffi.Int8> __command,
+    ffi.Pointer<ffi.Int8> _command,
   ) {
     return _system(
-      __command,
+      _command,
     );
   }
 
@@ -3450,12 +3450,12 @@ class ALSA {
   late final _dart_system _system = _system_ptr.asFunction<_dart_system>();
 
   ffi.Pointer<ffi.Int8> realpath(
-    ffi.Pointer<ffi.Int8> __name,
-    ffi.Pointer<ffi.Int8> __resolved,
+    ffi.Pointer<ffi.Int8> _name,
+    ffi.Pointer<ffi.Int8> _resolved,
   ) {
     return _realpath(
-      __name,
-      __resolved,
+      _name,
+      _resolved,
     );
   }
 
@@ -3465,18 +3465,18 @@ class ALSA {
       _realpath_ptr.asFunction<_dart_realpath>();
 
   ffi.Pointer<ffi.Void> bsearch(
-    ffi.Pointer<ffi.Void> __key,
-    ffi.Pointer<ffi.Void> __base,
-    int __nmemb,
-    int __size,
-    ffi.Pointer<ffi.NativeFunction<__compar_fn_t>> __compar,
+    ffi.Pointer<ffi.Void> _key,
+    ffi.Pointer<ffi.Void> _base,
+    int _nmemb,
+    int _size,
+    ffi.Pointer<ffi.NativeFunction<__compar_fn_t>> _compar,
   ) {
     return _bsearch(
-      __key,
-      __base,
-      __nmemb,
-      __size,
-      __compar,
+      _key,
+      _base,
+      _nmemb,
+      _size,
+      _compar,
     );
   }
 
@@ -3484,16 +3484,16 @@ class ALSA {
   late final _dart_bsearch _bsearch = _bsearch_ptr.asFunction<_dart_bsearch>();
 
   void qsort(
-    ffi.Pointer<ffi.Void> __base,
-    int __nmemb,
-    int __size,
-    ffi.Pointer<ffi.NativeFunction<__compar_fn_t>> __compar,
+    ffi.Pointer<ffi.Void> _base,
+    int _nmemb,
+    int _size,
+    ffi.Pointer<ffi.NativeFunction<__compar_fn_t>> _compar,
   ) {
     return _qsort(
-      __base,
-      __nmemb,
-      __size,
-      __compar,
+      _base,
+      _nmemb,
+      _size,
+      _compar,
     );
   }
 
@@ -3501,10 +3501,10 @@ class ALSA {
   late final _dart_qsort _qsort = _qsort_ptr.asFunction<_dart_qsort>();
 
   int abs(
-    int __x,
+    int _x,
   ) {
     return _abs(
-      __x,
+      _x,
     );
   }
 
@@ -3512,10 +3512,10 @@ class ALSA {
   late final _dart_abs _abs = _abs_ptr.asFunction<_dart_abs>();
 
   int labs(
-    int __x,
+    int _x,
   ) {
     return _labs(
-      __x,
+      _x,
     );
   }
 
@@ -3523,10 +3523,10 @@ class ALSA {
   late final _dart_labs _labs = _labs_ptr.asFunction<_dart_labs>();
 
   int llabs(
-    int __x,
+    int _x,
   ) {
     return _llabs(
-      __x,
+      _x,
     );
   }
 
@@ -3534,12 +3534,12 @@ class ALSA {
   late final _dart_llabs _llabs = _llabs_ptr.asFunction<_dart_llabs>();
 
   div_t div(
-    int __numer,
-    int __denom,
+    int _numer,
+    int _denom,
   ) {
     return _div(
-      __numer,
-      __denom,
+      _numer,
+      _denom,
     );
   }
 
@@ -3547,12 +3547,12 @@ class ALSA {
   late final _dart_div _div = _div_ptr.asFunction<_dart_div>();
 
   ldiv_t ldiv(
-    int __numer,
-    int __denom,
+    int _numer,
+    int _denom,
   ) {
     return _ldiv(
-      __numer,
-      __denom,
+      _numer,
+      _denom,
     );
   }
 
@@ -3560,12 +3560,12 @@ class ALSA {
   late final _dart_ldiv _ldiv = _ldiv_ptr.asFunction<_dart_ldiv>();
 
   lldiv_t lldiv(
-    int __numer,
-    int __denom,
+    int _numer,
+    int _denom,
   ) {
     return _lldiv(
-      __numer,
-      __denom,
+      _numer,
+      _denom,
     );
   }
 
@@ -3573,16 +3573,16 @@ class ALSA {
   late final _dart_lldiv _lldiv = _lldiv_ptr.asFunction<_dart_lldiv>();
 
   ffi.Pointer<ffi.Int8> ecvt(
-    double __value,
-    int __ndigit,
-    ffi.Pointer<ffi.Int32> __decpt,
-    ffi.Pointer<ffi.Int32> __sign,
+    double _value,
+    int _ndigit,
+    ffi.Pointer<ffi.Int32> _decpt,
+    ffi.Pointer<ffi.Int32> _sign,
   ) {
     return _ecvt(
-      __value,
-      __ndigit,
-      __decpt,
-      __sign,
+      _value,
+      _ndigit,
+      _decpt,
+      _sign,
     );
   }
 
@@ -3590,16 +3590,16 @@ class ALSA {
   late final _dart_ecvt _ecvt = _ecvt_ptr.asFunction<_dart_ecvt>();
 
   ffi.Pointer<ffi.Int8> fcvt(
-    double __value,
-    int __ndigit,
-    ffi.Pointer<ffi.Int32> __decpt,
-    ffi.Pointer<ffi.Int32> __sign,
+    double _value,
+    int _ndigit,
+    ffi.Pointer<ffi.Int32> _decpt,
+    ffi.Pointer<ffi.Int32> _sign,
   ) {
     return _fcvt(
-      __value,
-      __ndigit,
-      __decpt,
-      __sign,
+      _value,
+      _ndigit,
+      _decpt,
+      _sign,
     );
   }
 
@@ -3607,14 +3607,14 @@ class ALSA {
   late final _dart_fcvt _fcvt = _fcvt_ptr.asFunction<_dart_fcvt>();
 
   ffi.Pointer<ffi.Int8> gcvt(
-    double __value,
-    int __ndigit,
-    ffi.Pointer<ffi.Int8> __buf,
+    double _value,
+    int _ndigit,
+    ffi.Pointer<ffi.Int8> _buf,
   ) {
     return _gcvt(
-      __value,
-      __ndigit,
-      __buf,
+      _value,
+      _ndigit,
+      _buf,
     );
   }
 
@@ -3622,20 +3622,20 @@ class ALSA {
   late final _dart_gcvt _gcvt = _gcvt_ptr.asFunction<_dart_gcvt>();
 
   int ecvt_r(
-    double __value,
-    int __ndigit,
-    ffi.Pointer<ffi.Int32> __decpt,
-    ffi.Pointer<ffi.Int32> __sign,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __len,
+    double _value,
+    int _ndigit,
+    ffi.Pointer<ffi.Int32> _decpt,
+    ffi.Pointer<ffi.Int32> _sign,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _len,
   ) {
     return _ecvt_r(
-      __value,
-      __ndigit,
-      __decpt,
-      __sign,
-      __buf,
-      __len,
+      _value,
+      _ndigit,
+      _decpt,
+      _sign,
+      _buf,
+      _len,
     );
   }
 
@@ -3643,20 +3643,20 @@ class ALSA {
   late final _dart_ecvt_r _ecvt_r = _ecvt_r_ptr.asFunction<_dart_ecvt_r>();
 
   int fcvt_r(
-    double __value,
-    int __ndigit,
-    ffi.Pointer<ffi.Int32> __decpt,
-    ffi.Pointer<ffi.Int32> __sign,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __len,
+    double _value,
+    int _ndigit,
+    ffi.Pointer<ffi.Int32> _decpt,
+    ffi.Pointer<ffi.Int32> _sign,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _len,
   ) {
     return _fcvt_r(
-      __value,
-      __ndigit,
-      __decpt,
-      __sign,
-      __buf,
-      __len,
+      _value,
+      _ndigit,
+      _decpt,
+      _sign,
+      _buf,
+      _len,
     );
   }
 
@@ -3664,12 +3664,12 @@ class ALSA {
   late final _dart_fcvt_r _fcvt_r = _fcvt_r_ptr.asFunction<_dart_fcvt_r>();
 
   int mblen(
-    ffi.Pointer<ffi.Int8> __s,
-    int __n,
+    ffi.Pointer<ffi.Int8> _s,
+    int _n,
   ) {
     return _mblen(
-      __s,
-      __n,
+      _s,
+      _n,
     );
   }
 
@@ -3677,14 +3677,14 @@ class ALSA {
   late final _dart_mblen _mblen = _mblen_ptr.asFunction<_dart_mblen>();
 
   int mbtowc(
-    ffi.Pointer<ffi.Int32> __pwc,
-    ffi.Pointer<ffi.Int8> __s,
-    int __n,
+    ffi.Pointer<ffi.Int32> _pwc,
+    ffi.Pointer<ffi.Int8> _s,
+    int _n,
   ) {
     return _mbtowc(
-      __pwc,
-      __s,
-      __n,
+      _pwc,
+      _s,
+      _n,
     );
   }
 
@@ -3692,12 +3692,12 @@ class ALSA {
   late final _dart_mbtowc _mbtowc = _mbtowc_ptr.asFunction<_dart_mbtowc>();
 
   int wctomb(
-    ffi.Pointer<ffi.Int8> __s,
-    int __wchar,
+    ffi.Pointer<ffi.Int8> _s,
+    int _wchar,
   ) {
     return _wctomb(
-      __s,
-      __wchar,
+      _s,
+      _wchar,
     );
   }
 
@@ -3705,14 +3705,14 @@ class ALSA {
   late final _dart_wctomb _wctomb = _wctomb_ptr.asFunction<_dart_wctomb>();
 
   int mbstowcs(
-    ffi.Pointer<ffi.Int32> __pwcs,
-    ffi.Pointer<ffi.Int8> __s,
-    int __n,
+    ffi.Pointer<ffi.Int32> _pwcs,
+    ffi.Pointer<ffi.Int8> _s,
+    int _n,
   ) {
     return _mbstowcs(
-      __pwcs,
-      __s,
-      __n,
+      _pwcs,
+      _s,
+      _n,
     );
   }
 
@@ -3722,14 +3722,14 @@ class ALSA {
       _mbstowcs_ptr.asFunction<_dart_mbstowcs>();
 
   int wcstombs(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int32> __pwcs,
-    int __n,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int32> _pwcs,
+    int _n,
   ) {
     return _wcstombs(
-      __s,
-      __pwcs,
-      __n,
+      _s,
+      _pwcs,
+      _n,
     );
   }
 
@@ -3739,10 +3739,10 @@ class ALSA {
       _wcstombs_ptr.asFunction<_dart_wcstombs>();
 
   int rpmatch(
-    ffi.Pointer<ffi.Int8> __response,
+    ffi.Pointer<ffi.Int8> _response,
   ) {
     return _rpmatch(
-      __response,
+      _response,
     );
   }
 
@@ -3750,14 +3750,14 @@ class ALSA {
   late final _dart_rpmatch _rpmatch = _rpmatch_ptr.asFunction<_dart_rpmatch>();
 
   int getsubopt(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __optionp,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __tokens,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __valuep,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _optionp,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _tokens,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _valuep,
   ) {
     return _getsubopt(
-      __optionp,
-      __tokens,
-      __valuep,
+      _optionp,
+      _tokens,
+      _valuep,
     );
   }
 
@@ -3767,12 +3767,12 @@ class ALSA {
       _getsubopt_ptr.asFunction<_dart_getsubopt>();
 
   int getloadavg(
-    ffi.Pointer<ffi.Double> __loadavg,
-    int __nelem,
+    ffi.Pointer<ffi.Double> _loadavg,
+    int _nelem,
   ) {
     return _getloadavg(
-      __loadavg,
-      __nelem,
+      _loadavg,
+      _nelem,
     );
   }
 
@@ -3782,14 +3782,14 @@ class ALSA {
       _getloadavg_ptr.asFunction<_dart_getloadavg>();
 
   ffi.Pointer<ffi.Void> memcpy(
-    ffi.Pointer<ffi.Void> __dest,
-    ffi.Pointer<ffi.Void> __src,
-    int __n,
+    ffi.Pointer<ffi.Void> _dest,
+    ffi.Pointer<ffi.Void> _src,
+    int _n,
   ) {
     return _memcpy(
-      __dest,
-      __src,
-      __n,
+      _dest,
+      _src,
+      _n,
     );
   }
 
@@ -3797,14 +3797,14 @@ class ALSA {
   late final _dart_memcpy _memcpy = _memcpy_ptr.asFunction<_dart_memcpy>();
 
   ffi.Pointer<ffi.Void> memmove(
-    ffi.Pointer<ffi.Void> __dest,
-    ffi.Pointer<ffi.Void> __src,
-    int __n,
+    ffi.Pointer<ffi.Void> _dest,
+    ffi.Pointer<ffi.Void> _src,
+    int _n,
   ) {
     return _memmove(
-      __dest,
-      __src,
-      __n,
+      _dest,
+      _src,
+      _n,
     );
   }
 
@@ -3812,16 +3812,16 @@ class ALSA {
   late final _dart_memmove _memmove = _memmove_ptr.asFunction<_dart_memmove>();
 
   ffi.Pointer<ffi.Void> memccpy(
-    ffi.Pointer<ffi.Void> __dest,
-    ffi.Pointer<ffi.Void> __src,
-    int __c,
-    int __n,
+    ffi.Pointer<ffi.Void> _dest,
+    ffi.Pointer<ffi.Void> _src,
+    int _c,
+    int _n,
   ) {
     return _memccpy(
-      __dest,
-      __src,
-      __c,
-      __n,
+      _dest,
+      _src,
+      _c,
+      _n,
     );
   }
 
@@ -3829,14 +3829,14 @@ class ALSA {
   late final _dart_memccpy _memccpy = _memccpy_ptr.asFunction<_dart_memccpy>();
 
   ffi.Pointer<ffi.Void> memset(
-    ffi.Pointer<ffi.Void> __s,
-    int __c,
-    int __n,
+    ffi.Pointer<ffi.Void> _s,
+    int _c,
+    int _n,
   ) {
     return _memset(
-      __s,
-      __c,
-      __n,
+      _s,
+      _c,
+      _n,
     );
   }
 
@@ -3844,14 +3844,14 @@ class ALSA {
   late final _dart_memset _memset = _memset_ptr.asFunction<_dart_memset>();
 
   int memcmp(
-    ffi.Pointer<ffi.Void> __s1,
-    ffi.Pointer<ffi.Void> __s2,
-    int __n,
+    ffi.Pointer<ffi.Void> _s1,
+    ffi.Pointer<ffi.Void> _s2,
+    int _n,
   ) {
     return _memcmp(
-      __s1,
-      __s2,
-      __n,
+      _s1,
+      _s2,
+      _n,
     );
   }
 
@@ -3859,14 +3859,14 @@ class ALSA {
   late final _dart_memcmp _memcmp = _memcmp_ptr.asFunction<_dart_memcmp>();
 
   ffi.Pointer<ffi.Void> memchr(
-    ffi.Pointer<ffi.Void> __s,
-    int __c,
-    int __n,
+    ffi.Pointer<ffi.Void> _s,
+    int _c,
+    int _n,
   ) {
     return _memchr(
-      __s,
-      __c,
-      __n,
+      _s,
+      _c,
+      _n,
     );
   }
 
@@ -3874,12 +3874,12 @@ class ALSA {
   late final _dart_memchr _memchr = _memchr_ptr.asFunction<_dart_memchr>();
 
   ffi.Pointer<ffi.Int8> strcpy(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
   ) {
     return _strcpy(
-      __dest,
-      __src,
+      _dest,
+      _src,
     );
   }
 
@@ -3887,14 +3887,14 @@ class ALSA {
   late final _dart_strcpy _strcpy = _strcpy_ptr.asFunction<_dart_strcpy>();
 
   ffi.Pointer<ffi.Int8> strncpy(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
-    int __n,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
+    int _n,
   ) {
     return _strncpy(
-      __dest,
-      __src,
-      __n,
+      _dest,
+      _src,
+      _n,
     );
   }
 
@@ -3902,12 +3902,12 @@ class ALSA {
   late final _dart_strncpy _strncpy = _strncpy_ptr.asFunction<_dart_strncpy>();
 
   ffi.Pointer<ffi.Int8> strcat(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
   ) {
     return _strcat(
-      __dest,
-      __src,
+      _dest,
+      _src,
     );
   }
 
@@ -3915,14 +3915,14 @@ class ALSA {
   late final _dart_strcat _strcat = _strcat_ptr.asFunction<_dart_strcat>();
 
   ffi.Pointer<ffi.Int8> strncat(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
-    int __n,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
+    int _n,
   ) {
     return _strncat(
-      __dest,
-      __src,
-      __n,
+      _dest,
+      _src,
+      _n,
     );
   }
 
@@ -3930,12 +3930,12 @@ class ALSA {
   late final _dart_strncat _strncat = _strncat_ptr.asFunction<_dart_strncat>();
 
   int strcmp(
-    ffi.Pointer<ffi.Int8> __s1,
-    ffi.Pointer<ffi.Int8> __s2,
+    ffi.Pointer<ffi.Int8> _s1,
+    ffi.Pointer<ffi.Int8> _s2,
   ) {
     return _strcmp(
-      __s1,
-      __s2,
+      _s1,
+      _s2,
     );
   }
 
@@ -3943,14 +3943,14 @@ class ALSA {
   late final _dart_strcmp _strcmp = _strcmp_ptr.asFunction<_dart_strcmp>();
 
   int strncmp(
-    ffi.Pointer<ffi.Int8> __s1,
-    ffi.Pointer<ffi.Int8> __s2,
-    int __n,
+    ffi.Pointer<ffi.Int8> _s1,
+    ffi.Pointer<ffi.Int8> _s2,
+    int _n,
   ) {
     return _strncmp(
-      __s1,
-      __s2,
-      __n,
+      _s1,
+      _s2,
+      _n,
     );
   }
 
@@ -3958,12 +3958,12 @@ class ALSA {
   late final _dart_strncmp _strncmp = _strncmp_ptr.asFunction<_dart_strncmp>();
 
   int strcoll(
-    ffi.Pointer<ffi.Int8> __s1,
-    ffi.Pointer<ffi.Int8> __s2,
+    ffi.Pointer<ffi.Int8> _s1,
+    ffi.Pointer<ffi.Int8> _s2,
   ) {
     return _strcoll(
-      __s1,
-      __s2,
+      _s1,
+      _s2,
     );
   }
 
@@ -3971,14 +3971,14 @@ class ALSA {
   late final _dart_strcoll _strcoll = _strcoll_ptr.asFunction<_dart_strcoll>();
 
   int strxfrm(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
-    int __n,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
+    int _n,
   ) {
     return _strxfrm(
-      __dest,
-      __src,
-      __n,
+      _dest,
+      _src,
+      _n,
     );
   }
 
@@ -3986,14 +3986,14 @@ class ALSA {
   late final _dart_strxfrm _strxfrm = _strxfrm_ptr.asFunction<_dart_strxfrm>();
 
   int strcoll_l(
-    ffi.Pointer<ffi.Int8> __s1,
-    ffi.Pointer<ffi.Int8> __s2,
-    ffi.Pointer<_locale_struct_> __l,
+    ffi.Pointer<ffi.Int8> _s1,
+    ffi.Pointer<ffi.Int8> _s2,
+    ffi.Pointer<_locale_struct_> _l,
   ) {
     return _strcoll_l(
-      __s1,
-      __s2,
-      __l,
+      _s1,
+      _s2,
+      _l,
     );
   }
 
@@ -4003,16 +4003,16 @@ class ALSA {
       _strcoll_l_ptr.asFunction<_dart_strcoll_l>();
 
   int strxfrm_l(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
-    int __n,
-    ffi.Pointer<_locale_struct_> __l,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
+    int _n,
+    ffi.Pointer<_locale_struct_> _l,
   ) {
     return _strxfrm_l(
-      __dest,
-      __src,
-      __n,
-      __l,
+      _dest,
+      _src,
+      _n,
+      _l,
     );
   }
 
@@ -4022,10 +4022,10 @@ class ALSA {
       _strxfrm_l_ptr.asFunction<_dart_strxfrm_l>();
 
   ffi.Pointer<ffi.Int8> strdup(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Int8> _s,
   ) {
     return _strdup(
-      __s,
+      _s,
     );
   }
 
@@ -4033,12 +4033,12 @@ class ALSA {
   late final _dart_strdup _strdup = _strdup_ptr.asFunction<_dart_strdup>();
 
   ffi.Pointer<ffi.Int8> strndup(
-    ffi.Pointer<ffi.Int8> __string,
-    int __n,
+    ffi.Pointer<ffi.Int8> _string,
+    int _n,
   ) {
     return _strndup(
-      __string,
-      __n,
+      _string,
+      _n,
     );
   }
 
@@ -4046,12 +4046,12 @@ class ALSA {
   late final _dart_strndup _strndup = _strndup_ptr.asFunction<_dart_strndup>();
 
   ffi.Pointer<ffi.Int8> strchr(
-    ffi.Pointer<ffi.Int8> __s,
-    int __c,
+    ffi.Pointer<ffi.Int8> _s,
+    int _c,
   ) {
     return _strchr(
-      __s,
-      __c,
+      _s,
+      _c,
     );
   }
 
@@ -4059,12 +4059,12 @@ class ALSA {
   late final _dart_strchr _strchr = _strchr_ptr.asFunction<_dart_strchr>();
 
   ffi.Pointer<ffi.Int8> strrchr(
-    ffi.Pointer<ffi.Int8> __s,
-    int __c,
+    ffi.Pointer<ffi.Int8> _s,
+    int _c,
   ) {
     return _strrchr(
-      __s,
-      __c,
+      _s,
+      _c,
     );
   }
 
@@ -4072,12 +4072,12 @@ class ALSA {
   late final _dart_strrchr _strrchr = _strrchr_ptr.asFunction<_dart_strrchr>();
 
   int strcspn(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __reject,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _reject,
   ) {
     return _strcspn(
-      __s,
-      __reject,
+      _s,
+      _reject,
     );
   }
 
@@ -4085,12 +4085,12 @@ class ALSA {
   late final _dart_strcspn _strcspn = _strcspn_ptr.asFunction<_dart_strcspn>();
 
   int strspn(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __accept,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _accept,
   ) {
     return _strspn(
-      __s,
-      __accept,
+      _s,
+      _accept,
     );
   }
 
@@ -4098,12 +4098,12 @@ class ALSA {
   late final _dart_strspn _strspn = _strspn_ptr.asFunction<_dart_strspn>();
 
   ffi.Pointer<ffi.Int8> strpbrk(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __accept,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _accept,
   ) {
     return _strpbrk(
-      __s,
-      __accept,
+      _s,
+      _accept,
     );
   }
 
@@ -4111,12 +4111,12 @@ class ALSA {
   late final _dart_strpbrk _strpbrk = _strpbrk_ptr.asFunction<_dart_strpbrk>();
 
   ffi.Pointer<ffi.Int8> strstr(
-    ffi.Pointer<ffi.Int8> __haystack,
-    ffi.Pointer<ffi.Int8> __needle,
+    ffi.Pointer<ffi.Int8> _haystack,
+    ffi.Pointer<ffi.Int8> _needle,
   ) {
     return _strstr(
-      __haystack,
-      __needle,
+      _haystack,
+      _needle,
     );
   }
 
@@ -4124,12 +4124,12 @@ class ALSA {
   late final _dart_strstr _strstr = _strstr_ptr.asFunction<_dart_strstr>();
 
   ffi.Pointer<ffi.Int8> strtok(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __delim,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _delim,
   ) {
     return _strtok(
-      __s,
-      __delim,
+      _s,
+      _delim,
     );
   }
 
@@ -4137,14 +4137,14 @@ class ALSA {
   late final _dart_strtok _strtok = _strtok_ptr.asFunction<_dart_strtok>();
 
   ffi.Pointer<ffi.Int8> __strtok_r(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __delim,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __save_ptr,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _delim,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _save_ptr,
   ) {
     return ___strtok_r(
-      __s,
-      __delim,
-      __save_ptr,
+      _s,
+      _delim,
+      _save_ptr,
     );
   }
 
@@ -4154,14 +4154,14 @@ class ALSA {
       ___strtok_r_ptr.asFunction<_dart___strtok_r>();
 
   ffi.Pointer<ffi.Int8> strtok_r(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<ffi.Int8> __delim,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __save_ptr,
+    ffi.Pointer<ffi.Int8> _s,
+    ffi.Pointer<ffi.Int8> _delim,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _save_ptr,
   ) {
     return _strtok_r(
-      __s,
-      __delim,
-      __save_ptr,
+      _s,
+      _delim,
+      _save_ptr,
     );
   }
 
@@ -4171,10 +4171,10 @@ class ALSA {
       _strtok_r_ptr.asFunction<_dart_strtok_r>();
 
   int strlen(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Int8> _s,
   ) {
     return _strlen(
-      __s,
+      _s,
     );
   }
 
@@ -4182,12 +4182,12 @@ class ALSA {
   late final _dart_strlen _strlen = _strlen_ptr.asFunction<_dart_strlen>();
 
   int strnlen(
-    ffi.Pointer<ffi.Int8> __string,
-    int __maxlen,
+    ffi.Pointer<ffi.Int8> _string,
+    int _maxlen,
   ) {
     return _strnlen(
-      __string,
-      __maxlen,
+      _string,
+      _maxlen,
     );
   }
 
@@ -4195,10 +4195,10 @@ class ALSA {
   late final _dart_strnlen _strnlen = _strnlen_ptr.asFunction<_dart_strnlen>();
 
   ffi.Pointer<ffi.Int8> strerror(
-    int __errnum,
+    int _errnum,
   ) {
     return _strerror(
-      __errnum,
+      _errnum,
     );
   }
 
@@ -4208,14 +4208,14 @@ class ALSA {
       _strerror_ptr.asFunction<_dart_strerror>();
 
   int strerror_r(
-    int __errnum,
-    ffi.Pointer<ffi.Int8> __buf,
-    int __buflen,
+    int _errnum,
+    ffi.Pointer<ffi.Int8> _buf,
+    int _buflen,
   ) {
     return _strerror_r(
-      __errnum,
-      __buf,
-      __buflen,
+      _errnum,
+      _buf,
+      _buflen,
     );
   }
 
@@ -4225,12 +4225,12 @@ class ALSA {
       _strerror_r_ptr.asFunction<_dart_strerror_r>();
 
   ffi.Pointer<ffi.Int8> strerror_l(
-    int __errnum,
-    ffi.Pointer<_locale_struct_> __l,
+    int _errnum,
+    ffi.Pointer<_locale_struct_> _l,
   ) {
     return _strerror_l(
-      __errnum,
-      __l,
+      _errnum,
+      _l,
     );
   }
 
@@ -4240,14 +4240,14 @@ class ALSA {
       _strerror_l_ptr.asFunction<_dart_strerror_l>();
 
   int bcmp(
-    ffi.Pointer<ffi.Void> __s1,
-    ffi.Pointer<ffi.Void> __s2,
-    int __n,
+    ffi.Pointer<ffi.Void> _s1,
+    ffi.Pointer<ffi.Void> _s2,
+    int _n,
   ) {
     return _bcmp(
-      __s1,
-      __s2,
-      __n,
+      _s1,
+      _s2,
+      _n,
     );
   }
 
@@ -4255,14 +4255,14 @@ class ALSA {
   late final _dart_bcmp _bcmp = _bcmp_ptr.asFunction<_dart_bcmp>();
 
   void bcopy(
-    ffi.Pointer<ffi.Void> __src,
-    ffi.Pointer<ffi.Void> __dest,
-    int __n,
+    ffi.Pointer<ffi.Void> _src,
+    ffi.Pointer<ffi.Void> _dest,
+    int _n,
   ) {
     return _bcopy(
-      __src,
-      __dest,
-      __n,
+      _src,
+      _dest,
+      _n,
     );
   }
 
@@ -4270,12 +4270,12 @@ class ALSA {
   late final _dart_bcopy _bcopy = _bcopy_ptr.asFunction<_dart_bcopy>();
 
   void bzero(
-    ffi.Pointer<ffi.Void> __s,
-    int __n,
+    ffi.Pointer<ffi.Void> _s,
+    int _n,
   ) {
     return _bzero(
-      __s,
-      __n,
+      _s,
+      _n,
     );
   }
 
@@ -4283,12 +4283,12 @@ class ALSA {
   late final _dart_bzero _bzero = _bzero_ptr.asFunction<_dart_bzero>();
 
   ffi.Pointer<ffi.Int8> index(
-    ffi.Pointer<ffi.Int8> __s,
-    int __c,
+    ffi.Pointer<ffi.Int8> _s,
+    int _c,
   ) {
     return _index(
-      __s,
-      __c,
+      _s,
+      _c,
     );
   }
 
@@ -4296,12 +4296,12 @@ class ALSA {
   late final _dart_index _index = _index_ptr.asFunction<_dart_index>();
 
   ffi.Pointer<ffi.Int8> rindex(
-    ffi.Pointer<ffi.Int8> __s,
-    int __c,
+    ffi.Pointer<ffi.Int8> _s,
+    int _c,
   ) {
     return _rindex(
-      __s,
-      __c,
+      _s,
+      _c,
     );
   }
 
@@ -4309,10 +4309,10 @@ class ALSA {
   late final _dart_rindex _rindex = _rindex_ptr.asFunction<_dart_rindex>();
 
   int ffs(
-    int __i,
+    int _i,
   ) {
     return _ffs(
-      __i,
+      _i,
     );
   }
 
@@ -4320,10 +4320,10 @@ class ALSA {
   late final _dart_ffs _ffs = _ffs_ptr.asFunction<_dart_ffs>();
 
   int ffsl(
-    int __l,
+    int _l,
   ) {
     return _ffsl(
-      __l,
+      _l,
     );
   }
 
@@ -4331,10 +4331,10 @@ class ALSA {
   late final _dart_ffsl _ffsl = _ffsl_ptr.asFunction<_dart_ffsl>();
 
   int ffsll(
-    int __ll,
+    int _ll,
   ) {
     return _ffsll(
-      __ll,
+      _ll,
     );
   }
 
@@ -4342,12 +4342,12 @@ class ALSA {
   late final _dart_ffsll _ffsll = _ffsll_ptr.asFunction<_dart_ffsll>();
 
   int strcasecmp(
-    ffi.Pointer<ffi.Int8> __s1,
-    ffi.Pointer<ffi.Int8> __s2,
+    ffi.Pointer<ffi.Int8> _s1,
+    ffi.Pointer<ffi.Int8> _s2,
   ) {
     return _strcasecmp(
-      __s1,
-      __s2,
+      _s1,
+      _s2,
     );
   }
 
@@ -4357,14 +4357,14 @@ class ALSA {
       _strcasecmp_ptr.asFunction<_dart_strcasecmp>();
 
   int strncasecmp(
-    ffi.Pointer<ffi.Int8> __s1,
-    ffi.Pointer<ffi.Int8> __s2,
-    int __n,
+    ffi.Pointer<ffi.Int8> _s1,
+    ffi.Pointer<ffi.Int8> _s2,
+    int _n,
   ) {
     return _strncasecmp(
-      __s1,
-      __s2,
-      __n,
+      _s1,
+      _s2,
+      _n,
     );
   }
 
@@ -4374,14 +4374,14 @@ class ALSA {
       _strncasecmp_ptr.asFunction<_dart_strncasecmp>();
 
   int strcasecmp_l(
-    ffi.Pointer<ffi.Int8> __s1,
-    ffi.Pointer<ffi.Int8> __s2,
-    ffi.Pointer<_locale_struct_> __loc,
+    ffi.Pointer<ffi.Int8> _s1,
+    ffi.Pointer<ffi.Int8> _s2,
+    ffi.Pointer<_locale_struct_> _loc,
   ) {
     return _strcasecmp_l(
-      __s1,
-      __s2,
-      __loc,
+      _s1,
+      _s2,
+      _loc,
     );
   }
 
@@ -4391,16 +4391,16 @@ class ALSA {
       _strcasecmp_l_ptr.asFunction<_dart_strcasecmp_l>();
 
   int strncasecmp_l(
-    ffi.Pointer<ffi.Int8> __s1,
-    ffi.Pointer<ffi.Int8> __s2,
-    int __n,
-    ffi.Pointer<_locale_struct_> __loc,
+    ffi.Pointer<ffi.Int8> _s1,
+    ffi.Pointer<ffi.Int8> _s2,
+    int _n,
+    ffi.Pointer<_locale_struct_> _loc,
   ) {
     return _strncasecmp_l(
-      __s1,
-      __s2,
-      __n,
-      __loc,
+      _s1,
+      _s2,
+      _n,
+      _loc,
     );
   }
 
@@ -4410,12 +4410,12 @@ class ALSA {
       _strncasecmp_l_ptr.asFunction<_dart_strncasecmp_l>();
 
   void explicit_bzero(
-    ffi.Pointer<ffi.Void> __s,
-    int __n,
+    ffi.Pointer<ffi.Void> _s,
+    int _n,
   ) {
     return _explicit_bzero(
-      __s,
-      __n,
+      _s,
+      _n,
     );
   }
 
@@ -4425,12 +4425,12 @@ class ALSA {
       _explicit_bzero_ptr.asFunction<_dart_explicit_bzero>();
 
   ffi.Pointer<ffi.Int8> strsep(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __stringp,
-    ffi.Pointer<ffi.Int8> __delim,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> _stringp,
+    ffi.Pointer<ffi.Int8> _delim,
   ) {
     return _strsep(
-      __stringp,
-      __delim,
+      _stringp,
+      _delim,
     );
   }
 
@@ -4438,10 +4438,10 @@ class ALSA {
   late final _dart_strsep _strsep = _strsep_ptr.asFunction<_dart_strsep>();
 
   ffi.Pointer<ffi.Int8> strsignal(
-    int __sig,
+    int _sig,
   ) {
     return _strsignal(
-      __sig,
+      _sig,
     );
   }
 
@@ -4451,12 +4451,12 @@ class ALSA {
       _strsignal_ptr.asFunction<_dart_strsignal>();
 
   ffi.Pointer<ffi.Int8> __stpcpy(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
   ) {
     return ___stpcpy(
-      __dest,
-      __src,
+      _dest,
+      _src,
     );
   }
 
@@ -4466,12 +4466,12 @@ class ALSA {
       ___stpcpy_ptr.asFunction<_dart___stpcpy>();
 
   ffi.Pointer<ffi.Int8> stpcpy(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
   ) {
     return _stpcpy(
-      __dest,
-      __src,
+      _dest,
+      _src,
     );
   }
 
@@ -4479,14 +4479,14 @@ class ALSA {
   late final _dart_stpcpy _stpcpy = _stpcpy_ptr.asFunction<_dart_stpcpy>();
 
   ffi.Pointer<ffi.Int8> __stpncpy(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
-    int __n,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
+    int _n,
   ) {
     return ___stpncpy(
-      __dest,
-      __src,
-      __n,
+      _dest,
+      _src,
+      _n,
     );
   }
 
@@ -4496,14 +4496,14 @@ class ALSA {
       ___stpncpy_ptr.asFunction<_dart___stpncpy>();
 
   ffi.Pointer<ffi.Int8> stpncpy(
-    ffi.Pointer<ffi.Int8> __dest,
-    ffi.Pointer<ffi.Int8> __src,
-    int __n,
+    ffi.Pointer<ffi.Int8> _dest,
+    ffi.Pointer<ffi.Int8> _src,
+    int _n,
   ) {
     return _stpncpy(
-      __dest,
-      __src,
-      __n,
+      _dest,
+      _src,
+      _n,
     );
   }
 
@@ -4511,12 +4511,12 @@ class ALSA {
   late final _dart_stpncpy _stpncpy = _stpncpy_ptr.asFunction<_dart_stpncpy>();
 
   int fcntl(
-    int __fd,
-    int __cmd,
+    int _fd,
+    int _cmd,
   ) {
     return _fcntl(
-      __fd,
-      __cmd,
+      _fd,
+      _cmd,
     );
   }
 
@@ -4524,12 +4524,12 @@ class ALSA {
   late final _dart_fcntl _fcntl = _fcntl_ptr.asFunction<_dart_fcntl>();
 
   int open(
-    ffi.Pointer<ffi.Int8> __file,
-    int __oflag,
+    ffi.Pointer<ffi.Int8> _file,
+    int _oflag,
   ) {
     return _open(
-      __file,
-      __oflag,
+      _file,
+      _oflag,
     );
   }
 
@@ -4537,14 +4537,14 @@ class ALSA {
   late final _dart_open _open = _open_ptr.asFunction<_dart_open>();
 
   int openat(
-    int __fd,
-    ffi.Pointer<ffi.Int8> __file,
-    int __oflag,
+    int _fd,
+    ffi.Pointer<ffi.Int8> _file,
+    int _oflag,
   ) {
     return _openat(
-      __fd,
-      __file,
-      __oflag,
+      _fd,
+      _file,
+      _oflag,
     );
   }
 
@@ -4552,12 +4552,12 @@ class ALSA {
   late final _dart_openat _openat = _openat_ptr.asFunction<_dart_openat>();
 
   int creat(
-    ffi.Pointer<ffi.Int8> __file,
-    int __mode,
+    ffi.Pointer<ffi.Int8> _file,
+    int _mode,
   ) {
     return _creat(
-      __file,
-      __mode,
+      _file,
+      _mode,
     );
   }
 
@@ -4565,16 +4565,16 @@ class ALSA {
   late final _dart_creat _creat = _creat_ptr.asFunction<_dart_creat>();
 
   int posix_fadvise(
-    int __fd,
-    int __offset,
-    int __len,
-    int __advise,
+    int _fd,
+    int _offset,
+    int _len,
+    int _advise,
   ) {
     return _posix_fadvise(
-      __fd,
-      __offset,
-      __len,
-      __advise,
+      _fd,
+      _offset,
+      _len,
+      _advise,
     );
   }
 
@@ -4584,14 +4584,14 @@ class ALSA {
       _posix_fadvise_ptr.asFunction<_dart_posix_fadvise>();
 
   int posix_fallocate(
-    int __fd,
-    int __offset,
-    int __len,
+    int _fd,
+    int _offset,
+    int _len,
   ) {
     return _posix_fallocate(
-      __fd,
-      __offset,
-      __len,
+      _fd,
+      _offset,
+      _len,
     );
   }
 
@@ -4601,16 +4601,16 @@ class ALSA {
       _posix_fallocate_ptr.asFunction<_dart_posix_fallocate>();
 
   void __assert_fail(
-    ffi.Pointer<ffi.Int8> __assertion,
-    ffi.Pointer<ffi.Int8> __file,
-    int __line,
-    ffi.Pointer<ffi.Int8> __function,
+    ffi.Pointer<ffi.Int8> _assertion,
+    ffi.Pointer<ffi.Int8> _file,
+    int _line,
+    ffi.Pointer<ffi.Int8> _function,
   ) {
     return ___assert_fail(
-      __assertion,
-      __file,
-      __line,
-      __function,
+      _assertion,
+      _file,
+      _line,
+      _function,
     );
   }
 
@@ -4620,16 +4620,16 @@ class ALSA {
       ___assert_fail_ptr.asFunction<_dart___assert_fail>();
 
   void __assert_perror_fail(
-    int __errnum,
-    ffi.Pointer<ffi.Int8> __file,
-    int __line,
-    ffi.Pointer<ffi.Int8> __function,
+    int _errnum,
+    ffi.Pointer<ffi.Int8> _file,
+    int _line,
+    ffi.Pointer<ffi.Int8> _function,
   ) {
     return ___assert_perror_fail(
-      __errnum,
-      __file,
-      __line,
-      __function,
+      _errnum,
+      _file,
+      _line,
+      _function,
     );
   }
 
@@ -4640,14 +4640,14 @@ class ALSA {
       ___assert_perror_fail_ptr.asFunction<_dart___assert_perror_fail>();
 
   void __assert(
-    ffi.Pointer<ffi.Int8> __assertion,
-    ffi.Pointer<ffi.Int8> __file,
-    int __line,
+    ffi.Pointer<ffi.Int8> _assertion,
+    ffi.Pointer<ffi.Int8> _file,
+    int _line,
   ) {
     return ___assert(
-      __assertion,
-      __file,
-      __line,
+      _assertion,
+      _file,
+      _line,
     );
   }
 
@@ -4657,14 +4657,14 @@ class ALSA {
       ___assert_ptr.asFunction<_dart___assert>();
 
   int poll(
-    ffi.Pointer<pollfd> __fds,
-    int __nfds,
-    int __timeout,
+    ffi.Pointer<pollfd> _fds,
+    int _nfds,
+    int _timeout,
   ) {
     return _poll(
-      __fds,
-      __nfds,
-      __timeout,
+      _fds,
+      _nfds,
+      _timeout,
     );
   }
 
@@ -4688,10 +4688,10 @@ class ALSA {
   late final _dart_clock _clock = _clock_ptr.asFunction<_dart_clock>();
 
   int time(
-    ffi.Pointer<ffi.Int64> __timer,
+    ffi.Pointer<ffi.Int64> _timer,
   ) {
     return _time(
-      __timer,
+      _timer,
     );
   }
 
@@ -4699,12 +4699,12 @@ class ALSA {
   late final _dart_time _time = _time_ptr.asFunction<_dart_time>();
 
   double difftime(
-    int __time1,
-    int __time0,
+    int _time1,
+    int _time0,
   ) {
     return _difftime(
-      __time1,
-      __time0,
+      _time1,
+      _time0,
     );
   }
 
@@ -4714,10 +4714,10 @@ class ALSA {
       _difftime_ptr.asFunction<_dart_difftime>();
 
   int mktime(
-    ffi.Pointer<tm> __tp,
+    ffi.Pointer<tm> _tp,
   ) {
     return _mktime(
-      __tp,
+      _tp,
     );
   }
 
@@ -4725,16 +4725,16 @@ class ALSA {
   late final _dart_mktime _mktime = _mktime_ptr.asFunction<_dart_mktime>();
 
   int strftime(
-    ffi.Pointer<ffi.Int8> __s,
-    int __maxsize,
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<tm> __tp,
+    ffi.Pointer<ffi.Int8> _s,
+    int _maxsize,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<tm> _tp,
   ) {
     return _strftime(
-      __s,
-      __maxsize,
-      __format,
-      __tp,
+      _s,
+      _maxsize,
+      _format,
+      _tp,
     );
   }
 
@@ -4744,18 +4744,18 @@ class ALSA {
       _strftime_ptr.asFunction<_dart_strftime>();
 
   int strftime_l(
-    ffi.Pointer<ffi.Int8> __s,
-    int __maxsize,
-    ffi.Pointer<ffi.Int8> __format,
-    ffi.Pointer<tm> __tp,
-    ffi.Pointer<_locale_struct_> __loc,
+    ffi.Pointer<ffi.Int8> _s,
+    int _maxsize,
+    ffi.Pointer<ffi.Int8> _format,
+    ffi.Pointer<tm> _tp,
+    ffi.Pointer<_locale_struct_> _loc,
   ) {
     return _strftime_l(
-      __s,
-      __maxsize,
-      __format,
-      __tp,
-      __loc,
+      _s,
+      _maxsize,
+      _format,
+      _tp,
+      _loc,
     );
   }
 
@@ -4765,10 +4765,10 @@ class ALSA {
       _strftime_l_ptr.asFunction<_dart_strftime_l>();
 
   ffi.Pointer<tm> gmtime(
-    ffi.Pointer<ffi.Int64> __timer,
+    ffi.Pointer<ffi.Int64> _timer,
   ) {
     return _gmtime(
-      __timer,
+      _timer,
     );
   }
 
@@ -4776,10 +4776,10 @@ class ALSA {
   late final _dart_gmtime _gmtime = _gmtime_ptr.asFunction<_dart_gmtime>();
 
   ffi.Pointer<tm> localtime(
-    ffi.Pointer<ffi.Int64> __timer,
+    ffi.Pointer<ffi.Int64> _timer,
   ) {
     return _localtime(
-      __timer,
+      _timer,
     );
   }
 
@@ -4789,12 +4789,12 @@ class ALSA {
       _localtime_ptr.asFunction<_dart_localtime>();
 
   ffi.Pointer<tm> gmtime_r(
-    ffi.Pointer<ffi.Int64> __timer,
-    ffi.Pointer<tm> __tp,
+    ffi.Pointer<ffi.Int64> _timer,
+    ffi.Pointer<tm> _tp,
   ) {
     return _gmtime_r(
-      __timer,
-      __tp,
+      _timer,
+      _tp,
     );
   }
 
@@ -4804,12 +4804,12 @@ class ALSA {
       _gmtime_r_ptr.asFunction<_dart_gmtime_r>();
 
   ffi.Pointer<tm> localtime_r(
-    ffi.Pointer<ffi.Int64> __timer,
-    ffi.Pointer<tm> __tp,
+    ffi.Pointer<ffi.Int64> _timer,
+    ffi.Pointer<tm> _tp,
   ) {
     return _localtime_r(
-      __timer,
-      __tp,
+      _timer,
+      _tp,
     );
   }
 
@@ -4819,10 +4819,10 @@ class ALSA {
       _localtime_r_ptr.asFunction<_dart_localtime_r>();
 
   ffi.Pointer<ffi.Int8> asctime(
-    ffi.Pointer<tm> __tp,
+    ffi.Pointer<tm> _tp,
   ) {
     return _asctime(
-      __tp,
+      _tp,
     );
   }
 
@@ -4830,10 +4830,10 @@ class ALSA {
   late final _dart_asctime _asctime = _asctime_ptr.asFunction<_dart_asctime>();
 
   ffi.Pointer<ffi.Int8> ctime(
-    ffi.Pointer<ffi.Int64> __timer,
+    ffi.Pointer<ffi.Int64> _timer,
   ) {
     return _ctime(
-      __timer,
+      _timer,
     );
   }
 
@@ -4841,12 +4841,12 @@ class ALSA {
   late final _dart_ctime _ctime = _ctime_ptr.asFunction<_dart_ctime>();
 
   ffi.Pointer<ffi.Int8> asctime_r(
-    ffi.Pointer<tm> __tp,
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<tm> _tp,
+    ffi.Pointer<ffi.Int8> _buf,
   ) {
     return _asctime_r(
-      __tp,
-      __buf,
+      _tp,
+      _buf,
     );
   }
 
@@ -4856,12 +4856,12 @@ class ALSA {
       _asctime_r_ptr.asFunction<_dart_asctime_r>();
 
   ffi.Pointer<ffi.Int8> ctime_r(
-    ffi.Pointer<ffi.Int64> __timer,
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<ffi.Int64> _timer,
+    ffi.Pointer<ffi.Int8> _buf,
   ) {
     return _ctime_r(
-      __timer,
-      __buf,
+      _timer,
+      _buf,
     );
   }
 
@@ -4917,10 +4917,10 @@ class ALSA {
   set timezone(int value) => _timezone.value = value;
 
   int timegm(
-    ffi.Pointer<tm> __tp,
+    ffi.Pointer<tm> _tp,
   ) {
     return _timegm(
-      __tp,
+      _tp,
     );
   }
 
@@ -4928,10 +4928,10 @@ class ALSA {
   late final _dart_timegm _timegm = _timegm_ptr.asFunction<_dart_timegm>();
 
   int timelocal(
-    ffi.Pointer<tm> __tp,
+    ffi.Pointer<tm> _tp,
   ) {
     return _timelocal(
-      __tp,
+      _tp,
     );
   }
 
@@ -4941,10 +4941,10 @@ class ALSA {
       _timelocal_ptr.asFunction<_dart_timelocal>();
 
   int dysize(
-    int __year,
+    int _year,
   ) {
     return _dysize(
-      __year,
+      _year,
     );
   }
 
@@ -4952,12 +4952,12 @@ class ALSA {
   late final _dart_dysize _dysize = _dysize_ptr.asFunction<_dart_dysize>();
 
   int nanosleep(
-    ffi.Pointer<timespec> __requested_time,
-    ffi.Pointer<timespec> __remaining,
+    ffi.Pointer<timespec> _requested_time,
+    ffi.Pointer<timespec> _remaining,
   ) {
     return _nanosleep(
-      __requested_time,
-      __remaining,
+      _requested_time,
+      _remaining,
     );
   }
 
@@ -4967,12 +4967,12 @@ class ALSA {
       _nanosleep_ptr.asFunction<_dart_nanosleep>();
 
   int clock_getres(
-    int __clock_id,
-    ffi.Pointer<timespec> __res,
+    int _clock_id,
+    ffi.Pointer<timespec> _res,
   ) {
     return _clock_getres(
-      __clock_id,
-      __res,
+      _clock_id,
+      _res,
     );
   }
 
@@ -4982,12 +4982,12 @@ class ALSA {
       _clock_getres_ptr.asFunction<_dart_clock_getres>();
 
   int clock_gettime(
-    int __clock_id,
-    ffi.Pointer<timespec> __tp,
+    int _clock_id,
+    ffi.Pointer<timespec> _tp,
   ) {
     return _clock_gettime(
-      __clock_id,
-      __tp,
+      _clock_id,
+      _tp,
     );
   }
 
@@ -4997,12 +4997,12 @@ class ALSA {
       _clock_gettime_ptr.asFunction<_dart_clock_gettime>();
 
   int clock_settime(
-    int __clock_id,
-    ffi.Pointer<timespec> __tp,
+    int _clock_id,
+    ffi.Pointer<timespec> _tp,
   ) {
     return _clock_settime(
-      __clock_id,
-      __tp,
+      _clock_id,
+      _tp,
     );
   }
 
@@ -5012,16 +5012,16 @@ class ALSA {
       _clock_settime_ptr.asFunction<_dart_clock_settime>();
 
   int clock_nanosleep(
-    int __clock_id,
-    int __flags,
-    ffi.Pointer<timespec> __req,
-    ffi.Pointer<timespec> __rem,
+    int _clock_id,
+    int _flags,
+    ffi.Pointer<timespec> _req,
+    ffi.Pointer<timespec> _rem,
   ) {
     return _clock_nanosleep(
-      __clock_id,
-      __flags,
-      __req,
-      __rem,
+      _clock_id,
+      _flags,
+      _req,
+      _rem,
     );
   }
 
@@ -5031,12 +5031,12 @@ class ALSA {
       _clock_nanosleep_ptr.asFunction<_dart_clock_nanosleep>();
 
   int clock_getcpuclockid(
-    int __pid,
-    ffi.Pointer<ffi.Int32> __clock_id,
+    int _pid,
+    ffi.Pointer<ffi.Int32> _clock_id,
   ) {
     return _clock_getcpuclockid(
-      __pid,
-      __clock_id,
+      _pid,
+      _clock_id,
     );
   }
 
@@ -5047,14 +5047,14 @@ class ALSA {
       _clock_getcpuclockid_ptr.asFunction<_dart_clock_getcpuclockid>();
 
   int timer_create(
-    int __clock_id,
-    ffi.Pointer<sigevent> __evp,
-    ffi.Pointer<ffi.Pointer<ffi.Void>> __timerid,
+    int _clock_id,
+    ffi.Pointer<sigevent> _evp,
+    ffi.Pointer<ffi.Pointer<ffi.Void>> _timerid,
   ) {
     return _timer_create(
-      __clock_id,
-      __evp,
-      __timerid,
+      _clock_id,
+      _evp,
+      _timerid,
     );
   }
 
@@ -5064,10 +5064,10 @@ class ALSA {
       _timer_create_ptr.asFunction<_dart_timer_create>();
 
   int timer_delete(
-    ffi.Pointer<ffi.Void> __timerid,
+    ffi.Pointer<ffi.Void> _timerid,
   ) {
     return _timer_delete(
-      __timerid,
+      _timerid,
     );
   }
 
@@ -5077,16 +5077,16 @@ class ALSA {
       _timer_delete_ptr.asFunction<_dart_timer_delete>();
 
   int timer_settime(
-    ffi.Pointer<ffi.Void> __timerid,
-    int __flags,
-    ffi.Pointer<itimerspec> __value,
-    ffi.Pointer<itimerspec> __ovalue,
+    ffi.Pointer<ffi.Void> _timerid,
+    int _flags,
+    ffi.Pointer<itimerspec> _value,
+    ffi.Pointer<itimerspec> _ovalue,
   ) {
     return _timer_settime(
-      __timerid,
-      __flags,
-      __value,
-      __ovalue,
+      _timerid,
+      _flags,
+      _value,
+      _ovalue,
     );
   }
 
@@ -5096,12 +5096,12 @@ class ALSA {
       _timer_settime_ptr.asFunction<_dart_timer_settime>();
 
   int timer_gettime(
-    ffi.Pointer<ffi.Void> __timerid,
-    ffi.Pointer<itimerspec> __value,
+    ffi.Pointer<ffi.Void> _timerid,
+    ffi.Pointer<itimerspec> _value,
   ) {
     return _timer_gettime(
-      __timerid,
-      __value,
+      _timerid,
+      _value,
     );
   }
 
@@ -5111,10 +5111,10 @@ class ALSA {
       _timer_gettime_ptr.asFunction<_dart_timer_gettime>();
 
   int timer_getoverrun(
-    ffi.Pointer<ffi.Void> __timerid,
+    ffi.Pointer<ffi.Void> _timerid,
   ) {
     return _timer_getoverrun(
-      __timerid,
+      _timerid,
     );
   }
 
@@ -5124,12 +5124,12 @@ class ALSA {
       _timer_getoverrun_ptr.asFunction<_dart_timer_getoverrun>();
 
   int timespec_get(
-    ffi.Pointer<timespec> __ts,
-    int __base,
+    ffi.Pointer<timespec> _ts,
+    int _base,
   ) {
     return _timespec_get(
-      __ts,
-      __base,
+      _ts,
+      _base,
     );
   }
 
@@ -5209,13 +5209,13 @@ class ALSA {
     ffi.Pointer<ffi.Pointer<snd_async_handler_>> handler,
     int fd,
     ffi.Pointer<ffi.NativeFunction<snd_async_callback_t>> callback,
-    ffi.Pointer<ffi.Void> private_data,
+    ffi.Pointer<ffi.Void> privateData,
   ) {
     return _snd_async_add_handler(
       handler,
       fd,
       callback,
-      private_data,
+      privateData,
     );
   }
 
@@ -5364,12 +5364,12 @@ class ALSA {
   int snd_input_stdio_attach(
     ffi.Pointer<ffi.Pointer<snd_input_>> inputp,
     ffi.Pointer<IO_FILE_> fp,
-    int _close,
+    int close,
   ) {
     return _snd_input_stdio_attach(
       inputp,
       fp,
-      _close,
+      close,
     );
   }
 
@@ -5491,12 +5491,12 @@ class ALSA {
   int snd_output_stdio_attach(
     ffi.Pointer<ffi.Pointer<snd_output_>> outputp,
     ffi.Pointer<IO_FILE_> fp,
-    int _close,
+    int close,
   ) {
     return _snd_output_stdio_attach(
       outputp,
       fp,
-      _close,
+      close,
     );
   }
 
@@ -5906,14 +5906,14 @@ class ALSA {
     ffi.Pointer<snd_config_> config,
     ffi.Pointer<snd_config_> root,
     ffi.Pointer<ffi.Int8> args,
-    ffi.Pointer<snd_config_> private_data,
+    ffi.Pointer<snd_config_> privateData,
     ffi.Pointer<ffi.Pointer<snd_config_>> result,
   ) {
     return _snd_config_expand(
       config,
       root,
       args,
-      private_data,
+      privateData,
       result,
     );
   }
@@ -5926,13 +5926,13 @@ class ALSA {
   int snd_config_evaluate(
     ffi.Pointer<snd_config_> config,
     ffi.Pointer<snd_config_> root,
-    ffi.Pointer<snd_config_> private_data,
+    ffi.Pointer<snd_config_> privateData,
     ffi.Pointer<ffi.Pointer<snd_config_>> result,
   ) {
     return _snd_config_evaluate(
       config,
       root,
-      private_data,
+      privateData,
       result,
     );
   }
@@ -6750,7 +6750,7 @@ class ALSA {
     ffi.Pointer<ffi.Pointer<snd_pcm_>> pcm,
     ffi.Pointer<snd_config_> root,
     ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> orig_name,
+    ffi.Pointer<ffi.Int8> origName,
     int stream,
     int mode,
   ) {
@@ -6758,7 +6758,7 @@ class ALSA {
       pcm,
       root,
       name,
-      orig_name,
+      origName,
       stream,
       mode,
     );
@@ -6896,13 +6896,13 @@ class ALSA {
     ffi.Pointer<ffi.Pointer<snd_async_handler_>> handler,
     ffi.Pointer<snd_pcm_> pcm,
     ffi.Pointer<ffi.NativeFunction<snd_async_callback_t>> callback,
-    ffi.Pointer<ffi.Void> private_data,
+    ffi.Pointer<ffi.Void> privateData,
   ) {
     return _snd_async_add_pcm_handler(
       handler,
       pcm,
       callback,
-      private_data,
+      privateData,
     );
   }
 
@@ -7588,7 +7588,7 @@ class ALSA {
     int access,
     int channels,
     int rate,
-    int soft_resample,
+    int softResample,
     int latency,
   ) {
     return _snd_pcm_set_params(
@@ -7597,7 +7597,7 @@ class ALSA {
       access,
       channels,
       rate,
-      soft_resample,
+      softResample,
       latency,
     );
   }
@@ -7609,13 +7609,13 @@ class ALSA {
 
   int snd_pcm_get_params(
     ffi.Pointer<snd_pcm_> pcm,
-    ffi.Pointer<ffi.Uint64> buffer_size,
-    ffi.Pointer<ffi.Uint64> period_size,
+    ffi.Pointer<ffi.Uint64> bufferSize,
+    ffi.Pointer<ffi.Uint64> periodSize,
   ) {
     return _snd_pcm_get_params(
       pcm,
-      buffer_size,
-      period_size,
+      bufferSize,
+      periodSize,
     );
   }
 
@@ -8122,13 +8122,13 @@ class ALSA {
 
   int snd_pcm_hw_params_get_rate_numden(
     ffi.Pointer<snd_pcm_hw_params_> params,
-    ffi.Pointer<ffi.Uint32> rate_num,
-    ffi.Pointer<ffi.Uint32> rate_den,
+    ffi.Pointer<ffi.Uint32> rateNum,
+    ffi.Pointer<ffi.Uint32> rateDen,
   ) {
     return _snd_pcm_hw_params_get_rate_numden(
       params,
-      rate_num,
-      rate_den,
+      rateNum,
+      rateDen,
     );
   }
 
@@ -8228,11 +8228,11 @@ class ALSA {
 
   int snd_pcm_hw_params_get_access(
     ffi.Pointer<snd_pcm_hw_params_> params,
-    ffi.Pointer<ffi.Int32> _access,
+    ffi.Pointer<ffi.Int32> access,
   ) {
     return _snd_pcm_hw_params_get_access(
       params,
-      _access,
+      access,
     );
   }
 
@@ -8246,12 +8246,12 @@ class ALSA {
   int snd_pcm_hw_params_test_access(
     ffi.Pointer<snd_pcm_> pcm,
     ffi.Pointer<snd_pcm_hw_params_> params,
-    int _access,
+    int access,
   ) {
     return _snd_pcm_hw_params_test_access(
       pcm,
       params,
-      _access,
+      access,
     );
   }
 
@@ -8265,12 +8265,12 @@ class ALSA {
   int snd_pcm_hw_params_set_access(
     ffi.Pointer<snd_pcm_> pcm,
     ffi.Pointer<snd_pcm_hw_params_> params,
-    int _access,
+    int access,
   ) {
     return _snd_pcm_hw_params_set_access(
       pcm,
       params,
-      _access,
+      access,
     );
   }
 
@@ -8284,12 +8284,12 @@ class ALSA {
   int snd_pcm_hw_params_set_access_first(
     ffi.Pointer<snd_pcm_> pcm,
     ffi.Pointer<snd_pcm_hw_params_> params,
-    ffi.Pointer<ffi.Int32> _access,
+    ffi.Pointer<ffi.Int32> access,
   ) {
     return _snd_pcm_hw_params_set_access_first(
       pcm,
       params,
-      _access,
+      access,
     );
   }
 
@@ -8304,12 +8304,12 @@ class ALSA {
   int snd_pcm_hw_params_set_access_last(
     ffi.Pointer<snd_pcm_> pcm,
     ffi.Pointer<snd_pcm_hw_params_> params,
-    ffi.Pointer<ffi.Int32> _access,
+    ffi.Pointer<ffi.Int32> access,
   ) {
     return _snd_pcm_hw_params_set_access_last(
       pcm,
       params,
-      _access,
+      access,
     );
   }
 
@@ -11423,11 +11423,11 @@ class ALSA {
 
   void snd_pcm_status_get_audio_htstamp_report(
     ffi.Pointer<snd_pcm_status_> obj,
-    ffi.Pointer<snd_pcm_audio_tstamp_report_t> audio_tstamp_report,
+    ffi.Pointer<snd_pcm_audio_tstamp_report_t> audioTstampReport,
   ) {
     return _snd_pcm_status_get_audio_htstamp_report(
       obj,
-      audio_tstamp_report,
+      audioTstampReport,
     );
   }
 
@@ -11441,11 +11441,11 @@ class ALSA {
 
   void snd_pcm_status_set_audio_htstamp_config(
     ffi.Pointer<snd_pcm_status_> obj,
-    ffi.Pointer<snd_pcm_audio_tstamp_config_t> audio_tstamp_config,
+    ffi.Pointer<snd_pcm_audio_tstamp_config_t> audioTstampConfig,
   ) {
     return _snd_pcm_status_set_audio_htstamp_config(
       obj,
-      audio_tstamp_config,
+      audioTstampConfig,
     );
   }
 
@@ -11545,10 +11545,10 @@ class ALSA {
       _snd_pcm_stream_name_ptr.asFunction<_dart_snd_pcm_stream_name>();
 
   ffi.Pointer<ffi.Int8> snd_pcm_access_name(
-    int _access,
+    int access,
   ) {
     return _snd_pcm_access_name(
-      _access,
+      access,
     );
   }
 
@@ -12009,13 +12009,13 @@ class ALSA {
     int width,
     int pwidth,
     int unsignd,
-    int big_endian,
+    int bigEndian,
   ) {
     return _snd_pcm_build_linear_format(
       width,
       pwidth,
       unsignd,
-      big_endian,
+      bigEndian,
     );
   }
 
@@ -12187,14 +12187,14 @@ class ALSA {
           .asFunction<_dart_snd_pcm_samples_to_bytes>();
 
   int snd_pcm_area_silence(
-    ffi.Pointer<snd_pcm_channel_area_t> dst_channel,
-    int dst_offset,
+    ffi.Pointer<snd_pcm_channel_area_t> dstChannel,
+    int dstOffset,
     int samples,
     int format,
   ) {
     return _snd_pcm_area_silence(
-      dst_channel,
-      dst_offset,
+      dstChannel,
+      dstOffset,
       samples,
       format,
     );
@@ -12207,15 +12207,15 @@ class ALSA {
       _snd_pcm_area_silence_ptr.asFunction<_dart_snd_pcm_area_silence>();
 
   int snd_pcm_areas_silence(
-    ffi.Pointer<snd_pcm_channel_area_t> dst_channels,
-    int dst_offset,
+    ffi.Pointer<snd_pcm_channel_area_t> dstChannels,
+    int dstOffset,
     int channels,
     int frames,
     int format,
   ) {
     return _snd_pcm_areas_silence(
-      dst_channels,
-      dst_offset,
+      dstChannels,
+      dstOffset,
       channels,
       frames,
       format,
@@ -12229,18 +12229,18 @@ class ALSA {
       _snd_pcm_areas_silence_ptr.asFunction<_dart_snd_pcm_areas_silence>();
 
   int snd_pcm_area_copy(
-    ffi.Pointer<snd_pcm_channel_area_t> dst_channel,
-    int dst_offset,
-    ffi.Pointer<snd_pcm_channel_area_t> src_channel,
-    int src_offset,
+    ffi.Pointer<snd_pcm_channel_area_t> dstChannel,
+    int dstOffset,
+    ffi.Pointer<snd_pcm_channel_area_t> srcChannel,
+    int srcOffset,
     int samples,
     int format,
   ) {
     return _snd_pcm_area_copy(
-      dst_channel,
-      dst_offset,
-      src_channel,
-      src_offset,
+      dstChannel,
+      dstOffset,
+      srcChannel,
+      srcOffset,
       samples,
       format,
     );
@@ -12252,19 +12252,19 @@ class ALSA {
       _snd_pcm_area_copy_ptr.asFunction<_dart_snd_pcm_area_copy>();
 
   int snd_pcm_areas_copy(
-    ffi.Pointer<snd_pcm_channel_area_t> dst_channels,
-    int dst_offset,
-    ffi.Pointer<snd_pcm_channel_area_t> src_channels,
-    int src_offset,
+    ffi.Pointer<snd_pcm_channel_area_t> dstChannels,
+    int dstOffset,
+    ffi.Pointer<snd_pcm_channel_area_t> srcChannels,
+    int srcOffset,
     int channels,
     int frames,
     int format,
   ) {
     return _snd_pcm_areas_copy(
-      dst_channels,
-      dst_offset,
-      src_channels,
-      src_offset,
+      dstChannels,
+      dstOffset,
+      srcChannels,
+      srcOffset,
       channels,
       frames,
       format,
@@ -12277,23 +12277,23 @@ class ALSA {
       _snd_pcm_areas_copy_ptr.asFunction<_dart_snd_pcm_areas_copy>();
 
   int snd_pcm_areas_copy_wrap(
-    ffi.Pointer<snd_pcm_channel_area_t> dst_channels,
-    int dst_offset,
-    int dst_size,
-    ffi.Pointer<snd_pcm_channel_area_t> src_channels,
-    int src_offset,
-    int src_size,
+    ffi.Pointer<snd_pcm_channel_area_t> dstChannels,
+    int dstOffset,
+    int dstSize,
+    ffi.Pointer<snd_pcm_channel_area_t> srcChannels,
+    int srcOffset,
+    int srcSize,
     int channels,
     int frames,
     int format,
   ) {
     return _snd_pcm_areas_copy_wrap(
-      dst_channels,
-      dst_offset,
-      dst_size,
-      src_channels,
-      src_offset,
-      src_size,
+      dstChannels,
+      dstOffset,
+      dstSize,
+      srcChannels,
+      srcOffset,
+      srcSize,
       channels,
       frames,
       format,
@@ -12337,11 +12337,11 @@ class ALSA {
 
   void snd_pcm_hook_set_private(
     ffi.Pointer<snd_pcm_hook_> hook,
-    ffi.Pointer<ffi.Void> private_data,
+    ffi.Pointer<ffi.Void> privateData,
   ) {
     return _snd_pcm_hook_set_private(
       hook,
-      private_data,
+      privateData,
     );
   }
 
@@ -12357,14 +12357,14 @@ class ALSA {
     ffi.Pointer<snd_pcm_> pcm,
     int type,
     ffi.Pointer<ffi.NativeFunction<snd_pcm_hook_func_t>> func,
-    ffi.Pointer<ffi.Void> private_data,
+    ffi.Pointer<ffi.Void> privateData,
   ) {
     return _snd_pcm_hook_add(
       hookp,
       pcm,
       type,
       func,
-      private_data,
+      privateData,
     );
   }
 
@@ -12630,8 +12630,8 @@ class ALSA {
     int format,
     int subformat,
     int latency,
-    int _access,
-    int xrun_type,
+    int access,
+    int xrunType,
   ) {
     return _snd_spcm_init(
       pcm,
@@ -12640,8 +12640,8 @@ class ALSA {
       format,
       subformat,
       latency,
-      _access,
-      xrun_type,
+      access,
+      xrunType,
     );
   }
 
@@ -12651,28 +12651,28 @@ class ALSA {
       _snd_spcm_init_ptr.asFunction<_dart_snd_spcm_init>();
 
   int snd_spcm_init_duplex(
-    ffi.Pointer<snd_pcm_> playback_pcm,
-    ffi.Pointer<snd_pcm_> capture_pcm,
+    ffi.Pointer<snd_pcm_> playbackPcm,
+    ffi.Pointer<snd_pcm_> capturePcm,
     int rate,
     int channels,
     int format,
     int subformat,
     int latency,
-    int _access,
-    int xrun_type,
-    int duplex_type,
+    int access,
+    int xrunType,
+    int duplexType,
   ) {
     return _snd_spcm_init_duplex(
-      playback_pcm,
-      capture_pcm,
+      playbackPcm,
+      capturePcm,
       rate,
       channels,
       format,
       subformat,
       latency,
-      _access,
-      xrun_type,
-      duplex_type,
+      access,
+      xrunType,
+      duplexType,
     );
   }
 
@@ -12685,14 +12685,14 @@ class ALSA {
   int snd_spcm_init_get_params(
     ffi.Pointer<snd_pcm_> pcm,
     ffi.Pointer<ffi.Uint32> rate,
-    ffi.Pointer<ffi.Uint64> buffer_size,
-    ffi.Pointer<ffi.Uint64> period_size,
+    ffi.Pointer<ffi.Uint64> bufferSize,
+    ffi.Pointer<ffi.Uint64> periodSize,
   ) {
     return _snd_spcm_init_get_params(
       pcm,
       rate,
-      buffer_size,
-      period_size,
+      bufferSize,
+      periodSize,
     );
   }
 
@@ -13109,14 +13109,14 @@ class ALSA {
           .asFunction<_dart_snd_pcm_hw_params_set_tick_time_last>();
 
   int snd_rawmidi_open(
-    ffi.Pointer<ffi.Pointer<snd_rawmidi_>> in_rmidi,
-    ffi.Pointer<ffi.Pointer<snd_rawmidi_>> out_rmidi,
+    ffi.Pointer<ffi.Pointer<snd_rawmidi_>> inRmidi,
+    ffi.Pointer<ffi.Pointer<snd_rawmidi_>> outRmidi,
     ffi.Pointer<ffi.Int8> name,
     int mode,
   ) {
     return _snd_rawmidi_open(
-      in_rmidi,
-      out_rmidi,
+      inRmidi,
+      outRmidi,
       name,
       mode,
     );
@@ -13128,15 +13128,15 @@ class ALSA {
       _snd_rawmidi_open_ptr.asFunction<_dart_snd_rawmidi_open>();
 
   int snd_rawmidi_open_lconf(
-    ffi.Pointer<ffi.Pointer<snd_rawmidi_>> in_rmidi,
-    ffi.Pointer<ffi.Pointer<snd_rawmidi_>> out_rmidi,
+    ffi.Pointer<ffi.Pointer<snd_rawmidi_>> inRmidi,
+    ffi.Pointer<ffi.Pointer<snd_rawmidi_>> outRmidi,
     ffi.Pointer<ffi.Int8> name,
     int mode,
     ffi.Pointer<snd_config_> lconf,
   ) {
     return _snd_rawmidi_open_lconf(
-      in_rmidi,
-      out_rmidi,
+      inRmidi,
+      outRmidi,
       name,
       mode,
       lconf,
@@ -14090,13 +14090,13 @@ class ALSA {
     ffi.Pointer<ffi.Pointer<snd_async_handler_>> handler,
     ffi.Pointer<snd_timer_> timer,
     ffi.Pointer<ffi.NativeFunction<snd_async_callback_t>> callback,
-    ffi.Pointer<ffi.Void> private_data,
+    ffi.Pointer<ffi.Void> privateData,
   ) {
     return _snd_async_add_timer_handler(
       handler,
       timer,
       callback,
-      private_data,
+      privateData,
     );
   }
 
@@ -14333,11 +14333,11 @@ class ALSA {
 
   void snd_timer_id_set_class(
     ffi.Pointer<snd_timer_id_> id,
-    int dev_class,
+    int devClass,
   ) {
     return _snd_timer_id_set_class(
       id,
-      dev_class,
+      devClass,
     );
   }
 
@@ -14363,11 +14363,11 @@ class ALSA {
 
   void snd_timer_id_set_sclass(
     ffi.Pointer<snd_timer_id_> id,
-    int dev_sclass,
+    int devSclass,
   ) {
     return _snd_timer_id_set_sclass(
       id,
-      dev_sclass,
+      devSclass,
     );
   }
 
@@ -14869,11 +14869,11 @@ class ALSA {
 
   int snd_timer_params_set_auto_start(
     ffi.Pointer<snd_timer_params_> params,
-    int auto_start,
+    int autoStart,
   ) {
     return _snd_timer_params_set_auto_start(
       params,
-      auto_start,
+      autoStart,
     );
   }
 
@@ -14933,11 +14933,11 @@ class ALSA {
 
   int snd_timer_params_set_early_event(
     ffi.Pointer<snd_timer_params_> params,
-    int early_event,
+    int earlyEvent,
   ) {
     return _snd_timer_params_set_early_event(
       params,
-      early_event,
+      earlyEvent,
     );
   }
 
@@ -14997,11 +14997,11 @@ class ALSA {
 
   void snd_timer_params_set_queue_size(
     ffi.Pointer<snd_timer_params_> params,
-    int queue_size,
+    int queueSize,
   ) {
     return _snd_timer_params_set_queue_size(
       params,
-      queue_size,
+      queueSize,
     );
   }
 
@@ -15800,11 +15800,11 @@ class ALSA {
 
   void snd_hwdep_dsp_image_set_index(
     ffi.Pointer<snd_hwdep_dsp_image_> obj,
-    int _index,
+    int index,
   ) {
     return _snd_hwdep_dsp_image_set_index(
       obj,
-      _index,
+      index,
     );
   }
 
@@ -16026,14 +16026,14 @@ class ALSA {
     ffi.Pointer<ffi.Pointer<snd_ctl_>> ctl,
     ffi.Pointer<snd_config_> root,
     ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> orig_name,
+    ffi.Pointer<ffi.Int8> origName,
     int mode,
   ) {
     return _snd_ctl_open_fallback(
       ctl,
       root,
       name,
-      orig_name,
+      origName,
       mode,
     );
   }
@@ -16076,13 +16076,13 @@ class ALSA {
     ffi.Pointer<ffi.Pointer<snd_async_handler_>> handler,
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<ffi.NativeFunction<snd_async_callback_t>> callback,
-    ffi.Pointer<ffi.Void> private_data,
+    ffi.Pointer<ffi.Void> privateData,
   ) {
     return _snd_async_add_ctl_handler(
       handler,
       ctl,
       callback,
-      private_data,
+      privateData,
     );
   }
 
@@ -16290,13 +16290,13 @@ class ALSA {
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<snd_ctl_elem_id_> id,
     ffi.Pointer<ffi.Uint32> tlv,
-    int tlv_size,
+    int tlvSize,
   ) {
     return _snd_ctl_elem_tlv_read(
       ctl,
       id,
       tlv,
-      tlv_size,
+      tlvSize,
     );
   }
 
@@ -18246,8 +18246,8 @@ class ALSA {
   int snd_ctl_add_integer_elem_set(
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<snd_ctl_elem_info_> info,
-    int element_count,
-    int member_count,
+    int elementCount,
+    int memberCount,
     int min,
     int max,
     int step,
@@ -18255,8 +18255,8 @@ class ALSA {
     return _snd_ctl_add_integer_elem_set(
       ctl,
       info,
-      element_count,
-      member_count,
+      elementCount,
+      memberCount,
       min,
       max,
       step,
@@ -18273,8 +18273,8 @@ class ALSA {
   int snd_ctl_add_integer64_elem_set(
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<snd_ctl_elem_info_> info,
-    int element_count,
-    int member_count,
+    int elementCount,
+    int memberCount,
     int min,
     int max,
     int step,
@@ -18282,8 +18282,8 @@ class ALSA {
     return _snd_ctl_add_integer64_elem_set(
       ctl,
       info,
-      element_count,
-      member_count,
+      elementCount,
+      memberCount,
       min,
       max,
       step,
@@ -18300,14 +18300,14 @@ class ALSA {
   int snd_ctl_add_boolean_elem_set(
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<snd_ctl_elem_info_> info,
-    int element_count,
-    int member_count,
+    int elementCount,
+    int memberCount,
   ) {
     return _snd_ctl_add_boolean_elem_set(
       ctl,
       info,
-      element_count,
-      member_count,
+      elementCount,
+      memberCount,
     );
   }
 
@@ -18321,16 +18321,16 @@ class ALSA {
   int snd_ctl_add_enumerated_elem_set(
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<snd_ctl_elem_info_> info,
-    int element_count,
-    int member_count,
+    int elementCount,
+    int memberCount,
     int items,
     ffi.Pointer<ffi.Pointer<ffi.Int8>> labels,
   ) {
     return _snd_ctl_add_enumerated_elem_set(
       ctl,
       info,
-      element_count,
-      member_count,
+      elementCount,
+      memberCount,
       items,
       labels,
     );
@@ -18346,14 +18346,14 @@ class ALSA {
   int snd_ctl_add_bytes_elem_set(
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<snd_ctl_elem_info_> info,
-    int element_count,
-    int member_count,
+    int elementCount,
+    int memberCount,
   ) {
     return _snd_ctl_add_bytes_elem_set(
       ctl,
       info,
-      element_count,
-      member_count,
+      elementCount,
+      memberCount,
     );
   }
 
@@ -19053,13 +19053,13 @@ class ALSA {
 
   int snd_tlv_parse_dB_info(
     ffi.Pointer<ffi.Uint32> tlv,
-    int tlv_size,
-    ffi.Pointer<ffi.Pointer<ffi.Uint32>> db_tlvp,
+    int tlvSize,
+    ffi.Pointer<ffi.Pointer<ffi.Uint32>> dbTlvp,
   ) {
     return _snd_tlv_parse_dB_info(
       tlv,
-      tlv_size,
-      db_tlvp,
+      tlvSize,
+      dbTlvp,
     );
   }
 
@@ -19096,14 +19096,14 @@ class ALSA {
     int rangemin,
     int rangemax,
     int volume,
-    ffi.Pointer<ffi.Int64> db_gain,
+    ffi.Pointer<ffi.Int64> dbGain,
   ) {
     return _snd_tlv_convert_to_dB(
       tlv,
       rangemin,
       rangemax,
       volume,
-      db_gain,
+      dbGain,
     );
   }
 
@@ -19117,7 +19117,7 @@ class ALSA {
     ffi.Pointer<ffi.Uint32> tlv,
     int rangemin,
     int rangemax,
-    int db_gain,
+    int dbGain,
     ffi.Pointer<ffi.Int64> value,
     int xdir,
   ) {
@@ -19125,7 +19125,7 @@ class ALSA {
       tlv,
       rangemin,
       rangemax,
-      db_gain,
+      dbGain,
       value,
       xdir,
     );
@@ -19161,13 +19161,13 @@ class ALSA {
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<snd_ctl_elem_id_> id,
     int volume,
-    ffi.Pointer<ffi.Int64> db_gain,
+    ffi.Pointer<ffi.Int64> dbGain,
   ) {
     return _snd_ctl_convert_to_dB(
       ctl,
       id,
       volume,
-      db_gain,
+      dbGain,
     );
   }
 
@@ -19180,14 +19180,14 @@ class ALSA {
   int snd_ctl_convert_from_dB(
     ffi.Pointer<snd_ctl_> ctl,
     ffi.Pointer<snd_ctl_elem_id_> id,
-    int db_gain,
+    int dbGain,
     ffi.Pointer<ffi.Int64> value,
     int xdir,
   ) {
     return _snd_ctl_convert_from_dB(
       ctl,
       id,
-      db_gain,
+      dbGain,
       value,
       xdir,
     );
@@ -19606,12 +19606,12 @@ class ALSA {
   int snd_hctl_elem_tlv_read(
     ffi.Pointer<snd_hctl_elem_> elem,
     ffi.Pointer<ffi.Uint32> tlv,
-    int tlv_size,
+    int tlvSize,
   ) {
     return _snd_hctl_elem_tlv_read(
       elem,
       tlv,
-      tlv_size,
+      tlvSize,
     );
   }
 
@@ -19826,14 +19826,14 @@ class ALSA {
     ffi.Pointer<ffi.Pointer<snd_sctl_>> ctl,
     ffi.Pointer<snd_ctl_> handle,
     ffi.Pointer<snd_config_> config,
-    ffi.Pointer<snd_config_> private_data,
+    ffi.Pointer<snd_config_> privateData,
     int mode,
   ) {
     return _snd_sctl_build(
       ctl,
       handle,
       config,
-      private_data,
+      privateData,
       mode,
     );
   }
@@ -20334,16 +20334,16 @@ class ALSA {
   int snd_mixer_elem_new(
     ffi.Pointer<ffi.Pointer<snd_mixer_elem_>> elem,
     int type,
-    int compare_weight,
-    ffi.Pointer<ffi.Void> private_data,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_11>> private_free,
+    int compareWeight,
+    ffi.Pointer<ffi.Void> privateData,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_11>> privateFree,
   ) {
     return _snd_mixer_elem_new(
       elem,
       type,
-      compare_weight,
-      private_data,
-      private_free,
+      compareWeight,
+      privateData,
+      privateFree,
     );
   }
 
@@ -20618,11 +20618,11 @@ class ALSA {
 
   int snd_mixer_class_set_private(
     ffi.Pointer<snd_mixer_class_> class_,
-    ffi.Pointer<ffi.Void> private_data,
+    ffi.Pointer<ffi.Void> privateData,
   ) {
     return _snd_mixer_class_set_private(
       class_,
-      private_data,
+      privateData,
     );
   }
 
@@ -20635,11 +20635,11 @@ class ALSA {
 
   int snd_mixer_class_set_private_free(
     ffi.Pointer<snd_mixer_class_> class_,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_12>> private_free,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_12>> privateFree,
   ) {
     return _snd_mixer_class_set_private_free(
       class_,
-      private_free,
+      privateFree,
     );
   }
 
@@ -22564,11 +22564,11 @@ class ALSA {
 
   void snd_seq_client_info_event_filter_add(
     ffi.Pointer<snd_seq_client_info_> info,
-    int event_type,
+    int eventType,
   ) {
     return _snd_seq_client_info_event_filter_add(
       info,
-      event_type,
+      eventType,
     );
   }
 
@@ -22582,11 +22582,11 @@ class ALSA {
 
   void snd_seq_client_info_event_filter_del(
     ffi.Pointer<snd_seq_client_info_> info,
-    int event_type,
+    int eventType,
   ) {
     return _snd_seq_client_info_event_filter_del(
       info,
-      event_type,
+      eventType,
     );
   }
 
@@ -22600,11 +22600,11 @@ class ALSA {
 
   int snd_seq_client_info_event_filter_check(
     ffi.Pointer<snd_seq_client_info_> info,
-    int event_type,
+    int eventType,
   ) {
     return _snd_seq_client_info_event_filter_check(
       info,
-      event_type,
+      eventType,
     );
   }
 
@@ -24153,11 +24153,11 @@ class ALSA {
 
   void snd_seq_query_subscribe_set_index(
     ffi.Pointer<snd_seq_query_subscribe_> info,
-    int _index,
+    int index,
   ) {
     return _snd_seq_query_subscribe_set_index(
       info,
-      _index,
+      index,
     );
   }
 
@@ -25229,11 +25229,11 @@ class ALSA {
 
   int snd_seq_event_input_pending(
     ffi.Pointer<snd_seq_> seq,
-    int fetch_sequencer,
+    int fetchSequencer,
   ) {
     return _snd_seq_event_input_pending(
       seq,
-      fetch_sequencer,
+      fetchSequencer,
     );
   }
 
@@ -25748,15 +25748,15 @@ class ALSA {
 
   int snd_seq_connect_from(
     ffi.Pointer<snd_seq_> seq,
-    int my_port,
-    int src_client,
-    int src_port,
+    int myPort,
+    int srcClient,
+    int srcPort,
   ) {
     return _snd_seq_connect_from(
       seq,
-      my_port,
-      src_client,
-      src_port,
+      myPort,
+      srcClient,
+      srcPort,
     );
   }
 
@@ -25768,15 +25768,15 @@ class ALSA {
 
   int snd_seq_connect_to(
     ffi.Pointer<snd_seq_> seq,
-    int my_port,
-    int dest_client,
-    int dest_port,
+    int myPort,
+    int destClient,
+    int destPort,
   ) {
     return _snd_seq_connect_to(
       seq,
-      my_port,
-      dest_client,
-      dest_port,
+      myPort,
+      destClient,
+      destPort,
     );
   }
 
@@ -25787,15 +25787,15 @@ class ALSA {
 
   int snd_seq_disconnect_from(
     ffi.Pointer<snd_seq_> seq,
-    int my_port,
-    int src_client,
-    int src_port,
+    int myPort,
+    int srcClient,
+    int srcPort,
   ) {
     return _snd_seq_disconnect_from(
       seq,
-      my_port,
-      src_client,
-      src_port,
+      myPort,
+      srcClient,
+      srcPort,
     );
   }
 
@@ -25807,15 +25807,15 @@ class ALSA {
 
   int snd_seq_disconnect_to(
     ffi.Pointer<snd_seq_> seq,
-    int my_port,
-    int dest_client,
-    int dest_port,
+    int myPort,
+    int destClient,
+    int destPort,
   ) {
     return _snd_seq_disconnect_to(
       seq,
-      my_port,
-      dest_client,
-      dest_port,
+      myPort,
+      destClient,
+      destPort,
     );
   }
 
@@ -25843,11 +25843,11 @@ class ALSA {
 
   int snd_seq_set_client_event_filter(
     ffi.Pointer<snd_seq_> seq,
-    int event_type,
+    int eventType,
   ) {
     return _snd_seq_set_client_event_filter(
       seq,
-      event_type,
+      eventType,
     );
   }
 

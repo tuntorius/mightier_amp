@@ -23,7 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  permission_handler: ^10.2.0
+  permission_handler: ^11.3.1
   path_provider: ^2.0.10
   html: ^0.15.0
   just_audio: ^0.9.20

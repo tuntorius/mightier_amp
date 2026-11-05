@@ -14,15 +14,16 @@ abstract class EFX extends Processor {
   int? get nuxEffectTypeIndex => PresetDataIndexPlugAir.efxtype;
   @override
   int? get nuxEnableIndex => PresetDataIndexPlugAir.efxenable;
+
   //row 1871
   // 0 -Touch Wah, 1 - Uni Vibe, 2 - Tremolo, 3 - Phaser, 4 - Boost, 5 - TS Drive, 6 - Bass TS
   // 7 - 3 Band EQ, 8 - Muff, 9 - Crunch, 10 - Red Dist, 11 - Morning Drive, 12 - Dist One
   // The bass TS (6) is only available in bass preset mode, the rest are everywhere
+
   @override
   EffectEditorUI get editorUI => EffectEditorUI.Sliders;
   @override
   int get midiCCEnableValue => MidiCCValues.bCC_DistEnable;
-
   @override
   int get midiCCSelectionValue => MidiCCValues.bCC_DistMode;
 
@@ -46,6 +47,7 @@ class TouchWah extends EFX {
 
   @override
   int get nuxIndex => 0;
+
   @override
   List<Parameter> parameters = [
     Parameter(
@@ -54,7 +56,8 @@ class TouchWah extends EFX {
         value: 1,
         formatter: ValueFormatters.touchWahFormatter,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar1,
-        midiCC: MidiCCValues.bCC_DistGain),
+        midiCC: MidiCCValues.bCC_DistGain,
+        midiControllerHandle: MidiControllerHandles.efxMode),
     Parameter(
         name: "Wow",
         handle: "wow",
@@ -104,7 +107,8 @@ class UniVibe extends EFX {
         value: 0,
         formatter: ValueFormatters.vibeMode,
         devicePresetIndex: PresetDataIndexPlugAir.efxvar3,
-        midiCC: MidiCCValues.bCC_DistLevel),
+        midiCC: MidiCCValues.bCC_DistLevel,
+        midiControllerHandle: MidiControllerHandles.efxMode),
   ];
 }
 

@@ -76,13 +76,6 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     controller =
         TabController(initialIndex: 0, length: _tabs.length, vsync: this);
 
-    // controller.addListener(() {
-    //   setState(() {
-    //     _visibilityController.onTabChanged(_currentIndex, controller.index);
-    //     _currentIndex = controller.index;
-    //   });
-    // });
-
     NuxDeviceControl.instance().connectStatus.listen(connectionStateListener);
     NuxDeviceControl.instance().addListener(onDeviceChanged);
 
@@ -219,11 +212,16 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
         cancelButton: "No",
         confirmButton: "Yes",
         confirmColor: Colors.red,
-        description: "Are you sure?", onConfirm: (val) {
+        description: "Are you sure?", onConfirm: (val) async {
       if (val) {
-        //disconnect device if connected
+        // 1. Cleanly disconnect all BLE MIDI controllers (e.g. M-Vave Chocolate)
+        // This ensures the hardware LED turns off and drops the GATT connection.
+        await MidiControllerManager().disconnectAllControllers();
+        
+        // 2. Disconnect NUX Amp
         BLEMidiHandler.instance().disconnectDevice();
       }
+      // Complete only after the disconnects are safely dispatched
       confirmation.complete(val);
     });
     return confirmation.future;
@@ -239,8 +237,6 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
     final screenWidth = mediaQuery.size.width;
     final layoutMode = getLayoutMode(mediaQuery);
 
-    //WARNING: Workaround for a flutter bug - if the app is started with screen off,
-    //one of the widgets throws an exception and the app scaffold is empty
     if (screenWidth < 10) return const SizedBox();
     return PageStorage(
       bucket: bucketGlobal,
@@ -286,7 +282,7 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
                     onExpandChange: (val) => setState(() {
                       isBottomDrawerOpen = val;
                     }),
-                    child: VolumeSlider(),
+                    child: const VolumeSlider(),
                   ),
               ],
             ),
@@ -307,12 +303,10 @@ class MainTabsState extends State<MainTabs> with TickerProviderStateMixin {
 
   void _onBottomBarSwipe(DragUpdateDetails details) {
     if (details.delta.dy < 0) {
-      //open
       setState(() {
         isBottomDrawerOpen = true;
       });
     } else {
-      //close
       setState(() {
         isBottomDrawerOpen = false;
       });

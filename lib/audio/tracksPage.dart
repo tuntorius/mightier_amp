@@ -67,7 +67,6 @@ class _TracksPageState extends State<TracksPage>
         children: <Widget>[
           Icon(
             Icons.edit,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Edit"),
@@ -80,7 +79,6 @@ class _TracksPageState extends State<TracksPage>
         children: <Widget>[
           Icon(
             Icons.drive_file_rename_outline,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Rename"),
@@ -93,7 +91,6 @@ class _TracksPageState extends State<TracksPage>
         children: <Widget>[
           Icon(
             Icons.delete,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Delete"),
@@ -234,7 +231,7 @@ class _TracksPageState extends State<TracksPage>
           selected.containsKey(index)
               ? Icons.check_circle
               : Icons.brightness_1_outlined,
-          color: selected.containsKey(index) ? null : Colors.grey[800],
+          color: selected.containsKey(index) ? null : Theme.of(context).disabledColor,
         ),
       );
     }
@@ -424,6 +421,8 @@ class _TracksPageState extends State<TracksPage>
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return NestedWillPopScope(
       onWillPop: () {
         if (multiselectMode) {
@@ -440,8 +439,8 @@ class _TracksPageState extends State<TracksPage>
               SearchTextField(controller: searchCtrl),
             Expanded(
               child: ListTileTheme(
-                selectedTileColor: const Color.fromARGB(255, 9, 51, 116),
-                selectedColor: Colors.white,
+                selectedTileColor: isDark ? const Color.fromARGB(255, 9, 51, 116) : Colors.blue[100],
+                selectedColor: Theme.of(context).colorScheme.onSurface,
                 child: IndexedStack(
                   index: TrackData().tracks.isEmpty ? 0 : 1,
                   children: [
@@ -458,7 +457,9 @@ class _TracksPageState extends State<TracksPage>
                                 .tracks[index]
                                 .name
                                 .toLowerCase()
-                                .contains(filter)) return const SizedBox();
+                                .contains(filter)) {
+                          return const SizedBox();
+                        }
                         return ListTile(
                           contentPadding: const EdgeInsets.only(left: 12),
                           selected:
@@ -520,14 +521,13 @@ class _TracksPageState extends State<TracksPage>
 
   List<Bubble> _bubbles(BuildContext context) {
     return [
-      // Floating action menu item
       if (_showHiddenSources)
         Bubble(
             title: "Youtube",
-            iconColor: Colors.white,
+            iconColor: Theme.of(context).iconTheme.color ?? Colors.white,
             bubbleColor: Colors.red,
             icon: Icons.ondemand_video_outlined,
-            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+            titleStyle: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
             onPress: () {
               _animationController.reverse();
               addFromYoutubeSource(context);
@@ -535,10 +535,10 @@ class _TracksPageState extends State<TracksPage>
       if (_showHiddenSources)
         Bubble(
           title: "Online Source",
-          iconColor: Colors.white,
+          iconColor: Theme.of(context).iconTheme.color ?? Colors.white,
           bubbleColor: Colors.blue,
           icon: Icons.cloud,
-          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          titleStyle: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
           onPress: () {
             _animationController.reverse();
             addFromOnlineSource(context);
@@ -546,10 +546,10 @@ class _TracksPageState extends State<TracksPage>
         ),
       Bubble(
         title: "Media Library",
-        iconColor: Colors.white,
+        iconColor: Theme.of(context).iconTheme.color ?? Colors.white,
         bubbleColor: Colors.blue,
         icon: Icons.library_music,
-        titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+        titleStyle: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
         onPress: () {
           _animationController.reverse();
           if (PlatformUtils.isIOS) {
@@ -559,13 +559,12 @@ class _TracksPageState extends State<TracksPage>
           }
         },
       ),
-      //Floating action menu item
       Bubble(
         title: "File Browser",
-        iconColor: Colors.white,
+        iconColor: Theme.of(context).iconTheme.color ?? Colors.white,
         bubbleColor: Colors.blue,
         icon: Icons.folder,
-        titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+        titleStyle: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
         onPress: () {
           _animationController.reverse();
           if (PlatformUtils.isAndroid) {

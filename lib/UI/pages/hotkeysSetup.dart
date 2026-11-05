@@ -47,7 +47,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
         enabled: enabled,
         leading: Icon(
           icon,
-          color: color,
+          color: color ?? Theme.of(context).iconTheme.color,
         ),
         minLeadingWidth: 0,
         onTap: () {
@@ -114,9 +114,6 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     for (int i = 0; i < dev.processorList.length; i++) {
       var fxid = dev.processorList[i].nuxFXID;
       var slot = dev.getPreset(dev.selectedChannel).getSlotFromFXID(fxid)!;
-      //var count =
-      //    dev.getPreset(dev.selectedChannel).getEffectsForSlot(prc).length;
-      //var index = fxid.toInt();
 
       var name = dev.processorList[i].longName;
       var icon = dev.processorList[i].icon;
@@ -124,8 +121,9 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
 
       var switchable = dev.getPreset(dev.selectedChannel).slotSwitchable(slot);
       var effects = dev.getPreset(dev.selectedChannel).getEffectsForSlot(slot);
+      
       var fx = effects[0];
-      if (switchable) {
+      if (switchable && fx.midiControlOn != null && fx.midiControlOff != null && fx.midiControlToggle != null) {
         widgets.add(buildWidget(
             "Switch $name on",
             icon,
@@ -151,7 +149,7 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
             0,
             false));
       }
-      if (effects.length > 1) {
+      if (effects.length > 1 && fx.midiControlPrev != null && fx.midiControlNext != null) {
         widgets.add(buildWidget(
             "Previous $name",
             icon,
@@ -179,12 +177,11 @@ class _HotkeysSetupState extends State<HotkeysSetup> {
     var dev = NuxDeviceControl.instance().device;
 
     //add master volume
-    widgets.add(buildWidget("Volume", Icons.volume_up, Colors.white,
+    widgets.add(buildWidget("Volume", Icons.volume_up, null,
         HotkeyControl.MasterVolumeSet, 0, 0, true,
         infoButton: null));
 
     List<MidiControllerHandle> effectHandles = [];
-    //enumerate all the slots in the signal chain
     for (int i = 0; i < dev.processorList.length; i++) {
       effectHandles.clear();
       var fxid = dev.processorList[i].nuxFXID;

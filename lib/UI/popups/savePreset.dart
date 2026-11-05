@@ -35,7 +35,17 @@ class SavePresetDialog {
   }
 
   Widget buildDialog(NuxDevice device, BuildContext context) {
-    List<String> categories = PresetsStorage().getCategories();
+    String currentDeviceClass = NuxDeviceControl.instance().device.presetClass;
+    List<String> categories = [];
+    for (var cat in PresetsStorage().presetsData) {
+      if (cat["presets"] != null && cat["presets"].isNotEmpty) {
+        if (cat["presets"][0]["product_id"] == currentDeviceClass) {
+          categories.add(cat["name"]);
+        }
+      } else {
+        categories.add(cat["name"]);
+      }
+    }
 
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 

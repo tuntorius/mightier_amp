@@ -136,7 +136,6 @@ class AlertDialogs {
           controller: nameCtrl,
           autofocus: true,
           keyboardType: keyboardType,
-          //style: TextStyle(color: Colors.black),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please enter name';
@@ -216,7 +215,7 @@ class AlertDialogs {
         content: SizedBox(
           width: double.maxFinite,
           child: ListTileTheme(
-            iconColor: Colors.white,
+            iconColor: Theme.of(context).iconTheme.color,
             child: ListView(
               shrinkWrap: true,
               children: widgets,

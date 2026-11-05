@@ -12,7 +12,6 @@ class DrumStyleScrollPicker extends StatelessWidget {
   final NuxDevice device;
   final dynamic drumStyles;
 
-  // Events
   final ValueChanged<int> onChanged;
   final Function(int, bool, NuxDevice) onChangedFinal;
   final Function() onComplete;
@@ -46,7 +45,7 @@ class DrumStyleScrollPicker extends StatelessWidget {
         dense: smallControls,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
-            side: const BorderSide(width: 1, color: Colors.white)),
+            side: BorderSide(width: 1, color: Theme.of(context).dividerColor)),
         title: Text(
           layout == DrumEditorLayout.extendedToneControls
               ? _getComplexListStyle(drumStyles)

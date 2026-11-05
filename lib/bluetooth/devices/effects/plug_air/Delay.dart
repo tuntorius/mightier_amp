@@ -144,8 +144,9 @@ class DigitalDelay extends Delay {
   ];
   @override
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index)
+    if (version == PlugAirVersion.PlugAir21.index) {
       return DigitalDelayv2().nuxIndex;
+    }
     return nuxIndex;
   }
 }

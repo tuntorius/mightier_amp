@@ -23,7 +23,6 @@ class _SetlistPageState extends State<SetlistPage> {
 
   final SetlistPlayerState playerState = SetlistPlayerState.instance();
 
-  //multiselection stuff
   bool _multiselectMode = false;
   Offset dragStart = const Offset(0, 0);
   Map<int, bool> selected = {};
@@ -35,7 +34,6 @@ class _SetlistPageState extends State<SetlistPage> {
         children: <Widget>[
           Icon(
             Icons.highlight_remove_outlined,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Remove"),
@@ -46,7 +44,7 @@ class _SetlistPageState extends State<SetlistPage> {
 
   void menuActions(BuildContext context, int action, SetlistItem item) async {
     switch (action) {
-      case 0: //delete
+      case 0:
         AlertDialogs.showConfirmDialog(context,
             title: "Confirm",
             description:
@@ -89,7 +87,6 @@ class _SetlistPageState extends State<SetlistPage> {
 
   void multiselectHandler(int index) {
     if (selected.isEmpty || !selected.containsKey(index)) {
-      //fill it first if not created
       selected[index] = true;
       _multiselectMode = true;
     } else {
@@ -132,7 +129,7 @@ class _SetlistPageState extends State<SetlistPage> {
           selected.containsKey(index)
               ? Icons.check_circle
               : Icons.brightness_1_outlined,
-          color: selected.containsKey(index) ? null : Colors.grey[800],
+          color: selected.containsKey(index) ? null : Theme.of(context).disabledColor,
         ),
       );
     }
@@ -153,6 +150,8 @@ class _SetlistPageState extends State<SetlistPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return NestedWillPopScope(
       onWillPop: () async {
         if (_multiselectMode) {
@@ -163,22 +162,23 @@ class _SetlistPageState extends State<SetlistPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.grey[850],
+            // Removed hardcoded background color to use Theme
             title: Text(widget.setlist.name)),
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
               child: ListTileTheme(
-                selectedTileColor: const Color.fromARGB(255, 9, 51, 116),
-                selectedColor: Colors.white,
-                iconColor: Colors.white,
+                // Use dynamic theme values instead of hardcoded ARGBs
+                selectedTileColor: isDark ? const Color.fromARGB(255, 9, 51, 116) : Colors.blue[100],
+                selectedColor: isDark ? Colors.white : Colors.blue[900],
+                iconColor: Theme.of(context).iconTheme.color,
                 child: IndexedStack(
                   index: widget.setlist.items.isNotEmpty ? 0 : 1,
                   children: [
                     Theme(
                       data: Theme.of(context).copyWith(
-                        canvasColor: Colors.grey[700],
+                        canvasColor: Theme.of(context).canvasColor,
                       ),
                       child: ReorderableListView.builder(
                           buildDefaultDragHandles: false,
@@ -215,9 +215,9 @@ class _SetlistPageState extends State<SetlistPage> {
                                             width:
                                                 AppThemeConfig.dragHandlesWidth,
                                             height: 48,
-                                            child: const Icon(
+                                            child: Icon(
                                               Icons.drag_handle,
-                                              color: Colors.grey,
+                                              color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
                                               size: 24,
                                             ),
                                           ),
@@ -248,7 +248,6 @@ class _SetlistPageState extends State<SetlistPage> {
                             var currentItem =
                                 widget.setlist.items[playerState.currentTrack];
                             if (oldIndex < newIndex) {
-                              // removing the item at oldIndex will shorten the list by 1.
                               newIndex -= 1;
                             }
                             final element =
@@ -282,7 +281,6 @@ class _SetlistPageState extends State<SetlistPage> {
                 foregroundColor: Colors.white,
                 onPressed: () {
                   if (_multiselectMode) {
-                    //delete mode
                     AlertDialogs.showConfirmDialog(
                         JamTracks.jamtracksNavigator.currentContext!,
                         title: "Confirm",

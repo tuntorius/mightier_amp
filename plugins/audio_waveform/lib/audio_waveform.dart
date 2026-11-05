@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 
 class AudioWaveformDecoder {
-  static const platform = const MethodChannel("com.tuntori.audio_waveform");
+  static const platform = MethodChannel("com.tuntori.audio_waveform");
   int size = 0;
   double _durationms = 0;
   List<int> _samples = <int>[];
@@ -36,7 +36,7 @@ class AudioWaveformDecoder {
   Future<List<int>?> nextBuffer() async {
     if (Platform.isIOS) {
       var result = await platform.invokeMethod("next", {"frameCount": 242144});
-      return result?.cast<int>() ?? null;
+      return result?.cast<int>();
     }
     try {
       return await platform.invokeMethod("next");

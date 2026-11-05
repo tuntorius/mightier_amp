@@ -8,3 +8,6 @@ analyzer:
     - /**.pbjson.dart
     - /**.pb.dart
     - /**.pbenum.dart
+    - build/**
+    - android/**
+    - ios/**

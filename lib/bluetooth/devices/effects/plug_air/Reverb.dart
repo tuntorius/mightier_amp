@@ -176,8 +176,9 @@ class ShimmerReverb extends Reverb {
   ];
   @override
   int? getEquivalentEffect(int version) {
-    if (version == PlugAirVersion.PlugAir21.index)
+    if (version == PlugAirVersion.PlugAir21.index) {
       return SpringReverb().nuxIndex;
+    }
     return nuxIndex;
   }
 }

@@ -16,10 +16,7 @@ class MidiControlInfoDialog {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           IconButton(
-              icon: Icon(
-                Icons.adaptive.arrow_back,
-                color: Colors.white,
-              ),
+              icon: Icon(Icons.adaptive.arrow_back),
               onPressed: () => Navigator.of(context).pop()),
           const Text('Control Info'),
         ],

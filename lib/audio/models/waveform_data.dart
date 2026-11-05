@@ -101,8 +101,8 @@ class WaveformData {
     }
 
     var vmax = points.reduce(max);
-    for (var _i = 0; _i < size.width * upsample; _i++) {
-      path.lineTo(_i / upsample, middle - points[_i] / vmax * middle);
+    for (var i0 = 0; i0 < size.width * upsample; i0++) {
+      path.lineTo(i0 / upsample, middle - points[i0] / vmax * middle);
     }
 
     //maxPoints.forEach((o) => path.lineTo(o.dx, o.dy));

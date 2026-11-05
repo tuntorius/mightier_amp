@@ -15,9 +15,9 @@ fileprivate var qrcodeImage: CIImage!
     
     private let supportedCodeTypes = [AVMetadataObject.ObjectType.qr]
 
-    var controller: FlutterViewController!
+    var controller: FlutterViewController?
 
-    init(cont: FlutterViewController, messenger: FlutterBinaryMessenger) {
+    init(cont: FlutterViewController?, messenger: FlutterBinaryMessenger) {
           self.controller = cont;
           super.init();
       }
@@ -27,8 +27,7 @@ fileprivate var qrcodeImage: CIImage!
 
     SwiftFlutterBarcodeScannerPlugin.initScanner()
     let app =  UIApplication.shared
-    let controller : FlutterViewController = app.delegate!.window!!.rootViewController as! 	FlutterViewController;
-      
+    let controller = app.delegate?.window??.rootViewController as? FlutterViewController      
       let instance = SwiftQrUtilsPlugin.init(cont: controller, messenger: registrar.messenger())
       
     registrar.addMethodCallDelegate(instance, channel: channel)
@@ -56,7 +55,7 @@ fileprivate var qrcodeImage: CIImage!
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as? UIImage else { return }
 
-        controller!.dismiss(animated: true)
+        controller?.dismiss(animated: true)
         
         if let features = detectQRCode(image), !features.isEmpty{
             for case let row as CIQRCodeFeature in features{
@@ -102,7 +101,7 @@ extension SwiftQrUtilsPlugin {
         pickerController.allowsEditing = false
         pickerController.mediaTypes = ["public.image"]
         pickerController.sourceType = .photoLibrary
-        controller!.present(pickerController, animated: true)
+        controller?.present(pickerController, animated: true)
     }
 
     func generateQR(text:String){

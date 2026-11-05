@@ -1,25 +1,6 @@
-/* WaveformExtractor
- 
-   Author: Andrew Stubbs (based on some examples from the docs)
- 
-   This class opens a file, reads the first audio channel it finds, and returns raw audio data.
-   
-   Usage:
-      WaveformExtractor decoder = new WaveformExtractor("myfile.m4a");
-      short[] data;
-      while ((data = decoder.readShortData()) != null) {
-         // process data here
-      }
-  */
-
-//here is a promised faster decoding
-//https://imnotyourson.com/enhance-poor-performance-of-decoding-audio-with-mediaextractor-and-mediacodec-to-pcm/
-
-
 package com.tuntori.audio_waveform;
 
 import java.io.Console;
-
 import java.nio.ByteBuffer;
 import java.nio.*;
 
@@ -66,22 +47,27 @@ public class WaveformExtractor {
         }
         catch(Exception e)
         {
-            System.out.println("Extractor.sedDataSource exception");
+            System.out.println("Extractor.setDataSource exception");
             System.out.println(e); 
             return;
         }
         
         if (DEBUG)
             System.out.println("Decoding track"); 
+        
         // Select the first audio track we find.
         int numTracks = extractor.getTrackCount();
 
-        System.out.println("tracks " + numTracks); 
+        if (DEBUG)
+            System.out.println("tracks " + numTracks); 
+            
         for (int i = 0; i < numTracks; ++i) {
             MediaFormat format = extractor.getTrackFormat(i);
             String mime = format.getString(MediaFormat.KEY_MIME);
 
-            System.out.println("mime " + mime); 
+            if (DEBUG)
+                System.out.println("mime " + mime); 
+                
             if (mime.startsWith("audio/")) {
                 isMPEG = mime.endsWith("mpeg");
 
@@ -98,12 +84,6 @@ public class WaveformExtractor {
                 
                 decoder.configure(format, null, null, 0);
 
-                /* when adding encoder, use these settings
-                format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
-                format.setInteger(MediaFormat.KEY_SAMPLE_RATE, 8000);
-                format.setInteger(MediaFormat.KEY_PCM_ENCODING, AudioFormat.ENCODING_PCM_8BIT);
-
-                decoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);*/
                 format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, DECODE_INPUT_SIZE); // huge throughput
                 inputFormat = format;
                 break;
@@ -130,12 +110,12 @@ public class WaveformExtractor {
             decoder.stop();
             decoder.release();
         }
-        extractor.release();
+        if (extractor!=null) {
+            extractor.release();
+        }
     }
 
     // Read the raw data from MediaCodec.
-    // The caller should copy the data out of the ByteBuffer before calling this again
-    // or else it may get overwritten.
     private BufferInfo readData() {
         if (decoder == null)
             return null;
@@ -196,8 +176,6 @@ public class WaveformExtractor {
                     return null;
                 }
                 
-                //release output buffer removed from here!
-                
                 return info;
                 
             } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
@@ -209,9 +187,6 @@ public class WaveformExtractor {
         }
     }
 
-    // Read the raw data from MediaCodec.
-    // The caller should copy the data out of the ByteBuffer before calling this again
-    // or else it may get overwritten.
     private BufferInfo readDataLegacy() {
         if (decoder == null)
             return null;
@@ -222,10 +197,8 @@ public class WaveformExtractor {
             // Read data from the file into the codec.
             if (!end_of_input_file) {
                 int inputBufferIndex = decoder.dequeueInputBuffer(10000);
-                //System.out.println("DequeueInputBuffer");
                 if (inputBufferIndex >= 0) {
                     int size = extractor.readSampleData(inputBuffers[inputBufferIndex], 0);
-                    //System.out.println("readSampleData");
                     if (size < 0) {
                         // End Of File
                         decoder.queueInputBuffer(inputBufferIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
@@ -235,7 +208,6 @@ public class WaveformExtractor {
                     } else {
                         decoder.queueInputBuffer(inputBufferIndex, 0, size, extractor.getSampleTime(), 0);
                         extractor.advance();
-                        //System.out.println("advance");
                     }
                 }
             }
@@ -246,7 +218,6 @@ public class WaveformExtractor {
                 outputBuffers[outputBufferIndex].position(0);
                 
             outputBufferIndex = decoder.dequeueOutputBuffer(info, 10000);
-            //System.out.println("dequeueOutputBuffer");
             if (outputBufferIndex >= 0) {
                 // Handle EOF
                 if (info.flags != 0) {
@@ -257,8 +228,6 @@ public class WaveformExtractor {
                     decoder = null;
                     return null;
                 }
-                
-                //release output buffer removed from here!
                 
                 return info;
                 
@@ -279,7 +248,6 @@ public class WaveformExtractor {
     private void releaseBuffer()
     {
         // Release the buffer so MediaCodec can use it again.
-        // The data should stay there until the next time we are called.
         decoder.releaseOutputBuffer(outputBufferIndex, false);
     }
     
@@ -292,7 +260,7 @@ public class WaveformExtractor {
         return inputFormat.getLong(MediaFormat.KEY_DURATION);
     }
     
-    // Read the raw audio data in 16-bit format
+    // Read the raw audio data
     // Returns null on EOF
     public byte[] readShortData() {
         BufferInfo info;

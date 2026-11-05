@@ -22,6 +22,8 @@ class HotkeyInputDialog {
   int _previousCode = -1;
   int? previousSliderValue;
   bool _invert = false;
+  double _minLimit = 0.0;
+  double _maxLimit = 1.0;
 
   _applyHotkey() {
     if (_hotkeyCode != null) {
@@ -34,8 +36,17 @@ class HotkeyInputDialog {
           break;
         }
       } while (_control == HotkeyControl.ParameterSet);
+      
       _midiController.assignHotkey(
           _control, _index, _subindex, _hotkeyCode!, controller.text, _invert);
+          
+      // Fetch the newly assigned hotkey to update limits before saving
+      var newHk = _midiController.getHotkeyByFunction(_control, _index, _subindex);
+      if (newHk != null) {
+        newHk.minLimit = _minLimit;
+        newHk.maxLimit = _maxLimit;
+      }
+      
       MidiControllerManager().saveConfig();
     } else {
       _midiController.removeHotkeyByFunction(_control, _index, _subindex);
@@ -53,7 +64,6 @@ class HotkeyInputDialog {
       if (_invert) sliderValue = 127 - sliderValue;
       code &= 0xffffff00;
       if (code == _previousCode && previousSliderValue != sliderValue) {
-        //valid adjustment
         name = name.substring(0, name.length - 2);
         name += sliderValue.toRadixString(16).padLeft(2, '0');
         controller.text = name;
@@ -85,6 +95,8 @@ class HotkeyInputDialog {
 
     controller = TextEditingController(text: hk == null ? None : hk.hotkeyName);
     _invert = hk?.invertSlider ?? false;
+    _minLimit = hk?.minLimit ?? 0.0;
+    _maxLimit = hk?.maxLimit ?? 1.0;
 
     MidiControllerManager().overrideOnData(_onControllerData);
 
@@ -105,10 +117,7 @@ class HotkeyInputDialog {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                  icon: Icon(
-                    Icons.adaptive.arrow_back,
-                    color: Colors.white,
-                  ),
+                  icon: Icon(Icons.adaptive.arrow_back),
                   onPressed: () => Navigator.of(context).pop()),
               const Text('Set hotkey'),
             ],
@@ -119,7 +128,8 @@ class HotkeyInputDialog {
                   "Adjust the pedal/knob/slider you wish to assign to $hotkeyName")
             else
               Text("Press the control you wish to assign to $hotkeyName"),
-            if (sliderMode)
+            
+            if (sliderMode) ...[
               CheckboxListTile(
                   title: const Text("Invert"),
                   value: _invert,
@@ -128,6 +138,36 @@ class HotkeyInputDialog {
                       _invert = value!;
                     });
                   }),
+              const Padding(
+                padding: EdgeInsets.only(top: 16.0),
+                child: Text("Parameter Sweep Range", 
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              RangeSlider(
+                values: RangeValues(_minLimit, _maxLimit),
+                min: 0.0,
+                max: 1.0,
+                divisions: 100,
+                labels: RangeLabels(
+                  "${(_minLimit * 100).round()}%",
+                  "${(_maxLimit * 100).round()}%",
+                ),
+                onChanged: (RangeValues values) {
+                  setState(() {
+                    _minLimit = values.start;
+                    _maxLimit = values.end;
+                  });
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Min: ${(_minLimit * 100).round()}%"),
+                  Text("Max: ${(_maxLimit * 100).round()}%"),
+                ],
+              ),
+            ],
+            
             AbsorbPointer(
               child: TextField(
                 controller: controller,

@@ -12,16 +12,13 @@ class SelectPresetDialog {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           IconButton(
-              icon: Icon(
-                Icons.adaptive.arrow_back,
-                color: Colors.white,
-              ),
+              icon: Icon(Icons.adaptive.arrow_back),
               onPressed: () =>
                   Navigator.of(context, rootNavigator: true).pop()),
           const Text('Select preset'),
         ],
       ),
-      actions: [],
+      actions: const [],
       content: Scaffold(
         body: ListView(
             shrinkWrap: true,

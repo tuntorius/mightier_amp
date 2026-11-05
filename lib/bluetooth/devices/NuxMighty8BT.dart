@@ -79,6 +79,7 @@ class NuxMighty8BT extends NuxDevice {
   @override
   List<ProcessorInfo> get processorList => ProcessorsList.mighty8BTList;
 
+  @override
   List<String> channelNames = [];
 
   NuxMighty8BT(NuxDeviceControl devControl) : super(devControl) {

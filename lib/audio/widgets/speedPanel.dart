@@ -21,16 +21,15 @@ class SpeedPanel extends StatelessWidget {
       : super(key: key);
 
   void _modifySpeed(double amount) {
-    var _speed = speed + amount;
-
-    _speed = min(max(_speed, 0.1), 2.5);
-    onSpeedChanged(_speed);
+    var newSpeed = speed + amount;
+    newSpeed = min(max(newSpeed, 0.1), 2.5);
+    onSpeedChanged(newSpeed);
   }
 
   void _modifyPitch(int amount) {
-    var _semitones = semitones + amount;
-    _semitones = min(max(_semitones, -12), 12);
-    onSemitonesChanged(_semitones);
+    var newSemitones = semitones + amount;
+    newSemitones = min(max(newSemitones, -12), 12);
+    onSemitonesChanged(newSemitones);
   }
 
   Widget _speedControl() {

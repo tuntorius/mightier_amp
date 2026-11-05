@@ -112,14 +112,14 @@ class DragAndDropListExpansion implements DragAndDropListExpansionInterface {
                   if (candidateData.isNotEmpty) {}
                   return Container();
                 },
-                onWillAccept: (incoming) {
+                onWillAcceptWithDetails: (incoming) {
                   _startExpansionTimer();
                   return false;
                 },
                 onLeave: (incoming) {
                   _stopExpansionTimer();
                 },
-                onAccept: (incoming) {},
+                onAcceptWithDetails: (incoming) {},
               ),
             )
           ]);
@@ -170,7 +170,7 @@ class DragAndDropListExpansion implements DragAndDropListExpansionInterface {
           parameters: parameters,
           onReorderOrAdd: parameters.onItemDropOnLastTarget!,
           child: lastTarget ??
-              SizedBox(
+              const SizedBox(
                 height: 58,
                 child: Center(
                     child: Text(

@@ -157,15 +157,15 @@ class _DragAndDropListWrapper extends State<DragAndDropListWrapper>
               if (candidateData.isNotEmpty) {}
               return const SizedBox();
             },
-            onWillAccept: (incoming) {
+            onWillAcceptWithDetails: (incoming) {
               bool accept = true;
               if (widget.parameters.listOnWillAccept != null) {
                 accept = widget.parameters.listOnWillAccept!(
-                    incoming, widget.dragAndDropList);
+                    incoming.data, widget.dragAndDropList);
               }
               if (accept && mounted) {
                 setState(() {
-                  _hoveredDraggable = incoming;
+                  _hoveredDraggable = incoming.data;
                 });
               }
               return accept;
@@ -179,11 +179,11 @@ class _DragAndDropListWrapper extends State<DragAndDropListWrapper>
                 }
               }
             },
-            onAccept: (incoming) {
+            onAcceptWithDetails: (incoming) {
               if (mounted) {
                 setState(() {
                   widget.parameters.onListReordered!(
-                      incoming, widget.dragAndDropList);
+                      incoming.data, widget.dragAndDropList);
                   _hoveredDraggable = null;
                 });
               }

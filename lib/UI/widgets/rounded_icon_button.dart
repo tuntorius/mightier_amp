@@ -1,3 +1,6 @@
+// (c) 2020-2021 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'package:flutter/material.dart';
 
 class RoundedIconButton extends StatelessWidget {
@@ -16,9 +19,12 @@ class RoundedIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    Color disabledBg = isDark ? Colors.grey[800]! : Colors.grey[300]!;
+
     return Container(
       decoration: ShapeDecoration(
-        color: onPressed != null ? Colors.blue : Colors.grey[800],
+        color: onPressed != null ? Colors.blue : disabledBg,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius)),
       ),

@@ -17,7 +17,7 @@ class EventEditor {
 
     Color color = preset != null
         ? PresetConstants.channelColorsPlug[preset["channel"]]
-        : Colors.white;
+        : Theme.of(context).colorScheme.onSurface;
     String category = preset != null
         ? PresetsStorage().findCategoryOfPreset(preset)!["name"]
         : "";
@@ -50,11 +50,9 @@ class EventEditor {
   Future buildDialog(BuildContext context) {
     return showGeneralDialog(
       context: context,
-      barrierDismissible:
-          true, // should dialog be dismissed when tapped outside
-      barrierLabel: "Dialog", // label for barrier
+      barrierDismissible: true, 
+      barrierLabel: "Dialog", 
       pageBuilder: (_, __, ___) {
-        // your widget implementation
         return StatefulBuilder(
           builder: (context, setState) {
             var device = NuxDeviceControl.instance().device;
@@ -69,23 +67,23 @@ class EventEditor {
                   IconButton(
                       icon: Icon(
                         Icons.adaptive.arrow_back,
-                        color: Colors.white,
+                        color: Theme.of(context).iconTheme.color,
                       ),
                       onPressed: () => Navigator.of(context).pop()),
-                  const Text("Edit Event",
-                      style: TextStyle(color: Colors.white)),
+                  Text("Edit Event",
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                 ],
               ),
               contentPadding: const EdgeInsets.only(
                   left: 10, right: 10, bottom: 20, top: 30),
               content: ListTileTheme(
-                iconColor: Colors.white,
+                iconColor: Theme.of(context).iconTheme.color,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text("Preset",
+                    Text("Preset",
                         style: TextStyle(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),
                     ...createPresetTiles(context, preset, setState),

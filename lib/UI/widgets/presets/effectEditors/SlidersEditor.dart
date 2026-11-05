@@ -94,6 +94,18 @@ class _SlidersEditorState extends State<SlidersEditor> {
 
   Widget _createTapTempo(Parameter param) {
     bool enabled = widget.preset.slotEnabled(widget.slot);
+    
+    Color bgColor = enabled
+          ? TinyColor.fromColor(widget.preset.effectColor(widget.slot))
+              .darken(15)
+              .color
+          : TinyColor.fromColor(widget.preset.effectColor(widget.slot))
+              .desaturate(80)
+              .darken(15)
+              .color;
+    
+    Color textColor = bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+
     return RawMaterialButton(
       onPressed: () {
         DelayTapTimer.addClickTime();
@@ -109,21 +121,14 @@ class _SlidersEditorState extends State<SlidersEditor> {
         }
       },
       elevation: 2.0,
-      fillColor: enabled
-          ? TinyColor.fromColor(widget.preset.effectColor(widget.slot))
-              .darken(15)
-              .color
-          : TinyColor.fromColor(widget.preset.effectColor(widget.slot))
-              .desaturate(80)
-              .darken(15)
-              .color,
+      fillColor: bgColor,
       padding: const EdgeInsets.all(15.0),
       shape: const CircleBorder(),
-      child: const Padding(
-        padding: EdgeInsets.all(10.0),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
         child: Text(
           "Tap",
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: TextStyle(color: textColor, fontSize: 20),
         ),
       ),
     );
@@ -169,9 +174,9 @@ class _SlidersEditorState extends State<SlidersEditor> {
             height: 50,
             child: Center(
               child: RichText(
-                  text: const TextSpan(
-                style: TextStyle(fontSize: 18, color: Colors.white),
-                children: [
+                  text: TextSpan(
+                style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onSurface),
+                children: const [
                   TextSpan(text: "Use "),
                   TextSpan(
                     text: "NUX IR Patcher",

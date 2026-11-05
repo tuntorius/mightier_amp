@@ -177,7 +177,9 @@ class TrackData {
   bool isAnyPresetInUse(List<String> presetsUuid) {
     for (int i = 0; i < _tracksData.length; i++) {
       if (presetsUuid.contains(
-          _tracksData[i].automation.initialEvent.getPresetUuid())) return true;
+          _tracksData[i].automation.initialEvent.getPresetUuid())) {
+        return true;
+      }
       var e = _tracksData[i].automation.events;
       for (int j = 0; j < e.length; j++) {
         if (presetsUuid.contains(e[j].getPresetUuid())) return true;

@@ -44,11 +44,11 @@ class WaveformPainter extends CustomPainter {
       ..isAntiAlias = true;
 
     for (int i = 0; i < PresetConstants.channelColorsPlug.length; i++) {
-      var _paint = Paint()
+      var paint = Paint()
         ..color = PresetConstants.channelColorsPlug[i]
         ..strokeWidth = 1
         ..style = PaintingStyle.stroke;
-      channelPaints.add(_paint);
+      channelPaints.add(paint);
     }
 
     greyPaint
@@ -62,7 +62,7 @@ class WaveformPainter extends CustomPainter {
     if (data == null || !data!.initialized) {
       return;
     }
-    var _start = startingFrame, _end = endingFrame;
+    var start = startingFrame, end = endingFrame;
 
     if (!overallWaveform) {
       final path =
@@ -75,8 +75,8 @@ class WaveformPainter extends CustomPainter {
         canvas.drawLine(Offset(dx, 0), Offset(dx, size.height), playbackPaint);
       }
     } else {
-      _start = 0;
-      _end = data!.data.length;
+      start = 0;
+      end = data!.data.length;
       final path = data!.overallPath(size);
       if (path != null) canvas.drawPath(path, painter);
       double dx = data!.verticalLine(size, startingFrame, 0, data!.data.length);
@@ -100,11 +100,13 @@ class WaveformPainter extends CustomPainter {
 
       var paint = channelPaints[element.channel];
       if (element.type == AutomationEventType.preset &&
-          element.getPresetUuid().isEmpty) paint = greyPaint;
+          element.getPresetUuid().isEmpty) {
+        paint = greyPaint;
+      }
 
       if (element.type != showType) continue;
-      var dx = (((element.eventTime.inMilliseconds * msPerSample) - _start) /
-              (_end - _start)) *
+      var dx = (((element.eventTime.inMilliseconds * msPerSample) - start) /
+              (end - start)) *
           size.width;
       if (dx < 0 || dx > size.width - 1) continue;
       canvas.drawLine(Offset(dx, 0), Offset(dx, size.height), paint);

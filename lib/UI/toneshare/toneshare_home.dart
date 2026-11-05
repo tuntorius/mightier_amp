@@ -4,7 +4,7 @@ import 'package:mighty_plug_manager/modules/cloud/cloudManager.dart';
 import '../widgets/common/searchTextField.dart';
 
 class ToneShareHome extends StatefulWidget {
-  ToneShareHome({super.key});
+  const ToneShareHome({super.key});
 
   @override
   State<ToneShareHome> createState() => _ToneShareHomeState();
@@ -23,7 +23,7 @@ class _ToneShareHomeState extends State<ToneShareHome> {
   void _search(String? query) async {
     if (query == null || query.isEmpty) return;
 
-    final response = null;
+    const response = null;
     /*await Supabase.instance.client
         .from("presets")
         .select("*")
@@ -52,8 +52,8 @@ class _ToneShareHomeState extends State<ToneShareHome> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ElevatedButton(
-            child: const Text("Sync"),
-            onPressed: CloudManager.instance.syncPresets),
+            onPressed: CloudManager.instance.syncPresets,
+            child: const Text("Sync")),
         SearchTextField(controller: searchCtrl, onSearch: _search),
         Expanded(
             child: ListView.builder(
@@ -65,8 +65,8 @@ class _ToneShareHomeState extends State<ToneShareHome> {
           },
         )),
         ElevatedButton(
-            child: const Text("Sign Out"),
-            onPressed: CloudManager.instance.signOut)
+            onPressed: CloudManager.instance.signOut,
+            child: const Text("Sign Out"))
       ],
     );
   }

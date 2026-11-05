@@ -1,3 +1,6 @@
+// (c) 2020-2021 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import 'package:flutter/material.dart';
 import '../../../../bluetooth/devices/NuxDevice.dart';
 import '../../../../bluetooth/devices/effects/Processor.dart';
@@ -7,10 +10,6 @@ class PresetEffectPreview extends StatelessWidget {
   final NuxDevice device;
   final bool enabled;
 
-  static const TextStyle _ampActive =
-      TextStyle(color: Color.fromARGB(255, 158, 158, 158), fontSize: 14);
-  static const TextStyle _ampInactive =
-      TextStyle(color: Color.fromARGB(255, 90, 90, 90), fontSize: 14);
   const PresetEffectPreview(
       {super.key,
       required this.preset,
@@ -18,37 +17,72 @@ class PresetEffectPreview extends StatelessWidget {
       required this.enabled});
 
   List<Widget> _buildEffectsPreview(
-      Map<String, dynamic> preset, NuxDevice dev) {
+      BuildContext context, Map<String, dynamic> preset, NuxDevice dev) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     var widgets = <Widget>[];
-    //int presetVersion = preset["version"] ?? 0;
 
     var pVersion = preset["version"] ?? 0;
-    for (int i = 0; i < dev.processorList.length; i++) {
-      ProcessorInfo pi = dev.processorList[i];
 
+    TextStyle ampStyle;
+    if (enabled) {
+      ampStyle = TextStyle(
+          color: isDark
+              ? const Color.fromARGB(255, 180, 180, 180)
+              : const Color.fromARGB(255, 100, 100, 100),
+          fontSize: 14);
+    } else {
+      ampStyle = TextStyle(
+          color: isDark
+              ? const Color.fromARGB(255, 100, 100, 100)
+              : const Color.fromARGB(255, 160, 160, 160),
+          fontSize: 14);
+    }
+
+    bool isNamPro = dev.presetClass == "mighty_nam_pro";
+
+    List<ProcessorInfo> dynamicChainOrder = [];
+    for (String key in preset.keys) {
+      var pi = dev.getProcessorInfoByKey(key);
+      if (pi != null) {
+        dynamicChainOrder.add(pi);
+      }
+    }
+
+    for (ProcessorInfo pi in dynamicChainOrder) {
       Color color = pi.color;
 
       if (!enabled) color = color.withAlpha(128);
-      var textStyle = enabled ? _ampActive : _ampInactive;
 
       if (preset.containsKey(pi.keyName)) {
-        //special case for amp
-        if (pi.keyName == "amp") {
-          var name =
-              dev.getAmpNameByNuxIndex(preset[pi.keyName]["fx_type"], pVersion);
+        // SAFEGUARD: Ensure the JSON node is actually a Map before checking keys
+        var fxData = preset[pi.keyName];
+        if (fxData is! Map) continue; 
+
+        if (!isNamPro && pi.keyName == "amp") {
+          // SAFEGUARD: Provide default type and catch out-of-bounds amp indices
+          int fxType = fxData["fx_type"] as int? ?? 0;
+          String name = "Amp";
+          try {
+            name = dev.getAmpNameByNuxIndex(fxType, pVersion);
+          } catch (e) {
+            name = "Unknown";
+          }
+          
           widgets.insert(
               0,
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
-                child: Text(name, style: textStyle),
+                child: Text(name, style: ampStyle),
               ));
-        } else if (pi.keyName == "cabinet") {
+        } else if (!isNamPro && pi.keyName == "cabinet") {
           continue;
         } else {
-          bool fxEnabled = preset[pi.keyName]["enabled"];
+          bool fxEnabled = fxData["enabled"] as bool? ?? false;
           widgets.add(Icon(
             pi.icon,
-            color: fxEnabled ? color : Colors.grey,
+            color: fxEnabled
+                ? color
+                : (isDark ? Colors.grey[700]! : Colors.grey[400]!),
             size: 16,
           ));
         }
@@ -60,7 +94,7 @@ class PresetEffectPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: _buildEffectsPreview(preset, device),
+      children: _buildEffectsPreview(context, preset, device),
     );
   }
 }

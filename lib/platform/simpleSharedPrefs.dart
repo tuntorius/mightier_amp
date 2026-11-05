@@ -11,6 +11,7 @@ import 'platformUtils.dart';
 class SettingsKeys {
   static const String latency = "audioLatency";
   static const String screenAlwaysOn = "screenAlwaysOn";
+  static const String darkMode = "darkMode";
   static const String timeUnit = "timeUnit";
   static const String changeCabs = "changeCabs";
   static const String device = "device";
@@ -26,6 +27,7 @@ class SettingsKeys {
   static const String tempoTrainerChangeMode = "trainerChangeMode";
   static const String tempoTrainerChangeUnits = "trainerChangeUnits";
   static const String trackGain = "jamTracksGain";
+  static const String midiHotkeys = "midiHotkeysData";
 }
 
 class SharedPrefs {
@@ -67,14 +69,12 @@ class SharedPrefs {
   _loadPrefs() async {
     try {
       if (_prefsFile != null) {
-        var _presetJson = await _prefsFile!.readAsString();
-        _prefsData = json.decode(_presetJson);
+        var presetJson = await _prefsFile!.readAsString();
+        _prefsData = json.decode(presetJson);
         _prefsReady = true;
       }
     } catch (e) {
       _prefsReady = true;
-      //   //no file
-      //   print("Presets file not available");
     }
   }
 
@@ -87,8 +87,8 @@ class SharedPrefs {
 
   _savePrefs() async {
     if (_prefsFile != null) {
-      String _json = json.encode(_prefsData);
-      await _prefsFile?.writeAsString(_json);
+      String jsonString = json.encode(_prefsData);
+      await _prefsFile?.writeAsString(jsonString);
     }
   }
 
@@ -97,9 +97,9 @@ class SharedPrefs {
     _savePrefs();
   }
 
-  int getInt(String key, int _default) {
+  int getInt(String key, int defaultValue) {
     if (_prefsData.containsKey(key)) return _prefsData[key];
-    return _default;
+    return defaultValue;
   }
 
   void setValue(String key, dynamic value) {
@@ -112,9 +112,9 @@ class SharedPrefs {
     _savePrefs();
   }
 
-  dynamic getValue(String key, dynamic _default) {
+  dynamic getValue(String key, dynamic defaultValue) {
     if (_prefsData.containsKey(key)) return _prefsData[key];
-    return _default;
+    return defaultValue;
   }
 
   String? getCustomCabinetName(String productId, int cabIndex) {

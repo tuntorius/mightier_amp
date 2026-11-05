@@ -109,7 +109,8 @@ class HallReverb extends Reverb {
         value: 50,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para3,
-        midiCC: MidiCCValuesPro.RVB_Para3),
+        midiCC: MidiCCValuesPro.RVB_Para3,
+        midiControllerHandle: MidiControllerHandles.reverbTone),
   ];
 }
 
@@ -225,6 +226,6 @@ class DampReverbPro extends Reverb {
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.RVB_Para2,
         midiCC: MidiCCValuesPro.RVB_Para2,
-        midiControllerHandle: MidiControllerHandles.reverbTone)
+        midiControllerHandle: MidiControllerHandles.reverbDepth)
   ];
 }

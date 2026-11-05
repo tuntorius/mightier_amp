@@ -165,7 +165,6 @@ class BLEMidiHandler {
   }
 
   Future<BLEConnection?> connectToDevice(BLEDevice device) async {
-    if (!_granted) return null;
     return bleController.connectToDevice(device);
   }
 

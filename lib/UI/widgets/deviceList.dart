@@ -11,9 +11,10 @@ class DeviceList extends StatelessWidget {
   DeviceList({Key? key}) : super(key: key);
 
   bool isConnected(String id) {
-    //check with nux device first
     if (midiHandler.connectedDevice != null &&
-        id == midiHandler.connectedDevice?.id) return true;
+        id == midiHandler.connectedDevice?.id) {
+      return true;
+    }
 
     for (var controller in midiHandler.controllerDevices) {
       if (controller.id == id) return true;
@@ -24,17 +25,16 @@ class DeviceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      // Let the ListView know how many items it needs to build
       itemCount: midiHandler.nuxDevices.length,
-      // Provide a builder function. This is where the magic happens! We'll
-      // convert each item into a Widget based on the type of item it is.
       itemBuilder: (context, index) {
         final result = midiHandler.nuxDevices[index];
         return ListTile(
           title: Text(result.name,
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: isConnected(result.id) ? Colors.blue : Colors.white)),
-          trailing: const Icon(Icons.bluetooth, color: Colors.white),
+                  color: isConnected(result.id) 
+                     ? Theme.of(context).colorScheme.primary 
+                     : Theme.of(context).colorScheme.onSurface)),
+          trailing: Icon(Icons.bluetooth, color: Theme.of(context).iconTheme.color),
           onTap: () {
             midiHandler.connectToDevice(result.device);
           },

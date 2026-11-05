@@ -235,7 +235,8 @@ class FlangerPro extends Modulation {
         value: 63,
         formatter: ValueFormatters.percentageMPPro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para4,
-        midiCC: MidiCCValuesPro.MOD_Para4),
+        midiCC: MidiCCValuesPro.MOD_Para4,
+        midiControllerHandle: MidiControllerHandles.delayRepeat),
   ];
 }
 
@@ -323,7 +324,8 @@ class SCFPro extends Modulation {
         value: 1,
         formatter: ValueFormatters.scfMode,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para3,
-        midiCC: MidiCCValuesPro.MOD_Para3),
+        midiCC: MidiCCValuesPro.MOD_Para3,
+        midiControllerHandle: MidiControllerHandles.modMode),
   ];
 }
 
@@ -365,7 +367,8 @@ class VibePro extends Modulation {
         value: 0,
         formatter: ValueFormatters.vibeModePro,
         devicePresetIndex: PresetDataIndexPlugPro.MOD_Para4,
-        midiCC: MidiCCValuesPro.MOD_Para4),
+        midiCC: MidiCCValuesPro.MOD_Para4,
+        midiControllerHandle: MidiControllerHandles.modMode),
   ];
 }
 

@@ -1,3 +1,6 @@
+// (c) 2020-2021 Dian Iliev (Tuntorius)
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 import '../../NuxConstants.dart';
 import '../../NuxMightyPlugAir.dart';
 import '../../value_formatters/ValueFormatter.dart';
@@ -69,7 +72,8 @@ class JazzClean extends PlugAirAmplifier {
         value: 100,
         formatter: ValueFormatters.brightMode,
         devicePresetIndex: PresetDataIndexPlugAir.amptone,
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampBright),
   ];
 
   @override
@@ -172,7 +176,7 @@ class TwinRvbV2 extends PlugAirAmplifier {
         handle: "bass",
         value: 60,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampbass, //check this
+        devicePresetIndex: PresetDataIndexPlugAir.ampbass, 
         midiCC: MidiCCValues.bCC_OverDriveDrive,
         midiControllerHandle: MidiControllerHandles.ampBass),
     Parameter(
@@ -180,7 +184,7 @@ class TwinRvbV2 extends PlugAirAmplifier {
         handle: "middle",
         value: 70,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle, //check this
+        devicePresetIndex: PresetDataIndexPlugAir.ampmiddle, 
         midiCC: MidiCCValues.bCC_OverDriveTone,
         midiControllerHandle: MidiControllerHandles.ampMiddle),
     Parameter(
@@ -188,7 +192,7 @@ class TwinRvbV2 extends PlugAirAmplifier {
         handle: "treble",
         value: 55,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptreble, //check this
+        devicePresetIndex: PresetDataIndexPlugAir.amptreble, 
         midiCC: MidiCCValues.bCC_OverDriveLevel,
         midiControllerHandle: MidiControllerHandles.ampTreble),
     Parameter(
@@ -196,8 +200,9 @@ class TwinRvbV2 extends PlugAirAmplifier {
         handle: "tone",
         value: 100,
         formatter: ValueFormatters.brightMode,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
-        midiCC: MidiCCValues.bCC_AmpPresence),
+        devicePresetIndex: PresetDataIndexPlugAir.amptone, 
+        midiCC: MidiCCValues.bCC_AmpPresence,
+        midiControllerHandle: MidiControllerHandles.ampBright),
   ];
   @override
   int? getEquivalentEffect(int version) {
@@ -329,7 +334,7 @@ class Brit800 extends PlugAirAmplifier {
         handle: "tone",
         value: 58,
         formatter: ValueFormatters.percentage,
-        devicePresetIndex: PresetDataIndexPlugAir.amptone, //check this
+        devicePresetIndex: PresetDataIndexPlugAir.amptone,
         midiCC: MidiCCValues.bCC_AmpPresence,
         midiControllerHandle: MidiControllerHandles.ampTone),
   ];
@@ -729,7 +734,8 @@ class Starlift extends PlugAirAmplifier {
         value: 0,
         formatter: ValueFormatters.contourMode,
         devicePresetIndex: PresetDataIndexPlugAir.ampgain,
-        midiCC: MidiCCValues.bCC_AmpDrive),
+        midiCC: MidiCCValues.bCC_AmpDrive,
+        midiControllerHandle: MidiControllerHandles.ampBright),
     Parameter(
         name: "Level",
         handle: "level",

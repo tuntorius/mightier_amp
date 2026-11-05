@@ -449,8 +449,9 @@ class DragAndDropListsState extends State<DragAndDropLists> {
       // }
       return outerListHolder;
     } else {
-      if (widget.sliverList)
+      if (widget.sliverList) {
         return widget.contentsWhenEmpty ?? const Text("Empty");
+      }
       return Column(
         children: [
           if (widget.headerWidget != null) widget.headerWidget!,

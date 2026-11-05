@@ -45,26 +45,12 @@ class _SetlistsState extends State<Setlists> {
   }
 
   var popupSubmenu = <PopupMenuEntry>[
-    // PopupMenuItem(
-    //   value: 0,
-    //   child: Row(
-    //     children: <Widget>[
-    //       Icon(
-    //         Icons.view,
-    //         color: AppThemeConfig.contextMenuIconColor,
-    //       ),
-    //       const SizedBox(width: 5),
-    //       Text("Open"),
-    //     ],
-    //   ),
-    // ),
     PopupMenuItem(
       value: 1,
       child: Row(
         children: <Widget>[
           Icon(
             Icons.drive_file_rename_outline,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Rename"),
@@ -77,7 +63,6 @@ class _SetlistsState extends State<Setlists> {
         children: <Widget>[
           Icon(
             Icons.delete,
-            color: AppThemeConfig.contextMenuIconColor,
           ),
           const SizedBox(width: 5),
           const Text("Delete"),
@@ -150,7 +135,7 @@ class _SetlistsState extends State<Setlists> {
       return const Center(child: Text("Add some tracks first!"));
     }
     return ListTileTheme(
-      iconColor: Colors.white,
+      iconColor: Theme.of(context).iconTheme.color,
       child: Stack(
         alignment: Alignment.bottomRight,
         children: [
@@ -169,8 +154,7 @@ class _SetlistsState extends State<Setlists> {
               Expanded(
                 child: Theme(
                   data: Theme.of(context).copyWith(
-                    canvasColor: Colors.grey[700],
-                    //shadowColor: Colors.grey,
+                    canvasColor: Theme.of(context).canvasColor,
                   ),
                   child: ReorderableListView.builder(
                       padding: const EdgeInsets.only(bottom: 90),
@@ -238,7 +222,6 @@ class _SetlistsState extends State<Setlists> {
                       buildDefaultDragHandles: false,
                       onReorder: (int oldIndex, int newIndex) {
                         if (oldIndex < newIndex) {
-                          // removing the item at oldIndex will shorten the list by 1.
                           newIndex -= 1;
                         }
                         final element = setlists.removeAt(oldIndex);

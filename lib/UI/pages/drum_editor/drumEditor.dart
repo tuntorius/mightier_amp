@@ -262,6 +262,10 @@ class _DrumEditorState extends State<DrumEditor>
     final bool portrait = mediaQuery.orientation == Orientation.portrait;
     final bool smallControls =
         portrait ? mediaQuery.size.height < 690 : mediaQuery.size.height < 400;
+        
+    // Identify if the app is currently in Dark Mode
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color cardColor = isDark ? Colors.grey[850]! : Theme.of(context).cardColor;
 
     device = NuxDeviceControl.instance().device;
 
@@ -276,10 +280,10 @@ class _DrumEditorState extends State<DrumEditor>
     if (portrait) {
       return Column(
         mainAxisSize: MainAxisSize.max,
-        //padding: const EdgeInsets.all(16.0),
         children: [
           Card(
-            color: Colors.grey[850],
+            // Removed hardcoded Colors.grey[850] to respect Light Mode
+            color: cardColor,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(children: [
@@ -294,7 +298,8 @@ class _DrumEditorState extends State<DrumEditor>
               landscape: false,
               smallControls: smallControls),
           Card(
-            color: Colors.grey[850],
+            // Removed hardcoded Colors.grey[850] to respect Light Mode
+            color: cardColor,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -332,7 +337,8 @@ class _DrumEditorState extends State<DrumEditor>
         Expanded(
             flex: 1,
             child: Card(
-              color: Colors.grey[850],
+              // Removed hardcoded Colors.grey[850] to respect Light Mode
+              color: cardColor,
               child: Padding(
                 padding: const EdgeInsets.all(6.0),
                 child: Column(
@@ -371,7 +377,8 @@ class _DrumEditorState extends State<DrumEditor>
         Expanded(
             flex: 1,
             child: Card(
-              color: Colors.grey[850],
+              // Removed hardcoded Colors.grey[850] to respect Light Mode
+              color: cardColor,
               child: Padding(
                 padding: const EdgeInsets.all(6.0),
                 child: Column(

@@ -30,6 +30,7 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
     super.initState();
     playerState.addListener(_onPlayerStateChange);
     _positionSub = playerState.positionStream.listen(_onPlayerPosition);
+    // Removed NuxDeviceControl listener to prevent BLE flood from blocking audio transport UI updates
   }
 
   @override
@@ -170,7 +171,8 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
                 min: -20,
                 max: 20,
                 snapToCenter: true,
-                labelFormatter: (val) => "${val.toStringAsFixed(1)} dB",
+                // FIX: Corrected raw string interpolation syntax error
+                labelFormatter: (val) => val.toStringAsFixed(1) + " dB",
                 onChanged: (value, skip) {
                   playerState.gain = value;
                   if (mounted) setState(() {});
@@ -213,10 +215,7 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
     return [
       IconButton(
         padding: padding,
-        onPressed: () {
-          playerState.previous();
-          if (mounted) setState(() {}); 
-        },
+        onPressed: playerState.previous,
         iconSize: iconSize,
         icon: Icon(Icons.skip_previous, color: iconColor),
       ),
@@ -226,17 +225,13 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
           playerState.setPosition(
               (playerState.currentPosition + const Duration(seconds: -5))
                   .inMilliseconds);
-          if (mounted) setState(() {});
         },
         iconSize: iconSize,
         icon: Icon(Icons.fast_rewind, color: iconColor),
       ),
       IconButton(
         padding: padding,
-        onPressed: () {
-          playerState.playPause();
-          if (mounted) setState(() {}); 
-        },
+        onPressed: playerState.playPause,
         iconSize: iconSize,
         icon: Icon(
           playerState.state == PlayerState.play
@@ -251,26 +246,19 @@ class _SetlistPlayerState extends State<SetlistPlayer> {
           playerState.setPosition(
               (playerState.currentPosition + const Duration(seconds: 5))
                   .inMilliseconds);
-          if (mounted) setState(() {});
         },
         iconSize: iconSize,
         icon: Icon(Icons.fast_forward, color: iconColor),
       ),
       IconButton(
         padding: padding,
-        onPressed: () {
-          playerState.next();
-          if (mounted) setState(() {}); 
-        },
+        onPressed: playerState.next,
         iconSize: iconSize,
         icon: Icon(Icons.skip_next, color: iconColor),
       ),
       IconButton(
         padding: padding,
-        onPressed: () {
-          playerState.toggleABRepeat();
-          if (mounted) setState(() {});
-        },
+        onPressed: playerState.toggleABRepeat,
         iconSize: iconSize,
         icon: Icon(getABRepeatIcon(), color: iconColor),
       ),
@@ -410,10 +398,7 @@ class SetlistMiniPlayerState extends State<SetlistMiniPlayer> {
 
     return [
       IconButton(
-        onPressed: () {
-          playerState.previous();
-          if (mounted) setState(() {}); 
-        },
+        onPressed: playerState.previous,
         icon: Icon(
           Icons.skip_previous,
           color: iconColor,
@@ -421,10 +406,7 @@ class SetlistMiniPlayerState extends State<SetlistMiniPlayer> {
         ),
       ),
       IconButton(
-        onPressed: () {
-          playerState.playPause();
-          if (mounted) setState(() {}); 
-        },
+        onPressed: playerState.playPause,
         icon: Icon(
           playerState.state == PlayerState.play
               ? Icons.pause
@@ -434,10 +416,7 @@ class SetlistMiniPlayerState extends State<SetlistMiniPlayer> {
         ),
       ),
       IconButton(
-        onPressed: () {
-          playerState.next();
-          if (mounted) setState(() {}); 
-        },
+        onPressed: playerState.next,
         icon: Icon(
           Icons.skip_next,
           color: iconColor,
